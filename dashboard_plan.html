@@ -1,0 +1,323 @@
+
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font-sans)}
+  .shell{display:grid;grid-template-columns:200px 1fr;min-height:700px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;background:var(--color-background-primary)}
+  .sidebar{background:var(--color-background-secondary);border-right:0.5px solid var(--color-border-tertiary);padding:16px 0;display:flex;flex-direction:column;gap:2px}
+  .sb-brand{padding:8px 16px 16px;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:8px}
+  .sb-brand-name{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+  .sb-brand-sub{font-size:11px;color:var(--color-text-tertiary)}
+  .sb-section{font-size:10px;font-weight:500;color:var(--color-text-tertiary);letter-spacing:.06em;padding:10px 16px 4px;text-transform:uppercase}
+  .sb-item{display:flex;align-items:center;gap:8px;padding:7px 16px;font-size:12px;color:var(--color-text-secondary);cursor:pointer;border-radius:0}
+  .sb-item:hover{background:var(--color-background-primary);color:var(--color-text-primary)}
+  .sb-item.active{background:var(--color-background-primary);color:var(--color-text-primary);font-weight:500;border-left:2px solid #185FA5}
+  .sb-item i{font-size:15px;flex-shrink:0}
+  .sb-badge{margin-left:auto;font-size:10px;background:var(--color-background-danger);color:var(--color-text-danger);padding:1px 6px;border-radius:20px}
+  .main{display:flex;flex-direction:column;overflow:hidden}
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary)}
+  .topbar-left{font-size:14px;font-weight:500;color:var(--color-text-primary)}
+  .topbar-right{display:flex;align-items:center;gap:10px}
+  .topbar-icon{width:30px;height:30px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--color-text-secondary);font-size:15px}
+  .topbar-icon:hover{background:var(--color-background-secondary)}
+  .avatar{width:30px;height:30px;border-radius:50%;background:#E6F1FB;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:#0C447C}
+  .content{padding:18px 20px;display:flex;flex-direction:column;gap:16px;background:var(--color-background-tertiary)}
+  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .kpi{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px 16px}
+  .kpi-label{font-size:11px;color:var(--color-text-secondary);margin-bottom:6px;display:flex;align-items:center;gap:5px}
+  .kpi-label i{font-size:13px}
+  .kpi-val{font-size:22px;font-weight:500;color:var(--color-text-primary);line-height:1}
+  .kpi-sub{font-size:11px;margin-top:5px}
+  .kpi-up{color:var(--color-text-success)}
+  .kpi-down{color:var(--color-text-danger)}
+  .kpi-neutral{color:var(--color-text-secondary)}
+  .kpi-accent{border-left:3px solid #185FA5;border-radius:0 var(--border-radius-lg) var(--border-radius-lg) 0}
+  .kpi-accent-g{border-left:3px solid #3B6D11;border-radius:0 var(--border-radius-lg) var(--border-radius-lg) 0}
+  .kpi-accent-a{border-left:3px solid #854F0B;border-radius:0 var(--border-radius-lg) var(--border-radius-lg) 0}
+  .kpi-accent-r{border-left:3px solid #A32D2D;border-radius:0 var(--border-radius-lg) var(--border-radius-lg) 0}
+  .row2{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .row3{display:grid;grid-template-columns:1.4fr 1fr;gap:10px}
+  .card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px 16px}
+  .card-title{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+  .card-title-link{font-size:11px;color:var(--color-text-info);cursor:pointer;font-weight:400}
+  .proj-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+  .proj-row:last-child{border-bottom:none;padding-bottom:0}
+  .proj-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+  .proj-name{font-size:12px;color:var(--color-text-primary);flex:1}
+  .proj-pct{font-size:11px;color:var(--color-text-secondary);width:32px;text-align:right;flex-shrink:0}
+  .prog-bar{flex:1;height:4px;background:var(--color-background-secondary);border-radius:2px;overflow:hidden}
+  .prog-fill{height:100%;border-radius:2px}
+  .badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:20px;font-weight:500}
+  .badge-success{background:#EAF3DE;color:#27500A}
+  .badge-warning{background:#FAEEDA;color:#633806}
+  .badge-danger{background:#FCEBEB;color:#791F1F}
+  .badge-info{background:#E6F1FB;color:#0C447C}
+  .badge-gray{background:#F1EFE8;color:#444441}
+  @media (prefers-color-scheme: dark){
+    .badge-success{background:#173404;color:#C0DD97}
+    .badge-warning{background:#412402;color:#FAC775}
+    .badge-danger{background:#501313;color:#F7C1C1}
+    .badge-info{background:#042C53;color:#B5D4F4}
+    .badge-gray{background:#2C2C2A;color:#D3D1C7}
+  }
+  .appr-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+  .appr-row:last-child{border-bottom:none;padding-bottom:0}
+  .appr-icon{width:28px;height:28px;border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+  .appr-name{font-size:12px;color:var(--color-text-primary);flex:1}
+  .appr-sub{font-size:10px;color:var(--color-text-tertiary)}
+  .alert-row{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+  .alert-row:last-child{border-bottom:none;padding-bottom:0}
+  .alert-dot{width:7px;height:7px;border-radius:50%;margin-top:4px;flex-shrink:0}
+  .alert-text{font-size:12px;color:var(--color-text-primary);line-height:1.4}
+  .alert-time{font-size:10px;color:var(--color-text-tertiary)}
+  .mini-stat{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+  .mini-stat:last-child{border-bottom:none;padding-bottom:0}
+  .mini-stat-label{font-size:12px;color:var(--color-text-secondary);display:flex;align-items:center;gap:6px}
+  .mini-stat-label i{font-size:14px}
+  .mini-stat-val{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+  .chart-bars{display:flex;align-items:flex-end;gap:6px;height:80px;margin-top:8px}
+  .bar-col{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1}
+  .bar-wrap{display:flex;flex-direction:column;align-items:center;gap:1px;width:100%;flex:1;justify-content:flex-end}
+  .bar-actual{border-radius:3px 3px 0 0;width:100%}
+  .bar-budget{border-radius:3px 3px 0 0;width:100%;opacity:.35}
+  .bar-lbl{font-size:9px;color:var(--color-text-tertiary)}
+  .legend{display:flex;gap:12px;margin-top:8px}
+  .legend-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--color-text-secondary)}
+  .legend-dot{width:8px;height:8px;border-radius:2px}
+</style>
+<h2 class="sr-only">Admin dashboard layout plan for construction management system</h2>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <div class="sb-brand-name"><i class="ti ti-building-factory-2" style="font-size:15px;vertical-align:-2px;margin-right:5px" aria-hidden="true"></i>ConstroPro</div>
+      <div class="sb-brand-sub">Admin panel</div>
+    </div>
+    <div class="sb-item active"><i class="ti ti-layout-dashboard" aria-hidden="true"></i>Dashboard</div>
+    <div class="sb-section">Core project</div>
+    <div class="sb-item"><i class="ti ti-folders" aria-hidden="true"></i>Projects</div>
+    <div class="sb-item"><i class="ti ti-checklist" aria-hidden="true"></i>Tasks &amp; work orders</div>
+    <div class="sb-item"><i class="ti ti-map-pin" aria-hidden="true"></i>Sites</div>
+    <div class="sb-section">Finance</div>
+    <div class="sb-item"><i class="ti ti-calculator" aria-hidden="true"></i>Estimating / BOQ</div>
+    <div class="sb-item"><i class="ti ti-chart-pie" aria-hidden="true"></i>Budgeting</div>
+    <div class="sb-item"><i class="ti ti-podium" aria-hidden="true"></i>Tendering</div>
+    <div class="sb-item"><i class="ti ti-receipt" aria-hidden="true"></i>Invoicing<span class="sb-badge">3</span></div>
+    <div class="sb-section">Procurement</div>
+    <div class="sb-item"><i class="ti ti-users" aria-hidden="true"></i>Vendors</div>
+    <div class="sb-item"><i class="ti ti-truck-delivery" aria-hidden="true"></i>Purchasing<span class="sb-badge">5</span></div>
+    <div class="sb-item"><i class="ti ti-package" aria-hidden="true"></i>Inventory</div>
+    <div class="sb-item"><i class="ti ti-users-group" aria-hidden="true"></i>Subcontractors</div>
+    <div class="sb-section">HR &amp; Equipment</div>
+    <div class="sb-item"><i class="ti ti-id-badge-2" aria-hidden="true"></i>HR &amp; Payroll</div>
+    <div class="sb-item"><i class="ti ti-crane" aria-hidden="true"></i>Equipment</div>
+    <div class="sb-item"><i class="ti ti-shield-check" aria-hidden="true"></i>Safety</div>
+    <div class="sb-section">Other</div>
+    <div class="sb-item"><i class="ti ti-clipboard-check" aria-hidden="true"></i>Quality / QA</div>
+    <div class="sb-item"><i class="ti ti-file-stack" aria-hidden="true"></i>Documents</div>
+    <div class="sb-item"><i class="ti ti-writing" aria-hidden="true"></i>Contracts</div>
+    <div class="sb-item"><i class="ti ti-chart-bar" aria-hidden="true"></i>Reports</div>
+    <div class="sb-item"><i class="ti ti-settings" aria-hidden="true"></i>Settings</div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">Dashboard overview</div>
+      <div class="topbar-right">
+        <div class="topbar-icon"><i class="ti ti-search" aria-hidden="true"></i></div>
+        <div class="topbar-icon" style="position:relative"><i class="ti ti-bell" aria-hidden="true"></i><span style="position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%;background:#E24B4A"></span></div>
+        <div class="avatar">AD</div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="kpi-grid">
+        <div class="kpi kpi-accent">
+          <div class="kpi-label"><i class="ti ti-folders" aria-hidden="true"></i>Active projects</div>
+          <div class="kpi-val">14</div>
+          <div class="kpi-sub kpi-up"><i class="ti ti-arrow-up" style="font-size:10px" aria-hidden="true"></i> 2 this month</div>
+        </div>
+        <div class="kpi kpi-accent-g">
+          <div class="kpi-label"><i class="ti ti-currency-dollar" aria-hidden="true"></i>Total budget</div>
+          <div class="kpi-val">$4.2M</div>
+          <div class="kpi-sub kpi-neutral">across all projects</div>
+        </div>
+        <div class="kpi kpi-accent-a">
+          <div class="kpi-label"><i class="ti ti-clock" aria-hidden="true"></i>Pending approvals</div>
+          <div class="kpi-val">8</div>
+          <div class="kpi-sub kpi-down">POs, invoices, WOs</div>
+        </div>
+        <div class="kpi kpi-accent-r">
+          <div class="kpi-label"><i class="ti ti-alert-triangle" aria-hidden="true"></i>Cost overruns</div>
+          <div class="kpi-val">3</div>
+          <div class="kpi-sub kpi-down">projects over budget</div>
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="card">
+          <div class="kpi-label" style="margin-bottom:10px"><i class="ti ti-users" style="font-size:13px" aria-hidden="true"></i><span style="font-size:13px;font-weight:500;color:var(--color-text-primary)">Workforce on site</span></div>
+          <div style="font-size:22px;font-weight:500;color:var(--color-text-primary);line-height:1;margin-bottom:4px">247</div>
+          <div style="font-size:11px;color:var(--color-text-secondary)">workers active today</div>
+        </div>
+        <div class="card">
+          <div class="kpi-label" style="margin-bottom:10px"><i class="ti ti-crane" style="font-size:13px" aria-hidden="true"></i><span style="font-size:13px;font-weight:500;color:var(--color-text-primary)">Equipment in use</span></div>
+          <div style="font-size:22px;font-weight:500;color:var(--color-text-primary);line-height:1;margin-bottom:4px">38<span style="font-size:13px;color:var(--color-text-secondary);font-weight:400"> / 52</span></div>
+          <div style="font-size:11px;color:var(--color-text-secondary)">14 idle, 0 in maintenance</div>
+        </div>
+        <div class="card">
+          <div class="kpi-label" style="margin-bottom:10px"><i class="ti ti-package" style="font-size:13px" aria-hidden="true"></i><span style="font-size:13px;font-weight:500;color:var(--color-text-primary)">Low stock alerts</span></div>
+          <div style="font-size:22px;font-weight:500;color:#A32D2D;line-height:1;margin-bottom:4px">6</div>
+          <div style="font-size:11px;color:var(--color-text-secondary)">materials below reorder level</div>
+        </div>
+      </div>
+
+      <div class="row3">
+        <div class="card">
+          <div class="card-title">Project progress <span class="card-title-link">View all →</span></div>
+          <div class="proj-row">
+            <div class="proj-dot" style="background:#185FA5"></div>
+            <div class="proj-name">City Tower Block A</div>
+            <div class="prog-bar"><div class="prog-fill" style="width:72%;background:#185FA5"></div></div>
+            <div class="proj-pct">72%</div>
+            <span class="badge badge-info">Active</span>
+          </div>
+          <div class="proj-row">
+            <div class="proj-dot" style="background:#3B6D11"></div>
+            <div class="proj-name">Highway Bridge Ext.</div>
+            <div class="prog-bar"><div class="prog-fill" style="width:45%;background:#3B6D11"></div></div>
+            <div class="proj-pct">45%</div>
+            <span class="badge badge-success">On track</span>
+          </div>
+          <div class="proj-row">
+            <div class="proj-dot" style="background:#854F0B"></div>
+            <div class="proj-name">Warehouse Complex</div>
+            <div class="prog-bar"><div class="prog-fill" style="width:88%;background:#854F0B"></div></div>
+            <div class="proj-pct">88%</div>
+            <span class="badge badge-warning">Delayed</span>
+          </div>
+          <div class="proj-row">
+            <div class="proj-dot" style="background:#A32D2D"></div>
+            <div class="proj-name">Shopping Mall Phase 2</div>
+            <div class="prog-bar"><div class="prog-fill" style="width:31%;background:#A32D2D"></div></div>
+            <div class="proj-pct">31%</div>
+            <span class="badge badge-danger">Over budget</span>
+          </div>
+          <div class="proj-row">
+            <div class="proj-dot" style="background:#5F5E5A"></div>
+            <div class="proj-name">Residential Block C</div>
+            <div class="prog-bar"><div class="prog-fill" style="width:60%;background:#5F5E5A"></div></div>
+            <div class="proj-pct">60%</div>
+            <span class="badge badge-gray">On hold</span>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="card">
+            <div class="card-title">Pending approvals <span class="card-title-link">View all →</span></div>
+            <div class="appr-row">
+              <div class="appr-icon" style="background:#FAEEDA;color:#854F0B"><i class="ti ti-truck-delivery" aria-hidden="true"></i></div>
+              <div style="flex:1"><div class="appr-name">PO #2041 — Steel rods</div><div class="appr-sub">$18,400 · Vendor: AlSteelCo</div></div>
+              <span class="badge badge-warning">PO</span>
+            </div>
+            <div class="appr-row">
+              <div class="appr-icon" style="background:#E6F1FB;color:#185FA5"><i class="ti ti-receipt" aria-hidden="true"></i></div>
+              <div style="flex:1"><div class="appr-name">Invoice #INV-309</div><div class="appr-sub">$6,200 · City Tower Block A</div></div>
+              <span class="badge badge-info">Invoice</span>
+            </div>
+            <div class="appr-row">
+              <div class="appr-icon" style="background:#FCEBEB;color:#A32D2D"><i class="ti ti-file-invoice" aria-hidden="true"></i></div>
+              <div style="flex:1"><div class="appr-name">Work order #WO-88</div><div class="appr-sub">Electrical wiring — Site 3</div></div>
+              <span class="badge badge-danger">WO</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Recent alerts</div>
+            <div class="alert-row">
+              <div class="alert-dot" style="background:#E24B4A"></div>
+              <div style="flex:1"><div class="alert-text">Cement stock below reorder level at Site 2</div><div class="alert-time">10 min ago</div></div>
+            </div>
+            <div class="alert-row">
+              <div class="alert-dot" style="background:#BA7517"></div>
+              <div style="flex:1"><div class="alert-text">Shopping Mall Phase 2 budget exceeded by 8%</div><div class="alert-time">2 hrs ago</div></div>
+            </div>
+            <div class="alert-row">
+              <div class="alert-dot" style="background:#185FA5"></div>
+              <div style="flex:1"><div class="alert-text">New NCR submitted — Warehouse Complex</div><div class="alert-time">Yesterday</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="card">
+          <div class="card-title">Budget vs actual (top projects)</div>
+          <div class="chart-bars">
+            <div class="bar-col">
+              <div class="bar-wrap">
+                <div class="bar-actual" style="height:72%;background:#185FA5"></div>
+              </div>
+              <div class="bar-lbl">Tower A</div>
+            </div>
+            <div class="bar-col">
+              <div class="bar-wrap">
+                <div class="bar-actual" style="height:45%;background:#3B6D11"></div>
+              </div>
+              <div class="bar-lbl">Bridge</div>
+            </div>
+            <div class="bar-col">
+              <div class="bar-wrap">
+                <div class="bar-actual" style="height:100%;background:#A32D2D"></div>
+              </div>
+              <div class="bar-lbl">Mall P2</div>
+            </div>
+            <div class="bar-col">
+              <div class="bar-wrap">
+                <div class="bar-actual" style="height:55%;background:#185FA5"></div>
+              </div>
+              <div class="bar-lbl">Warehouse</div>
+            </div>
+            <div class="bar-col">
+              <div class="bar-wrap">
+                <div class="bar-actual" style="height:30%;background:#3B6D11"></div>
+              </div>
+              <div class="bar-lbl">Block C</div>
+            </div>
+          </div>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#185FA5"></div>Within budget</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#A32D2D"></div>Over budget</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Quick stats</div>
+          <div class="mini-stat">
+            <div class="mini-stat-label"><i class="ti ti-writing" aria-hidden="true"></i>Active contracts</div>
+            <div class="mini-stat-val">22</div>
+          </div>
+          <div class="mini-stat">
+            <div class="mini-stat-label"><i class="ti ti-users-group" aria-hidden="true"></i>Active subcontractors</div>
+            <div class="mini-stat-val">11</div>
+          </div>
+          <div class="mini-stat">
+            <div class="mini-stat-label"><i class="ti ti-clipboard-check" aria-hidden="true"></i>Open NCRs</div>
+            <div class="mini-stat-val" style="color:#A32D2D">7</div>
+          </div>
+          <div class="mini-stat">
+            <div class="mini-stat-label"><i class="ti ti-alert-triangle" aria-hidden="true"></i>Open risks</div>
+            <div class="mini-stat-val" style="color:#BA7517">12</div>
+          </div>
+          <div class="mini-stat">
+            <div class="mini-stat-label"><i class="ti ti-file-stack" aria-hidden="true"></i>Pending RFIs</div>
+            <div class="mini-stat-val">4</div>
+          </div>
+          <div class="mini-stat">
+            <div class="mini-stat-label"><i class="ti ti-shield-exclamation" aria-hidden="true"></i>Safety incidents (mtd)</div>
+            <div class="mini-stat-val">1</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
