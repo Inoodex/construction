@@ -3,9 +3,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\Project;
+use App\Models\Site;
+use App\Models\Task;
+use App\Models\Vendor;
+use App\Models\PurchaseOrder;
+use App\Models\Stock;
+use App\Models\Material;
+use App\Models\MaterialWastage;
 use HasinHayder\Tyro\Models\Role;
 use HasinHayder\Tyro\Models\Privilege;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -13,12 +21,72 @@ class DashboardController extends Controller
     {
         $userModel = config('tyro-dashboard.user_model', 'App\\Models\\User');
 
-        $stats = [
-            'total_users' => class_exists($userModel) ? $userModel::count() : 0,
-            'total_roles' => class_exists(Role::class) ? Role::count() : 0,
-            'total_privileges' => class_exists(Privilege::class) ? Privilege::count() : 0,
-        ];
+        // --- Projects ---
+        $totalProjects      = Project::count();
+        $activeProjects     = Project::where('status', 'active')->count();
+        $planningProjects   = Project::where('status', 'planning')->count();
+        $completedProjects  = Project::where('status', 'completed')->count();
+        $totalBudget        = Project::sum('budget');
 
-        return view('admin.dashboard', compact('stats'));
+        // --- Sites ---
+        $totalSites         = Site::count();
+
+        // --- Tasks ---
+        $totalTasks         = Task::count();
+        $openTasks          = Task::where('status', 'open')->count();
+        $inProgressTasks    = Task::where('status', 'in_progress')->count();
+        $criticalTasks      = Task::where('priority', 'critical')->whereIn('status', ['open', 'in_progress'])->count();
+
+        // --- Vendors ---
+        $totalVendors       = Vendor::count();
+        $approvedVendors    = Vendor::where('status', 'approved')->count();
+        $pendingVendors     = Vendor::where('status', 'pending')->count();
+
+        // --- Procurement ---
+        $totalPOs           = PurchaseOrder::count();
+        $pendingPOs         = PurchaseOrder::whereIn('status', ['draft', 'ordered'])->count();
+        $totalPOValue       = PurchaseOrder::sum('total_amount');
+
+        // --- Inventory Alerts (stocks below threshold of 50 units) ---
+        $lowStockItems = Stock::with(['material', 'warehouse', 'site'])
+            ->where('quantity', '<=', 50)
+            ->orderBy('quantity', 'asc')
+            ->take(5)
+            ->get();
+
+        // --- Recent Projects ---
+        $recentProjects = Project::with('creator')
+            ->latest()
+            ->take(5)
+            ->get();
+
+        // --- Recent Purchase Orders ---
+        $recentPOs = PurchaseOrder::with('vendor')
+            ->latest()
+            ->take(5)
+            ->get();
+
+        // --- Task breakdown by priority (for chart) ---
+        $tasksByPriority = Task::select('priority', DB::raw('count(*) as count'))
+            ->groupBy('priority')
+            ->pluck('count', 'priority');
+
+        // --- Project status breakdown (for chart) ---
+        $projectsByStatus = Project::select('status', DB::raw('count(*) as count'))
+            ->groupBy('status')
+            ->pluck('count', 'status');
+
+        return view('admin.dashboard', compact(
+            'totalProjects', 'activeProjects', 'planningProjects', 'completedProjects', 'totalBudget',
+            'totalSites',
+            'totalTasks', 'openTasks', 'inProgressTasks', 'criticalTasks',
+            'totalVendors', 'approvedVendors', 'pendingVendors',
+            'totalPOs', 'pendingPOs', 'totalPOValue',
+            'lowStockItems',
+            'recentProjects',
+            'recentPOs',
+            'tasksByPriority',
+            'projectsByStatus'
+        ));
     }
 }
