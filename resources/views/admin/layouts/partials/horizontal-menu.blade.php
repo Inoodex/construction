@@ -49,4 +49,78 @@
         </li>
     @endif
 
+    <!-- Core -->
+    <li class="menu nav-item relative">
+        <a href="javascript:;" class="nav-link">
+            <div class="flex items-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="shrink-0">
+                    <path opacity="0.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" fill="currentColor" />
+                </svg>
+                <span class="px-1">Core</span>
+            </div>
+            <div class="right_arrow">
+                <svg class="h-4 w-4 rotate-90" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </div>
+        </a>
+        <ul class="sub-menu">
+            <li><a href="{{ route('admin.core.projects.index') }}">Projects</a></li>
+            <li><a href="{{ route('admin.core.sites.index') }}">Sites</a></li>
+            <li><a href="{{ route('admin.core.tasks.index') }}">Tasks</a></li>
+        </ul>
+    </li>
+
+    <!-- Procurement -->
+    <li class="menu nav-item relative">
+        <a href="javascript:;" class="nav-link">
+            <div class="flex items-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="shrink-0">
+                    <path opacity="0.5" d="M3.46447 20.5355C4.92893 22 7.28595 22 12 22C16.714 22 19.0711 22 20.5355 20.5355C22 19.0711 22 16.714 22 12C22 7.28595 22 4.92893 20.5355 3.46447C19.0711 2 16.714 2 12 2C7.28595 2 4.92893 2 3.46447 3.46447C2 4.92893 2 7.28595 2 12C2 16.714 2 19.0711 3.46447 20.5355Z" fill="currentColor" />
+                    <path d="M11.28 7.78L11.28 11.28L7.78 11.28C7.36598 11.28 7.03001 11.616 7.03001 12.03C7.03001 12.444 7.36598 12.78 7.78 12.78L11.28 12.78L11.28 16.28C11.28 16.694 11.616 17.03 12.03 17.03C12.444 17.03 12.78 16.694 12.78 16.28L12.78 12.78L16.28 12.78C16.694 12.78 17.03 12.444 17.03 12.03C17.03 11.616 16.694 11.28 16.28 11.28L12.78 11.28L12.78 7.78C12.78 7.36598 12.444 7.03 12.03 7.03C11.616 7.03 11.28 7.36598 11.28 7.78Z" fill="currentColor" />
+                </svg>
+                <span class="px-1">Procurement</span>
+            </div>
+            <div class="right_arrow">
+                <svg class="h-4 w-4 rotate-90" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </div>
+        </a>
+        <ul class="sub-menu">
+            <li><a href="{{ route('admin.procurement.vendors.index') }}">Vendors</a></li>
+            <li><a href="{{ route('admin.procurement.materials.index') }}">Materials</a></li>
+            <li><a href="{{ route('admin.procurement.requisitions.index') }}">Requisitions</a></li>
+            <li><a href="{{ route('admin.procurement.purchase-orders.index') }}">Purchase Orders</a></li>
+            <li><a href="{{ route('admin.procurement.goods-received-notes.index') }}">Goods Received</a></li>
+            <li><a href="{{ route('admin.procurement.warehouses.index') }}">Warehouses</a></li>
+            <li><a href="{{ route('admin.procurement.stocks.index') }}">Stocks</a></li>
+            <li><a href="{{ route('admin.procurement.material-transfers.index') }}">Material Transfers</a></li>
+            <li><a href="{{ route('admin.procurement.material-issue-slips.index') }}">Issue Slips</a></li>
+            <li><a href="{{ route('admin.procurement.material-wastages.index') }}">Material Wastage</a></li>
+        </ul>
+    </li>
+
+    <!-- Reports -->
+    <li class="menu nav-item relative">
+        <a href="javascript:;" class="nav-link">
+            <div class="flex items-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="shrink-0">
+                    <path opacity="0.5" d="M4 4.69434V18.6943C4 20.3512 5.34315 21.6943 7 21.6943H17C18.6569 21.6943 20 20.3512 20 18.6943V8.69434C20 7.03748 18.6569 5.69434 17 5.69434H5C4.44772 5.69434 4 5.24662 4 4.69434Z" fill="currentColor" />
+                    <path d="M7.25 11.6943C7.25 11.2801 7.58579 10.9443 8 10.9443H16C16.4142 10.9443 16.75 11.2801 16.75 11.6943C16.75 12.1085 16.4142 12.4443 16 12.4443H8C7.58579 12.4443 7.25 12.1085 7.25 11.6943ZM7.25 15.1943C7.25 14.7801 7.58579 14.4443 8 14.4443H13.5C13.9142 14.4443 14.25 14.7801 14.25 15.1943C14.25 15.6085 13.9142 15.9443 13.5 15.9443H8C7.58579 15.9443 7.25 15.6085 7.25 15.1943Z" fill="currentColor" />
+                </svg>
+                <span class="px-1">Reports</span>
+            </div>
+            <div class="right_arrow">
+                <svg class="h-4 w-4 rotate-90" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </div>
+        </a>
+        <ul class="sub-menu">
+            <li><a href="{{ route('admin.reports.report-templates.index') }}">Report Templates</a></li>
+            <li><a href="{{ route('admin.reports.scheduled-reports.index') }}">Scheduled Reports</a></li>
+        </ul>
+    </li>
+
 </ul>
