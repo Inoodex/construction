@@ -18,10 +18,10 @@
     </div>
 
     <div class="panel mt-6">
-        <div class="mb-5 flex flex-col gap-5 md:flex-row md:items-center">
-            <form action="{{ route('admin.procurement.vendors.index') }}" method="GET" class="flex flex-1 flex-col gap-5 md:flex-row md:items-center w-full">
-                <div class="relative w-full md:w-[405px]">
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name, email or phone..." class="form-input ltr:pr-11 rtl:pl-11" />
+        <div class="mb-5">
+            <form action="{{ route('admin.procurement.vendors.index') }}" method="GET" class="flex items-center gap-3 w-full">
+                <div class="relative flex-1">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by name, email or phone..." class="form-input ltr:pr-11 rtl:pl-11 w-full" />
                     <button type="submit" class="absolute inset-y-0 flex items-center hover:text-primary ltr:right-4 rtl:left-4">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" stroke-width="1.5" opacity="0.5" />
@@ -29,27 +29,28 @@
                         </svg>
                     </button>
                 </div>
-                <div class="flex gap-2">
-                    <select name="status" class="form-select w-full md:w-36">
-                        <option value="">All Status</option>
-                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
-                        <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
-                        <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
-                        <option value="blacklisted" {{ request('status') == 'blacklisted' ? 'selected' : '' }}>Blacklisted</option>
-                    </select>
-                    <select name="trade_category" class="form-select w-full md:w-40">
-                        <option value="">All Categories</option>
-                        <option value="Electrical" {{ request('trade_category') == 'Electrical' ? 'selected' : '' }}>Electrical</option>
-                        <option value="Plumbing" {{ request('trade_category') == 'Plumbing' ? 'selected' : '' }}>Plumbing</option>
-                        <option value="Structural" {{ request('trade_category') == 'Structural' ? 'selected' : '' }}>Structural</option>
-                        <option value="Finishing" {{ request('trade_category') == 'Finishing' ? 'selected' : '' }}>Finishing</option>
-                        <option value="HVAC" {{ request('trade_category') == 'HVAC' ? 'selected' : '' }}>HVAC</option>
-                        <option value="General" {{ request('trade_category') == 'General' ? 'selected' : '' }}>General</option>
-                    </select>
-                    <button type="submit" class="btn btn-primary">Filter</button>
-                </div>
+                <select name="status" class="form-select flex-1">
+                    <option value="">Status</option>
+                    <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
+                    <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                    <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
+                    <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                    <option value="blacklisted" {{ request('status') == 'blacklisted' ? 'selected' : '' }}>Blacklisted</option>
+                </select>
+                <select name="trade_category" class="form-select flex-1">
+                    <option value="">Category</option>
+                    <option value="Electrical" {{ request('trade_category') == 'Electrical' ? 'selected' : '' }}>Electrical</option>
+                    <option value="Plumbing" {{ request('trade_category') == 'Plumbing' ? 'selected' : '' }}>Plumbing</option>
+                    <option value="Structural" {{ request('trade_category') == 'Structural' ? 'selected' : '' }}>Structural</option>
+                    <option value="Finishing" {{ request('trade_category') == 'Finishing' ? 'selected' : '' }}>Finishing</option>
+                    <option value="HVAC" {{ request('trade_category') == 'HVAC' ? 'selected' : '' }}>HVAC</option>
+                    <option value="General" {{ request('trade_category') == 'General' ? 'selected' : '' }}>General</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Filter</button>
+                @if(request()->anyFilled(['search', 'status', 'trade_category']))
+                    <a href="{{ route('admin.procurement.vendors.index') }}" class="btn btn-outline-danger">Reset</a>
+                @endif
             </form>
         </div>
 

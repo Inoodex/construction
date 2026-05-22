@@ -18,10 +18,10 @@
     </div>
 
     <div class="panel mt-6">
-        <div class="mb-5 flex flex-col gap-5 md:flex-row md:items-center">
-            <form action="{{ route('admin.core.projects.index') }}" method="GET" class="flex flex-1 flex-col gap-5 md:flex-row md:items-center w-full">
-                <div class="relative w-full md:w-[405px]">
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search projects..." class="form-input ltr:pr-11 rtl:pl-11" />
+        <div class="mb-5">
+            <form action="{{ route('admin.core.projects.index') }}" method="GET" class="flex items-center gap-3 w-full">
+                <div class="relative flex-1">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search projects..." class="form-input ltr:pr-11 rtl:pl-11 w-full" />
                     <button type="submit" class="absolute inset-y-0 flex items-center hover:text-primary ltr:right-4 rtl:left-4">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" stroke-width="1.5" opacity="0.5" />
@@ -29,16 +29,17 @@
                         </svg>
                     </button>
                 </div>
-                <div class="flex gap-2">
-                    <select name="status" class="form-select w-full md:w-36">
-                        <option value="">All Status</option>
-                        <option value="planning" {{ request('status') == 'planning' ? 'selected' : '' }}>Planning</option>
-                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
-                        <option value="on_hold" {{ request('status') == 'on_hold' ? 'selected' : '' }}>On Hold</option>
-                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
-                    </select>
-                    <button type="submit" class="btn btn-primary">Filter</button>
-                </div>
+                <select name="status" class="form-select flex-1">
+                    <option value="">Status</option>
+                    <option value="planning" {{ request('status') == 'planning' ? 'selected' : '' }}>Planning</option>
+                    <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
+                    <option value="on_hold" {{ request('status') == 'on_hold' ? 'selected' : '' }}>On Hold</option>
+                    <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Filter</button>
+                @if(request()->anyFilled(['search', 'status']))
+                    <a href="{{ route('admin.core.projects.index') }}" class="btn btn-outline-danger">Reset</a>
+                @endif
             </form>
         </div>
 

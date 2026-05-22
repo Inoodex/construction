@@ -18,17 +18,18 @@
     </div>
 
     <div class="panel mt-6">
-        <div class="mb-5 flex flex-col gap-5 md:flex-row md:items-center">
-            <form action="{{ route('admin.procurement.material-issue-slips.index') }}" method="GET" class="flex flex-1 flex-col gap-5 md:flex-row md:items-center w-full">
-                <div class="flex gap-2">
-                    <select name="project_id" class="form-select w-full md:w-44">
-                        <option value="">All Projects</option>
-                        @foreach($projects as $project)
-                            <option value="{{ $project->id }}" {{ request('project_id') == $project->id ? 'selected' : '' }}>{{ $project->name }}</option>
-                        @endforeach
-                    </select>
-                    <button type="submit" class="btn btn-primary">Filter</button>
-                </div>
+        <div class="mb-5">
+            <form action="{{ route('admin.procurement.material-issue-slips.index') }}" method="GET" class="flex items-center gap-3 w-full">
+                <select name="project_id" class="form-select flex-1">
+                    <option value="">Project</option>
+                    @foreach($projects as $project)
+                        <option value="{{ $project->id }}" {{ request('project_id') == $project->id ? 'selected' : '' }}>{{ $project->name }}</option>
+                    @endforeach
+                </select>
+                <button type="submit" class="btn btn-primary">Filter</button>
+                @if(request()->anyFilled(['project_id']))
+                    <a href="{{ route('admin.procurement.material-issue-slips.index') }}" class="btn btn-outline-danger">Reset</a>
+                @endif
             </form>
         </div>
 

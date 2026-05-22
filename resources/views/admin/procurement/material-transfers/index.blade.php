@@ -18,18 +18,19 @@
     </div>
 
     <div class="panel mt-6">
-        <div class="mb-5 flex flex-col gap-5 md:flex-row md:items-center">
-            <form action="{{ route('admin.procurement.material-transfers.index') }}" method="GET" class="flex flex-1 flex-col gap-5 md:flex-row md:items-center w-full">
-                <div class="flex gap-2">
-                    <select name="status" class="form-select w-full md:w-36">
-                        <option value="">All Status</option>
-                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="transit" {{ request('status') == 'transit' ? 'selected' : '' }}>In Transit</option>
-                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
-                        <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                    </select>
-                    <button type="submit" class="btn btn-primary">Filter</button>
-                </div>
+        <div class="mb-5">
+            <form action="{{ route('admin.procurement.material-transfers.index') }}" method="GET" class="flex items-center gap-3 w-full">
+                <select name="status" class="form-select flex-1">
+                    <option value="">Status</option>
+                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                    <option value="transit" {{ request('status') == 'transit' ? 'selected' : '' }}>In Transit</option>
+                    <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+                    <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Filter</button>
+                @if(request()->anyFilled(['status']))
+                    <a href="{{ route('admin.procurement.material-transfers.index') }}" class="btn btn-outline-danger">Reset</a>
+                @endif
             </form>
         </div>
 

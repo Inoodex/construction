@@ -18,10 +18,10 @@
     </div>
 
     <div class="panel mt-6">
-        <div class="mb-5 flex flex-col gap-5 md:flex-row md:items-center">
-            <form action="{{ route('admin.core.tasks.index') }}" method="GET" class="flex flex-1 flex-col gap-5 md:flex-row md:items-center w-full">
-                <div class="relative w-full md:w-[280px]">
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search tasks..." class="form-input ltr:pr-11 rtl:pl-11" />
+        <div class="mb-5">
+            <form action="{{ route('admin.core.tasks.index') }}" method="GET" class="flex items-center gap-3 w-full">
+                <div class="relative flex-1">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search tasks..." class="form-input ltr:pr-11 rtl:pl-11 w-full" />
                     <button type="submit" class="absolute inset-y-0 flex items-center hover:text-primary ltr:right-4 rtl:left-4">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" stroke-width="1.5" opacity="0.5" />
@@ -29,29 +29,30 @@
                         </svg>
                     </button>
                 </div>
-                <div class="flex flex-wrap gap-2">
-                    <select name="project_id" class="form-select w-full md:w-40">
-                        <option value="">All Projects</option>
-                        @foreach($projects as $project)
-                            <option value="{{ $project->id }}" {{ request('project_id') == $project->id ? 'selected' : '' }}>{{ $project->name }}</option>
-                        @endforeach
-                    </select>
-                    <select name="status" class="form-select w-full md:w-32">
-                        <option value="">All Status</option>
-                        <option value="open" {{ request('status') == 'open' ? 'selected' : '' }}>Open</option>
-                        <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>In Progress</option>
-                        <option value="review" {{ request('status') == 'review' ? 'selected' : '' }}>Review</option>
-                        <option value="closed" {{ request('status') == 'closed' ? 'selected' : '' }}>Closed</option>
-                    </select>
-                    <select name="priority" class="form-select w-full md:w-28">
-                        <option value="">All Priority</option>
-                        <option value="critical" {{ request('priority') == 'critical' ? 'selected' : '' }}>Critical</option>
-                        <option value="high" {{ request('priority') == 'high' ? 'selected' : '' }}>High</option>
-                        <option value="medium" {{ request('priority') == 'medium' ? 'selected' : '' }}>Medium</option>
-                        <option value="low" {{ request('priority') == 'low' ? 'selected' : '' }}>Low</option>
-                    </select>
-                    <button type="submit" class="btn btn-primary">Filter</button>
-                </div>
+                <select name="project_id" class="form-select flex-1">
+                    <option value="">Project</option>
+                    @foreach($projects as $project)
+                        <option value="{{ $project->id }}" {{ request('project_id') == $project->id ? 'selected' : '' }}>{{ $project->name }}</option>
+                    @endforeach
+                </select>
+                <select name="status" class="form-select flex-1">
+                    <option value="">Status</option>
+                    <option value="open" {{ request('status') == 'open' ? 'selected' : '' }}>Open</option>
+                    <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                    <option value="review" {{ request('status') == 'review' ? 'selected' : '' }}>Review</option>
+                    <option value="closed" {{ request('status') == 'closed' ? 'selected' : '' }}>Closed</option>
+                </select>
+                <select name="priority" class="form-select flex-1">
+                    <option value="">Priority</option>
+                    <option value="critical" {{ request('priority') == 'critical' ? 'selected' : '' }}>Critical</option>
+                    <option value="high" {{ request('priority') == 'high' ? 'selected' : '' }}>High</option>
+                    <option value="medium" {{ request('priority') == 'medium' ? 'selected' : '' }}>Medium</option>
+                    <option value="low" {{ request('priority') == 'low' ? 'selected' : '' }}>Low</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Filter</button>
+                @if(request()->anyFilled(['search', 'project_id', 'status', 'priority']))
+                    <a href="{{ route('admin.core.tasks.index') }}" class="btn btn-outline-danger">Reset</a>
+                @endif
             </form>
         </div>
 

@@ -18,28 +18,29 @@
     </div>
 
     <div class="panel mt-6">
-        <div class="mb-5 flex flex-col gap-5 md:flex-row md:items-center">
-            <form action="{{ route('admin.procurement.stocks.index') }}" method="GET" class="flex flex-1 flex-col gap-5 md:flex-row md:items-center w-full">
-                <div class="flex flex-wrap gap-2">
-                    <select name="material_id" class="form-select w-full md:w-44">
-                        <option value="">All Materials</option>
-                        @foreach($materials as $material)
-                            <option value="{{ $material->id }}" {{ request('material_id') == $material->id ? 'selected' : '' }}>{{ $material->name }}</option>
-                        @endforeach
-                    </select>
-                    <select name="warehouse_id" class="form-select w-full md:w-44">
-                        <option value="">All Warehouses</option>
-                        @foreach($warehouses as $warehouse)
-                            <option value="{{ $warehouse->id }}" {{ request('warehouse_id') == $warehouse->id ? 'selected' : '' }}>{{ $warehouse->name }}</option>
-                        @endforeach
-                    </select>
-                    <select name="location" class="form-select w-full md:w-32">
-                        <option value="">All Locations</option>
-                        <option value="warehouse" {{ request('location') == 'warehouse' ? 'selected' : '' }}>Warehouse</option>
-                        <option value="site" {{ request('location') == 'site' ? 'selected' : '' }}>Site</option>
-                    </select>
-                    <button type="submit" class="btn btn-primary">Filter</button>
-                </div>
+        <div class="mb-5">
+            <form action="{{ route('admin.procurement.stocks.index') }}" method="GET" class="flex items-center gap-3 w-full">
+                <select name="material_id" class="form-select flex-1">
+                    <option value="">Material</option>
+                    @foreach($materials as $material)
+                        <option value="{{ $material->id }}" {{ request('material_id') == $material->id ? 'selected' : '' }}>{{ $material->name }}</option>
+                    @endforeach
+                </select>
+                <select name="warehouse_id" class="form-select flex-1">
+                    <option value="">Warehouse</option>
+                    @foreach($warehouses as $warehouse)
+                        <option value="{{ $warehouse->id }}" {{ request('warehouse_id') == $warehouse->id ? 'selected' : '' }}>{{ $warehouse->name }}</option>
+                    @endforeach
+                </select>
+                <select name="location" class="form-select flex-[0.5]">
+                    <option value="">Location</option>
+                    <option value="warehouse" {{ request('location') == 'warehouse' ? 'selected' : '' }}>Warehouse</option>
+                    <option value="site" {{ request('location') == 'site' ? 'selected' : '' }}>Site</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Filter</button>
+                @if(request()->anyFilled(['material_id', 'warehouse_id', 'location']))
+                    <a href="{{ route('admin.procurement.stocks.index') }}" class="btn btn-outline-danger">Reset</a>
+                @endif
             </form>
         </div>
 

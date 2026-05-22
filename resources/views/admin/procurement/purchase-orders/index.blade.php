@@ -18,25 +18,26 @@
     </div>
 
     <div class="panel mt-6">
-        <div class="mb-5 flex flex-col gap-5 md:flex-row md:items-center">
-            <form action="{{ route('admin.procurement.purchase-orders.index') }}" method="GET" class="flex flex-1 flex-col gap-5 md:flex-row md:items-center w-full">
-                <div class="flex gap-2">
-                    <select name="vendor_id" class="form-select w-full md:w-44">
-                        <option value="">All Vendors</option>
-                        @foreach($vendors as $vendor)
-                            <option value="{{ $vendor->id }}" {{ request('vendor_id') == $vendor->id ? 'selected' : '' }}>{{ $vendor->name }}</option>
-                        @endforeach
-                    </select>
-                    <select name="status" class="form-select w-full md:w-40">
-                        <option value="">All Status</option>
-                        <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
-                        <option value="ordered" {{ request('status') == 'ordered' ? 'selected' : '' }}>Ordered</option>
-                        <option value="partially_received" {{ request('status') == 'partially_received' ? 'selected' : '' }}>Partially Received</option>
-                        <option value="received" {{ request('status') == 'received' ? 'selected' : '' }}>Received</option>
-                        <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                    </select>
-                    <button type="submit" class="btn btn-primary">Filter</button>
-                </div>
+        <div class="mb-5">
+            <form action="{{ route('admin.procurement.purchase-orders.index') }}" method="GET" class="flex items-center gap-3 w-full">
+                <select name="vendor_id" class="form-select flex-1">
+                    <option value="">Vendor</option>
+                    @foreach($vendors as $vendor)
+                        <option value="{{ $vendor->id }}" {{ request('vendor_id') == $vendor->id ? 'selected' : '' }}>{{ $vendor->name }}</option>
+                    @endforeach
+                </select>
+                <select name="status" class="form-select flex-1">
+                    <option value="">Status</option>
+                    <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
+                    <option value="ordered" {{ request('status') == 'ordered' ? 'selected' : '' }}>Ordered</option>
+                    <option value="partially_received" {{ request('status') == 'partially_received' ? 'selected' : '' }}>Partially Received</option>
+                    <option value="received" {{ request('status') == 'received' ? 'selected' : '' }}>Received</option>
+                    <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Filter</button>
+                @if(request()->anyFilled(['vendor_id', 'status']))
+                    <a href="{{ route('admin.procurement.purchase-orders.index') }}" class="btn btn-outline-danger">Reset</a>
+                @endif
             </form>
         </div>
 

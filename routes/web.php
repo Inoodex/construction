@@ -166,3 +166,51 @@ Route::prefix('dashboard/reports')->name('admin.reports.')->group(function () {
     Route::put('scheduled-reports/{scheduled_report}', [ScheduledReportController::class, 'update'])->name('scheduled-reports.update');
     Route::delete('scheduled-reports/{scheduled_report}', [ScheduledReportController::class, 'destroy'])->name('scheduled-reports.destroy');
 });
+
+// Finance - Budgeting & Cost Control
+use App\Http\Controllers\Admin\Finance\BudgetController;
+use App\Http\Controllers\Admin\Finance\BoqController;
+use App\Http\Controllers\Admin\Finance\TenderController;
+use App\Http\Controllers\Admin\Finance\InvoiceController;
+Route::prefix('dashboard/finance')->name('admin.finance.')->group(function () {
+    Route::get('budgets', [BudgetController::class, 'index'])->name('budgets.index');
+    Route::get('budgets/create', [BudgetController::class, 'create'])->name('budgets.create');
+    Route::post('budgets', [BudgetController::class, 'store'])->name('budgets.store');
+    Route::get('budgets/{budget}', [BudgetController::class, 'show'])->name('budgets.show');
+    Route::get('budgets/{budget}/edit', [BudgetController::class, 'edit'])->name('budgets.edit');
+    Route::put('budgets/{budget}', [BudgetController::class, 'update'])->name('budgets.update');
+    Route::delete('budgets/{budget}', [BudgetController::class, 'destroy'])->name('budgets.destroy');
+
+    Route::get('boqs', [BoqController::class, 'index'])->name('boqs.index');
+    Route::get('boqs/create', [BoqController::class, 'create'])->name('boqs.create');
+    Route::post('boqs', [BoqController::class, 'store'])->name('boqs.store');
+    Route::get('boqs/{boq}', [BoqController::class, 'show'])->name('boqs.show');
+    Route::get('boqs/{boq}/edit', [BoqController::class, 'edit'])->name('boqs.edit');
+    Route::put('boqs/{boq}', [BoqController::class, 'update'])->name('boqs.update');
+    Route::delete('boqs/{boq}', [BoqController::class, 'destroy'])->name('boqs.destroy');
+    Route::post('boqs/{boq}/items', [BoqController::class, 'addItem'])->name('boqs.items.store');
+    Route::delete('boqs/{boq}/items/{boq_item}', [BoqController::class, 'removeItem'])->name('boqs.items.destroy');
+
+    Route::get('tenders', [TenderController::class, 'index'])->name('tenders.index');
+    Route::get('tenders/create', [TenderController::class, 'create'])->name('tenders.create');
+    Route::post('tenders', [TenderController::class, 'store'])->name('tenders.store');
+    Route::get('tenders/{tender}', [TenderController::class, 'show'])->name('tenders.show');
+    Route::get('tenders/{tender}/edit', [TenderController::class, 'edit'])->name('tenders.edit');
+    Route::put('tenders/{tender}', [TenderController::class, 'update'])->name('tenders.update');
+    Route::delete('tenders/{tender}', [TenderController::class, 'destroy'])->name('tenders.destroy');
+    Route::post('tenders/{tender}/bids', [TenderController::class, 'addBid'])->name('tenders.bids.store');
+    Route::put('tenders/{tender}/bids/{tender_bid}', [TenderController::class, 'updateBid'])->name('tenders.bids.update');
+    Route::delete('tenders/{tender}/bids/{tender_bid}', [TenderController::class, 'removeBid'])->name('tenders.bids.destroy');
+
+    Route::get('invoices', [InvoiceController::class, 'index'])->name('invoices.index');
+    Route::get('invoices/create', [InvoiceController::class, 'create'])->name('invoices.create');
+    Route::post('invoices', [InvoiceController::class, 'store'])->name('invoices.store');
+    Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
+    Route::get('invoices/{invoice}/edit', [InvoiceController::class, 'edit'])->name('invoices.edit');
+    Route::put('invoices/{invoice}', [InvoiceController::class, 'update'])->name('invoices.update');
+    Route::delete('invoices/{invoice}', [InvoiceController::class, 'destroy'])->name('invoices.destroy');
+    Route::post('invoices/{invoice}/items', [InvoiceController::class, 'addItem'])->name('invoices.items.store');
+    Route::delete('invoices/{invoice}/items/{invoice_item}', [InvoiceController::class, 'removeItem'])->name('invoices.items.destroy');
+    Route::post('invoices/{invoice}/payments', [InvoiceController::class, 'addPayment'])->name('invoices.payments.store');
+    Route::delete('invoices/{invoice}/payments/{payment}', [InvoiceController::class, 'removePayment'])->name('invoices.payments.destroy');
+});
