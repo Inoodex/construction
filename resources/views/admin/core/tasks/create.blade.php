@@ -27,7 +27,7 @@
                 </div>
                 <div class="form-group">
                     <label for="project_id">Project <span class="text-danger">*</span></label>
-                    <select name="project_id" id="project_id" class="form-select" required onchange="fetchSites(this.value)">
+                    <select name="project_id" id="project_id" class="form-select" required onchange="fetchSites(this.value);fetchPhases(this.value)">
                         <option value="">Select Project</option>
                         @foreach($projects as $project)
                             <option value="{{ $project->id }}" {{ old('project_id') == $project->id ? 'selected' : '' }}>{{ $project->name }}</option>
@@ -48,6 +48,18 @@
                         @foreach($users as $user)
                             <option value="{{ $user->id }}" {{ old('assigned_to') == $user->id ? 'selected' : '' }}>{{ $user->name }}</option>
                         @endforeach
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="phase_id">Phase</label>
+                    <select name="phase_id" id="phase_id" class="form-select">
+                        <option value="">Select Phase</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="milestone_id">Milestone</label>
+                    <select name="milestone_id" id="milestone_id" class="form-select">
+                        <option value="">Select Milestone</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -98,6 +110,8 @@
 @push('scripts')
 <script>
 const sites = @json($sites);
+const phases = @json($phases);
+const milestones = @json($milestones);
 function fetchSites(projectId) {
     const siteSelect = document.getElementById('site_id');
     siteSelect.innerHTML = '<option value="">Select Site</option>';
@@ -107,6 +121,30 @@ function fetchSites(projectId) {
         opt.value = site.id;
         opt.textContent = site.name;
         siteSelect.appendChild(opt);
+    });
+}
+function fetchPhases(projectId) {
+    const phaseSelect = document.getElementById('phase_id');
+    phaseSelect.innerHTML = '<option value="">Select Phase</option>';
+    document.getElementById('milestone_id').innerHTML = '<option value="">Select Milestone</option>';
+    if (!projectId) return;
+    phases.filter(p => p.project_id == projectId).forEach(phase => {
+        const opt = document.createElement('option');
+        opt.value = phase.id;
+        opt.textContent = phase.name;
+        phaseSelect.appendChild(opt);
+    });
+    fetchMilestones(projectId);
+}
+function fetchMilestones(projectId) {
+    const msSelect = document.getElementById('milestone_id');
+    msSelect.innerHTML = '<option value="">Select Milestone</option>';
+    if (!projectId) return;
+    milestones.filter(m => m.project_id == projectId).forEach(ms => {
+        const opt = document.createElement('option');
+        opt.value = ms.id;
+        opt.textContent = ms.name;
+        msSelect.appendChild(opt);
     });
 }
 </script>

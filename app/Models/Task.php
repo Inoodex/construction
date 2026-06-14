@@ -14,6 +14,8 @@ class Task extends Model
     protected $fillable = [
         'project_id',
         'site_id',
+        'phase_id',
+        'milestone_id',
         'name',
         'description',
         'assigned_to',
@@ -68,5 +70,15 @@ class Task extends Model
     public function dependentTasks(): BelongsToMany
     {
         return $this->belongsToMany(Task::class, 'task_dependencies', 'depends_on_task_id', 'task_id');
+    }
+
+    public function phase(): BelongsTo
+    {
+        return $this->belongsTo(Phase::class);
+    }
+
+    public function milestone(): BelongsTo
+    {
+        return $this->belongsTo(Milestone::class);
     }
 }

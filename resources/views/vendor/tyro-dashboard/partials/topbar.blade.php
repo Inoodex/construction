@@ -31,7 +31,7 @@
                 <div class="user-info">
                     <div class="user-name">{{ $user->name ?? 'User' }}</div>
                     <div class="user-role">
-                        @if(method_exists($user, 'roles') && $user->roles->count())
+                        @if($user && method_exists($user, 'roles') && $user->roles->count())
                             {{ $user->roles->first()->name }}
                         @else
                             User

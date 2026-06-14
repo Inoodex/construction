@@ -42,20 +42,22 @@
     </div>
 @endif
 
-@if ($errors->any())
-    <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 8000)" x-show="show" x-transition.duration.300
-         class="mb-4 rounded-md border border-danger/20 bg-danger-light px-4 py-3 text-sm text-danger dark:border-danger/10 dark:bg-danger-dark-light">
-        <div class="flex items-center">
-            <svg class="h-5 w-5 shrink-0 ltr:mr-3 rtl:ml-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span class="flex-1 font-medium">Please correct the following errors:</span>
-            <button @click="show = false" class="text-danger hover:text-danger/70">&times;</button>
+@isset($errors)
+    @if ($errors->any())
+        <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 8000)" x-show="show" x-transition.duration.300
+             class="mb-4 rounded-md border border-danger/20 bg-danger-light px-4 py-3 text-sm text-danger dark:border-danger/10 dark:bg-danger-dark-light">
+            <div class="flex items-center">
+                <svg class="h-5 w-5 shrink-0 ltr:mr-3 rtl:ml-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="flex-1 font-medium">Please correct the following errors:</span>
+                <button @click="show = false" class="text-danger hover:text-danger/70">&times;</button>
+            </div>
+            <ul class="mt-2 list-disc space-y-1 ltr:ml-8 rtl:mr-8">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
         </div>
-        <ul class="mt-2 list-disc space-y-1 ltr:ml-8 rtl:mr-8">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+    @endif
+@endisset

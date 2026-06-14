@@ -5,7 +5,7 @@
 @section('content')
 <div class="flex min-h-[60vh] items-center justify-center">
     <div class="text-center">
-        <div class="mb-5 text-8xl font-bold text-warning md:text-9xl">404</div>
+        <div class="mb-5 font-bold text-warning" style="font-size: clamp(4rem, 10vw, 10rem); line-height: 1;">404</div>
         <h1 class="mb-3 text-2xl font-semibold dark:text-white-light">Page Not Found</h1>
         <p class="mx-auto mb-6 max-w-md text-white-dark">
             The page you are looking for does not exist or has been moved.

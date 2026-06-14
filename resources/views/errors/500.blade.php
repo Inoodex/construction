@@ -5,7 +5,7 @@
 @section('content')
 <div class="flex min-h-[60vh] items-center justify-center">
     <div class="text-center">
-        <div class="mb-5 text-8xl font-bold text-danger md:text-9xl">500</div>
+        <div class="mb-5 font-bold text-danger" style="font-size: clamp(4rem, 10vw, 10rem); line-height: 1;">500</div>
         <h1 class="mb-3 text-2xl font-semibold dark:text-white-light">Server Error</h1>
         <p class="mx-auto mb-6 max-w-md text-white-dark">
             Something went wrong on our end. Please try again later or contact support.

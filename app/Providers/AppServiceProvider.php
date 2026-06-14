@@ -25,7 +25,9 @@ class AppServiceProvider extends ServiceProvider
         Route::model('purchase_requisition', PurchaseRequisition::class);
         // echo "Booting AppServiceProvider\n";
         \Illuminate\Support\Facades\Gate::before(function ($user, $ability) {
-            // echo "Checking ability: {$ability} for user: {$user->email}\n";
+            if (! $user) {
+                return null;
+            }
             // Super-admin bypass
             if (method_exists($user, 'hasRole') && $user->hasRole('super-admin')) {
                 return true;

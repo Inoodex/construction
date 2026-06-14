@@ -5,7 +5,7 @@
 @section('content')
 <div class="flex min-h-[60vh] items-center justify-center">
     <div class="text-center">
-        <div class="mb-5 text-8xl font-bold text-danger md:text-9xl">403</div>
+        <div class="mb-5 font-bold text-danger" style="font-size: clamp(4rem, 10vw, 10rem); line-height: 1;">403</div>
         <h1 class="mb-3 text-2xl font-semibold dark:text-white-light">Access Forbidden</h1>
         <p class="mx-auto mb-6 max-w-md text-white-dark">
             You do not have permission to access this page. Please contact your administrator.

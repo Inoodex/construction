@@ -50,4 +50,19 @@ class Project extends Model
     {
         return $this->hasMany(Task::class);
     }
+
+    public function phases(): HasMany
+    {
+        return $this->hasMany(Phase::class)->orderBy('order_index');
+    }
+
+    public function milestones(): HasMany
+    {
+        return $this->hasMany(Milestone::class);
+    }
+
+    public function resources(): HasMany
+    {
+        return $this->hasMany(ProjectResource::class);
+    }
 }

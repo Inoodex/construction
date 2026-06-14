@@ -5,6 +5,13 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\Core\SiteController;
 use App\Http\Controllers\Admin\Core\TaskController;
+use App\Http\Controllers\Admin\Core\PhaseController;
+use App\Http\Controllers\Admin\Core\MilestoneController;
+use App\Http\Controllers\Admin\Core\SiteLogController;
+use App\Http\Controllers\Admin\Core\SitePhotoController;
+use App\Http\Controllers\Admin\Core\ProjectResourceController;
+use App\Http\Controllers\Admin\Core\WorkOrderController;
+use App\Http\Controllers\Admin\Core\InspectionChecklistController;
 
 Route::get('/', function () {
     return redirect()->route('tyro-login.login');
@@ -36,6 +43,7 @@ Route::prefix('dashboard/core')->name('admin.core.')->group(function () {
     Route::get('projects/create', [ProjectController::class, 'create'])->name('projects.create');
     Route::post('projects', [ProjectController::class, 'store'])->name('projects.store');
     Route::get('projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
+    Route::get('projects/{project}/gantt', [ProjectController::class, 'gantt'])->name('projects.gantt');
     Route::get('projects/{project}/edit', [ProjectController::class, 'edit'])->name('projects.edit');
     Route::put('projects/{project}', [ProjectController::class, 'update'])->name('projects.update');
     Route::delete('projects/{project}', [ProjectController::class, 'destroy'])->name('projects.destroy');
@@ -57,6 +65,81 @@ Route::prefix('dashboard/core')->name('admin.core.')->group(function () {
     Route::get('tasks/{task}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
     Route::put('tasks/{task}', [TaskController::class, 'update'])->name('tasks.update');
     Route::delete('tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
+
+    // Phases (global + nested under projects)
+    Route::get('phases', [PhaseController::class, 'globalIndex'])->name('phases.index');
+    Route::prefix('projects/{project}/phases')->name('projects.phases.')->group(function () {
+        Route::get('/', [PhaseController::class, 'index'])->name('index');
+        Route::get('create', [PhaseController::class, 'create'])->name('create');
+        Route::post('/', [PhaseController::class, 'store'])->name('store');
+        Route::get('{phase}', [PhaseController::class, 'show'])->name('show');
+        Route::get('{phase}/edit', [PhaseController::class, 'edit'])->name('edit');
+        Route::put('{phase}', [PhaseController::class, 'update'])->name('update');
+        Route::delete('{phase}', [PhaseController::class, 'destroy'])->name('destroy');
+    });
+
+    // Site Logs (global + nested under sites)
+    Route::get('site-logs', [SiteLogController::class, 'globalIndex'])->name('site-logs.index');
+    Route::prefix('sites/{site}/logs')->name('sites.logs.')->group(function () {
+        Route::get('/', [SiteLogController::class, 'index'])->name('index');
+        Route::get('create', [SiteLogController::class, 'create'])->name('create');
+        Route::post('/', [SiteLogController::class, 'store'])->name('store');
+        Route::get('{log}', [SiteLogController::class, 'show'])->name('show');
+        Route::get('{log}/edit', [SiteLogController::class, 'edit'])->name('edit');
+        Route::put('{log}', [SiteLogController::class, 'update'])->name('update');
+        Route::delete('{log}', [SiteLogController::class, 'destroy'])->name('destroy');
+    });
+
+    // Site Photos (global + nested under sites)
+    Route::get('site-photos', [SitePhotoController::class, 'globalIndex'])->name('site-photos.index');
+    Route::prefix('sites/{site}/photos')->name('sites.photos.')->group(function () {
+        Route::get('/', [SitePhotoController::class, 'index'])->name('index');
+        Route::post('/', [SitePhotoController::class, 'store'])->name('store');
+        Route::post('{photo}/caption', [SitePhotoController::class, 'updateCaption'])->name('caption');
+        Route::delete('{photo}', [SitePhotoController::class, 'destroy'])->name('destroy');
+    });
+
+    // Project Resources (global + nested under projects)
+    Route::get('resources', [ProjectResourceController::class, 'globalIndex'])->name('resources.index');
+    Route::prefix('projects/{project}/resources')->name('projects.resources.')->group(function () {
+        Route::get('/', [ProjectResourceController::class, 'index'])->name('index');
+        Route::get('create', [ProjectResourceController::class, 'create'])->name('create');
+        Route::post('/', [ProjectResourceController::class, 'store'])->name('store');
+        Route::get('{resource}/edit', [ProjectResourceController::class, 'edit'])->name('edit');
+        Route::put('{resource}', [ProjectResourceController::class, 'update'])->name('update');
+        Route::delete('{resource}', [ProjectResourceController::class, 'destroy'])->name('destroy');
+    });
+
+    // Work Orders
+    Route::get('work-orders', [WorkOrderController::class, 'index'])->name('work-orders.index');
+    Route::get('work-orders/create', [WorkOrderController::class, 'create'])->name('work-orders.create');
+    Route::post('work-orders', [WorkOrderController::class, 'store'])->name('work-orders.store');
+    Route::get('work-orders/{work_order}', [WorkOrderController::class, 'show'])->name('work-orders.show');
+    Route::get('work-orders/{work_order}/print', [WorkOrderController::class, 'print'])->name('work-orders.print');
+    Route::get('work-orders/{work_order}/edit', [WorkOrderController::class, 'edit'])->name('work-orders.edit');
+    Route::put('work-orders/{work_order}', [WorkOrderController::class, 'update'])->name('work-orders.update');
+    Route::delete('work-orders/{work_order}', [WorkOrderController::class, 'destroy'])->name('work-orders.destroy');
+
+    // Inspection Checklists
+    Route::get('inspection-checklists', [InspectionChecklistController::class, 'index'])->name('inspection-checklists.index');
+    Route::get('inspection-checklists/create', [InspectionChecklistController::class, 'create'])->name('inspection-checklists.create');
+    Route::post('inspection-checklists', [InspectionChecklistController::class, 'store'])->name('inspection-checklists.store');
+    Route::get('inspection-checklists/{checklist}', [InspectionChecklistController::class, 'show'])->name('inspection-checklists.show');
+    Route::get('inspection-checklists/{checklist}/edit', [InspectionChecklistController::class, 'edit'])->name('inspection-checklists.edit');
+    Route::put('inspection-checklists/{checklist}', [InspectionChecklistController::class, 'update'])->name('inspection-checklists.update');
+    Route::delete('inspection-checklists/{checklist}', [InspectionChecklistController::class, 'destroy'])->name('inspection-checklists.destroy');
+
+    // Milestones (global + nested under projects)
+    Route::get('milestones', [MilestoneController::class, 'globalIndex'])->name('milestones.index');
+    Route::prefix('projects/{project}/milestones')->name('projects.milestones.')->group(function () {
+        Route::get('/', [MilestoneController::class, 'index'])->name('index');
+        Route::get('create', [MilestoneController::class, 'create'])->name('create');
+        Route::post('/', [MilestoneController::class, 'store'])->name('store');
+        Route::get('{milestone}', [MilestoneController::class, 'show'])->name('show');
+        Route::get('{milestone}/edit', [MilestoneController::class, 'edit'])->name('edit');
+        Route::put('{milestone}', [MilestoneController::class, 'update'])->name('update');
+        Route::delete('{milestone}', [MilestoneController::class, 'destroy'])->name('destroy');
+    });
 });
 
 // Procurement - Vendor Management
@@ -234,4 +317,9 @@ Route::prefix('dashboard/approvals')->name('admin.approvals.')->middleware('auth
     Route::post('{approval}/approve', [ApprovalController::class, 'approve'])->name('approve');
     Route::post('{approval}/reject', [ApprovalController::class, 'reject'])->name('reject');
     Route::post('{approval}/withdraw', [ApprovalController::class, 'withdraw'])->name('withdraw');
+});
+
+// Fallback for unmatched URLs — renders full layout with middleware stack
+Route::fallback(function () {
+    return response()->view('errors.404', ['errors' => new \Illuminate\Support\ViewErrorBag], 404);
 });

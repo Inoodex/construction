@@ -68,6 +68,13 @@
             <li><a href="{{ route('admin.core.projects.index') }}">Projects</a></li>
             <li><a href="{{ route('admin.core.sites.index') }}">Sites</a></li>
             <li><a href="{{ route('admin.core.tasks.index') }}">Tasks</a></li>
+            <li><a href="{{ route('admin.core.phases.index') }}">Phases</a></li>
+            <li><a href="{{ route('admin.core.milestones.index') }}">Milestones</a></li>
+            <li><a href="{{ route('admin.core.site-logs.index') }}">Site Logs</a></li>
+            <li><a href="{{ route('admin.core.site-photos.index') }}">Site Photos</a></li>
+            <li><a href="{{ route('admin.core.resources.index') }}">Resources</a></li>
+            <li><a href="{{ route('admin.core.work-orders.index') }}">Work Orders</a></li>
+            <li><a href="{{ route('admin.core.inspection-checklists.index') }}">Inspections</a></li>
         </ul>
     </li>
 

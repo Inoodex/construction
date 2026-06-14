@@ -4,6 +4,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Support\ViewErrorBag;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -39,6 +40,6 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Not found'], 404);
             }
-            return response()->view('errors.404', [], 404);
+            return response()->view('errors.404', ['errors' => new ViewErrorBag], 404);
         });
     })->create();

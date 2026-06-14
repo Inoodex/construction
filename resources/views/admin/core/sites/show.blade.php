@@ -58,10 +58,55 @@
                     <span class="text-sm font-bold dark:text-white">{{ $site->tasks->count() }}</span>
                 </div>
                 <div class="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+                    <span class="text-xs text-gray-600 dark:text-gray-300">Total Logs</span>
+                    <span class="text-sm font-bold dark:text-white">{{ $site->siteLogs->count() }}</span>
+                </div>
+                <div class="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
                     <span class="text-xs text-gray-600 dark:text-gray-300">Created</span>
                     <span class="text-xs font-semibold dark:text-white">{{ $site->created_at->format('d M Y') }}</span>
                 </div>
             </div>
+            <div class="mt-4">
+                <a href="{{ route('admin.core.sites.logs.index', $site) }}" class="btn btn-sm btn-outline-primary w-full">View Logs</a>
+            </div>
         </div>
+    </div>
+
+    @if($site->siteLogs->isNotEmpty())
+        <div class="mt-6 panel">
+            <div class="mb-4 flex items-center justify-between">
+                <h5 class="text-base font-semibold">Recent Logs</h5>
+                <a href="{{ route('admin.core.sites.logs.index', $site) }}" class="text-xs text-primary">View All</a>
+            </div>
+            <div class="space-y-3">
+                @foreach($site->siteLogs->sortByDesc('log_date')->take(5) as $log)
+                    <div class="flex items-center justify-between rounded-lg border p-3 dark:border-gray-700">
+                        <div class="flex-1">
+                            <a href="{{ route('admin.core.sites.logs.show', [$site, $log]) }}" class="text-sm font-semibold hover:text-primary">{{ $log->title }}</a>
+                            <p class="text-xs text-white-dark">{{ $log->log_date->format('d M Y') }} — {{ ucfirst(str_replace('_', ' ', $log->report_type)) }}</p>
+                        </div>
+                        <span class="badge {{ $log->status == 'submitted' ? 'badge-outline-success' : 'badge-outline-warning' }} text-xs">{{ $log->status }}</span>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
+    <div class="mt-6 panel">
+        <div class="mb-4 flex items-center justify-between">
+            <h5 class="text-base font-semibold">Photos</h5>
+            <a href="{{ route('admin.core.sites.photos.index', $site) }}" class="text-xs text-primary">Manage Photos</a>
+        </div>
+        @if($site->photos->isNotEmpty())
+            <div class="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
+                @foreach($site->photos->sortByDesc('created_at')->take(6) as $photo)
+                    <a href="{{ asset('storage/' . $photo->file_path) }}" target="_blank" class="group overflow-hidden rounded-lg border dark:border-gray-700">
+                        <img src="{{ asset('storage/' . $photo->file_path) }}" alt="{{ $photo->caption ?: $photo->original_name }}" class="h-20 w-full object-cover transition group-hover:scale-105" loading="lazy" />
+                    </a>
+                @endforeach
+            </div>
+        @else
+            <p class="py-4 text-center text-sm text-white-dark">No photos yet. <a href="{{ route('admin.core.sites.photos.index', $site) }}" class="text-primary hover:underline">Upload photos</a></p>
+        @endif
     </div>
 @endsection

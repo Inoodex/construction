@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin\Core;
 
 use App\Http\Controllers\Controller;
+use App\Models\Phase;
+use App\Models\Milestone;
 use App\Models\Project;
 use App\Models\Site;
 use App\Models\Task;
@@ -45,7 +47,9 @@ class TaskController extends Controller
         $projects = Project::all();
         $users = User::all();
         $sites = Site::all();
-        return view('admin.core.tasks.create', compact('projects', 'users', 'sites'));
+        $phases = Phase::with('project')->get();
+        $milestones = Milestone::with('project')->get();
+        return view('admin.core.tasks.create', compact('projects', 'users', 'sites', 'phases', 'milestones'));
     }
 
     public function store(Request $request)
@@ -53,6 +57,8 @@ class TaskController extends Controller
         $validated = $request->validate([
             'project_id' => 'required|exists:projects,id',
             'site_id' => 'nullable|exists:sites,id',
+            'phase_id' => 'nullable|exists:phases,id',
+            'milestone_id' => 'nullable|exists:milestones,id',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'assigned_to' => 'nullable|exists:users,id',
@@ -79,7 +85,9 @@ class TaskController extends Controller
         $projects = Project::all();
         $users = User::all();
         $sites = Site::all();
-        return view('admin.core.tasks.edit', compact('task', 'projects', 'users', 'sites'));
+        $phases = Phase::with('project')->get();
+        $milestones = Milestone::with('project')->get();
+        return view('admin.core.tasks.edit', compact('task', 'projects', 'users', 'sites', 'phases', 'milestones'));
     }
 
     public function update(Request $request, Task $task)
@@ -87,6 +95,8 @@ class TaskController extends Controller
         $validated = $request->validate([
             'project_id' => 'required|exists:projects,id',
             'site_id' => 'nullable|exists:sites,id',
+            'phase_id' => 'nullable|exists:phases,id',
+            'milestone_id' => 'nullable|exists:milestones,id',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'assigned_to' => 'nullable|exists:users,id',

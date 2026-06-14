@@ -7,6 +7,84 @@ SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
 SET NAMES utf8mb4;
 
+DROP TABLE IF EXISTS `approval_history`;
+CREATE TABLE `approval_history` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `approval_id` bigint unsigned NOT NULL,
+  `approval_level` int NOT NULL,
+  `approved_by` bigint unsigned NOT NULL,
+  `status` enum('approved','rejected') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'approved',
+  `comment` text COLLATE utf8mb4_unicode_ci,
+  `approved_at` timestamp NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `approval_history_approval_id_foreign` (`approval_id`),
+  KEY `approval_history_approved_by_foreign` (`approved_by`),
+  CONSTRAINT `approval_history_approval_id_foreign` FOREIGN KEY (`approval_id`) REFERENCES `approvals` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `approval_history_approved_by_foreign` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+DROP TABLE IF EXISTS `approval_matrices`;
+CREATE TABLE `approval_matrices` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `approval_workflow_id` bigint unsigned NOT NULL,
+  `role_id` bigint unsigned NOT NULL,
+  `min_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `max_amount` decimal(15,2) NOT NULL DEFAULT '999999999.99',
+  `approval_level` int NOT NULL DEFAULT '1',
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `approval_matrices_approval_workflow_id_foreign` (`approval_workflow_id`),
+  KEY `approval_matrices_role_id_foreign` (`role_id`),
+  CONSTRAINT `approval_matrices_approval_workflow_id_foreign` FOREIGN KEY (`approval_workflow_id`) REFERENCES `approval_workflows` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `approval_matrices_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+DROP TABLE IF EXISTS `approval_workflows`;
+CREATE TABLE `approval_workflows` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `document_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `created_by` bigint unsigned NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `approval_workflows_document_type_unique` (`document_type`),
+  KEY `approval_workflows_created_by_foreign` (`created_by`),
+  CONSTRAINT `approval_workflows_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+DROP TABLE IF EXISTS `approvals`;
+CREATE TABLE `approvals` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `approval_workflow_id` bigint unsigned NOT NULL,
+  `approvable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `approvable_id` bigint unsigned NOT NULL,
+  `current_level` int NOT NULL DEFAULT '1',
+  `status` enum('pending','approved','rejected','withdrawn') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `submitted_by` bigint unsigned NOT NULL,
+  `submitted_at` timestamp NULL DEFAULT NULL,
+  `total_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `approvals_approval_workflow_id_foreign` (`approval_workflow_id`),
+  KEY `approvals_approvable_type_approvable_id_index` (`approvable_type`,`approvable_id`),
+  KEY `approvals_submitted_by_foreign` (`submitted_by`),
+  KEY `approvals_status_current_level_index` (`status`,`current_level`),
+  CONSTRAINT `approvals_approval_workflow_id_foreign` FOREIGN KEY (`approval_workflow_id`) REFERENCES `approval_workflows` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `approvals_submitted_by_foreign` FOREIGN KEY (`submitted_by`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 DROP TABLE IF EXISTS `boq_items`;
 CREATE TABLE `boq_items` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -78,7 +156,7 @@ CREATE TABLE `cache` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('admin-dashboard-cache-tyro:user-1:roles',	'a:1:{i:0;s:11:\"super-admin\";}',	1779444308);
+('admin-dashboard-cache-tyro:user-1:roles',	'a:1:{i:0;s:11:\"super-admin\";}',	1781419982);
 
 DROP TABLE IF EXISTS `cache_locks`;
 CREATE TABLE `cache_locks` (
@@ -122,7 +200,7 @@ CREATE TABLE `goods_received_note_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `goods_received_note_items` (`id`, `goods_received_note_id`, `material_id`, `quantity_received`, `quantity_accepted`, `quantity_rejected`, `created_at`, `updated_at`) VALUES
-(1,	1,	1,	25.5000,	25.5000,	0.0000,	'2026-05-20 23:17:34',	'2026-05-20 23:17:34');
+(1,	1,	1,	25.0000,	25.0000,	0.0000,	'2026-05-20 23:17:34',	'2026-05-20 23:17:34');
 
 DROP TABLE IF EXISTS `goods_received_notes`;
 CREATE TABLE `goods_received_notes` (
@@ -369,8 +447,7 @@ CREATE TABLE `materials` (
 
 INSERT INTO `materials` (`id`, `name`, `sku`, `unit`, `description`, `created_at`, `updated_at`) VALUES
 (1,	'Reinforced Steel Rebar 16mm',	'MAT-ST-16MM',	'Tons',	'Deformed reinforcement bar grade 500W.',	'2026-05-20 23:17:34',	'2026-05-20 23:17:34'),
-(2,	'Portland Composite Cement (PCC)',	'MAT-CM-PCC',	'Bags',	'Premium grade PCC cement.',	'2026-05-20 23:17:34',	'2026-05-20 23:17:34'),
-(3,	'Sylhet Coarse Sand',	'MAT-SD-SYLHET',	'CFT',	'Coarse river sand for concrete mix.',	'2026-05-20 23:17:34',	'2026-05-20 23:17:34');
+(2,	'Portland Composite Cement (PCC)',	'MAT-CM-PCC',	'Bags',	'Premium grade PCC cement.',	'2026-05-20 23:17:34',	'2026-05-20 23:17:34');
 
 DROP TABLE IF EXISTS `migrations`;
 CREATE TABLE `migrations` (
@@ -423,7 +500,11 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (40,	'2026_05_22_000001_create_budgets_table',	2),
 (41,	'2026_05_22_000002_create_boqs_table',	3),
 (42,	'2026_05_22_000003_create_tenders_table',	4),
-(43,	'2026_05_22_000004_create_invoices_table',	5);
+(43,	'2026_05_22_000004_create_invoices_table',	5),
+(44,	'2026_06_14_043010_create_approval_workflows_table',	6),
+(45,	'2026_06_14_043012_create_approval_matrices_table',	6),
+(46,	'2026_06_14_043013_create_approvals_table',	6),
+(47,	'2026_06_14_043014_create_approval_history_table',	6);
 
 DROP TABLE IF EXISTS `password_reset_tokens`;
 CREATE TABLE `password_reset_tokens` (
@@ -536,7 +617,7 @@ CREATE TABLE `purchase_order_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `purchase_order_items` (`id`, `purchase_order_id`, `material_id`, `quantity`, `unit_price`, `created_at`, `updated_at`) VALUES
-(1,	1,	1,	25.5000,	95000.00,	'2026-05-20 23:17:34',	'2026-05-20 23:17:34');
+(2,	1,	1,	25.0000,	95000.00,	'2026-06-13 22:15:18',	'2026-06-13 22:15:18');
 
 DROP TABLE IF EXISTS `purchase_orders`;
 CREATE TABLE `purchase_orders` (
@@ -558,7 +639,7 @@ CREATE TABLE `purchase_orders` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `purchase_orders` (`id`, `purchase_requisition_id`, `vendor_id`, `po_number`, `status`, `total_amount`, `order_date`, `created_at`, `updated_at`) VALUES
-(1,	1,	4,	'PO-2026-0001',	'ordered',	2422500.00,	'2026-05-18',	'2026-05-20 23:17:34',	'2026-05-20 23:17:34');
+(1,	1,	4,	'PO-2026-0001',	'ordered',	2375000.00,	'2026-05-18',	'2026-05-20 23:17:34',	'2026-06-13 22:15:18');
 
 DROP TABLE IF EXISTS `purchase_requisition_items`;
 CREATE TABLE `purchase_requisition_items` (
@@ -577,8 +658,8 @@ CREATE TABLE `purchase_requisition_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `purchase_requisition_items` (`id`, `purchase_requisition_id`, `material_id`, `quantity`, `estimated_unit_price`, `created_at`, `updated_at`) VALUES
-(1,	1,	1,	25.5000,	95000.00,	'2026-05-20 23:17:34',	'2026-05-20 23:17:34'),
-(2,	1,	2,	1000.0000,	520.00,	'2026-05-20 23:17:34',	'2026-05-20 23:17:34');
+(3,	1,	1,	25.0000,	95000.00,	'2026-06-13 22:14:07',	'2026-06-13 22:14:07'),
+(4,	1,	2,	500.0000,	550.00,	'2026-06-13 22:14:07',	'2026-06-13 22:14:07');
 
 DROP TABLE IF EXISTS `purchase_requisitions`;
 CREATE TABLE `purchase_requisitions` (
@@ -667,10 +748,29 @@ CREATE TABLE `sessions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('iItyUE6BVpKeuUoMs33rPXUuBZSP5wepcTg2YskO',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36',	'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiMUZsS3FDNzUxaVVGNzc0Z2pCZVBtNUFmNGhPeVZRZTZaT25JbGk3QyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kYXNoYm9hcmQvY29yZS9wcm9qZWN0cyI7czo1OiJyb3V0ZSI7czoyNToiYWRtaW4uY29yZS5wcm9qZWN0cy5pbmRleCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MTA6InR5cm8tbG9naW4iO2E6MTp7czo3OiJjYXB0Y2hhIjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9',	1779444112),
-('n7znQWR3Pxbz16LC7ALrXfVyOgJOz0BkxKfiW3oT',	NULL,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0',	'YTozOntzOjY6Il90b2tlbiI7czo0MDoiaERPRjhtSHBQQzNXRFdrYlM3cGpQSkpqcW9ORWtwejdLMUxudTZQNyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDI6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kYXNoYm9hcmQvY29yZS90YXNrcyI7czo1OiJyb3V0ZSI7czoyMjoiYWRtaW4uY29yZS50YXNrcy5pbmRleCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=',	1779425575),
-('qeSLWIj10QFpwyQfLpe0Tg9SgnJp0lauLuQjVlbJ',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0',	'YTo1OntzOjY6Il90b2tlbiI7czo0MDoibE5iM01wRDE3S3hyd0F3Y0lVaWJYM0NIejJMSXJITHFGdDZBck90QiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NTE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kYXNoYm9hcmQvcHJvY3VyZW1lbnQvdmVuZG9ycyI7czo1OiJyb3V0ZSI7czozMToiYWRtaW4ucHJvY3VyZW1lbnQudmVuZG9ycy5pbmRleCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MTA6InR5cm8tbG9naW4iO2E6MTp7czo3OiJjYXB0Y2hhIjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9',	1779427020),
-('y3a7NYzA6qE27UcF5MIJ0ZY918GDcf29OwTNmef5',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36',	'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiTVlnaktoMGFEbFRGcDJ3aERWMkUyVFppVk0xekVSMjZDM2EyUW5iayI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kYXNoYm9hcmQiO3M6NToicm91dGUiO3M6MjA6InR5cm8tZGFzaGJvYXJkLmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=',	1779428154);
+('1EyCrnvuTg5zzaUVjSxjITia3Sxo5s4zKFIbI3Fv',	NULL,	'127.0.0.1',	'',	'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiRktQcHdwTXhDM2FqeEJJU3ZHWks1bjZSa0xjYzlQWk5URHJpSDVuWCI7czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MTp7czo1OiJsb2dpbiI7aToxNzt9fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjI3OiJodHRwOi8vMTI3LjAuMC4xOjgwODUvbG9naW4iO3M6NToicm91dGUiO3M6MTY6InR5cm8tbG9naW4ubG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19',	1781414061),
+('8NW30oIEWE8ZJjvDJ6ZKKd3JHpmBtN2HVMpgdT82',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',	'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiSVk2ZmpKRnd1bjhwUE5EcTN6WU9wZ2M3VWxDWGhmZXhaaExxeXloaCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MDp7fX1zOjk6Il9wcmV2aW91cyI7YToyOntzOjM6InVybCI7czozMToiaHR0cDovLzEyNy4wLjAuMTo4MDAwL2Rhc2hib2FyZCI7czo1OiJyb3V0ZSI7czoyMDoidHlyby1kYXNoYm9hcmQuaW5kZXgiO31zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=',	1781419248),
+('9WxMLqYAJzOybnSbZjk3rA33XMAsSI4d6MR2BSkY',	NULL,	'127.0.0.1',	'',	'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiWTM4S3haMzVwVm1mOXdrWlJFMUlnTThDNEI0WXVFUDlFOFo1VlJ2RCI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo1MToiaHR0cDovLzEyNy4wLjAuMTo4MDg1L2Rhc2hib2FyZC9hcHByb3ZhbHMvd29ya2Zsb3dzIjt9czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NTE6Imh0dHA6Ly8xMjcuMC4wLjE6ODA4NS9kYXNoYm9hcmQvYXBwcm92YWxzL3dvcmtmbG93cyI7czo1OiJyb3V0ZSI7czozMToiYWRtaW4uYXBwcm92YWxzLndvcmtmbG93cy5pbmRleCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=',	1781414063),
+('AGe4Mgo42r9aGgFJ0fP8KNEYUhVZUcaSrprfh3Zz',	NULL,	'127.0.0.1',	'',	'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiOWpUVjBUWHZqQXdYMWREYk5nSkVKbkhpMzV4Z0haSnozeGdpSEREUiI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo1MToiaHR0cDovLzEyNy4wLjAuMTo4MDg0L2Rhc2hib2FyZC9hcHByb3ZhbHMvd29ya2Zsb3dzIjt9czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NTE6Imh0dHA6Ly8xMjcuMC4wLjE6ODA4NC9kYXNoYm9hcmQvYXBwcm92YWxzL3dvcmtmbG93cyI7czo1OiJyb3V0ZSI7czozMToiYWRtaW4uYXBwcm92YWxzLndvcmtmbG93cy5pbmRleCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=',	1781413962),
+('AXGGbOpi79EnYXN7d6ixuxIw8848iF5kFcJB1Qtb',	NULL,	'127.0.0.1',	'',	'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiZm1PdFNQendWbXRoSGNleXZMWWdUckxOa1FzUVRKVHEwYkJEbWFJVSI7czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MTp7czo1OiJsb2dpbiI7aToxNDt9fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjI3OiJodHRwOi8vMTI3LjAuMC4xOjgwODQvbG9naW4iO3M6NToicm91dGUiO3M6MTY6InR5cm8tbG9naW4ubG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19',	1781413964),
+('AyDPxYdBIx6I08IpkUadYOl0ESHXj4qmLe3EPDxC',	NULL,	'127.0.0.1',	'',	'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiTHUySVBUcGlHbXlQQUJjY2U2YjRnT1kxa3FOZ2QwMHBHelFBWHJscCI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo1ODoiaHR0cDovLzEyNy4wLjAuMTo4MDgzL2Rhc2hib2FyZC9hcHByb3ZhbHMvd29ya2Zsb3dzL2NyZWF0ZSI7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjU4OiJodHRwOi8vMTI3LjAuMC4xOjgwODMvZGFzaGJvYXJkL2FwcHJvdmFscy93b3JrZmxvd3MvY3JlYXRlIjtzOjU6InJvdXRlIjtzOjMyOiJhZG1pbi5hcHByb3ZhbHMud29ya2Zsb3dzLmNyZWF0ZSI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=',	1781413711),
+('BSlDybydtw0YLmy0eGyUgTyM7DFMJP0unqLOHW9v',	NULL,	'127.0.0.1',	'',	'YTo0OntzOjY6Il90b2tlbiI7czo0MDoia0UzS1FSeFg1c096eVBiR2I2UG1sa01mWXdkTVppZmFWb1NxUG90diI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo1MToiaHR0cDovLzEyNy4wLjAuMTo4MDgzL2Rhc2hib2FyZC9hcHByb3ZhbHMvd29ya2Zsb3dzIjt9czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NTE6Imh0dHA6Ly8xMjcuMC4wLjE6ODA4My9kYXNoYm9hcmQvYXBwcm92YWxzL3dvcmtmbG93cyI7czo1OiJyb3V0ZSI7czozMToiYWRtaW4uYXBwcm92YWxzLndvcmtmbG93cy5pbmRleCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=',	1781413709),
+('CgoAoPSKr7uUFdFaxINYaIQBIBbJLrBGjhzIacie',	NULL,	'127.0.0.1',	'',	'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiV1VRZDRJdGlaQzdxRHpTbmtxWjVMTEYwQ003Smc5bUs5QkQ0RGFTOCI7czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MTp7czo1OiJsb2dpbiI7aToxO319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODA4Mi9sb2dpbiI7czo1OiJyb3V0ZSI7czoxNjoidHlyby1sb2dpbi5sb2dpbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=',	1781413450),
+('DV8uy6gKixcdnvYDa8B7cqPNQLVR7IJUudvhtluN',	NULL,	'127.0.0.1',	'',	'YTo0OntzOjY6Il90b2tlbiI7czo0MDoib2R1ZWJUZHJUT3VuRE9WQ1IwUFNNN04yWExGZGZoaGhVTHI2Nm1uNCI7czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MTp7czo1OiJsb2dpbiI7aTo2O319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODA4My9sb2dpbiI7czo1OiJyb3V0ZSI7czoxNjoidHlyby1sb2dpbi5sb2dpbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=',	1781413710),
+('euePvaA2nQ5fOHHwQMAVpBL8JSecqSMTGXc1p1bS',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',	'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiZWh4Zzc4NTkydnVEMmZ6VkNIMGNOU1MxTnlydWw0Nk1YRmZZQzl5cSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDk6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kYXNoYm9hcmQvY29yZS90YXNrcy8yL2VkaXQiO3M6NToicm91dGUiO3M6MjE6ImFkbWluLmNvcmUudGFza3MuZWRpdCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MTA6InR5cm8tbG9naW4iO2E6MTp7czo3OiJjYXB0Y2hhIjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9',	1781415502),
+('h78asrp0TSyotv8YpXuzkxe0NscXzx3Qjsh1e1kp',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',	'YTo2OntzOjY6Il90b2tlbiI7czo0MDoib1hBcTRwUHpaQ3hkYWZISzdpQUdUd1p2SXVGcEJQVlJNUFc0UVdodiI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjMxOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvZGFzaGJvYXJkIjtzOjU6InJvdXRlIjtzOjIwOiJ0eXJvLWRhc2hib2FyZC5pbmRleCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MTA6InR5cm8tbG9naW4iO2E6MTp7czo3OiJjYXB0Y2hhIjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9',	1781419682),
+('I3ciPEuD1HTvQiiG8tSoO1MhMw2LbWyDV3npPc9p',	NULL,	'127.0.0.1',	'',	'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiaGN3RHNMU2RjaUxyY0FYSTlSMEw3YzRnT1J3MTBDclRUNHV5bHB6QyI7czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MTp7czo1OiJsb2dpbiI7aToxNTt9fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjI3OiJodHRwOi8vMTI3LjAuMC4xOjgwODQvbG9naW4iO3M6NToicm91dGUiO3M6MTY6InR5cm8tbG9naW4ubG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19',	1781413970),
+('jFt5cjQc50awXGBBIhexvvQ0x7ViL5cmyAhtVApi',	NULL,	'127.0.0.1',	'',	'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiRkFCYWJub2wxeGZLY1Q2cG1FR3g2NHNIOFN4WU1STk41WWc4aGpBYyI7czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MTp7czo1OiJsb2dpbiI7aTozO319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODA4My9sb2dpbiI7czo1OiJyb3V0ZSI7czoxNjoidHlyby1sb2dpbi5sb2dpbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=',	1781413712),
+('lXTtHQ8lAfLXVzGvZMDBELRfRovlcxrMA7aUoJV3',	NULL,	'127.0.0.1',	'',	'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiMzlNQ0ZaQnJWaGZNcnRjMkVyNlliZUFjQnVwWDRTV3BtaHlDVHNidSI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo0MToiaHR0cDovLzEyNy4wLjAuMTo4MDg0L2Rhc2hib2FyZC9hcHByb3ZhbHMiO31zOjk6Il9wcmV2aW91cyI7YToyOntzOjM6InVybCI7czo0MToiaHR0cDovLzEyNy4wLjAuMTo4MDg0L2Rhc2hib2FyZC9hcHByb3ZhbHMiO3M6NToicm91dGUiO3M6MjE6ImFkbWluLmFwcHJvdmFscy5pbmRleCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=',	1781413973),
+('mMDd6sz7H1u1rQL4Gn2TazvVY1pdmMFQJfxrtbGi',	NULL,	'127.0.0.1',	'',	'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiU2x0eUJab04xVTFrU0JSSXBzNlJ3MzE4ZnhUZTdNaWhpS2IyM0tSUSI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo1ODoiaHR0cDovLzEyNy4wLjAuMTo4MDg1L2Rhc2hib2FyZC9hcHByb3ZhbHMvd29ya2Zsb3dzL2NyZWF0ZSI7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjU4OiJodHRwOi8vMTI3LjAuMC4xOjgwODUvZGFzaGJvYXJkL2FwcHJvdmFscy93b3JrZmxvd3MvY3JlYXRlIjtzOjU6InJvdXRlIjtzOjMyOiJhZG1pbi5hcHByb3ZhbHMud29ya2Zsb3dzLmNyZWF0ZSI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=',	1781414067),
+('mxRAjXythJVm7VS5IFKiGV5X8Q2F0YTjeQa9YHFM',	NULL,	'127.0.0.1',	'',	'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiVFZNWDJ4Sm01Z1h0dXVJV1BXSHVwYXp1V3VwaFJ6WUduczlrZUMxNiI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo1MToiaHR0cDovLzEyNy4wLjAuMTo4MDgyL2Rhc2hib2FyZC9hcHByb3ZhbHMvd29ya2Zsb3dzIjt9czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NTE6Imh0dHA6Ly8xMjcuMC4wLjE6ODA4Mi9kYXNoYm9hcmQvYXBwcm92YWxzL3dvcmtmbG93cyI7czo1OiJyb3V0ZSI7czozMToiYWRtaW4uYXBwcm92YWxzLndvcmtmbG93cy5pbmRleCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=',	1781413447),
+('NWjIq8reQ4dlTn0nUxu00uM6jTwGgGF24CcGjnsk',	NULL,	'127.0.0.1',	'',	'YTo0OntzOjY6Il90b2tlbiI7czo0MDoicnVSWGZtYTBhSHBZYUFrWm4wYkdIWmwxMkhFUEhoM3hKRTdOOG1VQSI7czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MTp7czo1OiJsb2dpbiI7aToxNTt9fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjI3OiJodHRwOi8vMTI3LjAuMC4xOjgwODQvbG9naW4iO3M6NToicm91dGUiO3M6MTY6InR5cm8tbG9naW4ubG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19',	1781413976),
+('p0yBOJvUtMMVHp262Pj0nV8PvaoBXz4Yc5DvZqlH',	NULL,	'127.0.0.1',	'',	'YTo0OntzOjY6Il90b2tlbiI7czo0MDoicHRlRmpJMG5qaDZSSXNtMko3M1NDcFFrVkxRRDc1NWtDcjM2UTE0diI7czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MTp7czo1OiJsb2dpbiI7aTo2O319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODA4MS9sb2dpbiI7czo1OiJyb3V0ZSI7czoxNjoidHlyby1sb2dpbi5sb2dpbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=',	1781413169),
+('s3KsaCHux8cjmRctiH7LczLkPwvgKVILUORJUaSv',	NULL,	'127.0.0.1',	'',	'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiQ0doYjl0b3BQbzB6Z0FQUHB3ZTFvVkFSYWJPT3dyWWxJakJZekVlMSI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo1MToiaHR0cDovLzEyNy4wLjAuMTo4MDgxL2Rhc2hib2FyZC9hcHByb3ZhbHMvd29ya2Zsb3dzIjt9czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NTE6Imh0dHA6Ly8xMjcuMC4wLjE6ODA4MS9kYXNoYm9hcmQvYXBwcm92YWxzL3dvcmtmbG93cyI7czo1OiJyb3V0ZSI7czozMToiYWRtaW4uYXBwcm92YWxzLndvcmtmbG93cy5pbmRleCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=',	1781413167),
+('SiwvjlTHBiZL3lul4nbfUnzwD5toj6ar3LrOILs8',	NULL,	'127.0.0.1',	'',	'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiQkk0c29zMk9XWFZ3M3ZFTE1SNXVhN0NJTWtKYnZ1dHI1cWpaOTZkSCI7czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MTp7czo1OiJsb2dpbiI7aTo4O319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODA4NS9sb2dpbiI7czo1OiJyb3V0ZSI7czoxNjoidHlyby1sb2dpbi5sb2dpbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=',	1781414068),
+('ujF9JCJ006KsS1ExqQCuOQ3ZIOFDKnxPmodCaTih',	NULL,	'127.0.0.1',	'',	'YTo0OntzOjY6Il90b2tlbiI7czo0MDoibUxXeDBNOHlCaU9EZVhXT0FvcGV5Tk9xbGVZSWVtRUdWbXBaSnlLVSI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo0MToiaHR0cDovLzEyNy4wLjAuMTo4MDg1L2Rhc2hib2FyZC9hcHByb3ZhbHMiO31zOjk6Il9wcmV2aW91cyI7YToyOntzOjM6InVybCI7czo0MToiaHR0cDovLzEyNy4wLjAuMTo4MDg1L2Rhc2hib2FyZC9hcHByb3ZhbHMiO3M6NToicm91dGUiO3M6MjE6ImFkbWluLmFwcHJvdmFscy5pbmRleCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=',	1781414058),
+('VtQtVG3rP8Ch6ajzAs25POk7OZumREVU4SZCHHhE',	NULL,	'127.0.0.1',	'',	'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiSWJCUHA3cWgzQkVvaDRvaUc1ZHdDT0c5cmJWODF0Z0FxY0xKQ0VpbCI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo1ODoiaHR0cDovLzEyNy4wLjAuMTo4MDg0L2Rhc2hib2FyZC9hcHByb3ZhbHMvd29ya2Zsb3dzL2NyZWF0ZSI7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjU4OiJodHRwOi8vMTI3LjAuMC4xOjgwODQvZGFzaGJvYXJkL2FwcHJvdmFscy93b3JrZmxvd3MvY3JlYXRlIjtzOjU6InJvdXRlIjtzOjMyOiJhZG1pbi5hcHByb3ZhbHMud29ya2Zsb3dzLmNyZWF0ZSI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=',	1781413967),
+('WrDmihSKpUyP7YpcoXiMqjWhhWt719KwzX9XTZUy',	NULL,	'127.0.0.1',	'',	'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiUWxzZ3g5dm41VDRmWUFjdFcwOHpLckpUbktxVUdtYmE2bFF3ZHRJUiI7czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MTp7czo1OiJsb2dpbiI7aToxMTt9fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjI3OiJodHRwOi8vMTI3LjAuMC4xOjgwODUvbG9naW4iO3M6NToicm91dGUiO3M6MTY6InR5cm8tbG9naW4ubG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19',	1781414065);
 
 DROP TABLE IF EXISTS `settings`;
 CREATE TABLE `settings` (
@@ -703,8 +803,8 @@ CREATE TABLE `sites` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `sites` (`id`, `project_id`, `name`, `location_address`, `status`, `created_at`, `updated_at`) VALUES
-(3,	3,	'Banani Interchange Site',	'Banani, Dhaka',	'active',	'2026-05-20 23:17:34',	'2026-05-20 23:17:34'),
-(4,	3,	'Mohakhali Flyover Link Site',	'Mohakhali, Dhaka',	'active',	'2026-05-20 23:17:34',	'2026-05-20 23:17:34');
+(3,	3,	'Site 1',	'Banani, Dhaka',	'active',	'2026-05-20 23:17:34',	'2026-06-13 21:54:36'),
+(4,	2,	'Site 2',	'Mohakhali, Dhaka',	'active',	'2026-05-20 23:17:34',	'2026-06-13 23:30:38');
 
 DROP TABLE IF EXISTS `social_accounts`;
 CREATE TABLE `social_accounts` (
@@ -762,9 +862,7 @@ CREATE TABLE `task_dependencies` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `task_dependencies` (`task_id`, `depends_on_task_id`) VALUES
-(2,	1),
-(3,	2),
-(4,	3);
+(2,	1);
 
 DROP TABLE IF EXISTS `tasks`;
 CREATE TABLE `tasks` (
@@ -791,10 +889,8 @@ CREATE TABLE `tasks` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `tasks` (`id`, `project_id`, `site_id`, `name`, `description`, `assigned_to`, `start_date`, `end_date`, `priority`, `status`, `progress_percent`, `created_at`, `updated_at`) VALUES
-(1,	3,	3,	'Soil Testing and Soil Reinforcement',	'Conduct deep soil testing and perform sand piling.',	2,	'2026-02-21',	'2026-03-21',	'critical',	'closed',	100,	'2026-05-20 23:17:34',	'2026-05-20 23:17:34'),
-(2,	3,	3,	'Foundation Pile Casting',	'Casting of 45 piles of 1200mm diameter.',	2,	'2026-03-21',	'2026-04-21',	'high',	'closed',	100,	'2026-05-20 23:17:34',	'2026-05-20 23:17:34'),
-(3,	3,	3,	'Pillar Substructure Rebar Binding',	'Binding steel bars for pillars P1 to P12.',	2,	'2026-04-21',	'2026-06-05',	'high',	'in_progress',	60,	'2026-05-20 23:17:34',	'2026-05-20 23:17:34'),
-(4,	3,	3,	'Concrete Pouring for Pillars',	'Pouring grade-35 concrete for reinforced columns.',	2,	'2026-06-06',	'2026-06-20',	'critical',	'open',	0,	'2026-05-20 23:17:34',	'2026-05-20 23:17:34');
+(1,	3,	3,	'Soil Testing',	'deep soil testing',	2,	'2026-02-21',	'2026-03-21',	'critical',	'closed',	100,	'2026-05-20 23:17:34',	'2026-06-13 23:31:22'),
+(2,	3,	3,	'Pile Foundation',	'casting of 45 piles',	2,	'2026-03-21',	'2026-04-21',	'high',	'closed',	85,	'2026-05-20 23:17:34',	'2026-06-13 23:31:59');
 
 DROP TABLE IF EXISTS `tender_bids`;
 CREATE TABLE `tender_bids` (
@@ -863,7 +959,14 @@ INSERT INTO `tyro_audit_logs` (`id`, `user_id`, `event`, `auditable_type`, `audi
 (3,	NULL,	'role.assigned',	'App\\Models\\User',	1,	NULL,	'{\"role_id\": 1, \"role_slug\": \"super-admin\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-05-21 05:28:50'),
 (4,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36\"}',	'2026-05-22 03:59:32'),
 (5,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:151.0) Gecko/20100101 Firefox/151.0\"}',	'2026-05-22 04:53:38'),
-(6,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36\"}',	'2026-05-22 09:35:07');
+(6,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36\"}',	'2026-05-22 09:35:07'),
+(7,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36\"}',	'2026-06-11 12:01:47'),
+(8,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36\"}',	'2026-06-13 04:31:12'),
+(9,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36\"}',	'2026-06-14 03:43:15'),
+(10,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36\"}',	'2026-06-14 06:36:04'),
+(11,	1,	'user.logout',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36\"}',	'2026-06-14 06:36:10'),
+(12,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36\"}',	'2026-06-14 06:36:42'),
+(13,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36\"}',	'2026-06-14 06:48:01');
 
 DROP TABLE IF EXISTS `tyro_media`;
 CREATE TABLE `tyro_media` (
@@ -951,8 +1054,8 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `two_factor_secret`, `two_factor_recovery_codes`, `two_factor_confirmed_at`, `remember_token`, `created_at`, `updated_at`, `suspended_at`, `suspension_reason`, `profile_photo_path`, `use_gravatar`) VALUES
 (1,	'Project Administrator',	'hello@inoodex.com',	NULL,	'$2y$12$zo7SGTKVmrG9PeA.atYY9u7KIp5hn7GCYUXWUvJKdVjGxeuNealuu',	NULL,	NULL,	NULL,	NULL,	'2026-05-20 23:16:37',	'2026-05-20 23:16:37',	NULL,	NULL,	NULL,	0),
-(2,	'Site Engineer Dave',	'engineer@construction.com',	NULL,	'$2y$12$BoQHxmVYvM6Mzv.Qz3ZYrOrPwnQSHISAcNxFoh2dfwcHctBQEAyQa',	NULL,	NULL,	NULL,	NULL,	'2026-05-20 23:17:33',	'2026-05-20 23:17:33',	NULL,	NULL,	NULL,	0),
-(3,	'Procurement Officer Alice',	'procurement@construction.com',	NULL,	'$2y$12$CZJjnsrL1yZ9.aSMWNxWgurhwvliiKFLLGFykCkx5SpFN0vQAH826',	NULL,	NULL,	NULL,	NULL,	'2026-05-20 23:17:34',	'2026-05-20 23:17:34',	NULL,	NULL,	NULL,	0);
+(2,	'Site Engineer',	'engineer@construction.com',	NULL,	'$2y$12$BoQHxmVYvM6Mzv.Qz3ZYrOrPwnQSHISAcNxFoh2dfwcHctBQEAyQa',	NULL,	NULL,	NULL,	NULL,	'2026-05-20 23:17:33',	'2026-06-11 06:03:53',	NULL,	NULL,	NULL,	0),
+(3,	'Procurement Officer',	'procurement@construction.com',	NULL,	'$2y$12$CZJjnsrL1yZ9.aSMWNxWgurhwvliiKFLLGFykCkx5SpFN0vQAH826',	NULL,	NULL,	NULL,	NULL,	'2026-05-20 23:17:34',	'2026-06-11 06:03:45',	NULL,	NULL,	NULL,	0);
 
 DROP TABLE IF EXISTS `vendors`;
 CREATE TABLE `vendors` (
@@ -974,12 +1077,7 @@ CREATE TABLE `vendors` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `vendors` (`id`, `name`, `contact_name`, `email`, `phone`, `address`, `trade_category`, `status`, `credit_limit`, `payment_terms`, `performance_rating`, `is_blacklisted`, `created_at`, `updated_at`) VALUES
-(1,	'Steel King Industries',	'John Steel',	'sales@steelking.com',	'+8801711122233',	'Tejgaon Industrial Area, Dhaka',	'Steel',	'approved',	5000000.00,	'Net 30',	5,	0,	'2026-05-20 23:16:37',	'2026-05-20 23:16:37'),
-(2,	'LafargeHolcim Cement Ltd',	'Karim Rahman',	'info@lafarge.com',	'+8801711144455',	'Gulshan 2, Dhaka',	'Cement',	'approved',	3000000.00,	'Net 15',	4,	0,	'2026-05-20 23:16:37',	'2026-05-20 23:16:37'),
-(3,	'National Bricks & Co',	'Abul Kalam',	'kalam@nationalbricks.com',	'+8801711166677',	'Savar, Dhaka',	'Bricks',	'approved',	1000000.00,	'Cash on Delivery',	4,	0,	'2026-05-20 23:16:37',	'2026-05-20 23:16:37'),
-(4,	'Steel King Industries',	'John Steel',	'sales@steelking.com',	'+8801711122233',	'Tejgaon Industrial Area, Dhaka',	'Steel',	'approved',	5000000.00,	'Net 30',	5,	0,	'2026-05-20 23:17:34',	'2026-05-20 23:17:34'),
-(5,	'LafargeHolcim Cement Ltd',	'Karim Rahman',	'info@lafarge.com',	'+8801711144455',	'Gulshan 2, Dhaka',	'Cement',	'approved',	3000000.00,	'Net 15',	4,	0,	'2026-05-20 23:17:34',	'2026-05-20 23:17:34'),
-(6,	'National Bricks & Co',	'Abul Kalam',	'kalam@nationalbricks.com',	'+8801711166677',	'Savar, Dhaka',	'Bricks',	'approved',	1000000.00,	'Cash on Delivery',	4,	0,	'2026-05-20 23:17:34',	'2026-05-20 23:17:34');
+(4,	'Steel King Industries',	'John Steel',	'sales@steelking.com',	'+8801711122233',	'Tejgaon Industrial Area, Dhaka',	'Steel',	'approved',	5000000.00,	'Net 30',	5,	0,	'2026-05-20 23:17:34',	'2026-05-20 23:17:34');
 
 DROP TABLE IF EXISTS `warehouses`;
 CREATE TABLE `warehouses` (
@@ -993,7 +1091,7 @@ CREATE TABLE `warehouses` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `warehouses` (`id`, `name`, `location_address`, `status`, `created_at`, `updated_at`) VALUES
-(1,	'Central Equipment & Materials Depot',	'Tongi, Gazipur',	'active',	'2026-05-20 23:17:34',	'2026-05-20 23:17:34'),
-(2,	'Mirpur Temporary Storage Hub',	'Mirpur, Dhaka',	'active',	'2026-05-20 23:17:34',	'2026-05-20 23:17:34');
+(1,	'Warehouse 1',	'Tongi, Gazipur',	'active',	'2026-05-20 23:17:34',	'2026-06-13 22:16:23'),
+(2,	'Warehouse 2',	'Mirpur, Dhaka',	'active',	'2026-05-20 23:17:34',	'2026-06-13 22:16:35');
 
--- 2026-05-22 10:02:31 UTC
+-- 2026-06-14 09:26:37 UTC
