@@ -53,29 +53,27 @@
                 </div>
                 <div id="items-container" class="space-y-2">
                     @forelse($checklist->items as $i => $item)
-                        <div class="item-row flex items-start gap-2 rounded-lg border p-3 dark:border-gray-700">
+                        <div class="item-row grid items-center gap-3 rounded-lg border p-3 dark:border-gray-700" style="grid-template-columns: 1fr auto auto auto;">
                             <input type="hidden" name="items[{{ $i }}][id]" value="{{ $item->id }}" />
-                            <div class="flex-1">
-                                <input type="text" name="items[{{ $i }}][item_name]" value="{{ $item->item_name }}" class="form-input text-sm" required />
-                            </div>
-                            <label class="flex items-center gap-1 text-xs whitespace-nowrap mt-2">
+                            <input type="text" name="items[{{ $i }}][item_name]" value="{{ $item->item_name }}" class="form-input text-sm w-full" required />
+                            <label class="flex items-center gap-1.5 text-xs whitespace-nowrap">
+                                <input type="hidden" name="items[{{ $i }}][is_checked]" value="0" />
                                 <input type="checkbox" name="items[{{ $i }}][is_checked]" value="1" class="form-checkbox h-4 w-4" {{ $item->is_checked ? 'checked' : '' }} />
                                 Pass
                             </label>
-                            <input type="text" name="items[{{ $i }}][remarks]" value="{{ $item->remarks }}" placeholder="Remarks" class="form-input text-sm w-40" />
-                            <button type="button" onclick="this.closest('.item-row').remove()" class="mt-2 text-danger hover:underline text-xs">Remove</button>
+                            <input type="text" name="items[{{ $i }}][remarks]" value="{{ $item->remarks }}" placeholder="Remark" class="form-input text-sm" style="width: 140px;" />
+                            <button type="button" onclick="this.closest('.item-row').remove()" class="text-danger text-xs whitespace-nowrap hover:underline">Remove</button>
                         </div>
                     @empty
-                        <div class="item-row flex items-start gap-2 rounded-lg border p-3 dark:border-gray-700">
-                            <div class="flex-1">
-                                <input type="text" name="items[0][item_name]" placeholder="Item description" class="form-input text-sm" required />
-                            </div>
-                            <label class="flex items-center gap-1 text-xs whitespace-nowrap mt-2">
+                        <div class="item-row grid items-center gap-3 rounded-lg border p-3 dark:border-gray-700" style="grid-template-columns: 1fr auto auto auto;">
+                            <input type="text" name="items[0][item_name]" placeholder="Item description" class="form-input text-sm w-full" required />
+                            <label class="flex items-center gap-1.5 text-xs whitespace-nowrap">
+                                <input type="hidden" name="items[0][is_checked]" value="0" />
                                 <input type="checkbox" name="items[0][is_checked]" value="1" class="form-checkbox h-4 w-4" />
                                 Pass
                             </label>
-                            <input type="text" name="items[0][remarks]" placeholder="Remarks" class="form-input text-sm w-40" />
-                            <button type="button" onclick="this.closest('.item-row').remove()" class="mt-2 text-danger hover:underline text-xs">Remove</button>
+                            <input type="text" name="items[0][remarks]" placeholder="Remark" class="form-input text-sm" style="width: 140px;" />
+                            <button type="button" onclick="this.closest('.item-row').remove()" class="text-danger text-xs whitespace-nowrap hover:underline">Remove</button>
                         </div>
                     @endforelse
                 </div>
@@ -99,17 +97,17 @@ let itemIndex = {{ max(count($checklist->items), 1) }};
 function addItem() {
     const container = document.getElementById('items-container');
     const div = document.createElement('div');
-    div.className = 'item-row flex items-start gap-2 rounded-lg border p-3 dark:border-gray-700';
+    div.className = 'item-row grid items-center gap-3 rounded-lg border p-3 dark:border-gray-700';
+    div.style.gridTemplateColumns = '1fr auto auto auto';
     div.innerHTML = `
-        <div class="flex-1">
-            <input type="text" name="items[${itemIndex}][item_name]" placeholder="Item description" class="form-input text-sm" required />
-        </div>
-        <label class="flex items-center gap-1 text-xs whitespace-nowrap mt-2">
+        <input type="text" name="items[${itemIndex}][item_name]" placeholder="Item description" class="form-input text-sm w-full" required />
+        <label class="flex items-center gap-1.5 text-xs whitespace-nowrap">
+            <input type="hidden" name="items[${itemIndex}][is_checked]" value="0" />
             <input type="checkbox" name="items[${itemIndex}][is_checked]" value="1" class="form-checkbox h-4 w-4" />
             Pass
         </label>
-        <input type="text" name="items[${itemIndex}][remarks]" placeholder="Remarks" class="form-input text-sm w-40" />
-        <button type="button" onclick="this.closest('.item-row').remove()" class="mt-2 text-danger hover:underline text-xs">Remove</button>
+        <input type="text" name="items[${itemIndex}][remarks]" placeholder="Remark" class="form-input text-sm" style="width: 140px;" />
+        <button type="button" onclick="this.closest('.item-row').remove()" class="text-danger text-xs whitespace-nowrap hover:underline">Remove</button>
     `;
     container.appendChild(div);
     itemIndex++;
