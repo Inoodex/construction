@@ -20,6 +20,12 @@
         [x-cloak] {
             display: none !important;
         }
+        .main-container .main-content {
+            margin-left: 180px;
+        }
+        .toggle-sidebar .main-container .main-content {
+            margin-left: 0;
+        }
     </style>
 </head>
 
@@ -37,6 +43,7 @@
             @include('admin.layouts.header')
 
             <div class="animate__animated p-6" :class="[$store.app.animation]">
+                @include('admin.layouts.partials.flash-messages')
                 @yield('content')
             </div>
 

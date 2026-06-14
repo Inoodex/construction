@@ -38,7 +38,7 @@
 <div class="mb-6 flex items-center justify-between">
     <div>
         <h1 class="text-2xl font-bold dark:text-white">Construction ERP Dashboard</h1>
-        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Welcome back, {{ auth()->user()->name }} &mdash; {{ now()->format('l, d M Y') }}</p>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Welcome back, {{ auth()->user()?->name }} &mdash; {{ now()->format('l, d M Y') }}</p>
     </div>
     <div class="flex gap-2">
         <a href="{{ route('tyro-dashboard.index') }}" class="btn btn-sm btn-outline-primary gap-1">

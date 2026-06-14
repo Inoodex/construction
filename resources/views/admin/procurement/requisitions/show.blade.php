@@ -14,7 +14,7 @@
                 </svg>
                 Back to List
             </a>
-            <a href="{{ route('admin.procurement.requisitions.edit', $requisition->id) }}" class="btn btn-primary gap-2">
+            <a href="{{ route('admin.procurement.requisitions.edit', $requisition) }}" class="btn btn-primary gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
                     <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path>

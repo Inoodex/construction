@@ -10,7 +10,7 @@ Route::get('/', function () {
     return redirect()->route('tyro-login.login');
 });
 
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('tyro-dashboard.index');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('auth')->name('tyro-dashboard.index');
 
 Route::prefix('dashboard/settings')->name('admin.settings.')->group(function () {
     Route::get('/', [SettingController::class, 'index'])->name('index');
@@ -213,4 +213,25 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->group(function () {
     Route::delete('invoices/{invoice}/items/{invoice_item}', [InvoiceController::class, 'removeItem'])->name('invoices.items.destroy');
     Route::post('invoices/{invoice}/payments', [InvoiceController::class, 'addPayment'])->name('invoices.payments.store');
     Route::delete('invoices/{invoice}/payments/{payment}', [InvoiceController::class, 'removePayment'])->name('invoices.payments.destroy');
+});
+
+// Approvals - Approval Workflow Management
+use App\Http\Controllers\Admin\ApprovalController;
+Route::prefix('dashboard/approvals')->name('admin.approvals.')->middleware('auth')->group(function () {
+    // Workflow configuration (admin only) — must be before {approval} wildcard
+    Route::prefix('workflows')->name('workflows.')->group(function () {
+        Route::get('/', [ApprovalController::class, 'configureWorkflows'])->name('index');
+        Route::get('create', [ApprovalController::class, 'createWorkflow'])->name('create');
+        Route::post('/', [ApprovalController::class, 'storeWorkflow'])->name('store');
+        Route::get('{workflow}/edit', [ApprovalController::class, 'editWorkflow'])->name('edit');
+        Route::put('{workflow}', [ApprovalController::class, 'updateWorkflow'])->name('update');
+        Route::delete('{workflow}', [ApprovalController::class, 'deleteWorkflow'])->name('destroy');
+    });
+
+    // User approvals (pending approvals for user)
+    Route::get('/', [ApprovalController::class, 'index'])->name('index');
+    Route::get('{approval}', [ApprovalController::class, 'show'])->name('show');
+    Route::post('{approval}/approve', [ApprovalController::class, 'approve'])->name('approve');
+    Route::post('{approval}/reject', [ApprovalController::class, 'reject'])->name('reject');
+    Route::post('{approval}/withdraw', [ApprovalController::class, 'withdraw'])->name('withdraw');
 });

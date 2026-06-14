@@ -131,13 +131,13 @@
                         alt="logo" />
                                 <div class="truncate ltr:pl-4 rtl:pr-4">
                                     <h4 class="text-base">
-                                        {{ Auth::user()->name }}
+                                        {{ Auth::user()?->name }}
                                         <!-- <span
                                             class="rounded bg-success-light px-1 text-xs text-success ltr:ml-2 rtl:ml-2">Pro</span> -->
                                     </h4>
                                     <button type="button"
                                         class="text-black/60 hover:text-primary dark:text-dark-light/60 dark:hover:text-white">
-                                        {{ Auth::user()->email }}
+                                        {{ Auth::user()?->email ?? '' }}
                                     </button>
                                 </div>
                             </div>

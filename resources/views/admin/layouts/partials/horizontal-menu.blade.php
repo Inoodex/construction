@@ -1,7 +1,7 @@
 <ul class="horizontal-menu border-t border-[#ebedf2] bg-white px-6 py-1.5 font-semibold text-black rtl:space-x-reverse dark:border-[#191e3a] dark:bg-[#0e1726] dark:text-white-dark lg:space-x-1.5 xl:space-x-8"
     x-show="$store.app.menu === 'horizontal'">
     <!-- Dashboard -->
-    <li class="menu nav-item relative">
+    {{-- <li class="menu nav-item relative">
         <a href="{{ route('tyro-dashboard.index') }}" class="nav-link">
             <div class="flex items-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -16,10 +16,10 @@
                 <span class="px-1">Dashboard</span>
             </div>
         </a>
-    </li>
+    </li> --}}
 
     <!-- Administration -->
-    @if(auth()->user()->hasRole('super-admin'))
+    @if(auth()->user()?->hasRole('super-admin'))
         <li class="menu nav-item relative">
             <a href="javascript:;" class="nav-link">
                 <div class="flex items-center">
@@ -71,6 +71,29 @@
         </ul>
     </li>
 
+    <!-- Approvals -->
+    <li class="menu nav-item relative">
+        <a href="javascript:;" class="nav-link">
+            <div class="flex items-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="shrink-0">
+                    <path opacity="0.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" fill="currentColor" />
+                </svg>
+                <span class="px-1">Approvals</span>
+            </div>
+            <div class="right_arrow">
+                <svg class="h-4 w-4 rotate-90" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </div>
+        </a>
+        <ul class="sub-menu">
+            <li><a href="{{ route('admin.approvals.index') }}">Pending Approvals</a></li>
+            @if(auth()->user()?->hasRole('super-admin'))
+                <li><a href="{{ route('admin.approvals.workflows.index') }}">Approval Workflows</a></li>
+            @endif
+        </ul>
+    </li>
+
     <!-- Procurement -->
     <li class="menu nav-item relative">
         <a href="javascript:;" class="nav-link">
@@ -102,7 +125,7 @@
     </li>
 
     <!-- Reports -->
-    <li class="menu nav-item relative">
+    {{-- <li class="menu nav-item relative">
         <a href="javascript:;" class="nav-link">
             <div class="flex items-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="shrink-0">
@@ -121,10 +144,10 @@
             <li><a href="{{ route('admin.reports.report-templates.index') }}">Report Templates</a></li>
             <li><a href="{{ route('admin.reports.scheduled-reports.index') }}">Scheduled Reports</a></li>
         </ul>
-    </li>
+    </li> --}}
 
     <!-- Finance -->
-    <li class="menu nav-item relative">
+    {{-- <li class="menu nav-item relative">
         <a href="javascript:;" class="nav-link">
             <div class="flex items-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="shrink-0">
@@ -145,9 +168,6 @@
             <li><a href="{{ route('admin.finance.tenders.index') }}">Tenders</a></li>
             <li><a href="{{ route('admin.finance.invoices.index') }}">Invoices</a></li>
         </ul>
-    </li>
-
-</ul>
-    </li> -->
+    </li> --}}
 
 </ul>

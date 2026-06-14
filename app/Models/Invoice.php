@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Traits\Approvable;
 
 class Invoice extends Model
 {
-    use HasFactory;
+    use HasFactory, Approvable;
 
     protected $fillable = [
         'project_id',

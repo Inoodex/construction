@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Route;
+use App\Models\PurchaseRequisition;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +21,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Explicit route model binding for requisitions
+        Route::model('purchase_requisition', PurchaseRequisition::class);
         // echo "Booting AppServiceProvider\n";
         \Illuminate\Support\Facades\Gate::before(function ($user, $ability) {
             // echo "Checking ability: {$ability} for user: {$user->email}\n";

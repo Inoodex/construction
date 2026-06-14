@@ -16,7 +16,7 @@
     </div>
 
     <div class="panel mt-6">
-        <form action="{{ route('admin.procurement.requisitions.update', $requisition->id) }}" method="POST">
+        <form action="{{ route('admin.procurement.requisitions.update', $requisition) }}" method="POST">
             @csrf
             @method('PUT')
             <div class="grid grid-cols-1 gap-5 md:grid-cols-3">

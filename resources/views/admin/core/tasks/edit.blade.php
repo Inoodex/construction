@@ -40,9 +40,6 @@
                     <label for="site_id">Site</label>
                     <select name="site_id" id="site_id" class="form-select">
                         <option value="">Select Site</option>
-                        @foreach($sites as $site)
-                            <option value="{{ $site->id }}" {{ old('site_id', $task->site_id) == $site->id ? 'selected' : '' }}>{{ $site->name }}</option>
-                        @endforeach
                     </select>
                 </div>
                 <div class="form-group">
@@ -108,6 +105,7 @@
 @push('scripts')
 <script>
 const sites = @json($sites);
+fetchSites(document.getElementById('project_id').value);
 function fetchSites(projectId) {
     const siteSelect = document.getElementById('site_id');
     if (!projectId) return;

@@ -78,7 +78,7 @@ class TaskController extends Controller
     {
         $projects = Project::all();
         $users = User::all();
-        $sites = Site::where('project_id', $task->project_id)->get();
+        $sites = Site::all();
         return view('admin.core.tasks.edit', compact('task', 'projects', 'users', 'sites'));
     }
 
