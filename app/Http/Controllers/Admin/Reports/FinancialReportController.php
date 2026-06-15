@@ -79,7 +79,8 @@ class FinancialReportController extends Controller
         $data = $info['data'];
         $data['projects'] = $this->reportService->getProjects();
 
-        $pdf = Pdf::loadView($info['view'], $data)
+        $pdfView = 'admin.reports.financial.pdf.' . $report;
+        $pdf = Pdf::loadView($pdfView, $data)
             ->setPaper('a4', 'landscape')
             ->setOption('defaultFont', 'sans-serif');
 
