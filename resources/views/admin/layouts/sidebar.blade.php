@@ -1,7 +1,7 @@
 <!-- start sidebar section -->
 <div :class="{'dark text-white-dark' : $store.app.semidark}">
     <nav x-data="sidebar"
-        class="sidebar fixed bottom-0 top-0 z-50 h-full min-h-screen w-[220px] shadow-[5px_0_25px_0_rgba(94,92,154,0.1)] transition-all duration-300">
+        class="sidebar fixed bottom-0 top-0 z-50 h-full min-h-screen w-[240px] shadow-[5px_0_25px_0_rgba(94,92,154,0.1)] transition-all duration-300">
         <div class="h-full bg-white dark:bg-[#0e1726]">
             <div class="flex items-center justify-between px-4 py-3">
                 <a href="{{ route('tyro-dashboard.index') }}" class="main-logo flex shrink-0 items-center">
@@ -139,8 +139,8 @@
                                 </div>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.core.sites.index') }}" class="group">
+                        <li class="menu nav-item">
+                            <button type="button" class="nav-link group" :class="{'active' : activeDropdown === 'site'}" @click="activeDropdown === 'site' ? activeDropdown = null : activeDropdown = 'site'">
                                 <div class="flex items-center">
                                     <svg class="shrink-0 group-hover:!text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path opacity="0.5" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="currentColor" />
@@ -148,96 +148,59 @@
                                     </svg>
                                     <span class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300">Sites</span>
                                 </div>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.core.tasks.index') }}" class="group">
-                                <div class="flex items-center">
-                                    <svg class="shrink-0 group-hover:!text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path opacity="0.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" fill="currentColor" />
+                                <div class="rtl:rotate-180 transition-transform duration-300" :class="{'rotate-90' : activeDropdown === 'site'}">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                                     </svg>
-                                    <span class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300">Tasks</span>
                                 </div>
-                            </a>
+                            </button>
+                            <ul x-cloak x-show="activeDropdown === 'site'" x-collapse class="sub-menu text-gray-500">
+                                <li><a href="{{ route('admin.core.sites.index') }}">All Sites</a></li>
+                                <li><a href="{{ route('admin.core.site-logs.index') }}">Site Logs</a></li>
+                                <li><a href="{{ route('admin.core.site-photos.index') }}">Site Photos</a></li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.core.phases.index') }}" class="group">
+                        <li class="menu nav-item">
+                            <button type="button" class="nav-link group" :class="{'active' : activeDropdown === 'planning'}" @click="activeDropdown === 'planning' ? activeDropdown = null : activeDropdown = 'planning'">
                                 <div class="flex items-center">
                                     <svg class="shrink-0 group-hover:!text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path opacity="0.5" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="currentColor" />
                                         <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
                                     </svg>
-                                    <span class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300">Phases</span>
+                                    <span class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300">Planning</span>
                                 </div>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.core.milestones.index') }}" class="group">
-                                <div class="flex items-center">
-                                    <svg class="shrink-0 group-hover:!text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path opacity="0.5" d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" fill="currentColor" />
-                                        <path d="M12 6.75C12.4142 6.75 12.75 7.08579 12.75 7.5V11.25H16.5C16.9142 11.25 17.25 11.5858 17.25 12C17.25 12.4142 16.9142 12.75 16.5 12.75H12C11.5858 12.75 11.25 12.4142 11.25 12V7.5C11.25 7.08579 11.5858 6.75 12 6.75Z" fill="currentColor" />
+                                <div class="rtl:rotate-180 transition-transform duration-300" :class="{'rotate-90' : activeDropdown === 'planning'}">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                                     </svg>
-                                    <span class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300">Milestones</span>
                                 </div>
-                            </a>
+                            </button>
+                            <ul x-cloak x-show="activeDropdown === 'planning'" x-collapse class="sub-menu text-gray-500">
+                                <li><a href="{{ route('admin.core.tasks.index') }}">Tasks</a></li>
+                                <li><a href="{{ route('admin.core.phases.index') }}">Phases</a></li>
+                                <li><a href="{{ route('admin.core.milestones.index') }}">Milestones</a></li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.core.site-logs.index') }}" class="group">
-                                <div class="flex items-center">
-                                    <svg class="shrink-0 group-hover:!text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path opacity="0.5" d="M3 7.5C3 5.29086 4.79086 3.5 7 3.5H17C19.2091 3.5 21 5.29086 21 7.5V16.5C21 18.7091 19.2091 20.5 17 20.5H7C4.79086 20.5 3 18.7091 3 16.5V7.5Z" fill="currentColor" />
-                                        <path d="M7 8.25C6.58579 8.25 6.25 8.58579 6.25 9C6.25 9.41421 6.58579 9.75 7 9.75H9C9.41421 9.75 9.75 9.41421 9.75 9C9.75 8.58579 9.41421 8.25 9 8.25H7ZM7 11.25C6.58579 11.25 6.25 11.5858 6.25 12C6.25 12.4142 6.58579 12.75 7 12.75H13C13.4142 12.75 13.75 12.4142 13.75 12C13.75 11.5858 13.4142 11.25 13 11.25H7Z" fill="currentColor" />
-                                    </svg>
-                                    <span class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300">Site Logs</span>
-                                </div>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.core.site-photos.index') }}" class="group">
-                                <div class="flex items-center">
-                                    <svg class="shrink-0 group-hover:!text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path opacity="0.5" d="M2 15.5V12.5C2 9.90029 2 8.60043 2.46183 7.58148C2.89289 6.62989 3.62989 5.89289 4.58148 5.46183C5.60043 5 6.90029 5 9.5 5H14.5C17.0997 5 18.3996 5 19.4185 5.46183C20.3701 5.89289 21.1071 6.62989 21.5382 7.58148C22 8.60043 22 9.90029 22 12.5V15.5C22 18.0997 22 19.3996 21.5382 20.4185C21.1071 21.3701 20.3701 22.1071 19.4185 22.5382C18.3996 23 17.0997 23 14.5 23H9.5C6.90029 23 5.60043 23 4.58148 22.5382C3.62989 22.1071 2.89289 21.3701 2.46183 20.4185C2 19.3996 2 18.0997 2 15.5Z" fill="currentColor" />
-                                        <circle cx="18" cy="9" r="2" fill="currentColor" />
-                                        <circle cx="19" cy="7" r="2" fill="currentColor" />
-                                        <path d="M2 14.2801L3.77781 12.5023C4.77189 11.5082 5.26892 11.0112 5.83795 10.8322C6.40699 10.6533 7.00963 10.7569 8.21491 10.9642L9.47225 11.1811C10.069 11.287 10.3674 11.34 10.6043 11.4574C10.8411 11.5748 11.0343 11.7558 11.4208 12.1178L14.2135 14.7374C14.4722 14.9807 14.6016 15.1023 14.7142 15.1091C14.8268 15.116 14.9617 15.0091 15.2315 14.7954L15.4379 14.6306C16.301 13.9566 16.7326 13.6196 17.2146 13.4526C17.6966 13.2856 18.2123 13.2993 19.2437 13.3267L20.3103 13.3548C21.2791 13.3806 21.7634 13.3935 22.0508 13.7052C22.3618 14.042 22.3292 14.5961 21.9745 14.8911C21.7091 15.1112 21.2261 15.1112 20.2601 15.1112H16" fill="currentColor" />
-                                    </svg>
-                                    <span class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300">Site Photos</span>
-                                </div>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.core.resources.index') }}" class="group">
-                                <div class="flex items-center">
-                                    <svg class="shrink-0 group-hover:!text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path opacity="0.5" d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" fill="currentColor" />
-                                        <path d="M12.75 9C12.75 8.58579 12.4142 8.25 12 8.25C11.5858 8.25 11.25 8.58579 11.25 9L11.25 11.25L9 11.25C8.58579 11.25 8.25 11.5858 8.25 12C8.25 12.4142 8.58579 12.75 9 12.75L11.25 12.75L11.25 15C11.25 15.4142 11.5858 15.75 12 15.75C12.4142 15.75 12.75 15.4142 12.75 15L12.75 12.75L15 12.75C15.4142 12.75 15.75 12.4142 15.75 12C15.75 11.5858 15.4142 11.25 15 11.25L12.75 11.25L12.75 9Z" fill="currentColor" />
-                                    </svg>
-                                    <span class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300">Resources</span>
-                                </div>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.core.work-orders.index') }}" class="group">
+                        <li class="menu nav-item">
+                            <button type="button" class="nav-link group" :class="{'active' : activeDropdown === 'execution'}" @click="activeDropdown === 'execution' ? activeDropdown = null : activeDropdown = 'execution'">
                                 <div class="flex items-center">
                                     <svg class="shrink-0 group-hover:!text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path opacity="0.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" fill="currentColor" />
                                         <path d="M9 14l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
                                     </svg>
-                                    <span class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300">Work Orders</span>
+                                    <span class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300">Execution</span>
                                 </div>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('admin.core.inspection-checklists.index') }}" class="group">
-                                <div class="flex items-center">
-                                    <svg class="shrink-0 group-hover:!text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path opacity="0.5" d="M3 7.5C3 5.29086 4.79086 3.5 7 3.5H17C19.2091 3.5 21 5.29086 21 7.5V16.5C21 18.7091 19.2091 20.5 17 20.5H7C4.79086 20.5 3 18.7091 3 16.5V7.5Z" fill="currentColor" />
-                                        <path d="M8.25 9.75C8.25 9.33579 8.58579 9 9 9H15C15.4142 9 15.75 9.33579 15.75 9.75C15.75 10.1642 15.4142 10.5 15 10.5H9C8.58579 10.5 8.25 10.1642 8.25 9.75ZM8.25 13.25C8.25 12.8358 8.58579 12.5 9 12.5H12C12.4142 12.5 12.75 12.8358 12.75 13.25C12.75 13.6642 12.4142 14 12 14H9C8.58579 14 8.25 13.6642 8.25 13.25Z" fill="currentColor" />
+                                <div class="rtl:rotate-180 transition-transform duration-300" :class="{'rotate-90' : activeDropdown === 'execution'}">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                                     </svg>
-                                    <span class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300">Inspections</span>
                                 </div>
-                            </a>
+                            </button>
+                            <ul x-cloak x-show="activeDropdown === 'execution'" x-collapse class="sub-menu text-gray-500">
+                                <li><a href="{{ route('admin.core.resources.index') }}">Resources</a></li>
+                                <li><a href="{{ route('admin.core.work-orders.index') }}">Work Orders</a></li>
+                                <li><a href="{{ route('admin.core.inspection-checklists.index') }}">Inspections</a></li>
+                            </ul>
                         </li>
                     </ul>
                 </li>
@@ -287,22 +250,52 @@
                             </svg>
                         </div>
                     </button>
-                    <ul x-cloak x-show="activeDropdown === 'procurement'" x-collapse class="sub-menu text-gray-500">
-                        <li><a href="{{ route('admin.procurement.vendors.index') }}">Vendors</a></li>
-                        <li><a href="{{ route('admin.procurement.materials.index') }}">Materials</a></li>
-                        <li><a href="{{ route('admin.procurement.requisitions.index') }}">Requisitions</a></li>
-                        <li><a href="{{ route('admin.procurement.purchase-orders.index') }}">Purchase Orders</a></li>
-                        <li><a href="{{ route('admin.procurement.goods-received-notes.index') }}">Goods Received</a></li>
-                        <li><a href="{{ route('admin.procurement.warehouses.index') }}">Warehouses</a></li>
-                        <li><a href="{{ route('admin.procurement.stocks.index') }}">Stocks</a></li>
-                        <li><a href="{{ route('admin.procurement.material-transfers.index') }}">Material Transfers</a></li>
-                        <li><a href="{{ route('admin.procurement.material-issue-slips.index') }}">Issue Slips</a></li>
-                        <li><a href="{{ route('admin.procurement.material-wastages.index') }}">Material Wastage</a></li>
+                    <ul x-cloak x-show="activeDropdown === 'procurement'" x-collapse class="sub-menu text-gray-500 list-none">
+                        <li x-data="{ open: false }">
+                            <a href="javascript:;" class="block font-semibold" style="display: flex !important;  width: 100%;" @click="open = !open">
+                                <span class="text-left" style="text-align: left !important;">Reference Data</span>
+                                <svg class="h-3 w-3 transition-transform shrink-0" :class="{ 'rotate-90': open }" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </a>
+                            <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
+                                <li><a href="{{ route('admin.procurement.vendors.index') }}" class="block">Vendors</a></li>
+                                <li><a href="{{ route('admin.procurement.materials.index') }}" class="block">Materials</a></li>
+                                <li><a href="{{ route('admin.procurement.warehouses.index') }}" class="block">Warehouses</a></li>
+                            </ul>
+                        </li>
+                        <li x-data="{ open: false }">
+                            <a href="javascript:;" class="block font-semibold" style="display: flex !important;  width: 100%;" @click="open = !open">
+                                <span class="text-left" style="text-align: left !important;">Procurement</span>
+                                <svg class="h-3 w-3 transition-transform shrink-0" :class="{ 'rotate-90': open }" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </a>
+                            <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
+                                <li><a href="{{ route('admin.procurement.requisitions.index') }}" class="block">Requisitions</a></li>
+                                <li><a href="{{ route('admin.procurement.purchase-orders.index') }}" class="block">Purchase Orders</a></li>
+                                <li><a href="{{ route('admin.procurement.goods-received-notes.index') }}" class="block">Goods Received</a></li>
+                            </ul>
+                        </li>
+                        <li x-data="{ open: false }">
+                            <a href="javascript:;" class="block font-semibold" style="display: flex !important;  width: 100%;" @click="open = !open">
+                                <span class="text-left" style="text-align: left !important;">Inventory</span>
+                                <svg class="h-3 w-3 transition-transform shrink-0" :class="{ 'rotate-90': open }" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </a>
+                            <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
+                                <li><a href="{{ route('admin.procurement.stocks.index') }}" class="block">Stocks</a></li>
+                                <li><a href="{{ route('admin.procurement.material-transfers.index') }}" class="block">Material Transfers</a></li>
+                                <li><a href="{{ route('admin.procurement.material-issue-slips.index') }}" class="block">Issue Slips</a></li>
+                                <li><a href="{{ route('admin.procurement.material-wastages.index') }}" class="block">Material Wastage</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </li>
 
                 <!-- Reports -->
-                {{-- <h2 class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
+                <h2 class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
                     <span>Reports</span>
                 </h2>
                 <li class="nav-item">
@@ -329,8 +322,35 @@
                                 </div>
                             </a>
                         </li>
+                        <li class="menu nav-item">
+                            <button type="button" class="nav-link group" :class="{'active' : activeDropdown === 'financial-reports'}" @click="activeDropdown === 'financial-reports' ? activeDropdown = null : activeDropdown = 'financial-reports'">
+                                <div class="flex items-center">
+                                    <svg class="shrink-0 group-hover:!text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M3 3V21H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M7 16L10 11L13 14L17 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M21 7V11H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    <span class="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Cost & Financial</span>
+                                </div>
+                                <div class="rtl:rotate-180 transition-transform duration-300" :class="{'rotate-90' : activeDropdown === 'financial-reports'}">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                            </button>
+                            <ul x-cloak x-show="activeDropdown === 'financial-reports'" x-collapse class="sub-menu text-gray-500">
+                                <li><a href="{{ route('admin.reports.financial.progress-schedule') }}">Progress S-Curve</a></li>
+                                <li><a href="{{ route('admin.reports.financial.resource-utilisation') }}">Labour & Equipment</a></li>
+                                <li><a href="{{ route('admin.reports.financial.budget-vs-actual') }}">Budget vs Actual</a></li>
+                                <li><a href="{{ route('admin.reports.financial.project-cost-summary') }}">Project Cost Summary</a></li>
+                                <li><a href="{{ route('admin.reports.financial.procurement-spend') }}">Procurement Spend</a></li>
+                                <li><a href="{{ route('admin.reports.financial.invoice-status') }}">Invoice Status</a></li>
+                                <li><a href="{{ route('admin.reports.financial.cash-flow') }}">Cash Flow</a></li>
+                                <li><a href="{{ route('admin.reports.financial.retention-tracker') }}">Retention Tracker</a></li>
+                            </ul>
+                        </li>
                     </ul>
-                </li> --}}
+                </li>
 
                 <!-- Finance -->
                 {{-- <h2 class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">

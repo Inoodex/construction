@@ -155,6 +155,7 @@ use App\Http\Controllers\Admin\Procurement\MaterialIssueSlipController;
 use App\Http\Controllers\Admin\Procurement\MaterialWastageController;
 use App\Http\Controllers\Admin\Reports\ReportTemplateController;
 use App\Http\Controllers\Admin\Reports\ScheduledReportController;
+use App\Http\Controllers\Admin\Reports\FinancialReportController;
 Route::prefix('dashboard/procurement')->name('admin.procurement.')->group(function () {
     Route::get('vendors', [VendorController::class, 'index'])->name('vendors.index');
     Route::get('vendors/create', [VendorController::class, 'create'])->name('vendors.create');
@@ -248,6 +249,20 @@ Route::prefix('dashboard/reports')->name('admin.reports.')->group(function () {
     Route::get('scheduled-reports/{scheduled_report}/edit', [ScheduledReportController::class, 'edit'])->name('scheduled-reports.edit');
     Route::put('scheduled-reports/{scheduled_report}', [ScheduledReportController::class, 'update'])->name('scheduled-reports.update');
     Route::delete('scheduled-reports/{scheduled_report}', [ScheduledReportController::class, 'destroy'])->name('scheduled-reports.destroy');
+
+    // Cost & Financial Reports
+    Route::prefix('financial')->name('financial.')->group(function () {
+        Route::get('budget-vs-actual', [FinancialReportController::class, 'budgetVsActual'])->name('budget-vs-actual');
+        Route::get('project-cost-summary', [FinancialReportController::class, 'projectCostSummary'])->name('project-cost-summary');
+        Route::get('procurement-spend', [FinancialReportController::class, 'procurementSpend'])->name('procurement-spend');
+        Route::get('invoice-status', [FinancialReportController::class, 'invoiceStatus'])->name('invoice-status');
+        Route::get('cash-flow', [FinancialReportController::class, 'cashFlow'])->name('cash-flow');
+        Route::get('retention-tracker', [FinancialReportController::class, 'retentionTracker'])->name('retention-tracker');
+        Route::get('progress-schedule', [FinancialReportController::class, 'progressSchedule'])->name('progress-schedule');
+        Route::get('resource-utilisation', [FinancialReportController::class, 'resourceUtilisation'])->name('resource-utilisation');
+        Route::get('export/{report}/pdf', [FinancialReportController::class, 'exportPdf'])->name('export.pdf');
+        Route::get('export/{report}/excel', [FinancialReportController::class, 'exportExcel'])->name('export.excel');
+    });
 });
 
 // Finance - Budgeting & Cost Control
@@ -255,7 +270,7 @@ use App\Http\Controllers\Admin\Finance\BudgetController;
 use App\Http\Controllers\Admin\Finance\BoqController;
 use App\Http\Controllers\Admin\Finance\TenderController;
 use App\Http\Controllers\Admin\Finance\InvoiceController;
-Route::prefix('dashboard/finance')->name('admin.finance.')->group(function () {
+Route::prefix('dashboard/finance')->name('admin.finance.')->middleware('auth')->group(function () {
     Route::get('budgets', [BudgetController::class, 'index'])->name('budgets.index');
     Route::get('budgets/create', [BudgetController::class, 'create'])->name('budgets.create');
     Route::post('budgets', [BudgetController::class, 'store'])->name('budgets.store');

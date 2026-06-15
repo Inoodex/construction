@@ -66,15 +66,45 @@
         </a>
         <ul class="sub-menu">
             <li><a href="{{ route('admin.core.projects.index') }}">Projects</a></li>
-            <li><a href="{{ route('admin.core.sites.index') }}">Sites</a></li>
-            <li><a href="{{ route('admin.core.tasks.index') }}">Tasks</a></li>
-            <li><a href="{{ route('admin.core.phases.index') }}">Phases</a></li>
-            <li><a href="{{ route('admin.core.milestones.index') }}">Milestones</a></li>
-            <li><a href="{{ route('admin.core.site-logs.index') }}">Site Logs</a></li>
-            <li><a href="{{ route('admin.core.site-photos.index') }}">Site Photos</a></li>
-            <li><a href="{{ route('admin.core.resources.index') }}">Resources</a></li>
-            <li><a href="{{ route('admin.core.work-orders.index') }}">Work Orders</a></li>
-            <li><a href="{{ route('admin.core.inspection-checklists.index') }}">Inspections</a></li>
+            <li class="relative">
+                <a href="javascript:;" class="flex items-center justify-between">
+                    <span>Sites</span>
+                    <svg class="h-3 w-3 rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </a>
+                <ul class="sub-sub-menu">
+                    <li><a href="{{ route('admin.core.sites.index') }}">All Sites</a></li>
+                    <li><a href="{{ route('admin.core.site-logs.index') }}">Site Logs</a></li>
+                    <li><a href="{{ route('admin.core.site-photos.index') }}">Site Photos</a></li>
+                </ul>
+            </li>
+            <li class="relative">
+                <a href="javascript:;" class="flex items-center justify-between">
+                    <span>Planning</span>
+                    <svg class="h-3 w-3 rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </a>
+                <ul class="sub-sub-menu">
+                    <li><a href="{{ route('admin.core.tasks.index') }}">Tasks</a></li>
+                    <li><a href="{{ route('admin.core.phases.index') }}">Phases</a></li>
+                    <li><a href="{{ route('admin.core.milestones.index') }}">Milestones</a></li>
+                </ul>
+            </li>
+            <li class="relative">
+                <a href="javascript:;" class="flex items-center justify-between">
+                    <span>Execution</span>
+                    <svg class="h-3 w-3 rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </a>
+                <ul class="sub-sub-menu">
+                    <li><a href="{{ route('admin.core.resources.index') }}">Resources</a></li>
+                    <li><a href="{{ route('admin.core.work-orders.index') }}">Work Orders</a></li>
+                    <li><a href="{{ route('admin.core.inspection-checklists.index') }}">Inspections</a></li>
+                </ul>
+            </li>
         </ul>
     </li>
 
@@ -118,21 +148,51 @@
             </div>
         </a>
         <ul class="sub-menu">
-            <li><a href="{{ route('admin.procurement.vendors.index') }}">Vendors</a></li>
-            <li><a href="{{ route('admin.procurement.materials.index') }}">Materials</a></li>
-            <li><a href="{{ route('admin.procurement.requisitions.index') }}">Requisitions</a></li>
-            <li><a href="{{ route('admin.procurement.purchase-orders.index') }}">Purchase Orders</a></li>
-            <li><a href="{{ route('admin.procurement.goods-received-notes.index') }}">Goods Received</a></li>
-            <li><a href="{{ route('admin.procurement.warehouses.index') }}">Warehouses</a></li>
-            <li><a href="{{ route('admin.procurement.stocks.index') }}">Stocks</a></li>
-            <li><a href="{{ route('admin.procurement.material-transfers.index') }}">Material Transfers</a></li>
-            <li><a href="{{ route('admin.procurement.material-issue-slips.index') }}">Issue Slips</a></li>
-            <li><a href="{{ route('admin.procurement.material-wastages.index') }}">Material Wastage</a></li>
+            <li class="relative">
+                <a href="javascript:;" class="flex items-center justify-between">
+                    <span class="font-semibold">Reference Data</span>
+                    <svg class="h-3 w-3 rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </a>
+                <ul class="sub-sub-menu">
+                    <li><a href="{{ route('admin.procurement.vendors.index') }}">Vendors</a></li>
+                    <li><a href="{{ route('admin.procurement.materials.index') }}">Materials</a></li>
+                    <li><a href="{{ route('admin.procurement.warehouses.index') }}">Warehouses</a></li>
+                </ul>
+            </li>
+            <li class="relative">
+                <a href="javascript:;" class="flex items-center justify-between">
+                    <span class="font-semibold">Procurement</span>
+                    <svg class="h-3 w-3 rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </a>
+                <ul class="sub-sub-menu">
+                    <li><a href="{{ route('admin.procurement.requisitions.index') }}">Requisitions</a></li>
+                    <li><a href="{{ route('admin.procurement.purchase-orders.index') }}">Purchase Orders</a></li>
+                    <li><a href="{{ route('admin.procurement.goods-received-notes.index') }}">Goods Received</a></li>
+                </ul>
+            </li>
+            <li class="relative">
+                <a href="javascript:;" class="flex items-center justify-between">
+                    <span class="font-semibold">Inventory</span>
+                    <svg class="h-3 w-3 rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </a>
+                <ul class="sub-sub-menu">
+                    <li><a href="{{ route('admin.procurement.stocks.index') }}">Stocks</a></li>
+                    <li><a href="{{ route('admin.procurement.material-transfers.index') }}">Material Transfers</a></li>
+                    <li><a href="{{ route('admin.procurement.material-issue-slips.index') }}">Issue Slips</a></li>
+                    <li><a href="{{ route('admin.procurement.material-wastages.index') }}">Material Wastage</a></li>
+                </ul>
+            </li>
         </ul>
     </li>
 
     <!-- Reports -->
-    {{-- <li class="menu nav-item relative">
+    <li class="menu nav-item relative">
         <a href="javascript:;" class="nav-link">
             <div class="flex items-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="shrink-0">
@@ -150,8 +210,26 @@
         <ul class="sub-menu">
             <li><a href="{{ route('admin.reports.report-templates.index') }}">Report Templates</a></li>
             <li><a href="{{ route('admin.reports.scheduled-reports.index') }}">Scheduled Reports</a></li>
+            <li class="relative">
+                <a href="javascript:;" class="flex items-center justify-between">
+                    <span>Cost & Financial</span>
+                    <svg class="h-3 w-3 rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </a>
+                <ul class="sub-sub-menu">
+                    <li><a href="{{ route('admin.reports.financial.progress-schedule') }}">Progress S-Curve</a></li>
+                    <li><a href="{{ route('admin.reports.financial.resource-utilisation') }}">Labour & Equipment</a></li>
+                    <li><a href="{{ route('admin.reports.financial.budget-vs-actual') }}">Budget vs Actual</a></li>
+                    <li><a href="{{ route('admin.reports.financial.project-cost-summary') }}">Project Cost Summary</a></li>
+                    <li><a href="{{ route('admin.reports.financial.procurement-spend') }}">Procurement Spend</a></li>
+                    <li><a href="{{ route('admin.reports.financial.invoice-status') }}">Invoice Status</a></li>
+                    <li><a href="{{ route('admin.reports.financial.cash-flow') }}">Cash Flow</a></li>
+                    <li><a href="{{ route('admin.reports.financial.retention-tracker') }}">Retention Tracker</a></li>
+                </ul>
+            </li>
         </ul>
-    </li> --}}
+    </li>
 
     <!-- Finance -->
     {{-- <li class="menu nav-item relative">
@@ -176,5 +254,4 @@
             <li><a href="{{ route('admin.finance.invoices.index') }}">Invoices</a></li>
         </ul>
     </li> --}}
-
 </ul>
