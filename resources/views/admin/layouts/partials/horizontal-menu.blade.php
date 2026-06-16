@@ -208,11 +208,35 @@
             </div>
         </a>
         <ul class="sub-menu">
-            <li><a href="{{ route('admin.reports.report-templates.index') }}">Report Templates</a></li>
-            <li><a href="{{ route('admin.reports.scheduled-reports.index') }}">Scheduled Reports</a></li>
+            {{-- Report Templates and Scheduled Reports hidden --}}
             <li class="relative">
                 <a href="javascript:;" class="flex items-center justify-between">
-                    <span>Cost & Financial</span>
+                    <span>Cost & Budgeting</span>
+                    <svg class="h-3 w-3 rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </a>
+                <ul class="sub-sub-menu">
+                    <li><a href="{{ route('admin.reports.financial.budget-vs-actual') }}">Budget vs Actual</a></li>
+                    <li><a href="{{ route('admin.reports.financial.project-cost-summary') }}">Project Cost Summary</a></li>
+                </ul>
+            </li>
+            <li class="relative">
+                <a href="javascript:;" class="flex items-center justify-between">
+                    <span>Financial Status</span>
+                    <svg class="h-3 w-3 rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </a>
+                <ul class="sub-sub-menu">
+                    <li><a href="{{ route('admin.reports.financial.invoice-status') }}">Invoice Status</a></li>
+                    <li><a href="{{ route('admin.reports.financial.cash-flow') }}">Cash Flow</a></li>
+                    <li><a href="{{ route('admin.reports.financial.retention-tracker') }}">Retention Tracker</a></li>
+                </ul>
+            </li>
+            <li class="relative">
+                <a href="javascript:;" class="flex items-center justify-between">
+                    <span>Progress Reports</span>
                     <svg class="h-3 w-3 rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
@@ -220,19 +244,14 @@
                 <ul class="sub-sub-menu">
                     <li><a href="{{ route('admin.reports.financial.progress-schedule') }}">Progress S-Curve</a></li>
                     <li><a href="{{ route('admin.reports.financial.resource-utilisation') }}">Labour & Equipment</a></li>
-                    <li><a href="{{ route('admin.reports.financial.budget-vs-actual') }}">Budget vs Actual</a></li>
-                    <li><a href="{{ route('admin.reports.financial.project-cost-summary') }}">Project Cost Summary</a></li>
                     <li><a href="{{ route('admin.reports.financial.procurement-spend') }}">Procurement Spend</a></li>
-                    <li><a href="{{ route('admin.reports.financial.invoice-status') }}">Invoice Status</a></li>
-                    <li><a href="{{ route('admin.reports.financial.cash-flow') }}">Cash Flow</a></li>
-                    <li><a href="{{ route('admin.reports.financial.retention-tracker') }}">Retention Tracker</a></li>
                 </ul>
             </li>
         </ul>
     </li>
 
     <!-- Finance -->
-    {{-- <li class="menu nav-item relative">
+    <li class="menu nav-item relative">
         <a href="javascript:;" class="nav-link">
             <div class="flex items-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="shrink-0">
@@ -248,10 +267,36 @@
             </div>
         </a>
         <ul class="sub-menu">
-            <li><a href="{{ route('admin.finance.budgets.index') }}">Budgets</a></li>
-            <li><a href="{{ route('admin.finance.boqs.index') }}">Bill of Quantities</a></li>
-            <li><a href="{{ route('admin.finance.tenders.index') }}">Tenders</a></li>
-            <li><a href="{{ route('admin.finance.invoices.index') }}">Invoices</a></li>
+            <li class="relative">
+                <a href="javascript:;">Cost Control <svg class="h-3 w-3 rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
+                <ul class="sub-sub-menu">
+                    <li><a href="{{ route('admin.finance.budgets.index') }}">Budgets</a></li>
+                    <li><a href="{{ route('admin.finance.cost-overrun-alerts.index') }}">Cost Alerts</a></li>
+                </ul>
+            </li>
+            <li class="relative">
+                <a href="javascript:;">Estimating Analysis <svg class="h-3 w-3 rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
+                <ul class="sub-sub-menu">
+                    <li><a href="{{ route('admin.finance.boqs.index') }}">Bill of Quantities</a></li>
+                    <li><a href="{{ route('admin.finance.rate-analysis.index') }}">Rate Analysis</a></li>
+                    {{-- <li><a href="{{ route('admin.finance.tenders.index') }}">Tenders</a></li> --}}
+                </ul>
+            </li>
+            <li class="relative">
+                <a href="javascript:;">Billing & Payables <svg class="h-3 w-3 rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
+                <ul class="sub-sub-menu">
+                    <li><a href="{{ route('admin.finance.invoices.index') }}">Invoices</a></li>
+                    <li><a href="{{ route('admin.finance.ipas.index') }}">IPAs</a></li>
+                    <li><a href="{{ route('admin.finance.bills.index') }}">Bills Payable</a></li>
+                </ul>
+            </li>
+            <li class="relative">
+                <a href="javascript:;">Aging Reports <svg class="h-3 w-3 rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
+                <ul class="sub-sub-menu">
+                    <li><a href="{{ route('admin.finance.aging.ar') }}">Amount Receivable</a></li>
+                    <li><a href="{{ route('admin.finance.aging.ap') }}">Amount Payable</a></li>
+                </ul>
+            </li>
         </ul>
-    </li> --}}
+    </li>
 </ul>

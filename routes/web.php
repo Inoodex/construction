@@ -270,6 +270,11 @@ use App\Http\Controllers\Admin\Finance\BudgetController;
 use App\Http\Controllers\Admin\Finance\BoqController;
 use App\Http\Controllers\Admin\Finance\TenderController;
 use App\Http\Controllers\Admin\Finance\InvoiceController;
+use App\Http\Controllers\Admin\Finance\RateAnalysisController;
+use App\Http\Controllers\Admin\Finance\CostOverrunAlertController;
+use App\Http\Controllers\Admin\Finance\IpaController;
+use App\Http\Controllers\Admin\Finance\BillController;
+use App\Http\Controllers\Admin\Finance\AgingReportController;
 Route::prefix('dashboard/finance')->name('admin.finance.')->middleware('auth')->group(function () {
     Route::get('budgets', [BudgetController::class, 'index'])->name('budgets.index');
     Route::get('budgets/create', [BudgetController::class, 'create'])->name('budgets.create');
@@ -278,6 +283,10 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware('auth')->
     Route::get('budgets/{budget}/edit', [BudgetController::class, 'edit'])->name('budgets.edit');
     Route::put('budgets/{budget}', [BudgetController::class, 'update'])->name('budgets.update');
     Route::delete('budgets/{budget}', [BudgetController::class, 'destroy'])->name('budgets.destroy');
+
+    Route::get('cost-overrun-alerts', [CostOverrunAlertController::class, 'index'])->name('cost-overrun-alerts.index');
+    Route::post('cost-overrun-alerts/{alert}/acknowledge', [CostOverrunAlertController::class, 'acknowledge'])->name('cost-overrun-alerts.acknowledge');
+    Route::post('cost-overrun-alerts/{alert}/resolve', [CostOverrunAlertController::class, 'resolve'])->name('cost-overrun-alerts.resolve');
 
     Route::get('boqs', [BoqController::class, 'index'])->name('boqs.index');
     Route::get('boqs/create', [BoqController::class, 'create'])->name('boqs.create');
@@ -288,6 +297,18 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware('auth')->
     Route::delete('boqs/{boq}', [BoqController::class, 'destroy'])->name('boqs.destroy');
     Route::post('boqs/{boq}/items', [BoqController::class, 'addItem'])->name('boqs.items.store');
     Route::delete('boqs/{boq}/items/{boq_item}', [BoqController::class, 'removeItem'])->name('boqs.items.destroy');
+    Route::post('boqs/{boq}/items/import', [BoqController::class, 'importItems'])->name('boqs.items.import');
+    Route::get('boqs/import/template', [BoqController::class, 'downloadTemplate'])->name('boqs.import.template');
+
+    Route::get('rate-analysis', [RateAnalysisController::class, 'index'])->name('rate-analysis.index');
+    Route::get('rate-analysis/create', [RateAnalysisController::class, 'create'])->name('rate-analysis.create');
+    Route::post('rate-analysis', [RateAnalysisController::class, 'store'])->name('rate-analysis.store');
+    Route::get('rate-analysis/{rateAnalysis}', [RateAnalysisController::class, 'show'])->name('rate-analysis.show');
+    Route::get('rate-analysis/{rateAnalysis}/edit', [RateAnalysisController::class, 'edit'])->name('rate-analysis.edit');
+    Route::put('rate-analysis/{rateAnalysis}', [RateAnalysisController::class, 'update'])->name('rate-analysis.update');
+    Route::delete('rate-analysis/{rateAnalysis}', [RateAnalysisController::class, 'destroy'])->name('rate-analysis.destroy');
+    Route::post('rate-analysis/{rateAnalysis}/items', [RateAnalysisController::class, 'addItem'])->name('rate-analysis.items.store');
+    Route::delete('rate-analysis/{rateAnalysis}/items/{rateAnalysisItem}', [RateAnalysisController::class, 'removeItem'])->name('rate-analysis.items.destroy');
 
     Route::get('tenders', [TenderController::class, 'index'])->name('tenders.index');
     Route::get('tenders/create', [TenderController::class, 'create'])->name('tenders.create');
@@ -311,6 +332,36 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware('auth')->
     Route::delete('invoices/{invoice}/items/{invoice_item}', [InvoiceController::class, 'removeItem'])->name('invoices.items.destroy');
     Route::post('invoices/{invoice}/payments', [InvoiceController::class, 'addPayment'])->name('invoices.payments.store');
     Route::delete('invoices/{invoice}/payments/{payment}', [InvoiceController::class, 'removePayment'])->name('invoices.payments.destroy');
+
+    Route::get('ipas', [IpaController::class, 'index'])->name('ipas.index');
+    Route::get('ipas/create', [IpaController::class, 'create'])->name('ipas.create');
+    Route::post('ipas', [IpaController::class, 'store'])->name('ipas.store');
+    Route::get('ipas/{ipa}', [IpaController::class, 'show'])->name('ipas.show');
+    Route::get('ipas/{ipa}/edit', [IpaController::class, 'edit'])->name('ipas.edit');
+    Route::put('ipas/{ipa}', [IpaController::class, 'update'])->name('ipas.update');
+    Route::delete('ipas/{ipa}', [IpaController::class, 'destroy'])->name('ipas.destroy');
+    Route::post('ipas/{ipa}/items', [IpaController::class, 'addItem'])->name('ipas.items.store');
+    Route::delete('ipas/{ipa}/items/{ipaItem}', [IpaController::class, 'removeItem'])->name('ipas.items.destroy');
+    Route::post('ipas/{ipa}/submit', [IpaController::class, 'submit'])->name('ipas.submit');
+    Route::post('ipas/{ipa}/certify', [IpaController::class, 'certify'])->name('ipas.certify');
+    Route::post('ipas/{ipa}/approve', [IpaController::class, 'approve'])->name('ipas.approve');
+    Route::post('ipas/{ipa}/reject', [IpaController::class, 'reject'])->name('ipas.reject');
+    Route::post('ipas/{ipa}/generate-invoice', [IpaController::class, 'generateInvoice'])->name('ipas.generate-invoice');
+
+    Route::get('bills', [BillController::class, 'index'])->name('bills.index');
+    Route::get('bills/create', [BillController::class, 'create'])->name('bills.create');
+    Route::post('bills', [BillController::class, 'store'])->name('bills.store');
+    Route::get('bills/{bill}', [BillController::class, 'show'])->name('bills.show');
+    Route::get('bills/{bill}/edit', [BillController::class, 'edit'])->name('bills.edit');
+    Route::put('bills/{bill}', [BillController::class, 'update'])->name('bills.update');
+    Route::delete('bills/{bill}', [BillController::class, 'destroy'])->name('bills.destroy');
+    Route::post('bills/{bill}/items', [BillController::class, 'addItem'])->name('bills.items.store');
+    Route::delete('bills/{bill}/items/{billItem}', [BillController::class, 'removeItem'])->name('bills.items.destroy');
+    Route::post('bills/{bill}/payments', [BillController::class, 'addPayment'])->name('bills.payments.store');
+    Route::delete('bills/{bill}/payments/{billPayment}', [BillController::class, 'removePayment'])->name('bills.payments.destroy');
+
+    Route::get('aging/ar', [AgingReportController::class, 'arAging'])->name('aging.ar');
+    Route::get('aging/ap', [AgingReportController::class, 'apAging'])->name('aging.ap');
 });
 
 // Approvals - Approval Workflow Management

@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Admin\Finance;
 
 use App\Http\Controllers\Controller;
+use App\Imports\BoqItemsImport;
+use App\Exports\ReportExport;
 use App\Models\Boq;
 use App\Models\BoqItem;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class BoqController extends Controller
 {
@@ -115,5 +118,38 @@ class BoqController extends Controller
         $boq->update(['total_amount' => $boq->items()->sum('total_price')]);
 
         return back()->with('success', 'Item removed from BOQ.');
+    }
+
+    public function importItems(Request $request, Boq $boq)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv|max:10240',
+        ]);
+
+        $import = new BoqItemsImport($boq->id);
+        Excel::import($import, $request->file('file'));
+
+        $boq->update(['total_amount' => $boq->items()->sum('total_price')]);
+
+        $message = $import->imported . ' item(s) imported successfully.';
+        if (count($import->failures) > 0) {
+            $errors = collect($import->failures)
+                ->groupBy('row')
+                ->map(fn($fails, $row) => "Row {$row}: " . implode('; ', $fails->pluck('errors')->flatten()->toArray()))
+                ->values()
+                ->toArray();
+            return back()->with('warning', $message . ' ' . count($import->failures) . ' row(s) had errors.')->with('import_errors', $errors);
+        }
+
+        return back()->with('success', $message);
+    }
+
+    public function downloadTemplate()
+    {
+        $headings = ['item_number', 'description', 'unit', 'quantity', 'unit_price', 'notes'];
+        $data = [
+            ['ITEM-001', 'Sample item description', 'ea', 10, 1500, 'Optional notes'],
+        ];
+        return Excel::download(new ReportExport($data, $headings, 'BOQ Import Template'), 'boq-import-template.xlsx');
     }
 }

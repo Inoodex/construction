@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Finance;
 use App\Http\Controllers\Controller;
 use App\Models\Budget;
 use App\Models\Project;
+use App\Services\CostOverrunService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -49,7 +50,9 @@ class BudgetController extends Controller
 
         $validated['created_by'] = Auth::id();
 
-        Budget::create($validated);
+        $budget = Budget::create($validated);
+
+        app(CostOverrunService::class)->checkBudget($budget);
 
         return redirect()->route('admin.finance.budgets.index')
             ->with('success', 'Budget created successfully.');
@@ -80,6 +83,8 @@ class BudgetController extends Controller
         ]);
 
         $budget->update($validated);
+
+        app(CostOverrunService::class)->checkBudget($budget);
 
         return redirect()->route('admin.finance.budgets.index')
             ->with('success', 'Budget updated successfully.');

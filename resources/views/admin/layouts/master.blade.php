@@ -21,7 +21,7 @@
             display: none !important;
         }
         .main-container .main-content {
-            margin-left: 240px;
+            margin-left: 260px;
         }
         .toggle-sidebar .main-container .main-content {
             margin-left: 0;

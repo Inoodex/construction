@@ -40,7 +40,10 @@
     <div class="panel mt-6">
         <div class="flex items-center justify-between">
             <h5 class="text-base font-semibold">BOQ Items</h5>
-            <button type="button" onclick="document.getElementById('addItemForm').classList.toggle('hidden')" class="btn btn-sm btn-outline-primary">+ Add Item</button>
+            <div class="flex gap-2">
+                <button type="button" onclick="document.getElementById('importForm').classList.toggle('hidden')" class="btn btn-sm btn-outline-success">Import Excel</button>
+                <button type="button" onclick="document.getElementById('addItemForm').classList.toggle('hidden')" class="btn btn-sm btn-outline-primary">+ Add Item</button>
+            </div>
         </div>
 
         <div id="addItemForm" class="mb-5 mt-3 hidden rounded-lg border p-4 dark:border-gray-700">
@@ -68,6 +71,31 @@
                 </div>
                 <button type="submit" class="btn btn-primary mt-2">Add Item</button>
             </form>
+        </div>
+
+        <div id="importForm" class="mb-5 mt-3 hidden rounded-lg border p-4 dark:border-gray-700">
+            <form action="{{ route('admin.finance.boqs.items.import', $boq->id) }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="flex items-end gap-4">
+                    <div class="flex-1">
+                        <label class="text-xs text-white-dark">Upload Excel/CSV file</label>
+                        <input type="file" name="file" accept=".xlsx,.xls,.csv" class="form-input" required />
+                    </div>
+                    <button type="submit" class="btn btn-success">Import</button>
+                    <a href="{{ route('admin.finance.boqs.import.template') }}" class="btn btn-sm btn-outline-info">Download Template</a>
+                </div>
+                <p class="mt-2 text-xs text-white-dark">Expected columns: item_number, description, unit, quantity, unit_price, notes</p>
+            </form>
+            @if(session('import_errors'))
+                <div class="mt-3 rounded border border-danger p-3">
+                    <h6 class="mb-2 font-semibold text-danger">Import Errors:</h6>
+                    <ul class="list-disc pl-4 text-xs">
+                        @foreach(session('import_errors') as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
         </div>
 
         <div class="overflow-x-auto">
