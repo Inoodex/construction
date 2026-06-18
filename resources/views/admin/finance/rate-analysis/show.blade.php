@@ -50,11 +50,9 @@
                     <div>
                         <select name="resource_type" class="form-select" required>
                             <option value="">Type</option>
-                            <option value="labour">Labour</option>
-                            <option value="material">Material</option>
-                            <option value="equipment">Equipment</option>
-                            <option value="subcontract">Subcontract</option>
-                            <option value="overhead">Overhead</option>
+                            @foreach(\App\Models\Category::resourceTypes()->get() as $cat)
+                                <option value="{{ $cat->value }}">{{ $cat->label }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="md:col-span-2">

@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Admin\Finance;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\RateAnalysis;
 use App\Models\RateAnalysisItem;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 
 class RateAnalysisController extends Controller
@@ -93,8 +95,9 @@ class RateAnalysisController extends Controller
 
     public function addItem(Request $request, RateAnalysis $rateAnalysis)
     {
+        $resourceTypes = Category::resourceTypes()->pluck('value')->toArray();
         $validated = $request->validate([
-            'resource_type' => 'required|in:labour,material,equipment,subcontract,overhead',
+            'resource_type' => ['required', Rule::in($resourceTypes)],
             'resource_description' => 'required|string',
             'unit' => 'required|string|max:20',
             'quantity' => 'required|numeric|min:0.0001',

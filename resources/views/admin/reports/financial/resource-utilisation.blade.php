@@ -30,9 +30,9 @@
             <label class="mb-1 block text-xs font-semibold text-gray-500">Resource Type</label>
             <select name="resource_type" class="form-select text-xs" onchange="this.form.submit()">
                 <option value="all" {{ request('resource_type') == 'all' ? 'selected' : '' }}>All Types</option>
-                <option value="labor" {{ request('resource_type') == 'labor' ? 'selected' : '' }}>Labour</option>
-                <option value="equipment" {{ request('resource_type') == 'equipment' ? 'selected' : '' }}>Equipment</option>
-                <option value="material" {{ request('resource_type') == 'material' ? 'selected' : '' }}>Material</option>
+                @foreach(\App\Models\Category::resourceTypes()->get() as $cat)
+                    <option value="{{ $cat->value }}" {{ request('resource_type') == $cat->value ? 'selected' : '' }}>{{ $cat->label }}</option>
+                @endforeach
             </select>
         </div>
         <div class="flex items-end">

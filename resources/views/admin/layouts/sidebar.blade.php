@@ -114,8 +114,18 @@
                                                 d="M18.121 17.659c.032.085.097.158.18.194l.003.002c.198.088.435-.004.529-.204.03-.065.062-.132.094-.197.105-.209.346-.312.569-.245.068.02.137.04.205.063.228.077.375.31.344.548-.009.071-.02.144-.032.215-.04.241.104.475.34.55a4.342 4.342 0 01.705.315c.218.122.316.395.231.624l-.025.07c-.085.23-.339.351-.568.27-.07-.024-.138-.05-.208-.072-.225-.073-.473.023-.585.228-.035.064-.07.13-.108.194-.123.212-.046.48.167.603.064.037.129.071.193.109.215.126.31.398.225.626-.145.394-.33.766-.554 1.111-.137.211-.407.284-.63.17l-.066-.034c-.218-.11-.49-.057-.643.125-.047.056-.093.113-.143.167-.163.178-.186.446-.057.653l.044.07c.143.232.083.535-.135.698a4.33 4.33 0 01-.84.484c-.233.1-.515-.004-.634-.233l-.037-.073c-.116-.226-.395-.316-.624-.213l-.208.094c-.22.1-.336.353-.274.587l.02.075c.063.242-.083.491-.324.557a4.343 4.343 0 01-.767.121c-.25.016-.474-.165-.52-.413l-.014-.076c-.042-.243-.278-.403-.523-.357l-.226.042c-.244.045-.42.274-.393.52l.008.077c.026.252-.15.484-.403.534a4.343 4.343 0 01-.775-.028c-.25-.034-.43-.257-.406-.508l.006-.077c.022-.247-.14-.475-.386-.54l-.22-.058c-.24-.065-.487.058-.584.29l-.022.054c-.114.283-.43.415-.705.298a4.333 4.333 0 01-.803-.45c-.244-.176-.328-.496-.188-.74l.03-.053c.125-.231.066-.52-.138-.684l-.167-.134c-.201-.161-.26-.445-.143-.675l.035-.069c.127-.249.034-.559-.21-.692a4.34 4.34 0 01-.697-.478c-.218-.184-.257-.5-.091-.73l.047-.066c.15-.21-.082-.52-.279-.652l-.183-.122c-.217-.145-.295-.436-.183-.67l.034-.07c.112-.236.4-.334.643-.22l.205.097c.228.106.505.01.62-.218l.094-.188c.114-.23.41-.303.626-.145l.056.04c.223.16.544.11.706-.112a4.337 4.337 0 01.32-.387c.189-.2.15-.52-.086-.685l-.066-.046c-.22-.153-.306-.449-.2-.686l.03-.067c.105-.239.387-.354.63-.259l.186.072c.23.09.5-.02.603-.245l.078-.17c.128-.278.44-.383.717-.245a4.33 4.33 0 01.605.353c.22.153.525.101.684-.117l.033-.044c.162-.216.444-.291.683-.133l.03.02z"
                                                 fill="currentColor" />
                                         </svg>
-                                        <span
-                                            class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300">Settings</span>
+                                    <span
+                                        class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300">Settings</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('admin.categories.index') }}" class="group">
+                                    <div class="flex items-center">
+                                        <svg class="shrink-0 group-hover:!text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M4 4h6v6H4V4zm10 0h6v6h-6V4zM4 14h6v6H4v-6zm10 0h6v6h-6v-6z" fill="currentColor" opacity="0.7"/>
+                                        </svg>
+                                        <span class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300">Categories</span>
                                     </div>
                                 </a>
                             </li>
@@ -206,7 +216,7 @@
                 </li>
 
                 <!-- Approvals -->
-                <h2 class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
+                {{-- <h2 class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
                     <span>Approvals</span>
                 </h2>
                 <li class="menu nav-item">
@@ -229,7 +239,7 @@
                             <li><a href="{{ route('admin.approvals.workflows.index') }}">Approval Workflows</a></li>
                         @endif
                     </ul>
-                </li>
+                </li> --}}
 
                 <!-- Procurement -->
                 <h2 class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
@@ -289,6 +299,17 @@
                                 <li><a href="{{ route('admin.procurement.material-transfers.index') }}" class="block">Material Transfers</a></li>
                                 <li><a href="{{ route('admin.procurement.material-issue-slips.index') }}" class="block">Issue Slips</a></li>
                                 <li><a href="{{ route('admin.procurement.material-wastages.index') }}" class="block">Material Wastage</a></li>
+                            </ul>
+                        </li>
+                        <li x-data="{ open: false }">
+                            <a href="javascript:;" class="block font-semibold" style="display: flex !important;  width: 100%;" @click="open = !open">
+                                <span class="text-left" style="text-align: left !important;">Subcontractors</span>
+                                <svg class="h-3 w-3 transition-transform shrink-0" :class="{ 'rotate-90': open }" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </a>
+                            <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
+                                <li><a href="{{ route('admin.procurement.subcontractors.index') }}" class="block">All Subcontractors</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -352,18 +373,7 @@
                                 <li><a href="{{ route('admin.finance.bills.index') }}">Bills Payable</a></li>
                             </ul>
                         </li>
-                        <li x-data="{ open: false }">
-                            <a href="javascript:;" class="group block font-semibold" style="display: flex !important; width: 100%;" @click="open = !open">
-                                <span class="text-left text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300" style="text-align: left !important;">Aging Reports</span>
-                                <svg class="h-3 w-3 transition-transform shrink-0" :class="{ 'rotate-90': open }" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
-                            </a>
-                            <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
-                                <li><a href="{{ route('admin.finance.aging.ar') }}">Amount Receivable</a></li>
-                                <li><a href="{{ route('admin.finance.aging.ap') }}">Amount Payable</a></li>
-                            </ul>
-                        </li>
+                        
                     </ul>
                 </li>
 
@@ -436,6 +446,27 @@
                                 <li><a href="{{ route('admin.reports.financial.progress-schedule') }}">Progress S-Curve</a></li>
                                 <li><a href="{{ route('admin.reports.financial.resource-utilisation') }}">Labour & Equipment</a></li>
                                 <li><a href="{{ route('admin.reports.financial.procurement-spend') }}">Procurement Spend</a></li>
+                            </ul>
+                        </li>
+                       
+                        <li class="menu nav-item">
+                            <button type="button" class="nav-link group" :class="{'active' : activeDropdown === 'aging.reports'}" @click="activeDropdown === 'aging.reports' ? activeDropdown = null : activeDropdown = 'aging.reports'">
+                                <div class="flex items-center">
+                                    <svg class="shrink-0 group-hover:!text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path opacity="0.5" d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" fill="currentColor"/>
+                                        <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    <span class="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Aging Reports</span>
+                                </div>
+                                <div class="rtl:rotate-180 transition-transform duration-300" :class="{'rotate-90' : activeDropdown === 'aging.reports'}">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                            </button>
+                            <ul x-cloak x-show="activeDropdown === 'aging.reports'" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
+                                 <li><a href="{{ route('admin.finance.aging.ar') }}">Amount Receivable</a></li>
+                                <li><a href="{{ route('admin.finance.aging.ap') }}">Amount Payable</a></li>
                             </ul>
                         </li>
                     </ul>

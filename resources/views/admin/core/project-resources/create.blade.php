@@ -24,9 +24,9 @@
                     <label for="resource_type">Type <span class="text-danger">*</span></label>
                     <select name="resource_type" id="resource_type" class="form-select" required>
                         <option value="">Select Type</option>
-                        <option value="labor" {{ old('resource_type') == 'labor' ? 'selected' : '' }}>Labor</option>
-                        <option value="equipment" {{ old('resource_type') == 'equipment' ? 'selected' : '' }}>Equipment</option>
-                        <option value="material" {{ old('resource_type') == 'material' ? 'selected' : '' }}>Material</option>
+                        @foreach(\App\Models\Category::resourceTypes()->get() as $cat)
+                            <option value="{{ $cat->value }}" {{ old('resource_type') == $cat->value ? 'selected' : '' }}>{{ $cat->label }}</option>
+                        @endforeach
                     </select>
                     @error('resource_type') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>

@@ -18,9 +18,9 @@
                 </select>
                 <select name="resource_type" class="form-select flex-1">
                     <option value="">All Types</option>
-                    <option value="labor" {{ request('resource_type') == 'labor' ? 'selected' : '' }}>Labor</option>
-                    <option value="equipment" {{ request('resource_type') == 'equipment' ? 'selected' : '' }}>Equipment</option>
-                    <option value="material" {{ request('resource_type') == 'material' ? 'selected' : '' }}>Material</option>
+                    @foreach(\App\Models\Category::resourceTypes()->get() as $cat)
+                        <option value="{{ $cat->value }}" {{ request('resource_type') == $cat->value ? 'selected' : '' }}>{{ $cat->label }}</option>
+                    @endforeach
                 </select>
                 <button type="submit" class="btn btn-primary">Filter</button>
                 @if(request()->anyFilled(['project_id', 'resource_type']))

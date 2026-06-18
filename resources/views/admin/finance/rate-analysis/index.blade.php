@@ -22,11 +22,9 @@
                 </select>
                 <select name="resource_type" class="form-select flex-1">
                     <option value="">Resource Type</option>
-                    <option value="labour" {{ request('resource_type') == 'labour' ? 'selected' : '' }}>Labour</option>
-                    <option value="material" {{ request('resource_type') == 'material' ? 'selected' : '' }}>Material</option>
-                    <option value="equipment" {{ request('resource_type') == 'equipment' ? 'selected' : '' }}>Equipment</option>
-                    <option value="subcontract" {{ request('resource_type') == 'subcontract' ? 'selected' : '' }}>Subcontract</option>
-                    <option value="overhead" {{ request('resource_type') == 'overhead' ? 'selected' : '' }}>Overhead</option>
+                    @foreach(\App\Models\Category::resourceTypes()->get() as $cat)
+                        <option value="{{ $cat->value }}" {{ request('resource_type') == $cat->value ? 'selected' : '' }}>{{ $cat->label }}</option>
+                    @endforeach
                 </select>
                 <select name="status" class="form-select flex-1">
                     <option value="">Status</option>

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin\Procurement;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class VendorController extends Controller
 {
@@ -28,6 +30,8 @@ class VendorController extends Controller
             $query->where('trade_category', $request->trade_category);
         }
 
+        $tradeCategories = Category::tradeCategories()->pluck('value')->toArray();
+
         $vendors = $query->latest()->paginate(15);
 
         return view('admin.procurement.vendors.index', compact('vendors'));
@@ -46,7 +50,7 @@ class VendorController extends Controller
             'email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
-            'trade_category' => 'nullable|string|max:255',
+            'trade_category' => ['nullable', 'string', 'max:255', Rule::in($tradeCategories)],
             'credit_limit' => 'nullable|numeric|min:0',
             'payment_terms' => 'nullable|string|max:255',
             'status' => 'required|in:active,inactive,pending,approved,rejected,blacklisted',
@@ -78,7 +82,7 @@ class VendorController extends Controller
             'email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string',
-            'trade_category' => 'nullable|string|max:255',
+            'trade_category' => ['nullable', 'string', 'max:255', Rule::in($tradeCategories)],
             'credit_limit' => 'nullable|numeric|min:0',
             'payment_terms' => 'nullable|string|max:255',
             'status' => 'required|in:active,inactive,pending,approved,rejected,blacklisted',

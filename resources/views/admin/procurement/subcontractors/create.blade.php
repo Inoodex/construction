@@ -1,11 +1,11 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Create Vendor')
+@section('title', 'Create Subcontractor')
 
 @section('content')
     <div class="flex flex-wrap items-center justify-between gap-4">
-        <h2 class="text-xl font-semibold uppercase">Create Vendor</h2>
-        <a href="{{ route('admin.procurement.vendors.index') }}" class="btn btn-secondary gap-2">
+        <h2 class="text-xl font-semibold uppercase">Create Subcontractor</h2>
+        <a href="{{ route('admin.procurement.subcontractors.index') }}" class="btn btn-secondary gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
                 <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -16,11 +16,11 @@
     </div>
 
     <div class="panel mt-6">
-        <form action="{{ route('admin.procurement.vendors.store') }}" method="POST">
+        <form action="{{ route('admin.procurement.subcontractors.store') }}" method="POST">
             @csrf
             <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
                 <div class="form-group">
-                    <label for="name">Vendor Name <span class="text-danger">*</span></label>
+                    <label for="name">Subcontractor Name <span class="text-danger">*</span></label>
                     <input type="text" name="name" id="name" class="form-input" required
                         value="{{ old('name') }}" />
                     @error('name') <span class="text-danger text-sm">{{ $message }}</span> @enderror
@@ -49,6 +49,16 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label for="specialization">Specialization</label>
+                    <input type="text" name="specialization" id="specialization" class="form-input"
+                        value="{{ old('specialization') }}" placeholder="e.g. Concrete Works, Steel Fixing" />
+                </div>
+                <div class="form-group">
+                    <label for="license_number">License Number</label>
+                    <input type="text" name="license_number" id="license_number" class="form-input"
+                        value="{{ old('license_number') }}" />
+                </div>
+                <div class="form-group">
                     <label for="status">Status <span class="text-danger">*</span></label>
                     <select name="status" id="status" class="form-select" required>
                         <option value="pending" {{ old('status') == 'pending' ? 'selected' : '' }}>Pending</option>
@@ -56,18 +66,9 @@
                         <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                         <option value="approved" {{ old('status') == 'approved' ? 'selected' : '' }}>Approved</option>
                         <option value="rejected" {{ old('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                        <option value="suspended" {{ old('status') == 'suspended' ? 'selected' : '' }}>Suspended</option>
                     </select>
                     @error('status') <span class="text-danger text-sm">{{ $message }}</span> @enderror
-                </div>
-                <div class="form-group">
-                    <label for="credit_limit">Credit Limit (৳)</label>
-                    <input type="number" step="0.01" min="0" name="credit_limit" id="credit_limit" class="form-input"
-                        value="{{ old('credit_limit') }}" />
-                </div>
-                <div class="form-group">
-                    <label for="payment_terms">Payment Terms</label>
-                    <input type="text" name="payment_terms" id="payment_terms" class="form-input"
-                        value="{{ old('payment_terms') }}" placeholder="e.g. Net 30, Net 60" />
                 </div>
             </div>
 
@@ -77,7 +78,7 @@
             </div>
 
             <div class="mt-8 flex items-center gap-4">
-                <button type="submit" class="btn btn-primary px-10">Save Vendor</button>
+                <button type="submit" class="btn btn-primary px-10">Save Subcontractor</button>
                 <button type="reset" class="btn btn-outline-danger">Reset Form</button>
             </div>
         </form>

@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin\Core;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Project;
 use App\Models\ProjectResource;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ProjectResourceController extends Controller
 {
@@ -46,8 +48,9 @@ class ProjectResourceController extends Controller
 
     public function store(Request $request, Project $project)
     {
+        $resourceTypes = Category::resourceTypes()->pluck('value')->toArray();
         $validated = $request->validate([
-            'resource_type' => 'required|in:labor,equipment,material',
+            'resource_type' => ['required', Rule::in($resourceTypes)],
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'quantity' => 'required|numeric|min:0',
@@ -71,8 +74,9 @@ class ProjectResourceController extends Controller
 
     public function update(Request $request, Project $project, ProjectResource $resource)
     {
+        $resourceTypes = Category::resourceTypes()->pluck('value')->toArray();
         $validated = $request->validate([
-            'resource_type' => 'required|in:labor,equipment,material',
+            'resource_type' => ['required', Rule::in($resourceTypes)],
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'quantity' => 'required|numeric|min:0',

@@ -46,12 +46,9 @@
                     <label for="trade_category">Trade Category</label>
                     <select name="trade_category" id="trade_category" class="form-select">
                         <option value="">Select Category</option>
-                        <option value="Electrical" {{ old('trade_category', $vendor->trade_category) == 'Electrical' ? 'selected' : '' }}>Electrical</option>
-                        <option value="Plumbing" {{ old('trade_category', $vendor->trade_category) == 'Plumbing' ? 'selected' : '' }}>Plumbing</option>
-                        <option value="Structural" {{ old('trade_category', $vendor->trade_category) == 'Structural' ? 'selected' : '' }}>Structural</option>
-                        <option value="Finishing" {{ old('trade_category', $vendor->trade_category) == 'Finishing' ? 'selected' : '' }}>Finishing</option>
-                        <option value="HVAC" {{ old('trade_category', $vendor->trade_category) == 'HVAC' ? 'selected' : '' }}>HVAC</option>
-                        <option value="General" {{ old('trade_category', $vendor->trade_category) == 'General' ? 'selected' : '' }}>General</option>
+                        @foreach(\App\Models\Category::tradeCategories()->get() as $cat)
+                            <option value="{{ $cat->value }}" {{ old('trade_category', $vendor->trade_category) == $cat->value ? 'selected' : '' }}>{{ $cat->label }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="form-group">

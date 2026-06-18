@@ -45,6 +45,7 @@
                 <li><a href="{{ route('tyro-dashboard.roles.index') }}">Roles</a></li>
                 <li><a href="{{ route('tyro-dashboard.privileges.index') }}">Privileges</a></li>
                 <li><a href="{{ route('admin.settings.index') }}">Settings</a></li>
+                <li><a href="{{ route('admin.categories.index') }}">Categories</a></li>
             </ul>
         </li>
     @endif
@@ -109,7 +110,7 @@
     </li>
 
     <!-- Approvals -->
-    <li class="menu nav-item relative">
+    {{-- <li class="menu nav-item relative">
         <a href="javascript:;" class="nav-link">
             <div class="flex items-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="shrink-0">
@@ -129,7 +130,7 @@
                 <li><a href="{{ route('admin.approvals.workflows.index') }}">Approval Workflows</a></li>
             @endif
         </ul>
-    </li>
+    </li> --}}
 
     <!-- Procurement -->
     <li class="menu nav-item relative">
@@ -188,6 +189,17 @@
                     <li><a href="{{ route('admin.procurement.material-wastages.index') }}">Material Wastage</a></li>
                 </ul>
             </li>
+            <li class="relative">
+                <a href="javascript:;" class="flex items-center justify-between">
+                    <span class="font-semibold">Subcontractors</span>
+                    <svg class="h-3 w-3 rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </a>
+                <ul class="sub-sub-menu">
+                    <li><a href="{{ route('admin.procurement.subcontractors.index') }}">All Subcontractors</a></li>
+                </ul>
+            </li>
         </ul>
     </li>
 
@@ -231,13 +243,7 @@
                     <li><a href="{{ route('admin.finance.bills.index') }}">Bills Payable</a></li>
                 </ul>
             </li>
-            <li class="relative">
-                <a href="javascript:;">Aging Reports <svg class="h-3 w-3 rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
-                <ul class="sub-sub-menu">
-                    <li><a href="{{ route('admin.finance.aging.ar') }}">Amount Receivable</a></li>
-                    <li><a href="{{ route('admin.finance.aging.ap') }}">Amount Payable</a></li>
-                </ul>
-            </li>
+            
         </ul>
     </li>
 
@@ -295,6 +301,13 @@
                     <li><a href="{{ route('admin.reports.financial.progress-schedule') }}">Progress S-Curve</a></li>
                     <li><a href="{{ route('admin.reports.financial.resource-utilisation') }}">Labour & Equipment</a></li>
                     <li><a href="{{ route('admin.reports.financial.procurement-spend') }}">Procurement Spend</a></li>
+                </ul>
+            </li>
+            <li class="relative">
+                <a href="javascript:;">Aging Reports <svg class="h-3 w-3 rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
+                <ul class="sub-sub-menu">
+                    <li><a href="{{ route('admin.finance.aging.ar') }}">Amount Receivable</a></li>
+                    <li><a href="{{ route('admin.finance.aging.ap') }}">Amount Payable</a></li>
                 </ul>
             </li>
         </ul>

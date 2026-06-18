@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\Core\SiteController;
 use App\Http\Controllers\Admin\Core\TaskController;
 use App\Http\Controllers\Admin\Core\PhaseController;
@@ -22,6 +23,15 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('aut
 Route::prefix('dashboard/settings')->name('admin.settings.')->group(function () {
     Route::get('/', [SettingController::class, 'index'])->name('index');
     Route::post('/update', [SettingController::class, 'update'])->name('update');
+});
+
+Route::prefix('dashboard/categories')->name('admin.categories.')->group(function () {
+    Route::get('/', [CategoryController::class, 'index'])->name('index');
+    Route::get('/create', [CategoryController::class, 'create'])->name('create');
+    Route::post('/', [CategoryController::class, 'store'])->name('store');
+    Route::get('/{category}/edit', [CategoryController::class, 'edit'])->name('edit');
+    Route::put('/{category}', [CategoryController::class, 'update'])->name('update');
+    Route::delete('/{category}', [CategoryController::class, 'destroy'])->name('destroy');
 });
 
 // Role Management Overrides
@@ -153,6 +163,7 @@ use App\Http\Controllers\Admin\Procurement\StockController;
 use App\Http\Controllers\Admin\Procurement\MaterialTransferController;
 use App\Http\Controllers\Admin\Procurement\MaterialIssueSlipController;
 use App\Http\Controllers\Admin\Procurement\MaterialWastageController;
+use App\Http\Controllers\Admin\Procurement\SubcontractorController;
 use App\Http\Controllers\Admin\Reports\ReportTemplateController;
 use App\Http\Controllers\Admin\Reports\ScheduledReportController;
 use App\Http\Controllers\Admin\Reports\FinancialReportController;
@@ -230,6 +241,14 @@ Route::prefix('dashboard/procurement')->name('admin.procurement.')->group(functi
     Route::get('material-wastages/{material_wastage}/edit', [MaterialWastageController::class, 'edit'])->name('material-wastages.edit');
     Route::put('material-wastages/{material_wastage}', [MaterialWastageController::class, 'update'])->name('material-wastages.update');
     Route::delete('material-wastages/{material_wastage}', [MaterialWastageController::class, 'destroy'])->name('material-wastages.destroy');
+
+    Route::get('subcontractors', [SubcontractorController::class, 'index'])->name('subcontractors.index');
+    Route::get('subcontractors/create', [SubcontractorController::class, 'create'])->name('subcontractors.create');
+    Route::post('subcontractors', [SubcontractorController::class, 'store'])->name('subcontractors.store');
+    Route::get('subcontractors/{subcontractor}', [SubcontractorController::class, 'show'])->name('subcontractors.show');
+    Route::get('subcontractors/{subcontractor}/edit', [SubcontractorController::class, 'edit'])->name('subcontractors.edit');
+    Route::put('subcontractors/{subcontractor}', [SubcontractorController::class, 'update'])->name('subcontractors.update');
+    Route::delete('subcontractors/{subcontractor}', [SubcontractorController::class, 'destroy'])->name('subcontractors.destroy');
 });
 
 // Reports - Report Templates
