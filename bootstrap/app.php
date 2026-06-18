@@ -97,6 +97,11 @@ return Application::configure(basePath: dirname(__DIR__))
                 return response()->json(['message' => 'Server error'], 500);
             }
 
+            // Let ValidationException use default redirect behaviour
+            if ($e instanceof \Illuminate\Validation\ValidationException) {
+                throw $e;
+            }
+
             if (config('app.debug')) {
                 throw $e;
             }

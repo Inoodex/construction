@@ -85,6 +85,50 @@ CREATE TABLE `approvals` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
+DROP TABLE IF EXISTS `attendance`;
+CREATE TABLE `attendance` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `employee_id` bigint unsigned NOT NULL,
+  `date` date NOT NULL,
+  `clock_in` timestamp NULL DEFAULT NULL,
+  `clock_out` timestamp NULL DEFAULT NULL,
+  `status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'present',
+  `note` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `attendance_employee_id_date_unique` (`employee_id`,`date`),
+  CONSTRAINT `attendance_employee_id_foreign` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+DROP TABLE IF EXISTS `bank_guarantees`;
+CREATE TABLE `bank_guarantees` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `reference_number` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `issuing_bank` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `project_id` bigint unsigned DEFAULT NULL,
+  `beneficiary` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `amount` decimal(15,2) NOT NULL,
+  `issue_date` date NOT NULL,
+  `expiry_date` date NOT NULL,
+  `return_date` date DEFAULT NULL,
+  `status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
+  `narration` text COLLATE utf8mb4_unicode_ci,
+  `document_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_by` bigint unsigned DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `bank_guarantees_reference_number_unique` (`reference_number`),
+  KEY `bank_guarantees_project_id_foreign` (`project_id`),
+  KEY `bank_guarantees_created_by_foreign` (`created_by`),
+  CONSTRAINT `bank_guarantees_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `bank_guarantees_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 DROP TABLE IF EXISTS `bill_items`;
 CREATE TABLE `bill_items` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -224,7 +268,7 @@ CREATE TABLE `cache` (
 
 INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
 ('admin-dashboard-cache-tyro:user-1:roles',	'a:1:{i:0;s:11:\"super-admin\";}',	1781673157),
-('inoodex-cache-tyro:user-1:roles',	'a:1:{i:0;s:11:\"super-admin\";}',	1781675248);
+('inoodex-cache-tyro:user-1:roles',	'a:1:{i:0;s:11:\"super-admin\";}',	1781783939);
 
 DROP TABLE IF EXISTS `cache_locks`;
 CREATE TABLE `cache_locks` (
@@ -235,6 +279,79 @@ CREATE TABLE `cache_locks` (
   KEY `cache_locks_expiration_index` (`expiration`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
+DROP TABLE IF EXISTS `categories`;
+CREATE TABLE `categories` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `value` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `label` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `sort_order` int NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `categories_type_value_unique` (`type`,`value`),
+  KEY `categories_type_index` (`type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `categories` (`id`, `type`, `value`, `label`, `is_active`, `sort_order`, `created_at`, `updated_at`) VALUES
+(1,	'trade_category',	'Electrical',	'Electrical',	1,	1,	'2026-06-17 23:36:17',	'2026-06-17 23:36:17'),
+(2,	'trade_category',	'Plumbing',	'Plumbing',	1,	2,	'2026-06-17 23:36:17',	'2026-06-17 23:36:17'),
+(3,	'trade_category',	'Structural',	'Structural',	1,	3,	'2026-06-17 23:36:17',	'2026-06-17 23:36:17'),
+(4,	'trade_category',	'Finishing',	'Finishing',	1,	4,	'2026-06-17 23:36:17',	'2026-06-17 23:36:17'),
+(5,	'trade_category',	'HVAC',	'HVAC',	1,	5,	'2026-06-17 23:36:17',	'2026-06-17 23:36:17'),
+(6,	'trade_category',	'General',	'General',	1,	6,	'2026-06-17 23:36:17',	'2026-06-17 23:36:17'),
+(7,	'trade_category',	'Steel',	'Steel',	1,	7,	'2026-06-17 23:36:17',	'2026-06-17 23:36:17'),
+(8,	'trade_category',	'Cement',	'Cement',	1,	8,	'2026-06-17 23:36:17',	'2026-06-17 23:36:17'),
+(9,	'trade_category',	'Bricks',	'Bricks',	1,	9,	'2026-06-17 23:36:17',	'2026-06-17 23:36:17'),
+(10,	'trade_category',	'Sand',	'Sand',	1,	10,	'2026-06-17 23:36:17',	'2026-06-17 23:36:17'),
+(11,	'resource_type',	'labor',	'Labor',	1,	1,	'2026-06-17 23:36:17',	'2026-06-17 23:36:17'),
+(12,	'resource_type',	'labour',	'Labour',	1,	2,	'2026-06-17 23:36:17',	'2026-06-17 23:36:17'),
+(13,	'resource_type',	'equipment',	'Equipment',	1,	3,	'2026-06-17 23:36:17',	'2026-06-17 23:36:17'),
+(14,	'resource_type',	'material',	'Material',	1,	4,	'2026-06-17 23:36:17',	'2026-06-17 23:36:17'),
+(15,	'resource_type',	'subcontract',	'Subcontract',	1,	5,	'2026-06-17 23:36:17',	'2026-06-17 23:36:17'),
+(16,	'resource_type',	'overhead',	'Overhead',	1,	6,	'2026-06-17 23:36:17',	'2026-06-17 23:36:17');
+
+DROP TABLE IF EXISTS `chart_of_accounts`;
+CREATE TABLE `chart_of_accounts` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `account_code` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `normal_balance` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `parent_id` bigint unsigned DEFAULT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `chart_of_accounts_account_code_unique` (`account_code`),
+  KEY `chart_of_accounts_parent_id_foreign` (`parent_id`),
+  CONSTRAINT `chart_of_accounts_parent_id_foreign` FOREIGN KEY (`parent_id`) REFERENCES `chart_of_accounts` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `chart_of_accounts` (`id`, `account_code`, `name`, `type`, `normal_balance`, `parent_id`, `description`, `is_active`, `created_at`, `updated_at`) VALUES
+(39,	'1-1000',	'Current Assets',	'asset',	'debit',	NULL,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
+(40,	'1-2000',	'Fixed Assets',	'asset',	'debit',	NULL,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
+(41,	'2-1000',	'Current Liabilities',	'liability',	'credit',	NULL,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
+(42,	'3-1000',	'Owner\'s Equity',	'equity',	'credit',	NULL,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
+(43,	'4-1000',	'Revenue',	'income',	'credit',	NULL,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
+(44,	'5-1000',	'Direct Costs',	'expense',	'debit',	NULL,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
+(45,	'5-2000',	'Overhead',	'expense',	'debit',	NULL,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
+(46,	'1-1010',	'Cash & Bank',	'asset',	'debit',	39,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
+(47,	'1-1020',	'Accounts Receivable',	'asset',	'debit',	39,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
+(48,	'1-1030',	'Inventory - Materials',	'asset',	'debit',	39,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
+(49,	'1-1040',	'Work in Progress',	'asset',	'debit',	39,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
+(50,	'2-1010',	'Accounts Payable',	'liability',	'credit',	41,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
+(51,	'2-1020',	'Accrued Expenses',	'liability',	'credit',	41,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
+(52,	'3-1010',	'Capital',	'equity',	'credit',	42,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
+(53,	'3-1020',	'Retained Earnings',	'equity',	'credit',	42,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
+(54,	'4-1010',	'Contract Revenue',	'income',	'credit',	43,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
+(55,	'5-1010',	'Material Costs',	'expense',	'debit',	44,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
+(56,	'5-1020',	'Labour Costs',	'expense',	'debit',	44,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
+(57,	'5-1030',	'Subcontractor Costs',	'expense',	'debit',	44,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
+(58,	'5-1040',	'Equipment Costs',	'expense',	'debit',	44,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31');
 
 DROP TABLE IF EXISTS `cost_overrun_alerts`;
 CREATE TABLE `cost_overrun_alerts` (
@@ -264,6 +381,37 @@ CREATE TABLE `cost_overrun_alerts` (
   CONSTRAINT `cost_overrun_alerts_budget_id_foreign` FOREIGN KEY (`budget_id`) REFERENCES `budgets` (`id`) ON DELETE CASCADE,
   CONSTRAINT `cost_overrun_alerts_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
   CONSTRAINT `cost_overrun_alerts_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+DROP TABLE IF EXISTS `employees`;
+CREATE TABLE `employees` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `employee_code` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `full_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `father_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mother_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `date_of_birth` date DEFAULT NULL,
+  `gender` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `blood_group` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nid_number` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `present_address` text COLLATE utf8mb4_unicode_ci,
+  `permanent_address` text COLLATE utf8mb4_unicode_ci,
+  `designation` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `department` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `employment_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'permanent',
+  `joining_date` date DEFAULT NULL,
+  `basic_salary` decimal(12,2) NOT NULL DEFAULT '0.00',
+  `status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
+  `emergency_contact_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `emergency_contact_phone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `photo` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `employees_employee_code_unique` (`employee_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
@@ -528,6 +676,91 @@ CREATE TABLE `jobs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
+DROP TABLE IF EXISTS `journal_entries`;
+CREATE TABLE `journal_entries` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `journal_number` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `date` date NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'general',
+  `status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
+  `created_by` bigint unsigned DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `journal_entries_journal_number_unique` (`journal_number`),
+  KEY `journal_entries_created_by_foreign` (`created_by`),
+  CONSTRAINT `journal_entries_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `journal_entries` (`id`, `journal_number`, `date`, `description`, `type`, `status`, `created_by`, `created_at`, `updated_at`) VALUES
+(1,	'JV-20260618-001',	'2026-06-18',	NULL,	'general',	'posted',	1,	'2026-06-18 05:42:44',	'2026-06-18 05:42:44');
+
+DROP TABLE IF EXISTS `journal_entry_items`;
+CREATE TABLE `journal_entry_items` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `journal_entry_id` bigint unsigned NOT NULL,
+  `account_id` bigint unsigned NOT NULL,
+  `debit_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `credit_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `journal_entry_items_journal_entry_id_foreign` (`journal_entry_id`),
+  KEY `journal_entry_items_account_id_foreign` (`account_id`),
+  CONSTRAINT `journal_entry_items_account_id_foreign` FOREIGN KEY (`account_id`) REFERENCES `chart_of_accounts` (`id`),
+  CONSTRAINT `journal_entry_items_journal_entry_id_foreign` FOREIGN KEY (`journal_entry_id`) REFERENCES `journal_entries` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `journal_entry_items` (`id`, `journal_entry_id`, `account_id`, `debit_amount`, `credit_amount`, `description`, `created_at`, `updated_at`) VALUES
+(1,	1,	40,	5000.00,	8000.00,	'asdf F',	'2026-06-18 05:42:44',	'2026-06-18 05:42:44'),
+(2,	1,	43,	6500.00,	5500.00,	'ZDFG',	'2026-06-18 05:42:44',	'2026-06-18 05:42:44'),
+(3,	1,	50,	5500.00,	3500.00,	'SDG',	'2026-06-18 05:42:44',	'2026-06-18 05:42:44');
+
+DROP TABLE IF EXISTS `labour_entries`;
+CREATE TABLE `labour_entries` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint unsigned NOT NULL,
+  `employee_id` bigint unsigned NOT NULL,
+  `date` date NOT NULL,
+  `hours` decimal(6,2) NOT NULL,
+  `hourly_rate` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `created_by` bigint unsigned DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `labour_entries_project_id_foreign` (`project_id`),
+  KEY `labour_entries_employee_id_foreign` (`employee_id`),
+  KEY `labour_entries_created_by_foreign` (`created_by`),
+  CONSTRAINT `labour_entries_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `labour_entries_employee_id_foreign` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `labour_entries_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+DROP TABLE IF EXISTS `leave_requests`;
+CREATE TABLE `leave_requests` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `employee_id` bigint unsigned NOT NULL,
+  `leave_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `start_date` date NOT NULL,
+  `end_date` date NOT NULL,
+  `reason` text COLLATE utf8mb4_unicode_ci,
+  `status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `approved_by` bigint unsigned DEFAULT NULL,
+  `remarks` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `leave_requests_employee_id_foreign` (`employee_id`),
+  KEY `leave_requests_approved_by_foreign` (`approved_by`),
+  CONSTRAINT `leave_requests_approved_by_foreign` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `leave_requests_employee_id_foreign` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 DROP TABLE IF EXISTS `material_issue_slip_items`;
 CREATE TABLE `material_issue_slip_items` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -706,7 +939,17 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (57,	'2026_05_22_000005_create_rate_analyses_table',	12),
 (58,	'2026_05_22_000006_create_cost_overrun_alerts_table',	13),
 (59,	'2026_05_22_000007_create_interim_payment_applications_table',	14),
-(60,	'2026_05_22_000008_create_bills_table',	15);
+(60,	'2026_05_22_000008_create_bills_table',	15),
+(61,	'2026_05_22_000009_create_subcontractors_table',	16),
+(62,	'2026_06_18_000001_create_categories_table',	17),
+(63,	'2026_06_18_000002_create_employees_table',	18),
+(64,	'2026_06_18_000003_create_attendance_table',	18),
+(65,	'2026_06_18_000004_create_leave_requests_table',	18),
+(66,	'2026_06_18_000005_create_chart_of_accounts_table',	19),
+(67,	'2026_06_18_000006_create_journal_entries_table',	20),
+(68,	'2026_06_18_000007_create_receivables_table',	21),
+(69,	'2026_06_18_000008_create_bank_guarantees_table',	22),
+(70,	'2026_06_18_000009_create_labour_entries_table',	23);
 
 DROP TABLE IF EXISTS `milestones`;
 CREATE TABLE `milestones` (
@@ -976,6 +1219,50 @@ CREATE TABLE `rate_analysis_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
+DROP TABLE IF EXISTS `receivable_payments`;
+CREATE TABLE `receivable_payments` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `receivable_id` bigint unsigned NOT NULL,
+  `amount` decimal(15,2) NOT NULL,
+  `payment_date` date NOT NULL,
+  `payment_method` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `reference` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `notes` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `receivable_payments_receivable_id_foreign` (`receivable_id`),
+  CONSTRAINT `receivable_payments_receivable_id_foreign` FOREIGN KEY (`receivable_id`) REFERENCES `receivables` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+DROP TABLE IF EXISTS `receivables`;
+CREATE TABLE `receivables` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint unsigned DEFAULT NULL,
+  `invoice_id` bigint unsigned DEFAULT NULL,
+  `receivable_number` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payer_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `amount` decimal(15,2) NOT NULL,
+  `paid_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `due_date` date NOT NULL,
+  `status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `notes` text COLLATE utf8mb4_unicode_ci,
+  `created_by` bigint unsigned DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `receivables_receivable_number_unique` (`receivable_number`),
+  KEY `receivables_project_id_foreign` (`project_id`),
+  KEY `receivables_invoice_id_foreign` (`invoice_id`),
+  KEY `receivables_created_by_foreign` (`created_by`),
+  CONSTRAINT `receivables_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `receivables_invoice_id_foreign` FOREIGN KEY (`invoice_id`) REFERENCES `invoices` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `receivables_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 DROP TABLE IF EXISTS `report_templates`;
 CREATE TABLE `report_templates` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -1038,11 +1325,7 @@ CREATE TABLE `sessions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('DkOx7m8Tw2JyvL6heWrvxwXP6EOWKzJ5cbtwQQVT',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',	'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiWFJsVXhNZTdUR2FobDdodnFjUzNoQ043SXhLR1NTczFFYXdLUWYwQyI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjMxOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvZGFzaGJvYXJkIjtzOjU6InJvdXRlIjtzOjIwOiJ0eXJvLWRhc2hib2FyZC5pbmRleCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MTA6InR5cm8tbG9naW4iO2E6MTp7czo3OiJjYXB0Y2hhIjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9',	1781672821),
-('duw6t91YIaMLbHqWzopSQla7meDmWRPKzqViqMRf',	1,	'192.168.0.107',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',	'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiUlVtellRSFVzc0V4M3RYNzQ1N3NxWTRubGxTUzgyVE41WEh3Q0pZcyI7czozOiJ1cmwiO2E6MDp7fXM6NjoiX2ZsYXNoIjthOjI6e3M6MzoibmV3IjthOjA6e31zOjM6Im9sZCI7YTowOnt9fXM6MTA6InR5cm8tbG9naW4iO2E6MTp7czo3OiJjYXB0Y2hhIjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzQ6Imh0dHA6Ly8xOTIuMTY4LjAuMTA3OjQwMS9kYXNoYm9hcmQiO3M6NToicm91dGUiO3M6MjA6InR5cm8tZGFzaGJvYXJkLmluZGV4Ijt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9',	1781673984),
-('PmHMhckx79eDRcTTIM5ThNCbWzdRgcDRNB7Zsz08',	1,	'192.168.0.107',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',	'YTo1OntzOjY6Il90b2tlbiI7czo0MDoicHp6a09BWDlzQXhKMnlCZUl0ejc2dFhETEhzcGRRQ0x3Z29jZ0hKdyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzQ6Imh0dHA6Ly8xOTIuMTY4LjAuMTA3OjQwMS9kYXNoYm9hcmQiO3M6NToicm91dGUiO3M6MjA6InR5cm8tZGFzaGJvYXJkLmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=',	1781672857),
-('vetHq7dQ6kTEAiAG1ax9JMPR6FpM0hkB0ae9v7gN',	1,	'192.168.0.173',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',	'YTo1OntzOjY6Il90b2tlbiI7czo0MDoicnVTdUd5STBRZDBkS1BNNW5WVG9JcXB1WDZuSFR5UFplQmJZbWxDWCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NTA6Imh0dHA6Ly8xOTIuMTY4LjAuMTA3OjQwMS9kYXNoYm9hcmQvY29yZS9wcm9qZWN0cy81IjtzOjU6InJvdXRlIjtzOjI0OiJhZG1pbi5jb3JlLnByb2plY3RzLnNob3ciO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjEwOiJ0eXJvLWxvZ2luIjthOjE6e3M6NzoiY2FwdGNoYSI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7fQ==',	1781675015),
-('YVziodEoqzJpvr4ZCOreBGUKFGOh81TpOf1rr9lT',	NULL,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',	'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiM3c0UHJ1Ym03MWdTYjh2TmlsYkZPRVFWS2c2YUxBYXNsVE5NMDhaSSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9sb2dpbiI7czo1OiJyb3V0ZSI7czoxNjoidHlyby1sb2dpbi5sb2dpbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MTA6InR5cm8tbG9naW4iO2E6MTp7czo3OiJjYXB0Y2hhIjthOjE6e3M6NToibG9naW4iO2k6ODt9fX0=',	1781667917);
+('PNEbRvzi3DAvc6g5d4F3ntJ20FlfC3aUQTjeLFZi',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',	'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiYTgyc3VPRmRTaWxMTlBRbVRNMHFhYlFLRzJEem10dGkyRjZtdU5LSiI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MDp7fX1zOjk6Il9wcmV2aW91cyI7YToyOntzOjM6InVybCI7czo1NjoiaHR0cDovLzEyNy4wLjAuMTo4MDAwL2Rhc2hib2FyZC9maW5hbmNlL2luY29tZS1zdGF0ZW1lbnQiO3M6NToicm91dGUiO3M6MzY6ImFkbWluLmZpbmFuY2UuaW5jb21lLXN0YXRlbWVudC5pbmRleCI7fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7fQ==',	1781783665);
 
 DROP TABLE IF EXISTS `settings`;
 CREATE TABLE `settings` (
@@ -1161,6 +1444,25 @@ CREATE TABLE `stocks` (
   CONSTRAINT `stocks_material_id_foreign` FOREIGN KEY (`material_id`) REFERENCES `materials` (`id`) ON DELETE CASCADE,
   CONSTRAINT `stocks_site_id_foreign` FOREIGN KEY (`site_id`) REFERENCES `sites` (`id`) ON DELETE CASCADE,
   CONSTRAINT `stocks_warehouse_id_foreign` FOREIGN KEY (`warehouse_id`) REFERENCES `warehouses` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+DROP TABLE IF EXISTS `subcontractors`;
+CREATE TABLE `subcontractors` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `contact_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `address` text COLLATE utf8mb4_unicode_ci,
+  `trade_category` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `specialization` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `license_number` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` enum('active','inactive','pending','approved','rejected','suspended') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `performance_rating` tinyint unsigned DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
@@ -1289,7 +1591,11 @@ INSERT INTO `tyro_audit_logs` (`id`, `user_id`, `event`, `auditable_type`, `audi
 (19,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36\"}',	'2026-06-17 03:45:35'),
 (20,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"192.168.0.107\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36\"}',	'2026-06-17 05:07:36'),
 (21,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"192.168.0.107\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36\"}',	'2026-06-17 05:08:06'),
-(22,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"192.168.0.173\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36\"}',	'2026-06-17 05:27:13');
+(22,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"192.168.0.173\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36\"}',	'2026-06-17 05:27:13'),
+(23,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36\"}',	'2026-06-18 03:55:08'),
+(24,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36\"}',	'2026-06-18 10:05:47'),
+(25,	1,	'user.logout',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36\"}',	'2026-06-18 10:05:54'),
+(26,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36\"}',	'2026-06-18 10:12:00');
 
 DROP TABLE IF EXISTS `tyro_media`;
 CREATE TABLE `tyro_media` (
@@ -1445,4 +1751,4 @@ CREATE TABLE `work_orders` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
--- 2026-06-17 06:27:31 UTC
+-- 2026-06-18 11:54:47 UTC

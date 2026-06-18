@@ -315,7 +315,47 @@
                     </ul>
                 </li>
 
-                               <!-- Finance -->
+                <!-- HR -->
+                <h2 class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
+                    <span>HR</span>
+                </h2>
+                <li class="menu nav-item">
+                    <button type="button" class="nav-link group" :class="{'active' : activeDropdown === 'hr'}" @click="activeDropdown === 'hr' ? activeDropdown = null : activeDropdown = 'hr'">
+                        <div class="flex items-center">
+                            <svg class="shrink-0 group-hover:!text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path opacity="0.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" fill="currentColor"/>
+                            </svg>
+                            <span class="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">HR</span>
+                        </div>
+                        <div class="rtl:rotate-180 transition-transform duration-300" :class="{'rotate-90' : activeDropdown === 'hr'}">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                    </button>
+                    <ul x-cloak x-show="activeDropdown === 'hr'" x-collapse class="sub-menu text-gray-500">
+                        <li x-data="{ open: false }">
+                            <a href="javascript:;" class="group block font-semibold" style="display: flex !important; width: 100%;" @click="open = !open">
+                                <span class="text-left text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300" style="text-align: left !important;">Employees</span>
+                                <svg class="h-3 w-3 transition-transform shrink-0" :class="{ 'rotate-90': open }" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </a>
+                            <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
+                                <li><a href="{{ route('admin.hr.employees.index') }}">All Employees</a></li>
+                                <li><a href="{{ route('admin.hr.employees.create') }}">Add Employee</a></li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.hr.attendance.index') }}" class="group block font-semibold">Attendance</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.hr.leaves.index') }}" class="group block font-semibold">Leave Requests</a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Finance -->
                 <h2 class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
                     <span>Finance</span>
                 </h2>
@@ -345,6 +385,25 @@
                             <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
                                 <li><a href="{{ route('admin.finance.budgets.index') }}">Budgets</a></li>
                                 <li><a href="{{ route('admin.finance.cost-overrun-alerts.index') }}">Cost Alerts</a></li>
+                                <li><a href="{{ route('admin.finance.labour-entries.index') }}">Labour Cost</a></li>
+                            </ul>
+                        </li>
+                        <li x-data="{ open: false }">
+                            <a href="javascript:;" class="group block font-semibold" style="display: flex !important; width: 100%;" @click="open = !open">
+                                <span class="text-left text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300" style="text-align: left !important;">Accounting</span>
+                                <svg class="h-3 w-3 transition-transform shrink-0" :class="{ 'rotate-90': open }" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </a>
+                            <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
+                                <li><a href="{{ route('admin.finance.chart-of-accounts.index') }}">Chart of Accounts</a></li>
+                                <li><a href="{{ route('admin.finance.journal-entries.index') }}">Journal Vouchers</a></li>
+                                <li><a href="{{ route('admin.finance.general-ledger.index') }}">General Ledger</a></li>
+                                <li><a href="{{ route('admin.finance.trial-balance.index') }}">Trial Balance</a></li>
+                                <li><a href="{{ route('admin.finance.receivables.index') }}">Accounts Receivable</a></li>
+                                <li><a href="{{ route('admin.finance.bank-guarantees.index') }}">Bank Guarantees</a></li>
+                                <li><a href="{{ route('admin.finance.balance-sheet.index') }}">Balance Sheet</a></li>
+                                <li><a href="{{ route('admin.finance.income-statement.index') }}">Income Statement</a></li>
                             </ul>
                         </li>
                         <li x-data="{ open: false }">

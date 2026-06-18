@@ -164,6 +164,9 @@ use App\Http\Controllers\Admin\Procurement\MaterialTransferController;
 use App\Http\Controllers\Admin\Procurement\MaterialIssueSlipController;
 use App\Http\Controllers\Admin\Procurement\MaterialWastageController;
 use App\Http\Controllers\Admin\Procurement\SubcontractorController;
+use App\Http\Controllers\Admin\Hr\EmployeeController;
+use App\Http\Controllers\Admin\Hr\AttendanceController;
+use App\Http\Controllers\Admin\Hr\LeaveRequestController;
 use App\Http\Controllers\Admin\Reports\ReportTemplateController;
 use App\Http\Controllers\Admin\Reports\ScheduledReportController;
 use App\Http\Controllers\Admin\Reports\FinancialReportController;
@@ -251,6 +254,30 @@ Route::prefix('dashboard/procurement')->name('admin.procurement.')->group(functi
     Route::delete('subcontractors/{subcontractor}', [SubcontractorController::class, 'destroy'])->name('subcontractors.destroy');
 });
 
+// HR - Employee Management
+Route::prefix('dashboard/hr')->name('admin.hr.')->group(function () {
+    Route::get('employees', [EmployeeController::class, 'index'])->name('employees.index');
+    Route::get('employees/create', [EmployeeController::class, 'create'])->name('employees.create');
+    Route::post('employees', [EmployeeController::class, 'store'])->name('employees.store');
+    Route::get('employees/{employee}', [EmployeeController::class, 'show'])->name('employees.show');
+    Route::get('employees/{employee}/edit', [EmployeeController::class, 'edit'])->name('employees.edit');
+    Route::put('employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
+    Route::delete('employees/{employee}', [EmployeeController::class, 'destroy'])->name('employees.destroy');
+
+    Route::get('attendance', [AttendanceController::class, 'index'])->name('attendance.index');
+    Route::get('attendance/create', [AttendanceController::class, 'create'])->name('attendance.create');
+    Route::post('attendance', [AttendanceController::class, 'store'])->name('attendance.store');
+    Route::delete('attendance/{attendance}', [AttendanceController::class, 'destroy'])->name('attendance.destroy');
+
+    Route::get('leaves', [LeaveRequestController::class, 'index'])->name('leaves.index');
+    Route::get('leaves/create', [LeaveRequestController::class, 'create'])->name('leaves.create');
+    Route::post('leaves', [LeaveRequestController::class, 'store'])->name('leaves.store');
+    Route::get('leaves/{leave}', [LeaveRequestController::class, 'show'])->name('leaves.show');
+    Route::patch('leaves/{leave}/approve', [LeaveRequestController::class, 'approve'])->name('leaves.approve');
+    Route::patch('leaves/{leave}/reject', [LeaveRequestController::class, 'reject'])->name('leaves.reject');
+    Route::delete('leaves/{leave}', [LeaveRequestController::class, 'destroy'])->name('leaves.destroy');
+});
+
 // Reports - Report Templates
 Route::prefix('dashboard/reports')->name('admin.reports.')->group(function () {
     Route::get('report-templates', [ReportTemplateController::class, 'index'])->name('report-templates.index');
@@ -294,6 +321,15 @@ use App\Http\Controllers\Admin\Finance\CostOverrunAlertController;
 use App\Http\Controllers\Admin\Finance\IpaController;
 use App\Http\Controllers\Admin\Finance\BillController;
 use App\Http\Controllers\Admin\Finance\AgingReportController;
+use App\Http\Controllers\Admin\Finance\ChartOfAccountController;
+use App\Http\Controllers\Admin\Finance\JournalEntryController;
+use App\Http\Controllers\Admin\Finance\GeneralLedgerController;
+use App\Http\Controllers\Admin\Finance\TrialBalanceController;
+use App\Http\Controllers\Admin\Finance\ReceivableController;
+use App\Http\Controllers\Admin\Finance\BankGuaranteeController;
+use App\Http\Controllers\Admin\Finance\BalanceSheetController;
+use App\Http\Controllers\Admin\Finance\IncomeStatementController;
+use App\Http\Controllers\Admin\Finance\LabourEntryController;
 Route::prefix('dashboard/finance')->name('admin.finance.')->middleware('auth')->group(function () {
     Route::get('budgets', [BudgetController::class, 'index'])->name('budgets.index');
     Route::get('budgets/create', [BudgetController::class, 'create'])->name('budgets.create');
@@ -378,6 +414,45 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware('auth')->
     Route::delete('bills/{bill}/items/{billItem}', [BillController::class, 'removeItem'])->name('bills.items.destroy');
     Route::post('bills/{bill}/payments', [BillController::class, 'addPayment'])->name('bills.payments.store');
     Route::delete('bills/{bill}/payments/{billPayment}', [BillController::class, 'removePayment'])->name('bills.payments.destroy');
+
+    Route::get('chart-of-accounts', [ChartOfAccountController::class, 'index'])->name('chart-of-accounts.index');
+    Route::get('chart-of-accounts/create', [ChartOfAccountController::class, 'create'])->name('chart-of-accounts.create');
+    Route::post('chart-of-accounts', [ChartOfAccountController::class, 'store'])->name('chart-of-accounts.store');
+    Route::get('chart-of-accounts/{chartOfAccount}/edit', [ChartOfAccountController::class, 'edit'])->name('chart-of-accounts.edit');
+    Route::put('chart-of-accounts/{chartOfAccount}', [ChartOfAccountController::class, 'update'])->name('chart-of-accounts.update');
+    Route::delete('chart-of-accounts/{chartOfAccount}', [ChartOfAccountController::class, 'destroy'])->name('chart-of-accounts.destroy');
+
+    Route::get('journal-entries', [JournalEntryController::class, 'index'])->name('journal-entries.index');
+    Route::get('journal-entries/create', [JournalEntryController::class, 'create'])->name('journal-entries.create');
+    Route::post('journal-entries', [JournalEntryController::class, 'store'])->name('journal-entries.store');
+    Route::get('journal-entries/{journalEntry}', [JournalEntryController::class, 'show'])->name('journal-entries.show');
+    Route::delete('journal-entries/{journalEntry}', [JournalEntryController::class, 'destroy'])->name('journal-entries.destroy');
+
+    Route::get('general-ledger', [GeneralLedgerController::class, 'index'])->name('general-ledger.index');
+    Route::get('trial-balance', [TrialBalanceController::class, 'index'])->name('trial-balance.index');
+
+    Route::get('receivables', [ReceivableController::class, 'index'])->name('receivables.index');
+    Route::get('receivables/create', [ReceivableController::class, 'create'])->name('receivables.create');
+    Route::post('receivables', [ReceivableController::class, 'store'])->name('receivables.store');
+    Route::get('receivables/{receivable}', [ReceivableController::class, 'show'])->name('receivables.show');
+    Route::delete('receivables/{receivable}', [ReceivableController::class, 'destroy'])->name('receivables.destroy');
+    Route::post('receivables/{receivable}/payments', [ReceivableController::class, 'addPayment'])->name('receivables.payments.store');
+    Route::delete('receivables/{receivable}/payments/{payment}', [ReceivableController::class, 'removePayment'])->name('receivables.payments.destroy');
+
+    Route::get('bank-guarantees', [BankGuaranteeController::class, 'index'])->name('bank-guarantees.index');
+    Route::get('bank-guarantees/create', [BankGuaranteeController::class, 'create'])->name('bank-guarantees.create');
+    Route::post('bank-guarantees', [BankGuaranteeController::class, 'store'])->name('bank-guarantees.store');
+    Route::get('bank-guarantees/{bankGuarantee}', [BankGuaranteeController::class, 'show'])->name('bank-guarantees.show');
+    Route::patch('bank-guarantees/{bankGuarantee}/status', [BankGuaranteeController::class, 'updateStatus'])->name('bank-guarantees.status');
+    Route::delete('bank-guarantees/{bankGuarantee}', [BankGuaranteeController::class, 'destroy'])->name('bank-guarantees.destroy');
+
+    Route::get('balance-sheet', [BalanceSheetController::class, 'index'])->name('balance-sheet.index');
+    Route::get('income-statement', [IncomeStatementController::class, 'index'])->name('income-statement.index');
+
+    Route::get('labour-entries', [LabourEntryController::class, 'index'])->name('labour-entries.index');
+    Route::get('labour-entries/create', [LabourEntryController::class, 'create'])->name('labour-entries.create');
+    Route::post('labour-entries', [LabourEntryController::class, 'store'])->name('labour-entries.store');
+    Route::delete('labour-entries/{labourEntry}', [LabourEntryController::class, 'destroy'])->name('labour-entries.destroy');
 
     Route::get('aging/ar', [AgingReportController::class, 'arAging'])->name('aging.ar');
     Route::get('aging/ap', [AgingReportController::class, 'apAging'])->name('aging.ap');

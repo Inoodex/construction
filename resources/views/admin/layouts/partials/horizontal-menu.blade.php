@@ -203,7 +203,40 @@
         </ul>
     </li>
 
-        <!-- Finance -->
+    <!-- HR -->
+    <li class="menu nav-item relative">
+        <a href="javascript:;" class="nav-link">
+            <div class="flex items-center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="shrink-0">
+                    <path opacity="0.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" fill="currentColor"/>
+                </svg>
+                <span class="px-1">HR</span>
+            </div>
+            <div class="right_arrow">
+                <svg class="h-4 w-4 rotate-90" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </div>
+        </a>
+        <ul class="sub-menu">
+            <li class="relative">
+                <a href="javascript:;" class="flex items-center justify-between">
+                    <span>Employees</span>
+                    <svg class="h-3 w-3 rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </a>
+                <ul class="sub-sub-menu">
+                    <li><a href="{{ route('admin.hr.employees.index') }}">All Employees</a></li>
+                    <li><a href="{{ route('admin.hr.employees.create') }}">Add Employee</a></li>
+                </ul>
+            </li>
+            <li><a href="{{ route('admin.hr.attendance.index') }}">Attendance</a></li>
+            <li><a href="{{ route('admin.hr.leaves.index') }}">Leave Requests</a></li>
+        </ul>
+    </li>
+
+    <!-- Finance -->
     <li class="menu nav-item relative">
         <a href="javascript:;" class="nav-link">
             <div class="flex items-center">
@@ -225,6 +258,7 @@
                 <ul class="sub-sub-menu">
                     <li><a href="{{ route('admin.finance.budgets.index') }}">Budgets</a></li>
                     <li><a href="{{ route('admin.finance.cost-overrun-alerts.index') }}">Cost Alerts</a></li>
+                    <li><a href="{{ route('admin.finance.labour-entries.index') }}">Labour Cost</a></li>
                 </ul>
             </li>
             <li class="relative">
@@ -241,6 +275,19 @@
                     <li><a href="{{ route('admin.finance.invoices.index') }}">Invoices</a></li>
                     <li><a href="{{ route('admin.finance.ipas.index') }}">IPAs</a></li>
                     <li><a href="{{ route('admin.finance.bills.index') }}">Bills Payable</a></li>
+                </ul>
+            </li>
+            <li class="relative">
+                <a href="javascript:;">Accounting <svg class="h-3 w-3 rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
+                <ul class="sub-sub-menu">
+                    <li><a href="{{ route('admin.finance.chart-of-accounts.index') }}">Chart of Accounts</a></li>
+                    <li><a href="{{ route('admin.finance.journal-entries.index') }}">Journal Vouchers</a></li>
+                    <li><a href="{{ route('admin.finance.general-ledger.index') }}">General Ledger</a></li>
+                    <li><a href="{{ route('admin.finance.trial-balance.index') }}">Trial Balance</a></li>
+                    <li><a href="{{ route('admin.finance.receivables.index') }}">Accounts Receivable</a></li>
+                    <li><a href="{{ route('admin.finance.bank-guarantees.index') }}">Bank Guarantees</a></li>
+                    <li><a href="{{ route('admin.finance.balance-sheet.index') }}">Balance Sheet</a></li>
+                    <li><a href="{{ route('admin.finance.income-statement.index') }}">Income Statement</a></li>
                 </ul>
             </li>
             
