@@ -409,8 +409,10 @@
                             </a>
                             <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
                                 <li><a href="{{ route('admin.finance.budgets.index') }}">Budgets</a></li>
+                                <li><a href="{{ route('admin.finance.budgets.forecasting') }}">Forecasting (EVM)</a></li>
                                 <li><a href="{{ route('admin.finance.cost-overrun-alerts.index') }}">Cost Alerts</a></li>
                                 <li><a href="{{ route('admin.finance.labour-entries.index') }}">Labour Cost</a></li>
+                                <li><a href="{{ route('admin.finance.material-takeoffs.index') }}">Material Takeoffs</a></li>
                             </ul>
                         </li>
                         <li x-data="{ open: false }">

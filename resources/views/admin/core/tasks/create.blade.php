@@ -100,6 +100,18 @@
             </div>
 
             <div class="mt-6 border-t pt-6">
+                <h5 class="mb-4 text-base font-semibold">Task Dependencies</h5>
+                <select name="dependency_ids[]" class="form-select" multiple size="5">
+                    @foreach($tasks as $t)
+                        <option value="{{ $t->id }}" {{ in_array($t->id, old('dependency_ids', [])) ? 'selected' : '' }}>
+                            [{{ $t->project?->name ?? 'N/A' }}] {{ $t->name }}
+                        </option>
+                    @endforeach
+                </select>
+                <p class="text-xs text-gray-500 mt-1">Ctrl+click to select multiple tasks that this task depends on.</p>
+            </div>
+
+            <div class="mt-6 border-t pt-6">
                 <h5 class="mb-4 text-base font-semibold">Resource Allocations</h5>
                 <div id="resource-allocations">
                     <div class="text-sm text-white-dark">Select a project above to see available resources.</div>

@@ -44,6 +44,21 @@
                     <label for="actual_amount">Actual Amount <span class="text-danger">*</span></label>
                     <input type="number" step="0.01" min="0" name="actual_amount" id="actual_amount" class="form-input" required value="{{ old('actual_amount', $budget->actual_amount) }}" />
                 </div>
+                <div class="border-t pt-4 md:col-span-3">
+                    <h4 class="font-semibold mb-3">Earned Value Management</h4>
+                </div>
+                <div class="form-group">
+                    <label for="planned_value">Planned Value (PV) <span class="text-danger">*</span></label>
+                    <input type="number" step="0.01" min="0" name="planned_value" id="planned_value" class="form-input" required value="{{ old('planned_value', $budget->planned_value) }}" />
+                </div>
+                <div class="form-group">
+                    <label for="earned_value">Earned Value (EV) <span class="text-danger">*</span></label>
+                    <input type="number" step="0.01" min="0" name="earned_value" id="earned_value" class="form-input" required value="{{ old('earned_value', $budget->earned_value) }}" />
+                </div>
+                <div class="form-group">
+                    <label for="actual_cost">Actual Cost (AC) <span class="text-danger">*</span></label>
+                    <input type="number" step="0.01" min="0" name="actual_cost" id="actual_cost" class="form-input" required value="{{ old('actual_cost', $budget->actual_cost) }}" />
+                </div>
                 <div class="form-group md:col-span-3">
                     <label for="notes">Notes</label>
                     <textarea name="notes" id="notes" class="form-input" rows="2">{{ old('notes', $budget->notes) }}</textarea>

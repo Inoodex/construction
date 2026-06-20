@@ -244,6 +244,9 @@ CREATE TABLE `budgets` (
   `description` text COLLATE utf8mb4_unicode_ci,
   `budgeted_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
   `actual_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `planned_value` decimal(12,2) NOT NULL DEFAULT '0.00',
+  `earned_value` decimal(12,2) NOT NULL DEFAULT '0.00',
+  `actual_cost` decimal(12,2) NOT NULL DEFAULT '0.00',
   `financial_year` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `notes` text COLLATE utf8mb4_unicode_ci,
   `created_by` bigint unsigned NOT NULL,
@@ -886,6 +889,28 @@ CREATE TABLE `material_submittals` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
+DROP TABLE IF EXISTS `material_takeoffs`;
+CREATE TABLE `material_takeoffs` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint unsigned NOT NULL,
+  `boq_item_id` bigint unsigned DEFAULT NULL,
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `unit` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `quantity` decimal(12,2) NOT NULL DEFAULT '0.00',
+  `unit_price` decimal(12,2) NOT NULL DEFAULT '0.00',
+  `total_price` decimal(12,2) NOT NULL DEFAULT '0.00',
+  `source_drawing` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `notes` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `material_takeoffs_project_id_foreign` (`project_id`),
+  KEY `material_takeoffs_boq_item_id_foreign` (`boq_item_id`),
+  CONSTRAINT `material_takeoffs_boq_item_id_foreign` FOREIGN KEY (`boq_item_id`) REFERENCES `boq_items` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `material_takeoffs_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 DROP TABLE IF EXISTS `material_transfer_items`;
 CREATE TABLE `material_transfer_items` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -1065,7 +1090,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (87,	'2026_06_20_111243_create_timesheets_table',	34),
 (88,	'2026_06_20_111709_create_wage_slips_table',	35),
 (89,	'2026_06_20_112634_create_equipment_table',	36),
-(90,	'2026_06_20_112637_create_equipment_maintenance_table',	36);
+(90,	'2026_06_20_112637_create_equipment_maintenance_table',	36),
+(91,	'2026_06_20_115814_add_evm_fields_to_budgets_table',	37),
+(92,	'2026_06_20_115915_create_material_takeoffs_table',	37);
 
 DROP TABLE IF EXISTS `milestones`;
 CREATE TABLE `milestones` (
@@ -2110,4 +2137,4 @@ CREATE TABLE `work_orders` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
--- 2026-06-20 11:37:11 UTC
+-- 2026-06-20 12:14:21 UTC

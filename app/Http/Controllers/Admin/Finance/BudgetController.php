@@ -44,6 +44,9 @@ class BudgetController extends Controller
             'description' => 'nullable|string',
             'budgeted_amount' => 'required|numeric|min:0',
             'actual_amount' => 'required|numeric|min:0',
+            'planned_value' => 'required|numeric|min:0',
+            'earned_value' => 'required|numeric|min:0',
+            'actual_cost' => 'required|numeric|min:0',
             'financial_year' => 'nullable|string|max:20',
             'notes' => 'nullable|string',
         ]);
@@ -78,6 +81,9 @@ class BudgetController extends Controller
             'description' => 'nullable|string',
             'budgeted_amount' => 'required|numeric|min:0',
             'actual_amount' => 'required|numeric|min:0',
+            'planned_value' => 'required|numeric|min:0',
+            'earned_value' => 'required|numeric|min:0',
+            'actual_cost' => 'required|numeric|min:0',
             'financial_year' => 'nullable|string|max:20',
             'notes' => 'nullable|string',
         ]);
@@ -88,6 +94,29 @@ class BudgetController extends Controller
 
         return redirect()->route('admin.finance.budgets.index')
             ->with('success', 'Budget updated successfully.');
+    }
+
+    public function forecasting(Request $request)
+    {
+        $query = Budget::with('project');
+
+        if ($request->filled('project_id')) {
+            $query->where('project_id', $request->project_id);
+        }
+
+        $budgets = $query->latest()->get();
+        $projects = Project::all();
+
+        $totals = [
+            'budgeted' => $budgets->sum('budgeted_amount'),
+            'planned' => $budgets->sum('planned_value'),
+            'earned' => $budgets->sum('earned_value'),
+            'actual' => $budgets->sum('actual_cost'),
+            'etc' => $budgets->sum('etc'),
+            'eac' => $budgets->sum('eac'),
+        ];
+
+        return view('admin.finance.budgets.forecasting', compact('budgets', 'projects', 'totals'));
     }
 
     public function destroy(Budget $budget)

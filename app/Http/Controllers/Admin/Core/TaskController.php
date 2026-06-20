@@ -51,7 +51,8 @@ class TaskController extends Controller
         $phases = Phase::with('project')->get();
         $milestones = Milestone::with('project')->get();
         $resources = ProjectResource::with('project')->get();
-        return view('admin.core.tasks.create', compact('projects', 'users', 'sites', 'phases', 'milestones', 'resources'));
+        $tasks = Task::with('project')->orderBy('name')->get();
+        return view('admin.core.tasks.create', compact('projects', 'users', 'sites', 'phases', 'milestones', 'resources', 'tasks'));
     }
 
     public function store(Request $request)
@@ -68,6 +69,8 @@ class TaskController extends Controller
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'priority' => 'required|in:low,medium,high,critical',
             'status' => 'required|in:open,in_progress,review,closed',
+            'dependency_ids' => 'nullable|array',
+            'dependency_ids.*' => 'exists:tasks,id',
             'resource_allocations' => 'nullable|array',
             'resource_allocations.*.project_resource_id' => 'required|exists:project_resources,id',
             'resource_allocations.*.allocated_quantity' => 'required|numeric|min:0',
@@ -77,6 +80,10 @@ class TaskController extends Controller
         ]);
 
         $task = Task::create($validated);
+
+        if ($request->filled('dependency_ids')) {
+            $task->dependencies()->sync($request->dependency_ids);
+        }
 
         if ($request->filled('resource_allocations')) {
             foreach ($request->resource_allocations as $alloc) {
@@ -104,8 +111,9 @@ class TaskController extends Controller
         $phases = Phase::with('project')->get();
         $milestones = Milestone::with('project')->get();
         $resources = ProjectResource::with('project')->get();
-        $task->load('resources');
-        return view('admin.core.tasks.edit', compact('task', 'projects', 'users', 'sites', 'phases', 'milestones', 'resources'));
+        $tasks = Task::with('project')->where('id', '!=', $task->id)->orderBy('name')->get();
+        $task->load('resources', 'dependencies');
+        return view('admin.core.tasks.edit', compact('task', 'projects', 'users', 'sites', 'phases', 'milestones', 'resources', 'tasks'));
     }
 
     public function update(Request $request, Task $task)
@@ -123,6 +131,8 @@ class TaskController extends Controller
             'priority' => 'required|in:low,medium,high,critical',
             'status' => 'required|in:open,in_progress,review,closed',
             'progress_percent' => 'nullable|integer|min:0|max:100',
+            'dependency_ids' => 'nullable|array',
+            'dependency_ids.*' => 'exists:tasks,id',
             'resource_allocations' => 'nullable|array',
             'resource_allocations.*.project_resource_id' => 'required|exists:project_resources,id',
             'resource_allocations.*.allocated_quantity' => 'required|numeric|min:0',
@@ -132,6 +142,12 @@ class TaskController extends Controller
         ]);
 
         $task->update($validated);
+
+        if ($request->filled('dependency_ids')) {
+            $task->dependencies()->sync($request->dependency_ids);
+        } else {
+            $task->dependencies()->detach();
+        }
 
         $task->resources()->delete();
         if ($request->filled('resource_allocations')) {

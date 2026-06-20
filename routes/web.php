@@ -401,6 +401,7 @@ Route::prefix('dashboard/reports')->name('admin.reports.')->group(function () {
 
 // Finance - Budgeting & Cost Control
 use App\Http\Controllers\Admin\Finance\BudgetController;
+use App\Http\Controllers\Admin\Finance\MaterialTakeoffController;
 use App\Http\Controllers\Admin\Finance\BoqController;
 use App\Http\Controllers\Admin\Finance\TenderController;
 use App\Http\Controllers\Admin\Finance\InvoiceController;
@@ -426,6 +427,15 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware('auth')->
     Route::get('budgets/{budget}/edit', [BudgetController::class, 'edit'])->name('budgets.edit');
     Route::put('budgets/{budget}', [BudgetController::class, 'update'])->name('budgets.update');
     Route::delete('budgets/{budget}', [BudgetController::class, 'destroy'])->name('budgets.destroy');
+    Route::get('budgets/forecasting', [BudgetController::class, 'forecasting'])->name('budgets.forecasting');
+
+    Route::get('material-takeoffs', [MaterialTakeoffController::class, 'index'])->name('material-takeoffs.index');
+    Route::get('material-takeoffs/create', [MaterialTakeoffController::class, 'create'])->name('material-takeoffs.create');
+    Route::post('material-takeoffs', [MaterialTakeoffController::class, 'store'])->name('material-takeoffs.store');
+    Route::get('material-takeoffs/{materialTakeoff}', [MaterialTakeoffController::class, 'show'])->name('material-takeoffs.show');
+    Route::get('material-takeoffs/{materialTakeoff}/edit', [MaterialTakeoffController::class, 'edit'])->name('material-takeoffs.edit');
+    Route::put('material-takeoffs/{materialTakeoff}', [MaterialTakeoffController::class, 'update'])->name('material-takeoffs.update');
+    Route::delete('material-takeoffs/{materialTakeoff}', [MaterialTakeoffController::class, 'destroy'])->name('material-takeoffs.destroy');
 
     Route::get('cost-overrun-alerts', [CostOverrunAlertController::class, 'index'])->name('cost-overrun-alerts.index');
     Route::post('cost-overrun-alerts/{alert}/acknowledge', [CostOverrunAlertController::class, 'acknowledge'])->name('cost-overrun-alerts.acknowledge');

@@ -86,13 +86,35 @@
         <div class="panel">
             <h5 class="mb-4 text-base font-semibold">Task Relationships</h5>
             <div class="space-y-3">
-                <div class="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+                <div class="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
                     <span class="text-xs text-gray-600 dark:text-gray-300">Depends On</span>
-                    <span class="text-sm font-bold dark:text-white">{{ $task->dependencies->count() }}</span>
+                    @if($task->dependencies->isNotEmpty())
+                        <ul class="mt-1 space-y-1">
+                            @foreach($task->dependencies as $dep)
+                                <li class="text-sm flex items-center gap-1">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-warning inline-block"></span>
+                                    <a href="{{ route('admin.core.tasks.show', $dep) }}" class="text-primary hover:underline">{{ $dep->name }}</a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <p class="text-sm font-bold dark:text-white mt-1">—</p>
+                    @endif
                 </div>
-                <div class="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+                <div class="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
                     <span class="text-xs text-gray-600 dark:text-gray-300">Blocks</span>
-                    <span class="text-sm font-bold dark:text-white">{{ $task->dependentTasks->count() }}</span>
+                    @if($task->dependentTasks->isNotEmpty())
+                        <ul class="mt-1 space-y-1">
+                            @foreach($task->dependentTasks as $dep)
+                                <li class="text-sm flex items-center gap-1">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-info inline-block"></span>
+                                    <a href="{{ route('admin.core.tasks.show', $dep) }}" class="text-primary hover:underline">{{ $dep->name }}</a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <p class="text-sm font-bold dark:text-white mt-1">—</p>
+                    @endif
                 </div>
                 <div class="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
                     <span class="text-xs text-gray-600 dark:text-gray-300">Allocated Resources</span>

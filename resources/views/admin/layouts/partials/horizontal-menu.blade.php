@@ -278,8 +278,10 @@
                 <a href="javascript:;">Cost Control <svg class="h-3 w-3 rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
                 <ul class="sub-sub-menu">
                     <li><a href="{{ route('admin.finance.budgets.index') }}">Budgets</a></li>
+                    <li><a href="{{ route('admin.finance.budgets.forecasting') }}">Forecasting (EVM)</a></li>
                     <li><a href="{{ route('admin.finance.cost-overrun-alerts.index') }}">Cost Alerts</a></li>
                     <li><a href="{{ route('admin.finance.labour-entries.index') }}">Labour Cost</a></li>
+                    <li><a href="{{ route('admin.finance.material-takeoffs.index') }}">Material Takeoffs</a></li>
                 </ul>
             </li>
             <li class="relative">
