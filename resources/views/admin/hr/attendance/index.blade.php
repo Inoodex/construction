@@ -13,7 +13,7 @@
         <div class="mb-4 rounded-md bg-green-100 p-3 text-green-700">{{ session('success') }}</div>
     @endif
 
-    <form method="GET" class="mb-4 flex flex-wrap items-center gap-3">
+    <form method="GET" class="mb-4 flex flex-nowrap items-center gap-2 overflow-x-auto">
         <select name="employee_id" class="form-select">
             <option value="">All Employees</option>
             @foreach($employees as $id => $name)

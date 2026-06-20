@@ -49,4 +49,9 @@ class Employee extends Model
     {
         return $this->hasMany(WageSlip::class);
     }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
 }
