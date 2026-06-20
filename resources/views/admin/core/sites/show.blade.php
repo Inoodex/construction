@@ -62,6 +62,10 @@
                     <span class="text-sm font-bold dark:text-white">{{ $site->siteLogs->count() }}</span>
                 </div>
                 <div class="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+                    <span class="text-xs text-gray-600 dark:text-gray-300">Deliveries</span>
+                    <span class="text-sm font-bold dark:text-white">{{ $site->goodsReceivedNotes->count() }}</span>
+                </div>
+                <div class="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
                     <span class="text-xs text-gray-600 dark:text-gray-300">Created</span>
                     <span class="text-xs font-semibold dark:text-white">{{ $site->created_at->format('d M Y') }}</span>
                 </div>
@@ -107,6 +111,52 @@
             </div>
         @else
             <p class="py-4 text-center text-sm text-white-dark">No photos yet. <a href="{{ route('admin.core.sites.photos.index', $site) }}" class="text-primary hover:underline">Upload photos</a></p>
+        @endif
+    </div>
+
+    <div class="mt-6 panel">
+        <div class="mb-4 flex items-center justify-between">
+            <h5 class="text-base font-semibold">Material Deliveries</h5>
+            <a href="{{ route('admin.procurement.goods-received-notes.index', ['site_id' => $site->id]) }}" class="text-xs text-primary">View All</a>
+        </div>
+        @if($site->goodsReceivedNotes->isNotEmpty())
+            <div class="datatable">
+                <div class="overflow-x-auto">
+                    <table class="table-hover w-full table-auto">
+                        <thead>
+                            <tr>
+                                <th>GRN</th>
+                                <th>Date</th>
+                                <th>Vehicle</th>
+                                <th>Materials</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($site->goodsReceivedNotes->sortByDesc('received_date')->take(10) as $grn)
+                                <tr>
+                                    <td><a href="{{ route('admin.procurement.goods-received-notes.show', $grn) }}" class="font-mono text-xs font-semibold text-primary hover:underline">{{ $grn->grn_number }}</a></td>
+                                    <td class="text-xs">{{ $grn->received_date->format('d M Y') }}</td>
+                                    <td class="text-xs">{{ $grn->vehicle_number ?: '—' }}</td>
+                                    <td class="text-xs">
+                                        @foreach($grn->items->take(3) as $item)
+                                            <div>{{ $item->material->name ?? 'Unknown' }}: {{ number_format($item->quantity_accepted, 1) }} accepted</div>
+                                        @endforeach
+                                        @if($grn->items->count() > 3)
+                                            <div class="text-primary text-[10px]">+{{ $grn->items->count() - 3 }} more</div>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <span class="badge {{ $grn->status == 'verified' ? 'badge-outline-success' : 'badge-outline-warning' }} text-xs capitalize">{{ $grn->status }}</span>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        @else
+            <p class="py-4 text-center text-sm text-white-dark">No deliveries recorded for this site yet.</p>
         @endif
     </div>
 @endsection

@@ -33,12 +33,16 @@
                     </div>
                 </div>
                 <div>
-                    <label class="text-xs text-white-dark">From Warehouse</label>
-                    <p class="font-semibold">{{ $materialTransfer->fromWarehouse->name ?? 'N/A' }}</p>
+                    <label class="text-xs text-white-dark">Transfer Type</label>
+                    <p class="font-semibold">{{ $materialTransfer->transfer_type_label }}</p>
                 </div>
                 <div>
-                    <label class="text-xs text-white-dark">To Site</label>
-                    <p class="font-semibold">{{ $materialTransfer->toSite->name ?? 'N/A' }}</p>
+                    <label class="text-xs text-white-dark">From</label>
+                    <p class="font-semibold">{{ $materialTransfer->from_location_label }}</p>
+                </div>
+                <div>
+                    <label class="text-xs text-white-dark">To</label>
+                    <p class="font-semibold">{{ $materialTransfer->to_location_label }}</p>
                 </div>
                 <div>
                     <label class="text-xs text-white-dark">Transfer Date</label>
@@ -59,6 +63,36 @@
                     <span class="text-xs font-semibold dark:text-white">{{ $materialTransfer->created_at->format('d M Y h:i A') }}</span>
                 </div>
             </div>
+
+            @if($materialTransfer->status === 'pending')
+            <div class="mt-4 space-y-2">
+                <form action="{{ route('admin.procurement.material-transfers.status', $materialTransfer) }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="status" value="transit" />
+                    <button type="submit" class="btn btn-info w-full">Mark In Transit</button>
+                </form>
+            </div>
+            @elseif($materialTransfer->status === 'transit')
+            <div class="mt-4 space-y-2">
+                <form action="{{ route('admin.procurement.material-transfers.status', $materialTransfer) }}" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="status" value="completed" />
+                    <button type="submit" class="btn btn-success w-full">Mark Completed</button>
+                </form>
+            </div>
+            @endif
+            @if(in_array($materialTransfer->status, ['pending', 'transit']))
+            <div class="mt-2">
+                <form action="{{ route('admin.procurement.material-transfers.status', $materialTransfer) }}" method="POST" onsubmit="return confirm('Cancel this transfer?');">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="status" value="cancelled" />
+                    <button type="submit" class="btn btn-outline-danger w-full">Cancel Transfer</button>
+                </form>
+            </div>
+            @endif
         </div>
     </div>
 

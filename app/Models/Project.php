@@ -81,5 +81,14 @@ class Project extends Model
     {
         return $this->hasMany(Invoice::class);
     }
-    
+
+    public function getProgressAttribute(): int
+    {
+        return (int) round($this->tasks()->avg('progress_percent') ?: 0);
+    }
+
+    public function resourceAllocations(): HasManyThrough
+    {
+        return $this->hasManyThrough(TaskResource::class, Task::class);
+    }
 }

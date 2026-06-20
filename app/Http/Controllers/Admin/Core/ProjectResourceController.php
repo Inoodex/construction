@@ -31,7 +31,7 @@ class ProjectResourceController extends Controller
 
     public function index(Project $project)
     {
-        $resources = $project->resources()->latest()->get();
+        $resources = $project->resources()->with('taskAllocations.task')->latest()->get();
         $totals = [
             'labor' => $resources->where('resource_type', 'labor')->sum('total_cost'),
             'equipment' => $resources->where('resource_type', 'equipment')->sum('total_cost'),

@@ -16,10 +16,14 @@ class MaterialTransferController extends Controller
 {
     public function index(Request $request)
     {
-        $query = MaterialTransfer::with('fromWarehouse', 'toSite');
+        $query = MaterialTransfer::with(['fromWarehouse', 'fromSite', 'toSite', 'toWarehouse']);
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
+        }
+
+        if ($request->filled('transfer_type')) {
+            $query->where('transfer_type', $request->transfer_type);
         }
 
         $transfers = $query->latest()->paginate(15);
@@ -38,8 +42,11 @@ class MaterialTransferController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'from_warehouse_id' => 'required|exists:warehouses,id',
-            'to_site_id' => 'required|exists:sites,id',
+            'transfer_type' => 'required|in:warehouse_to_site,site_to_warehouse,site_to_site,warehouse_to_warehouse',
+            'from_warehouse_id' => 'required_if:transfer_type,warehouse_to_site,warehouse_to_warehouse|nullable|exists:warehouses,id',
+            'from_site_id' => 'required_if:transfer_type,site_to_warehouse,site_to_site|nullable|exists:sites,id',
+            'to_site_id' => 'required_if:transfer_type,warehouse_to_site,site_to_site|nullable|exists:sites,id',
+            'to_warehouse_id' => 'required_if:transfer_type,site_to_warehouse,warehouse_to_warehouse|nullable|exists:warehouses,id',
             'transfer_date' => 'required|date',
             'items' => 'required|array|min:1',
             'items.*.material_id' => 'required|exists:materials,id',
@@ -50,8 +57,11 @@ class MaterialTransferController extends Controller
             $number = 'TRF-' . now()->format('Ymd') . '-' . strtoupper(substr(uniqid(), -4));
 
             $transfer = MaterialTransfer::create([
-                'from_warehouse_id' => $validated['from_warehouse_id'],
-                'to_site_id' => $validated['to_site_id'],
+                'transfer_type' => $validated['transfer_type'],
+                'from_warehouse_id' => $validated['from_warehouse_id'] ?? null,
+                'from_site_id' => $validated['from_site_id'] ?? null,
+                'to_site_id' => $validated['to_site_id'] ?? null,
+                'to_warehouse_id' => $validated['to_warehouse_id'] ?? null,
                 'transfer_number' => $number,
                 'status' => 'pending',
                 'transfer_date' => $validated['transfer_date'],
@@ -64,17 +74,33 @@ class MaterialTransferController extends Controller
                     'quantity' => $item['quantity'],
                 ]);
 
-                // Deduct from warehouse stock
-                DB::table('stocks')
-                    ->where('warehouse_id', $validated['from_warehouse_id'])
-                    ->where('material_id', $item['material_id'])
-                    ->decrement('quantity', $item['quantity']);
+                $qty = $item['quantity'];
 
-                // Add to site stock
-                Stock::updateOrCreate(
-                    ['site_id' => $validated['to_site_id'], 'material_id' => $item['material_id'], 'warehouse_id' => null],
-                    ['quantity' => DB::raw('quantity + ' . $item['quantity'])]
-                );
+                // Deduct from source
+                if (in_array($validated['transfer_type'], ['warehouse_to_site', 'warehouse_to_warehouse'])) {
+                    DB::table('stocks')
+                        ->where('warehouse_id', $validated['from_warehouse_id'])
+                        ->where('material_id', $item['material_id'])
+                        ->decrement('quantity', $qty);
+                } else {
+                    DB::table('stocks')
+                        ->where('site_id', $validated['from_site_id'])
+                        ->where('material_id', $item['material_id'])
+                        ->decrement('quantity', $qty);
+                }
+
+                // Add to destination
+                if (in_array($validated['transfer_type'], ['warehouse_to_site', 'site_to_site'])) {
+                    Stock::updateOrCreate(
+                        ['site_id' => $validated['to_site_id'], 'material_id' => $item['material_id'], 'warehouse_id' => null],
+                        ['quantity' => DB::raw('quantity + ' . $qty)]
+                    );
+                } else {
+                    Stock::updateOrCreate(
+                        ['warehouse_id' => $validated['to_warehouse_id'], 'material_id' => $item['material_id'], 'site_id' => null],
+                        ['quantity' => DB::raw('quantity + ' . $qty)]
+                    );
+                }
             }
         });
 
@@ -84,8 +110,19 @@ class MaterialTransferController extends Controller
 
     public function show(MaterialTransfer $materialTransfer)
     {
-        $materialTransfer->load('fromWarehouse', 'toSite', 'items.material');
+        $materialTransfer->load(['fromWarehouse', 'fromSite', 'toSite', 'toWarehouse', 'items.material']);
         return view('admin.procurement.material-transfers.show', compact('materialTransfer'));
+    }
+
+    public function updateStatus(Request $request, MaterialTransfer $materialTransfer)
+    {
+        $request->validate([
+            'status' => 'required|in:transit,completed,cancelled',
+        ]);
+
+        $materialTransfer->update(['status' => $request->status]);
+
+        return back()->with('success', 'Transfer status updated to "' . $request->status . '".');
     }
 
     public function destroy(MaterialTransfer $materialTransfer)

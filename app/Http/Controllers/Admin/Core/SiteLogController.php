@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Site;
 use App\Models\SiteLog;
 use App\Models\User;
+use App\Services\WeatherService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -104,6 +105,23 @@ class SiteLogController extends Controller
 
         return redirect()->route('admin.core.sites.logs.index', $site)
             ->with('success', 'Site log updated successfully.');
+    }
+
+    public function fetchWeather(Request $request, WeatherService $weatherService)
+    {
+        $location = $request->input('location');
+
+        if (!$location) {
+            return response()->json(['error' => 'Location is required'], 422);
+        }
+
+        $weather = $weatherService->fetchByLocation($location);
+
+        if (!$weather) {
+            return response()->json(['error' => 'Could not fetch weather data for this location. Try a broader address (e.g. city name, country).'], 404);
+        }
+
+        return response()->json($weather);
     }
 
     public function destroy(Site $site, SiteLog $log)

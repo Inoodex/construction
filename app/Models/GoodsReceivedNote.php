@@ -13,9 +13,12 @@ class GoodsReceivedNote extends Model
 
     protected $fillable = [
         'purchase_order_id',
+        'site_id',
         'grn_number',
         'received_date',
         'received_by',
+        'delivery_note',
+        'vehicle_number',
         'status',
     ];
 
@@ -29,6 +32,14 @@ class GoodsReceivedNote extends Model
     public function purchaseOrder(): BelongsTo
     {
         return $this->belongsTo(PurchaseOrder::class);
+    }
+
+    /**
+     * Get the site where goods were delivered.
+     */
+    public function site(): BelongsTo
+    {
+        return $this->belongsTo(Site::class);
     }
 
     /**

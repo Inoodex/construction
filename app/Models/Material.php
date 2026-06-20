@@ -13,6 +13,11 @@ class Material extends Model
         'name',
         'sku',
         'unit',
+        'reorder_level',
         'description',
+    ];
+
+    protected $casts = [
+        'reorder_level' => 'decimal:4',
     ];
 }

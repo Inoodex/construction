@@ -54,6 +54,8 @@ Route::prefix('dashboard/core')->name('admin.core.')->group(function () {
     Route::post('projects', [ProjectController::class, 'store'])->name('projects.store');
     Route::get('projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
     Route::get('projects/{project}/gantt', [ProjectController::class, 'gantt'])->name('projects.gantt');
+    Route::get('resource-gantt', [ProjectController::class, 'resourceGanttIndex'])->name('resource-gantt.index');
+    Route::get('projects/{project}/resource-gantt', [ProjectController::class, 'resourceGantt'])->name('projects.resource-gantt');
     Route::get('projects/{project}/edit', [ProjectController::class, 'edit'])->name('projects.edit');
     Route::put('projects/{project}', [ProjectController::class, 'update'])->name('projects.update');
     Route::delete('projects/{project}', [ProjectController::class, 'destroy'])->name('projects.destroy');
@@ -90,6 +92,7 @@ Route::prefix('dashboard/core')->name('admin.core.')->group(function () {
 
     // Site Logs (global + nested under sites)
     Route::get('site-logs', [SiteLogController::class, 'globalIndex'])->name('site-logs.index');
+    Route::get('weather', [SiteLogController::class, 'fetchWeather'])->name('weather.fetch');
     Route::prefix('sites/{site}/logs')->name('sites.logs.')->group(function () {
         Route::get('/', [SiteLogController::class, 'index'])->name('index');
         Route::get('create', [SiteLogController::class, 'create'])->name('create');
@@ -164,8 +167,16 @@ use App\Http\Controllers\Admin\Procurement\MaterialTransferController;
 use App\Http\Controllers\Admin\Procurement\MaterialIssueSlipController;
 use App\Http\Controllers\Admin\Procurement\MaterialWastageController;
 use App\Http\Controllers\Admin\Procurement\SubcontractorController;
+use App\Http\Controllers\Admin\Procurement\RfqController;
+use App\Http\Controllers\Admin\Procurement\MaterialSubmittalController;
+use App\Http\Controllers\Admin\Procurement\MaterialReconciliationController;
+use App\Http\Controllers\Admin\Procurement\SubcontractAgreementController;
+use App\Http\Controllers\Admin\Procurement\SubcontractProgressPaymentController;
 use App\Http\Controllers\Admin\Hr\EmployeeController;
 use App\Http\Controllers\Admin\Hr\AttendanceController;
+use App\Http\Controllers\Admin\Hr\TimesheetController;
+use App\Http\Controllers\Admin\Hr\WageSlipController;
+use App\Http\Controllers\Admin\Hr\EquipmentController;
 use App\Http\Controllers\Admin\Hr\LeaveRequestController;
 use App\Http\Controllers\Admin\Reports\ReportTemplateController;
 use App\Http\Controllers\Admin\Reports\ScheduledReportController;
@@ -178,6 +189,9 @@ Route::prefix('dashboard/procurement')->name('admin.procurement.')->group(functi
     Route::get('vendors/{vendor}/edit', [VendorController::class, 'edit'])->name('vendors.edit');
     Route::put('vendors/{vendor}', [VendorController::class, 'update'])->name('vendors.update');
     Route::delete('vendors/{vendor}', [VendorController::class, 'destroy'])->name('vendors.destroy');
+    Route::post('vendors/{vendor}/documents', [VendorController::class, 'uploadDocument'])->name('vendors.documents.upload');
+    Route::delete('vendors/documents/{document}', [VendorController::class, 'deleteDocument'])->name('vendors.documents.delete');
+    Route::put('vendors/{vendor}/qualification', [VendorController::class, 'updateQualification'])->name('vendors.qualification.update');
 
     Route::get('materials', [MaterialController::class, 'index'])->name('materials.index');
     Route::get('materials/create', [MaterialController::class, 'create'])->name('materials.create');
@@ -194,6 +208,7 @@ Route::prefix('dashboard/procurement')->name('admin.procurement.')->group(functi
     Route::get('requisitions/{purchase_requisition}/edit', [PurchaseRequisitionController::class, 'edit'])->name('requisitions.edit');
     Route::put('requisitions/{purchase_requisition}', [PurchaseRequisitionController::class, 'update'])->name('requisitions.update');
     Route::delete('requisitions/{purchase_requisition}', [PurchaseRequisitionController::class, 'destroy'])->name('requisitions.destroy');
+    Route::post('requisitions/{purchase_requisition}/submit', [PurchaseRequisitionController::class, 'submitForApproval'])->name('requisitions.submit');
 
     Route::get('purchase-orders', [PurchaseOrderController::class, 'index'])->name('purchase-orders.index');
     Route::get('purchase-orders/create', [PurchaseOrderController::class, 'create'])->name('purchase-orders.create');
@@ -202,6 +217,7 @@ Route::prefix('dashboard/procurement')->name('admin.procurement.')->group(functi
     Route::get('purchase-orders/{purchase_order}/edit', [PurchaseOrderController::class, 'edit'])->name('purchase-orders.edit');
     Route::put('purchase-orders/{purchase_order}', [PurchaseOrderController::class, 'update'])->name('purchase-orders.update');
     Route::delete('purchase-orders/{purchase_order}', [PurchaseOrderController::class, 'destroy'])->name('purchase-orders.destroy');
+    Route::post('purchase-orders/{purchase_order}/submit', [PurchaseOrderController::class, 'submitForApproval'])->name('purchase-orders.submit');
 
     Route::get('goods-received-notes', [GoodsReceivedNoteController::class, 'index'])->name('goods-received-notes.index');
     Route::get('goods-received-notes/create', [GoodsReceivedNoteController::class, 'create'])->name('goods-received-notes.create');
@@ -230,6 +246,7 @@ Route::prefix('dashboard/procurement')->name('admin.procurement.')->group(functi
     Route::post('material-transfers', [MaterialTransferController::class, 'store'])->name('material-transfers.store');
     Route::get('material-transfers/{material_transfer}', [MaterialTransferController::class, 'show'])->name('material-transfers.show');
     Route::delete('material-transfers/{material_transfer}', [MaterialTransferController::class, 'destroy'])->name('material-transfers.destroy');
+    Route::put('material-transfers/{material_transfer}/status', [MaterialTransferController::class, 'updateStatus'])->name('material-transfers.status');
 
     Route::get('material-issue-slips', [MaterialIssueSlipController::class, 'index'])->name('material-issue-slips.index');
     Route::get('material-issue-slips/create', [MaterialIssueSlipController::class, 'create'])->name('material-issue-slips.create');
@@ -252,6 +269,53 @@ Route::prefix('dashboard/procurement')->name('admin.procurement.')->group(functi
     Route::get('subcontractors/{subcontractor}/edit', [SubcontractorController::class, 'edit'])->name('subcontractors.edit');
     Route::put('subcontractors/{subcontractor}', [SubcontractorController::class, 'update'])->name('subcontractors.update');
     Route::delete('subcontractors/{subcontractor}', [SubcontractorController::class, 'destroy'])->name('subcontractors.destroy');
+
+    Route::get('material-submittals', [MaterialSubmittalController::class, 'index'])->name('material-submittals.index');
+    Route::get('material-submittals/create', [MaterialSubmittalController::class, 'create'])->name('material-submittals.create');
+    Route::post('material-submittals', [MaterialSubmittalController::class, 'store'])->name('material-submittals.store');
+    Route::get('material-submittals/{materialSubmittal}', [MaterialSubmittalController::class, 'show'])->name('material-submittals.show');
+    Route::get('material-submittals/{materialSubmittal}/edit', [MaterialSubmittalController::class, 'edit'])->name('material-submittals.edit');
+    Route::put('material-submittals/{materialSubmittal}', [MaterialSubmittalController::class, 'update'])->name('material-submittals.update');
+    Route::delete('material-submittals/{materialSubmittal}', [MaterialSubmittalController::class, 'destroy'])->name('material-submittals.destroy');
+    Route::put('material-submittals/{materialSubmittal}/submit', [MaterialSubmittalController::class, 'submit'])->name('material-submittals.submit');
+    Route::put('material-submittals/{materialSubmittal}/review', [MaterialSubmittalController::class, 'review'])->name('material-submittals.review');
+    Route::get('material-submittals/{materialSubmittal}/resubmit', [MaterialSubmittalController::class, 'resubmitForm'])->name('material-submittals.resubmit-form');
+    Route::put('material-submittals/{materialSubmittal}/resubmit', [MaterialSubmittalController::class, 'resubmit'])->name('material-submittals.resubmit');
+
+    Route::get('material-reconciliation', [MaterialReconciliationController::class, 'index'])->name('material-reconciliation.index');
+
+    Route::get('rfqs', [RfqController::class, 'index'])->name('rfqs.index');
+    Route::get('rfqs/create', [RfqController::class, 'create'])->name('rfqs.create');
+    Route::post('rfqs', [RfqController::class, 'store'])->name('rfqs.store');
+    Route::get('rfqs/{rfq}', [RfqController::class, 'show'])->name('rfqs.show');
+    Route::get('rfqs/{rfq}/edit', [RfqController::class, 'edit'])->name('rfqs.edit');
+    Route::put('rfqs/{rfq}', [RfqController::class, 'update'])->name('rfqs.update');
+    Route::delete('rfqs/{rfq}', [RfqController::class, 'destroy'])->name('rfqs.destroy');
+    Route::put('rfqs/{rfq}/send', [RfqController::class, 'send'])->name('rfqs.send');
+    Route::put('rfqs/{rfq}/close', [RfqController::class, 'close'])->name('rfqs.close');
+    Route::get('rfqs/{rfq}/quotations/create', [RfqController::class, 'createQuotation'])->name('rfqs.quotations.create');
+    Route::post('rfqs/{rfq}/quotations', [RfqController::class, 'storeQuotation'])->name('rfqs.quotations.store');
+    Route::get('rfqs/{rfq}/quotations/{quotation}/edit', [RfqController::class, 'editQuotation'])->name('rfqs.quotations.edit');
+    Route::put('rfqs/{rfq}/quotations/{quotation}', [RfqController::class, 'updateQuotation'])->name('rfqs.quotations.update');
+    Route::post('rfqs/{rfq}/award', [RfqController::class, 'award'])->name('rfqs.award');
+
+    Route::get('subcontract-agreements', [SubcontractAgreementController::class, 'index'])->name('subcontract-agreements.index');
+    Route::get('subcontract-agreements/create', [SubcontractAgreementController::class, 'create'])->name('subcontract-agreements.create');
+    Route::post('subcontract-agreements', [SubcontractAgreementController::class, 'store'])->name('subcontract-agreements.store');
+    Route::get('subcontract-agreements/{subcontractAgreement}', [SubcontractAgreementController::class, 'show'])->name('subcontract-agreements.show');
+    Route::get('subcontract-agreements/{subcontractAgreement}/edit', [SubcontractAgreementController::class, 'edit'])->name('subcontract-agreements.edit');
+    Route::put('subcontract-agreements/{subcontractAgreement}', [SubcontractAgreementController::class, 'update'])->name('subcontract-agreements.update');
+    Route::delete('subcontract-agreements/{subcontractAgreement}', [SubcontractAgreementController::class, 'destroy'])->name('subcontract-agreements.destroy');
+    Route::put('subcontract-agreements/{subcontractAgreement}/activate', [SubcontractAgreementController::class, 'activate'])->name('subcontract-agreements.activate');
+    Route::put('subcontract-agreements/{subcontractAgreement}/complete', [SubcontractAgreementController::class, 'complete'])->name('subcontract-agreements.complete');
+    Route::put('subcontract-agreements/{subcontractAgreement}/terminate', [SubcontractAgreementController::class, 'terminate'])->name('subcontract-agreements.terminate');
+
+    Route::get('subcontract-progress-payments', [SubcontractProgressPaymentController::class, 'index'])->name('subcontract-progress-payments.index');
+    Route::get('subcontract-progress-payments/create', [SubcontractProgressPaymentController::class, 'create'])->name('subcontract-progress-payments.create');
+    Route::post('subcontract-progress-payments', [SubcontractProgressPaymentController::class, 'store'])->name('subcontract-progress-payments.store');
+    Route::get('subcontract-progress-payments/{subcontractProgressPayment}', [SubcontractProgressPaymentController::class, 'show'])->name('subcontract-progress-payments.show');
+    Route::put('subcontract-progress-payments/{subcontractProgressPayment}/status', [SubcontractProgressPaymentController::class, 'updateStatus'])->name('subcontract-progress-payments.status');
+    Route::delete('subcontract-progress-payments/{subcontractProgressPayment}', [SubcontractProgressPaymentController::class, 'destroy'])->name('subcontract-progress-payments.destroy');
 });
 
 // HR - Employee Management
@@ -268,6 +332,30 @@ Route::prefix('dashboard/hr')->name('admin.hr.')->group(function () {
     Route::get('attendance/create', [AttendanceController::class, 'create'])->name('attendance.create');
     Route::post('attendance', [AttendanceController::class, 'store'])->name('attendance.store');
     Route::delete('attendance/{attendance}', [AttendanceController::class, 'destroy'])->name('attendance.destroy');
+    Route::get('attendance/summary', [AttendanceController::class, 'summary'])->name('attendance.summary');
+
+    Route::get('timesheets', [TimesheetController::class, 'index'])->name('timesheets.index');
+    Route::get('timesheets/create', [TimesheetController::class, 'create'])->name('timesheets.create');
+    Route::post('timesheets', [TimesheetController::class, 'store'])->name('timesheets.store');
+    Route::delete('timesheets/{timesheet}', [TimesheetController::class, 'destroy'])->name('timesheets.destroy');
+
+    Route::get('wage-slips', [WageSlipController::class, 'index'])->name('wage-slips.index');
+    Route::get('wage-slips/create', [WageSlipController::class, 'create'])->name('wage-slips.create');
+    Route::post('wage-slips', [WageSlipController::class, 'store'])->name('wage-slips.store');
+    Route::get('wage-slips/{wageSlip}', [WageSlipController::class, 'show'])->name('wage-slips.show');
+    Route::get('wage-slips/{wageSlip}/print', [WageSlipController::class, 'print'])->name('wage-slips.print');
+    Route::delete('wage-slips/{wageSlip}', [WageSlipController::class, 'destroy'])->name('wage-slips.destroy');
+
+    Route::get('equipment', [EquipmentController::class, 'index'])->name('equipment.index');
+    Route::get('equipment/create', [EquipmentController::class, 'create'])->name('equipment.create');
+    Route::post('equipment', [EquipmentController::class, 'store'])->name('equipment.store');
+    Route::get('equipment/{equipment}', [EquipmentController::class, 'show'])->name('equipment.show');
+    Route::get('equipment/{equipment}/edit', [EquipmentController::class, 'edit'])->name('equipment.edit');
+    Route::put('equipment/{equipment}', [EquipmentController::class, 'update'])->name('equipment.update');
+    Route::delete('equipment/{equipment}', [EquipmentController::class, 'destroy'])->name('equipment.destroy');
+    Route::post('equipment/{equipment}/maintenance', [EquipmentController::class, 'maintenanceStore'])->name('equipment.maintenance.store');
+    Route::delete('equipment/maintenance/{maintenance}', [EquipmentController::class, 'maintenanceDestroy'])->name('equipment.maintenance.destroy');
+    Route::post('equipment/{equipment}/update-meter', [EquipmentController::class, 'updateMeter'])->name('equipment.update-meter');
 
     Route::get('leaves', [LeaveRequestController::class, 'index'])->name('leaves.index');
     Route::get('leaves/create', [LeaveRequestController::class, 'create'])->name('leaves.create');

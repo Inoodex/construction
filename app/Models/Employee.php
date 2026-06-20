@@ -39,4 +39,14 @@ class Employee extends Model
     {
         return $this->hasMany(LeaveRequest::class);
     }
+
+    public function timesheets()
+    {
+        return $this->hasMany(Timesheet::class);
+    }
+
+    public function wageSlips()
+    {
+        return $this->hasMany(WageSlip::class);
+    }
 }

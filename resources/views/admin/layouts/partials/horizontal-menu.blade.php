@@ -102,6 +102,7 @@
                 </a>
                 <ul class="sub-sub-menu">
                     <li><a href="{{ route('admin.core.resources.index') }}">Resources</a></li>
+                    <li><a href="{{ route('admin.core.resource-gantt.index') }}">Allocation Chart</a></li>
                     <li><a href="{{ route('admin.core.work-orders.index') }}">Work Orders</a></li>
                     <li><a href="{{ route('admin.core.inspection-checklists.index') }}">Inspections</a></li>
                 </ul>
@@ -110,7 +111,7 @@
     </li>
 
     <!-- Approvals -->
-    {{-- <li class="menu nav-item relative">
+    <li class="menu nav-item relative">
         <a href="javascript:;" class="nav-link">
             <div class="flex items-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="shrink-0">
@@ -130,7 +131,7 @@
                 <li><a href="{{ route('admin.approvals.workflows.index') }}">Approval Workflows</a></li>
             @endif
         </ul>
-    </li> --}}
+    </li>
 
     <!-- Procurement -->
     <li class="menu nav-item relative">
@@ -159,6 +160,7 @@
                 <ul class="sub-sub-menu">
                     <li><a href="{{ route('admin.procurement.vendors.index') }}">Vendors</a></li>
                     <li><a href="{{ route('admin.procurement.materials.index') }}">Materials</a></li>
+                    <li><a href="{{ route('admin.procurement.material-submittals.index') }}">Material Submittals</a></li>
                     <li><a href="{{ route('admin.procurement.warehouses.index') }}">Warehouses</a></li>
                 </ul>
             </li>
@@ -170,6 +172,7 @@
                     </svg>
                 </a>
                 <ul class="sub-sub-menu">
+                    <li><a href="{{ route('admin.procurement.rfqs.index') }}">RFQs</a></li>
                     <li><a href="{{ route('admin.procurement.requisitions.index') }}">Requisitions</a></li>
                     <li><a href="{{ route('admin.procurement.purchase-orders.index') }}">Purchase Orders</a></li>
                     <li><a href="{{ route('admin.procurement.goods-received-notes.index') }}">Goods Received</a></li>
@@ -187,6 +190,7 @@
                     <li><a href="{{ route('admin.procurement.material-transfers.index') }}">Material Transfers</a></li>
                     <li><a href="{{ route('admin.procurement.material-issue-slips.index') }}">Issue Slips</a></li>
                     <li><a href="{{ route('admin.procurement.material-wastages.index') }}">Material Wastage</a></li>
+                    <li><a href="{{ route('admin.procurement.material-reconciliation.index') }}">Material Reconciliation</a></li>
                 </ul>
             </li>
             <li class="relative">
@@ -198,6 +202,8 @@
                 </a>
                 <ul class="sub-sub-menu">
                     <li><a href="{{ route('admin.procurement.subcontractors.index') }}">All Subcontractors</a></li>
+                    <li><a href="{{ route('admin.procurement.subcontract-agreements.index') }}">Subcontract Agreements</a></li>
+                    <li><a href="{{ route('admin.procurement.subcontract-progress-payments.index') }}">Progress Payments</a></li>
                 </ul>
             </li>
         </ul>
@@ -231,7 +237,22 @@
                     <li><a href="{{ route('admin.hr.employees.create') }}">Add Employee</a></li>
                 </ul>
             </li>
-            <li><a href="{{ route('admin.hr.attendance.index') }}">Attendance</a></li>
+            <li class="relative">
+                <a href="javascript:;" class="flex items-center justify-between">
+                    <span>Attendance</span>
+                    <svg class="h-3 w-3 rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </a>
+                <ul class="sub-sub-menu">
+                    <li><a href="{{ route('admin.hr.attendance.index') }}">Daily Register</a></li>
+                    <li><a href="{{ route('admin.hr.attendance.create') }}">Mark Attendance</a></li>
+                    <li><a href="{{ route('admin.hr.attendance.summary') }}">Monthly Summary</a></li>
+                </ul>
+            </li>
+            <li><a href="{{ route('admin.hr.timesheets.index') }}">Timesheets</a></li>
+            <li><a href="{{ route('admin.hr.wage-slips.index') }}">Wage Slips</a></li>
+            <li><a href="{{ route('admin.hr.equipment.index') }}">Equipment</a></li>
             <li><a href="{{ route('admin.hr.leaves.index') }}">Leave Requests</a></li>
         </ul>
     </li>

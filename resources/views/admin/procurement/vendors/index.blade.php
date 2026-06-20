@@ -38,6 +38,13 @@
                     <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
                     <option value="blacklisted" {{ request('status') == 'blacklisted' ? 'selected' : '' }}>Blacklisted</option>
                 </select>
+                <select name="qualification_status" class="form-select flex-1">
+                    <option value="">Qualification</option>
+                    <option value="qualified" {{ request('qualification_status') == 'qualified' ? 'selected' : '' }}>Qualified</option>
+                    <option value="under_review" {{ request('qualification_status') == 'under_review' ? 'selected' : '' }}>Under Review</option>
+                    <option value="unqualified" {{ request('qualification_status') == 'unqualified' ? 'selected' : '' }}>Not Applied</option>
+                    <option value="rejected" {{ request('qualification_status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                </select>
                 <select name="trade_category" class="form-select flex-1">
                     <option value="">Category</option>
                     @foreach(\App\Models\Category::tradeCategories()->get() as $cat)
@@ -45,7 +52,7 @@
                     @endforeach
                 </select>
                 <button type="submit" class="btn btn-primary">Filter</button>
-                @if(request()->anyFilled(['search', 'status', 'trade_category']))
+                @if(request()->anyFilled(['search', 'status', 'qualification_status', 'trade_category']))
                     <a href="{{ route('admin.procurement.vendors.index') }}" class="btn btn-outline-danger">Reset</a>
                 @endif
             </form>
@@ -62,6 +69,7 @@
                             <th>Credit Limit</th>
                             <th>Rating</th>
                             <th>Status</th>
+                            <th>Qualification</th>
                             <th class="text-center">Action</th>
                         </tr>
                     </thead>
@@ -117,6 +125,25 @@
                                     @endphp
                                     <span class="badge {{ $class }} capitalize">{{ $vendor->status }}</span>
                                 </td>
+                                <td>
+                                    @php
+                                        $qualClasses = [
+                                            'qualified' => 'badge-outline-success',
+                                            'under_review' => 'badge-outline-warning',
+                                            'unqualified' => 'badge-outline-secondary',
+                                            'rejected' => 'badge-outline-danger',
+                                        ];
+                                        $qualLabels = [
+                                            'qualified' => 'Qualified',
+                                            'under_review' => 'Under Review',
+                                            'unqualified' => 'Not Applied',
+                                            'rejected' => 'Rejected',
+                                        ];
+                                        $qualClass = $qualClasses[$vendor->qualification_status] ?? 'badge-outline-secondary';
+                                        $qualLabel = $qualLabels[$vendor->qualification_status] ?? $vendor->qualification_status;
+                                    @endphp
+                                    <span class="badge {{ $qualClass }} text-xs">{{ $qualLabel }}</span>
+                                </td>
                                 <td class="text-center">
                                     <div class="flex items-center justify-center gap-2">
                                         <a href="{{ route('admin.procurement.vendors.show', $vendor->id) }}" class="btn btn-sm btn-outline-info">View</a>
@@ -131,7 +158,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center">No vendors found.</td>
+                                <td colspan="8" class="text-center">No vendors found.</td>
                             </tr>
                         @endforelse
                     </tbody>

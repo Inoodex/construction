@@ -7,6 +7,7 @@ use App\Models\GoodsReceivedNote;
 use App\Models\GoodsReceivedNoteItem;
 use App\Models\PurchaseOrder;
 use App\Models\Material;
+use App\Models\Site;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,28 +16,37 @@ class GoodsReceivedNoteController extends Controller
 {
     public function index(Request $request)
     {
-        $query = GoodsReceivedNote::with('purchaseOrder', 'receiver');
+        $query = GoodsReceivedNote::with('purchaseOrder', 'receiver', 'site');
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        $notes = $query->latest()->paginate(15);
+        if ($request->filled('site_id')) {
+            $query->where('site_id', $request->site_id);
+        }
 
-        return view('admin.procurement.goods-received-notes.index', compact('notes'));
+        $notes = $query->latest()->paginate(15);
+        $sites = Site::whereHas('project', fn($q) => $q->whereIn('status', ['active', 'on_hold']))->get();
+
+        return view('admin.procurement.goods-received-notes.index', compact('notes', 'sites'));
     }
 
     public function create()
     {
-        $orders = PurchaseOrder::whereIn('status', ['ordered', 'partially_received'])->with('vendor', 'items.material')->get();
-        return view('admin.procurement.goods-received-notes.create', compact('orders'));
+        $orders = PurchaseOrder::whereIn('status', ['ordered', 'partially_received'])->with('vendor', 'items.material', 'project.sites')->get();
+        $sites = Site::whereHas('project', fn($q) => $q->whereIn('status', ['active', 'on_hold']))->get();
+        return view('admin.procurement.goods-received-notes.create', compact('orders', 'sites'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'purchase_order_id' => 'required|exists:purchase_orders,id',
+            'site_id' => 'nullable|exists:sites,id',
             'received_date' => 'required|date',
+            'delivery_note' => 'nullable|string|max:255',
+            'vehicle_number' => 'nullable|string|max:100',
             'items' => 'required|array|min:1',
             'items.*.material_id' => 'required|exists:materials,id',
             'items.*.quantity_received' => 'required|numeric|min:0',
@@ -49,9 +59,12 @@ class GoodsReceivedNoteController extends Controller
 
             $note = GoodsReceivedNote::create([
                 'purchase_order_id' => $validated['purchase_order_id'],
+                'site_id' => $validated['site_id'] ?? null,
                 'grn_number' => $number,
                 'received_date' => $validated['received_date'],
                 'received_by' => Auth::id(),
+                'delivery_note' => $validated['delivery_note'] ?? null,
+                'vehicle_number' => $validated['vehicle_number'] ?? null,
                 'status' => 'pending',
             ]);
 

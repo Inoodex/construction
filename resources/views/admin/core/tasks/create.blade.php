@@ -99,6 +99,13 @@
                 <textarea name="description" id="description" class="form-textarea" rows="4">{{ old('description') }}</textarea>
             </div>
 
+            <div class="mt-6 border-t pt-6">
+                <h5 class="mb-4 text-base font-semibold">Resource Allocations</h5>
+                <div id="resource-allocations">
+                    <div class="text-sm text-white-dark">Select a project above to see available resources.</div>
+                </div>
+            </div>
+
             <div class="mt-8 flex items-center gap-4">
                 <button type="submit" class="btn btn-primary px-10">Save Task</button>
                 <button type="reset" class="btn btn-outline-danger">Reset Form</button>
@@ -112,6 +119,8 @@
 const sites = @json($sites);
 const phases = @json($phases);
 const milestones = @json($milestones);
+const allResources = @json($resources);
+
 function fetchSites(projectId) {
     const siteSelect = document.getElementById('site_id');
     siteSelect.innerHTML = '<option value="">Select Site</option>';
@@ -147,5 +156,72 @@ function fetchMilestones(projectId) {
         msSelect.appendChild(opt);
     });
 }
+
+document.getElementById('project_id').addEventListener('change', function() {
+    renderResourceAllocations(this.value);
+});
+
+function renderResourceAllocations(projectId) {
+    const container = document.getElementById('resource-allocations');
+    if (!projectId) {
+        container.innerHTML = '<div class="text-sm text-white-dark">Select a project above to see available resources.</div>';
+        return;
+    }
+    const projectResources = allResources.filter(r => r.project_id == projectId);
+    if (projectResources.length === 0) {
+        container.innerHTML = '<div class="text-sm text-white-dark">No resources planned for this project. <a href="{{ route('admin.core.resources.index') }}" class="text-primary underline">Add resources first.</a></div>';
+        return;
+    }
+    let html = '<div class="grid grid-cols-1 gap-4">';
+    projectResources.forEach(r => {
+        const unitLabel = r.unit ? ' (' + r.unit + ')' : '';
+        html += `
+            <div class="rounded-lg border p-4 dark:border-gray-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <span class="font-semibold">${r.name}</span>
+                        <span class="ml-2 badge badge-outline-${r.resource_type === 'labor' ? 'info' : r.resource_type === 'equipment' ? 'warning' : 'primary'} capitalize text-xs">${r.resource_type}</span>
+                        <span class="ml-2 text-xs text-white-dark">Available: ${parseFloat(r.quantity).toFixed(2)} ${r.unit || ''}</span>
+                    </div>
+                    <label class="flex items-center gap-2 text-sm">
+                        <input type="checkbox" class="form-checkbox resource-toggle" data-resource-id="${r.id}" onchange="toggleResourceRow(${r.id})" />
+                        Allocate
+                    </label>
+                </div>
+                <div id="resource-row-${r.id}" class="mt-3 grid grid-cols-1 gap-3 md:grid-cols-4 hidden">
+                    <input type="hidden" name="resource_allocations[${r.id}][project_resource_id]" value="${r.id}" />
+                    <div class="form-group">
+                        <label class="text-xs text-white-dark">Quantity${unitLabel}</label>
+                        <input type="number" name="resource_allocations[${r.id}][allocated_quantity]" class="form-input" step="0.01" min="0" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label class="text-xs text-white-dark">Start Date</label>
+                        <input type="date" name="resource_allocations[${r.id}][start_date]" class="form-input" />
+                    </div>
+                    <div class="form-group">
+                        <label class="text-xs text-white-dark">End Date</label>
+                        <input type="date" name="resource_allocations[${r.id}][end_date]" class="form-input" />
+                    </div>
+                    <div class="form-group">
+                        <label class="text-xs text-white-dark">Notes</label>
+                        <input type="text" name="resource_allocations[${r.id}][notes]" class="form-input" placeholder="Optional" />
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function toggleResourceRow(id) {
+    const row = document.getElementById('resource-row-' + id);
+    row.classList.toggle('hidden');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const pid = document.getElementById('project_id').value;
+    if (pid) renderResourceAllocations(pid);
+});
 </script>
 @endpush

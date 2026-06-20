@@ -48,6 +48,12 @@
                     </select>
                     @error('unit') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
+                <div class="form-group">
+                    <label for="reorder_level">Reorder Level</label>
+                    <input type="number" step="0.0001" min="0" name="reorder_level" id="reorder_level" class="form-input"
+                        value="{{ old('reorder_level', $material->reorder_level) }}" placeholder="e.g. 100" />
+                    <p class="text-xs text-white-dark mt-1">Default minimum stock threshold when creating stock entries</p>
+                </div>
             </div>
 
             <div class="form-group mt-5">

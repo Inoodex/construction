@@ -44,6 +44,8 @@ class SubcontractorController extends Controller
 
     public function store(Request $request)
     {
+        $tradeCategories = Category::tradeCategories()->pluck('value')->toArray();
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'contact_name' => 'nullable|string|max:255',
@@ -74,6 +76,8 @@ class SubcontractorController extends Controller
 
     public function update(Request $request, Subcontractor $subcontractor)
     {
+        $tradeCategories = Category::tradeCategories()->pluck('value')->toArray();
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'contact_name' => 'nullable|string|max:255',

@@ -14,14 +14,15 @@
                 </svg>
                 Back to List
             </a>
-            <a href="{{ route('admin.procurement.purchase-orders.edit', $purchaseOrder->id) }}" class="btn btn-primary gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
-                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path>
-                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                </svg>
-                Edit
-            </a>
+            @if($purchaseOrder->status === 'draft')
+                <a href="{{ route('admin.procurement.purchase-orders.edit', $purchaseOrder->id) }}" class="btn btn-primary gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+                        <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    Edit
+                </a>
+            @endif
         </div>
     </div>
 
@@ -36,7 +37,7 @@
                 <div>
                     <label class="text-xs text-white-dark">Status</label>
                     <div>
-                        @php $sc = ['draft' => 'badge-outline-secondary', 'ordered' => 'badge-outline-info', 'partially_received' => 'badge-outline-warning', 'received' => 'badge-outline-success', 'cancelled' => 'badge-outline-danger']; @endphp
+                        @php $sc = ['draft' => 'badge-outline-secondary', 'submitted' => 'badge-outline-info', 'ordered' => 'badge-outline-success', 'partially_received' => 'badge-outline-warning', 'received' => 'badge-outline-success', 'cancelled' => 'badge-outline-danger']; @endphp
                         <span class="badge {{ $sc[$purchaseOrder->status] ?? 'badge-outline-secondary' }} capitalize">{{ str_replace('_', ' ', $purchaseOrder->status) }}</span>
                     </div>
                 </div>
@@ -70,9 +71,48 @@
                     <span class="text-xs text-gray-600 dark:text-gray-300">Created</span>
                     <span class="text-xs font-semibold dark:text-white">{{ $purchaseOrder->created_at->format('d M Y h:i A') }}</span>
                 </div>
+                @if($purchaseOrder->status === 'draft')
+                    <form action="{{ route('admin.procurement.purchase-orders.submit', $purchaseOrder) }}" method="POST" onsubmit="return confirm('Submit this purchase order for approval?');">
+                        @csrf
+                        <button type="submit" class="btn btn-primary w-full mt-3">Submit for Approval</button>
+                    </form>
+                @endif
             </div>
         </div>
     </div>
+
+    @php $approvalRecord = $purchaseOrder->approvals->sortByDesc('id')->first(); @endphp
+    @if($approvalRecord)
+    <div class="panel mt-6 border-l-4 border-info">
+        <h5 class="mb-3 text-base font-semibold">Approval Progress</h5>
+        <div class="flex items-center gap-2 mb-3">
+            @php $aStatus = $approvalRecord->status; @endphp
+            <span class="badge {{ $aStatus === 'approved' ? 'badge-outline-success' : ($aStatus === 'rejected' ? 'badge-outline-danger' : 'badge-outline-warning') }} capitalize">{{ $aStatus }}</span>
+            <span class="text-xs text-white-dark">Level {{ $approvalRecord->current_level }}</span>
+            @if($approvalRecord->submitted_by === auth()->id() && $approvalRecord->status === 'pending')
+                <form action="{{ route('admin.approvals.withdraw', $approvalRecord) }}" method="POST" class="inline" onsubmit="return confirm('Withdraw this approval request?');">
+                    @csrf
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Withdraw</button>
+                </form>
+            @endif
+        </div>
+        @if($approvalRecord->history->count() > 0)
+            <div class="space-y-2">
+                @foreach($approvalRecord->history as $h)
+                    <div class="flex items-center gap-3 rounded-lg bg-gray-50 p-2 text-xs dark:bg-gray-800">
+                        <span class="badge {{ $h->status === 'approved' ? 'badge-outline-success' : 'badge-outline-danger' }}">{{ $h->status }}</span>
+                        <span class="font-semibold">{{ $h->approver->name ?? 'Unknown' }}</span>
+                        <span class="text-white-dark">Level {{ $h->approval_level }}</span>
+                        @if($h->comment)<span class="text-gray-500 italic">— {{ $h->comment }}</span>@endif
+                        <span class="ml-auto text-white-dark">{{ $h->approved_at?->format('d M Y h:i A') }}</span>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <p class="text-xs text-white-dark">Awaiting approval from Level {{ $approvalRecord->current_level }} approvers.</p>
+        @endif
+    </div>
+    @endif
 
     <div class="panel mt-6">
         <h5 class="mb-4 text-base font-semibold">Items</h5>

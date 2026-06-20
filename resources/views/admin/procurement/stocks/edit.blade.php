@@ -46,6 +46,12 @@
                         value="{{ old('quantity', $stock->quantity) }}" />
                     @error('quantity') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
+                <div class="form-group">
+                    <label for="min_stock">Min Stock (Reorder Alert)</label>
+                    <input type="number" step="0.0001" min="0" name="min_stock" id="min_stock" class="form-input"
+                        value="{{ old('min_stock', $stock->min_stock) }}" />
+                    <p class="text-xs text-white-dark mt-1">Alert when stock falls below this level</p>
+                </div>
             </div>
 
             <div class="mt-8 flex items-center gap-4">

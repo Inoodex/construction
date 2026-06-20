@@ -47,11 +47,17 @@ class DashboardController extends Controller
         $pendingPOs         = PurchaseOrder::whereIn('status', ['draft', 'ordered'])->count();
         $totalPOValue       = PurchaseOrder::sum('total_amount');
 
-        // --- Inventory Alerts (stocks below threshold of 50 units) ---
+        // --- Inventory Alerts (stocks below min_stock threshold) ---
         $lowStockItems = Stock::with(['material', 'warehouse', 'site'])
-            ->where('quantity', '<=', 50)
+            ->where(function ($q) {
+                $q->where(function ($q2) {
+                    $q2->where('quantity', '>', 0)
+                       ->where('min_stock', '>', 0)
+                       ->whereColumn('quantity', '<', 'min_stock');
+                })->orWhere('quantity', '<=', 0);
+            })
             ->orderBy('quantity', 'asc')
-            ->take(5)
+            ->take(10)
             ->get();
 
         // --- Recent Projects ---

@@ -21,7 +21,7 @@
             <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
                 <div class="form-group">
                     <label for="purchase_order_id">Purchase Order <span class="text-danger">*</span></label>
-                    <select name="purchase_order_id" id="purchase_order_id" class="form-select" required onchange="loadPOItems(this.value)">
+                    <select name="purchase_order_id" id="purchase_order_id" class="form-select" required onchange="loadPOItems(this.value);filterSites(this.value)">
                         <option value="">Select PO</option>
                         @foreach($orders as $po)
                             <option value="{{ $po->id }}" {{ old('purchase_order_id') == $po->id ? 'selected' : '' }}>
@@ -32,9 +32,26 @@
                     @error('purchase_order_id') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
+                    <label for="site_id">Delivery Site</label>
+                    <select name="site_id" id="site_id" class="form-select">
+                        <option value="">Select Site</option>
+                        @foreach($sites as $site)
+                            <option value="{{ $site->id }}" data-project="{{ $site->project_id }}" {{ old('site_id') == $site->id ? 'selected' : '' }}>{{ $site->name }} ({{ $site->project->name }})</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group">
                     <label for="received_date">Received Date <span class="text-danger">*</span></label>
                     <input type="date" name="received_date" id="received_date" class="form-input" required
                         value="{{ old('received_date', date('Y-m-d')) }}" />
+                </div>
+                <div class="form-group">
+                    <label for="delivery_note">Delivery Note / Reference</label>
+                    <input type="text" name="delivery_note" id="delivery_note" class="form-input" value="{{ old('delivery_note') }}" placeholder="e.g. Challan #123" />
+                </div>
+                <div class="form-group">
+                    <label for="vehicle_number">Vehicle Number</label>
+                    <input type="text" name="vehicle_number" id="vehicle_number" class="form-input" value="{{ old('vehicle_number') }}" placeholder="e.g. Dhaka Metro 12-3456" />
                 </div>
             </div>
 
@@ -69,6 +86,22 @@
 @push('scripts')
 <script>
 const orders = @json($orders);
+const allSites = @json($sites);
+
+function filterSites(poId) {
+    const siteSelect = document.getElementById('site_id');
+    siteSelect.innerHTML = '<option value="">Select Site</option>';
+    if (!poId) return;
+    const po = orders.find(o => o.id == poId);
+    const projectId = po?.project_id;
+    if (!projectId) return;
+    allSites.filter(s => s.project_id == projectId).forEach(site => {
+        const opt = document.createElement('option');
+        opt.value = site.id;
+        opt.textContent = site.name;
+        siteSelect.appendChild(opt);
+    });
+}
 
 function loadPOItems(poId) {
     const tbody = document.getElementById('items-body');

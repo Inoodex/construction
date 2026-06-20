@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->text('address')->nullable();
             $table->string('trade_category'); // e.g. Cement, Steel, Bricks, Sand, Electrical, Plumbing, etc.
-            $table->enum('status', ['approved', 'pending', 'suspended'])->default('pending');
+            $table->enum('status', ['active', 'inactive', 'pending', 'approved', 'rejected', 'blacklisted'])->default('pending');
             $table->decimal('credit_limit', 15, 2)->default(0.00);
             $table->string('payment_terms')->nullable(); // e.g. Net 30, Cash on Delivery
             $table->unsignedTinyInteger('performance_rating')->default(5); // 1 to 5 stars

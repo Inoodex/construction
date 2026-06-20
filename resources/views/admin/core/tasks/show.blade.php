@@ -95,10 +95,61 @@
                     <span class="text-sm font-bold dark:text-white">{{ $task->dependentTasks->count() }}</span>
                 </div>
                 <div class="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+                    <span class="text-xs text-gray-600 dark:text-gray-300">Allocated Resources</span>
+                    <span class="text-sm font-bold dark:text-white">{{ $task->resources->count() }}</span>
+                </div>
+                <div class="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
                     <span class="text-xs text-gray-600 dark:text-gray-300">Created</span>
                     <span class="text-xs font-semibold dark:text-white">{{ $task->created_at->format('d M Y') }}</span>
                 </div>
             </div>
         </div>
     </div>
+
+    @if($task->resources->isNotEmpty())
+    <div class="mt-6">
+        <div class="panel">
+            <h5 class="mb-4 text-base font-semibold">Allocated Resources</h5>
+            <div class="datatable">
+                <div class="overflow-x-auto">
+                    <table class="table-hover w-full table-auto">
+                        <thead>
+                            <tr>
+                                <th>Resource</th>
+                                <th>Type</th>
+                                <th>Allocated Qty</th>
+                                <th>Period</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($task->resources as $tr)
+                                <tr>
+                                    <td class="font-semibold">{{ $tr->projectResource->name }}</td>
+                                    <td>
+                                        @php $rc = ['labor' => 'badge-outline-info', 'equipment' => 'badge-outline-warning', 'material' => 'badge-outline-primary']; @endphp
+                                        <span class="badge {{ $rc[$tr->projectResource->resource_type] ?? 'badge-outline-secondary' }} capitalize">{{ $tr->projectResource->resource_type }}</span>
+                                    </td>
+                                    <td>{{ number_format($tr->allocated_quantity, 2) }} {{ $tr->projectResource->unit }}</td>
+                                    <td class="text-xs">
+                                        @if($tr->start_date && $tr->end_date)
+                                            {{ $tr->start_date->format('d M') }} — {{ $tr->end_date->format('d M Y') }}
+                                        @elseif($tr->start_date)
+                                            From {{ $tr->start_date->format('d M Y') }}
+                                        @elseif($tr->end_date)
+                                            Until {{ $tr->end_date->format('d M Y') }}
+                                        @else
+                                            —
+                                        @endif
+                                    </td>
+                                    <td class="text-xs text-white-dark">{{ $tr->notes ?: '—' }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 @endsection

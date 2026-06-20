@@ -10,6 +10,10 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                 Back to Project
             </a>
+            <a href="{{ route('admin.core.projects.resource-gantt', $project) }}" class="btn btn-info gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line><line x1="7" y1="8" x2="13" y2="8"></line><line x1="7" y1="12" x2="17" y2="12"></line><line x1="7" y1="16" x2="11" y2="16"></line></svg>
+                Allocation Chart
+            </a>
             <a href="{{ route('admin.core.projects.resources.create', $project) }}" class="btn btn-primary gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                 Add Resource
@@ -63,6 +67,7 @@
                             <th>Unit</th>
                             <th>Unit Cost</th>
                             <th>Total Cost</th>
+                            <th>Allocated</th>
                             <th class="text-center">Action</th>
                         </tr>
                     </thead>
@@ -81,6 +86,25 @@
                                 <td class="text-xs">{{ $resource->unit ?? '—' }}</td>
                                 <td class="text-xs">৳{{ number_format($resource->unit_cost, 2) }}</td>
                                 <td class="text-xs font-semibold">৳{{ number_format($resource->total_cost, 2) }}</td>
+                                <td class="text-xs">
+                                    @php $allocPct = $resource->quantity > 0 ? ($resource->allocated_quantity / $resource->quantity) * 100 : 0; @endphp
+                                    <div class="flex items-center gap-2">
+                                        <div class="h-1.5 w-12 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+                                            <div class="h-full rounded-full {{ $allocPct >= 100 ? 'bg-success' : 'bg-primary' }}" style="width: {{ min($allocPct, 100) }}%"></div>
+                                        </div>
+                                        <span class="font-semibold">{{ number_format($resource->allocated_quantity, 1) }}/{{ number_format($resource->quantity, 1) }}</span>
+                                    </div>
+                                    @if($resource->taskAllocations->isNotEmpty())
+                                        <div class="mt-1 text-[10px] text-white-dark">
+                                            @foreach($resource->taskAllocations->take(2) as $ta)
+                                                <div>→ {{ $ta->task->name }}</div>
+                                            @endforeach
+                                            @if($resource->taskAllocations->count() > 2)
+                                                <div class="text-primary">+{{ $resource->taskAllocations->count() - 2 }} more</div>
+                                            @endif
+                                        </div>
+                                    @endif
+                                </td>
                                 <td class="text-center">
                                     <div class="flex items-center justify-center gap-2">
                                         <a href="{{ route('admin.core.projects.resources.edit', [$project, $resource]) }}" class="btn btn-sm btn-outline-primary">Edit</a>
@@ -92,7 +116,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="7" class="text-center">No resources planned yet.</td></tr>
+                            <tr><td colspan="8" class="text-center">No resources planned yet.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

@@ -43,4 +43,9 @@ class Site extends Model
     {
         return $this->hasMany(SitePhoto::class);
     }
+
+    public function goodsReceivedNotes(): HasMany
+    {
+        return $this->hasMany(GoodsReceivedNote::class);
+    }
 }

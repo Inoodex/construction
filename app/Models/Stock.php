@@ -15,10 +15,12 @@ class Stock extends Model
         'site_id',
         'material_id',
         'quantity',
+        'min_stock',
     ];
 
     protected $casts = [
         'quantity' => 'decimal:4',
+        'min_stock' => 'decimal:4',
     ];
 
     /**

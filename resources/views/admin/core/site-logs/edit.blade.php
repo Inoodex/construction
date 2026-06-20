@@ -33,7 +33,14 @@
                 </div>
                 <div class="form-group">
                     <label for="weather_conditions">Weather Conditions</label>
-                    <input type="text" name="weather_conditions" id="weather_conditions" class="form-input" value="{{ old('weather_conditions', $log->weather_conditions) }}" />
+                    <div class="flex gap-2">
+                        <input type="text" name="weather_conditions" id="weather_conditions" class="form-input" value="{{ old('weather_conditions', $log->weather_conditions) }}" />
+                        <button type="button" id="fetch-weather-btn" class="btn btn-outline-info whitespace-nowrap shrink-0" onclick="fetchWeather()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="inline-block mr-1"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                            Fetch Weather
+                        </button>
+                    </div>
+                    <div id="weather-status" class="mt-1 text-xs text-white-dark"></div>
                 </div>
                 <div class="form-group">
                     <label for="temperature">Temperature (°C)</label>
@@ -80,3 +87,41 @@
         </form>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+async function fetchWeather() {
+    const btn = document.getElementById('fetch-weather-btn');
+    const status = document.getElementById('weather-status');
+    const location = '{{ $site->location_address ?? "" }}';
+
+    if (!location) {
+        status.innerHTML = '<span class="text-danger">No location address set for this site.</span>';
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = 'Fetching...';
+    status.innerHTML = '<span class="text-info">Fetching weather data...</span>';
+
+    try {
+        const res = await fetch('{{ route('admin.core.weather.fetch') }}?location=' + encodeURIComponent(location));
+        const data = await res.json();
+
+        if (data.error) {
+            status.innerHTML = '<span class="text-danger">' + data.error + '</span>';
+            return;
+        }
+
+        document.getElementById('weather_conditions').value = data.weather_conditions;
+        document.getElementById('temperature').value = data.temperature;
+        status.innerHTML = '<span class="text-success">Weather fetched from ' + (data.location || 'Open-Meteo') + '</span>';
+    } catch (e) {
+        status.innerHTML = '<span class="text-danger">Network error. Try again.</span>';
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="inline-block mr-1"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg> Fetch Weather';
+    }
+}
+</script>
+@endpush

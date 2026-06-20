@@ -7,6 +7,7 @@ use App\Models\Material;
 use App\Models\Project;
 use App\Models\PurchaseRequisition;
 use App\Models\PurchaseRequisitionItem;
+use App\Services\ApprovalService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -78,7 +79,7 @@ class PurchaseRequisitionController extends Controller
 
     public function show(PurchaseRequisition $requisition)
     {
-        $requisition->load('project', 'requester', 'items.material');
+        $requisition->load('project', 'requester', 'items.material', 'approvals.history.approver');
         return view('admin.procurement.requisitions.show', compact('requisition'));
     }
 
@@ -123,6 +124,27 @@ class PurchaseRequisitionController extends Controller
 
         return redirect()->route('admin.procurement.requisitions.index')
             ->with('success', 'Requisition updated successfully.');
+    }
+
+    public function submitForApproval(PurchaseRequisition $requisition)
+    {
+        if ($requisition->status !== 'draft') {
+            return back()->with('error', 'Only draft requisitions can be submitted for approval.');
+        }
+
+        $totalAmount = $requisition->items->sum(fn($i) => ($i->quantity * ($i->estimated_unit_price ?? 0)));
+
+        $approvalService = app(ApprovalService::class);
+        $approval = $approvalService->submitForApproval($requisition, 'purchase_requisition', $totalAmount, Auth::id());
+
+        $requisition->update(['status' => $approval ? 'submitted' : 'approved']);
+
+        if (!$approval) {
+            return redirect()->route('admin.procurement.requisitions.index')
+                ->with('success', 'No approval workflow configured. Requisition auto-approved.');
+        }
+
+        return back()->with('success', 'Requisition submitted for approval.');
     }
 
     public function destroy(PurchaseRequisition $requisition)

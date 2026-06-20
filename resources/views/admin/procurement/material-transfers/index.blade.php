@@ -20,6 +20,13 @@
     <div class="panel mt-6">
         <div class="mb-5">
             <form action="{{ route('admin.procurement.material-transfers.index') }}" method="GET" class="flex items-center gap-3 w-full">
+                <select name="transfer_type" class="form-select flex-1">
+                    <option value="">All Types</option>
+                    <option value="warehouse_to_site" {{ request('transfer_type') == 'warehouse_to_site' ? 'selected' : '' }}>Warehouse → Site</option>
+                    <option value="site_to_warehouse" {{ request('transfer_type') == 'site_to_warehouse' ? 'selected' : '' }}>Site → Warehouse</option>
+                    <option value="site_to_site" {{ request('transfer_type') == 'site_to_site' ? 'selected' : '' }}>Site → Site</option>
+                    <option value="warehouse_to_warehouse" {{ request('transfer_type') == 'warehouse_to_warehouse' ? 'selected' : '' }}>Warehouse → Warehouse</option>
+                </select>
                 <select name="status" class="form-select flex-1">
                     <option value="">Status</option>
                     <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
@@ -28,7 +35,7 @@
                     <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                 </select>
                 <button type="submit" class="btn btn-primary">Filter</button>
-                @if(request()->anyFilled(['status']))
+                @if(request()->anyFilled(['status', 'transfer_type']))
                     <a href="{{ route('admin.procurement.material-transfers.index') }}" class="btn btn-outline-danger">Reset</a>
                 @endif
             </form>
@@ -40,8 +47,9 @@
                     <thead>
                         <tr>
                             <th>Transfer #</th>
-                            <th>From Warehouse</th>
-                            <th>To Site</th>
+                            <th>Type</th>
+                            <th>From</th>
+                            <th>To</th>
                             <th>Date</th>
                             <th>Status</th>
                             <th class="text-center">Action</th>
@@ -51,8 +59,9 @@
                         @forelse($transfers as $t)
                             <tr>
                                 <td><span class="font-mono text-xs font-semibold text-primary">{{ $t->transfer_number }}</span></td>
-                                <td class="text-xs">{{ $t->fromWarehouse->name ?? 'N/A' }}</td>
-                                <td class="text-xs">{{ $t->toSite->name ?? 'N/A' }}</td>
+                                <td><span class="badge badge-outline-info text-xs">{{ $t->transfer_type_label }}</span></td>
+                                <td class="text-xs">{{ $t->from_location_label }}</td>
+                                <td class="text-xs">{{ $t->to_location_label }}</td>
                                 <td class="text-xs">{{ $t->transfer_date->format('d M Y') }}</td>
                                 <td>
                                     @php
@@ -73,7 +82,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center">No transfers found.</td>
+                                <td colspan="7" class="text-center">No transfers found.</td>
                             </tr>
                         @endforelse
                     </tbody>

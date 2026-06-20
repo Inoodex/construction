@@ -70,6 +70,16 @@
         <div class="panel">
             <h5 class="mb-4 text-base font-semibold">Project Summary</h5>
             <div class="space-y-3">
+                <div class="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs text-gray-600 dark:text-gray-300">Progress</span>
+                        <span class="text-sm font-bold dark:text-white">{{ $project->progress }}%</span>
+                    </div>
+                    <div class="mt-2 h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+                        @php $progColor = $project->progress >= 100 ? 'bg-success' : ($project->progress >= 50 ? 'bg-primary' : ($project->progress >= 25 ? 'bg-warning' : 'bg-danger')); @endphp
+                        <div class="h-full rounded-full {{ $progColor }} transition-all duration-500" style="width: {{ $project->progress }}%"></div>
+                    </div>
+                </div>
                 <div class="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
                     <span class="text-xs text-gray-600 dark:text-gray-300">Total Sites</span>
                     <span class="text-sm font-bold dark:text-white">{{ $project->sites->count() }}</span>

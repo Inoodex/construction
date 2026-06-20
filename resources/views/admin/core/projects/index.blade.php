@@ -51,6 +51,7 @@
                             <th>Project Name</th>
                             <th>Budget</th>
                             <th>Timeline</th>
+                            <th>Progress</th>
                             <th>Status</th>
                             <th>Created By</th>
                             <th class="text-center">Action</th>
@@ -67,6 +68,15 @@
                                 <td class="text-xs">
                                     <div>{{ $project->start_date->format('d M Y') }}</div>
                                     <div class="text-white-dark">{{ $project->end_date->format('d M Y') }}</div>
+                                </td>
+                                <td>
+                                    <div class="flex items-center gap-2">
+                                        <div class="h-1.5 w-16 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+                                            @php $progColor = $project->progress >= 100 ? 'bg-success' : ($project->progress >= 50 ? 'bg-primary' : ($project->progress >= 25 ? 'bg-warning' : 'bg-danger')); @endphp
+                                            <div class="h-full rounded-full {{ $progColor }}" style="width: {{ $project->progress }}%"></div>
+                                        </div>
+                                        <span class="text-xs font-semibold">{{ $project->progress }}%</span>
+                                    </div>
                                 </td>
                                 <td>
                                     @php
@@ -89,7 +99,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center">No projects found.</td>
+                                <td colspan="7" class="text-center">No projects found.</td>
                             </tr>
                         @endforelse
                     </tbody>

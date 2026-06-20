@@ -8,7 +8,9 @@ use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
 use App\Models\PurchaseRequisition;
 use App\Models\Vendor;
+use App\Services\ApprovalService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class PurchaseOrderController extends Controller
@@ -83,7 +85,7 @@ class PurchaseOrderController extends Controller
 
     public function show(PurchaseOrder $purchaseOrder)
     {
-        $purchaseOrder->load('vendor', 'requisition', 'items.material');
+        $purchaseOrder->load('vendor', 'requisition', 'items.material', 'approvals.history.approver');
         return view('admin.procurement.purchase-orders.show', compact('purchaseOrder'));
     }
 
@@ -102,7 +104,7 @@ class PurchaseOrderController extends Controller
             'purchase_requisition_id' => 'nullable|exists:purchase_requisitions,id',
             'vendor_id' => 'required|exists:vendors,id',
             'order_date' => 'required|date',
-            'status' => 'required|in:draft,ordered,partially_received,received,cancelled',
+            'status' => 'required|in:draft,submitted,ordered,partially_received,received,cancelled',
             'items' => 'required|array|min:1',
             'items.*.material_id' => 'required|exists:materials,id',
             'items.*.quantity' => 'required|numeric|min:0.0001',
@@ -134,6 +136,29 @@ class PurchaseOrderController extends Controller
 
         return redirect()->route('admin.procurement.purchase-orders.index')
             ->with('success', 'PO updated successfully.');
+    }
+
+    public function submitForApproval(PurchaseOrder $purchaseOrder)
+    {
+        if ($purchaseOrder->status !== 'draft') {
+            return back()->with('error', 'Only draft purchase orders can be submitted for approval.');
+        }
+
+        $approvalService = app(ApprovalService::class);
+        $approval = $approvalService->submitForApproval($purchaseOrder, 'purchase_order', $purchaseOrder->total_amount, Auth::id());
+
+        if ($approval) {
+            $purchaseOrder->update(['status' => 'submitted']);
+        } else {
+            $purchaseOrder->update(['status' => 'ordered']);
+        }
+
+        if (!$approval) {
+            return redirect()->route('admin.procurement.purchase-orders.index')
+                ->with('success', 'No approval workflow configured. Purchase order auto-approved.');
+        }
+
+        return back()->with('success', 'Purchase order submitted for approval.');
     }
 
     public function destroy(PurchaseOrder $purchaseOrder)

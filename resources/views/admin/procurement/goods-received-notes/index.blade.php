@@ -19,14 +19,20 @@
 
     <div class="panel mt-6">
         <div class="mb-5">
-            <form action="{{ route('admin.procurement.goods-received-notes.index') }}" method="GET" class="flex items-center gap-3 w-full">
+            <form action="{{ route('admin.procurement.goods-received-notes.index') }}" method="GET" class="flex items-center gap-3 w-full flex-wrap">
                 <select name="status" class="form-select flex-1">
                     <option value="">Status</option>
                     <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
                     <option value="verified" {{ request('status') == 'verified' ? 'selected' : '' }}>Verified</option>
                 </select>
+                <select name="site_id" class="form-select flex-1">
+                    <option value="">All Sites</option>
+                    @foreach($sites ?? [] as $site)
+                        <option value="{{ $site->id }}" {{ request('site_id') == $site->id ? 'selected' : '' }}>{{ $site->name }}</option>
+                    @endforeach
+                </select>
                 <button type="submit" class="btn btn-primary">Filter</button>
-                @if(request()->anyFilled(['status']))
+                @if(request()->anyFilled(['status', 'site_id']))
                     <a href="{{ route('admin.procurement.goods-received-notes.index') }}" class="btn btn-outline-danger">Reset</a>
                 @endif
             </form>
@@ -39,6 +45,7 @@
                         <tr>
                             <th>GRN Number</th>
                             <th>PO Reference</th>
+                            <th>Delivery Site</th>
                             <th>Received Date</th>
                             <th>Received By</th>
                             <th>Status</th>
@@ -50,6 +57,7 @@
                             <tr>
                                 <td><span class="font-mono text-xs font-semibold text-primary">{{ $note->grn_number }}</span></td>
                                 <td class="text-xs">{{ $note->purchaseOrder->po_number ?? 'N/A' }}</td>
+                                <td class="text-xs">{{ $note->site->name ?? '—' }}</td>
                                 <td class="text-xs">{{ $note->received_date->format('d M Y') }}</td>
                                 <td class="text-xs">{{ $note->receiver->name ?? 'N/A' }}</td>
                                 <td>
@@ -68,7 +76,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center">No GRNs found.</td>
+                                <td colspan="7" class="text-center">No GRNs found.</td>
                             </tr>
                         @endforelse
                     </tbody>

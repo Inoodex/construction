@@ -93,10 +93,12 @@ class ApprovalService
                     DB::commit();
                     return false; // More approvals needed
                 } else {
-                    // Final approval
+                    // Final approval — update approvable model status
                     $approval->update([
                         'status' => 'approved',
                     ]);
+
+                    $this->updateApprovableStatus($approval, 'approved');
 
                     DB::commit();
                     return true; // Fully approved
@@ -138,6 +140,8 @@ class ApprovalService
             $approval->update([
                 'status' => 'rejected',
             ]);
+
+            $this->updateApprovableStatus($approval, 'rejected');
 
             DB::commit();
         } catch (\Exception $e) {
@@ -214,6 +218,34 @@ class ApprovalService
         }
 
         $approval->update(['status' => 'withdrawn']);
+
+        $this->updateApprovableStatus($approval, 'draft');
+
         return true;
+    }
+
+    /**
+     * Update the approvable model's status based on approval outcome.
+     */
+    protected function updateApprovableStatus(Approval $approval, string $approvalStatus): void
+    {
+        $model = $approval->approvable;
+        if (!$model) return;
+
+        $documentType = $approval->workflow->document_type ?? '';
+
+        if ($approvalStatus === 'approved') {
+            if ($documentType === 'purchase_requisition') {
+                $model->status = 'approved';
+            } elseif ($documentType === 'purchase_order') {
+                $model->status = 'ordered';
+            }
+        } elseif ($approvalStatus === 'rejected') {
+            $model->status = 'rejected';
+        } elseif ($approvalStatus === 'draft') {
+            $model->status = 'draft';
+        }
+
+        $model->save();
     }
 }

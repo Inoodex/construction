@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin\Procurement;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Vendor;
+use App\Models\VendorDocument;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class VendorController extends Controller
@@ -26,6 +28,10 @@ class VendorController extends Controller
             $query->where('status', $request->status);
         }
 
+        if ($request->filled('qualification_status')) {
+            $query->where('qualification_status', $request->qualification_status);
+        }
+
         if ($request->filled('trade_category')) {
             $query->where('trade_category', $request->trade_category);
         }
@@ -44,6 +50,8 @@ class VendorController extends Controller
 
     public function store(Request $request)
     {
+        $tradeCategories = Category::tradeCategories()->pluck('value')->toArray();
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'contact_name' => 'nullable|string|max:255',
@@ -66,6 +74,7 @@ class VendorController extends Controller
 
     public function show(Vendor $vendor)
     {
+        $vendor->load('documents', 'qualifiedBy');
         return view('admin.procurement.vendors.show', compact('vendor'));
     }
 
@@ -76,6 +85,8 @@ class VendorController extends Controller
 
     public function update(Request $request, Vendor $vendor)
     {
+        $tradeCategories = Category::tradeCategories()->pluck('value')->toArray();
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'contact_name' => 'nullable|string|max:255',
@@ -102,5 +113,65 @@ class VendorController extends Controller
         $vendor->delete();
         return redirect()->route('admin.procurement.vendors.index')
             ->with('success', 'Vendor deleted successfully.');
+    }
+
+    public function uploadDocument(Request $request, Vendor $vendor)
+    {
+        $request->validate([
+            'document_type' => 'required|string|max:100',
+            'title' => 'required|string|max:255',
+            'file' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
+            'expiry_date' => 'nullable|date',
+            'notes' => 'nullable|string|max:1000',
+        ]);
+
+        $filePath = $request->file('file')->store('vendor-documents', 'public');
+
+        $vendor->documents()->create([
+            'document_type' => $request->document_type,
+            'title' => $request->title,
+            'file_path' => $filePath,
+            'expiry_date' => $request->expiry_date,
+            'notes' => $request->notes,
+            'status' => 'pending',
+        ]);
+
+        return back()->with('success', 'Document uploaded successfully.');
+    }
+
+    public function deleteDocument(VendorDocument $document)
+    {
+        Storage::disk('public')->delete($document->file_path);
+        $document->delete();
+        return back()->with('success', 'Document deleted successfully.');
+    }
+
+    public function updateQualification(Request $request, Vendor $vendor)
+    {
+        $request->validate([
+            'qualification_status' => 'required|in:unqualified,under_review,qualified,rejected',
+            'qualification_notes' => 'nullable|string|max:1000',
+        ]);
+
+        $vendor->qualification_status = $request->qualification_status;
+
+        if ($request->qualification_status === 'qualified') {
+            $vendor->qualified_at = now();
+            $vendor->qualified_by = auth()->id();
+        } elseif ($request->qualification_status === 'unqualified') {
+            $vendor->qualified_at = null;
+            $vendor->qualified_by = null;
+        }
+
+        $vendor->save();
+
+        $statusLabels = [
+            'unqualified' => 'Not Applied',
+            'under_review' => 'Under Review',
+            'qualified' => 'Qualified',
+            'rejected' => 'Rejected',
+        ];
+
+        return back()->with('success', 'Vendor qualification status updated to "' . ($statusLabels[$request->qualification_status] ?? $request->qualification_status) . '".');
     }
 }

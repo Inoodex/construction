@@ -32,6 +32,12 @@ class StockController extends Controller
             }
         }
 
+        if ($request->boolean('low_stock')) {
+            $query->where('quantity', '>', 0)
+                  ->where('min_stock', '>', 0)
+                  ->whereColumn('quantity', '<', 'min_stock');
+        }
+
         $stocks = $query->latest()->paginate(15);
         $materials = Material::all();
         $warehouses = Warehouse::where('status', 'active')->get();
@@ -54,6 +60,7 @@ class StockController extends Controller
             'warehouse_id' => 'nullable|exists:warehouses,id',
             'site_id' => 'nullable|exists:sites,id',
             'quantity' => 'required|numeric|min:0',
+            'min_stock' => 'nullable|numeric|min:0',
         ]);
 
         if (!$validated['warehouse_id'] && !$validated['site_id']) {
@@ -66,7 +73,10 @@ class StockController extends Controller
                 'site_id' => $validated['site_id'],
                 'material_id' => $validated['material_id'],
             ],
-            ['quantity' => DB::raw('quantity + ' . $validated['quantity'])]
+            [
+                'quantity' => DB::raw('quantity + ' . $validated['quantity']),
+                'min_stock' => $validated['min_stock'] ?? 0,
+            ]
         );
 
         return redirect()->route('admin.procurement.stocks.index')
@@ -91,9 +101,13 @@ class StockController extends Controller
     {
         $validated = $request->validate([
             'quantity' => 'required|numeric|min:0',
+            'min_stock' => 'nullable|numeric|min:0',
         ]);
 
-        $stock->update(['quantity' => $validated['quantity']]);
+        $stock->update([
+            'quantity' => $validated['quantity'],
+            'min_stock' => $validated['min_stock'] ?? $stock->min_stock,
+        ]);
 
         return redirect()->route('admin.procurement.stocks.index')
             ->with('success', 'Stock quantity updated successfully.');

@@ -47,6 +47,18 @@
                     <label class="text-xs text-white-dark">Received By</label>
                     <p class="font-semibold">{{ $goodsReceivedNote->receiver->name ?? 'N/A' }}</p>
                 </div>
+                <div>
+                    <label class="text-xs text-white-dark">Delivery Site</label>
+                    <p class="font-semibold">{{ $goodsReceivedNote->site->name ?? '—' }}</p>
+                </div>
+                <div>
+                    <label class="text-xs text-white-dark">Vehicle Number</label>
+                    <p class="font-semibold">{{ $goodsReceivedNote->vehicle_number ?: '—' }}</p>
+                </div>
+                <div>
+                    <label class="text-xs text-white-dark">Delivery Note</label>
+                    <p class="font-semibold">{{ $goodsReceivedNote->delivery_note ?: '—' }}</p>
+                </div>
             </div>
         </div>
 

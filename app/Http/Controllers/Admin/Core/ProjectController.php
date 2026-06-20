@@ -121,6 +121,45 @@ class ProjectController extends Controller
         ));
     }
 
+    public function resourceGanttIndex()
+    {
+        $projects = Project::withCount(['resources' => function ($q) {
+            $q->whereHas('taskAllocations');
+        }])->orderBy('name')->get();
+
+        return view('admin.core.projects.resource-gantt-index', compact('projects'));
+    }
+
+    public function resourceGantt(Project $project)
+    {
+        $project->load('resources.taskAllocations.task', 'tasks');
+
+        $resources = $project->resources;
+
+        $allDates = collect();
+        foreach ($resources as $r) {
+            foreach ($r->taskAllocations as $ta) {
+                if ($ta->start_date) $allDates->push($ta->start_date);
+                if ($ta->end_date) $allDates->push($ta->end_date);
+            }
+        }
+
+        $chartStart = $allDates->min() ?? now()->startOfMonth();
+        $chartEnd = $allDates->max() ?? now()->endOfMonth();
+        $totalDays = $chartStart->diffInDays($chartEnd) ?: 1;
+
+        $weeks = [];
+        $current = $chartStart->copy()->startOfWeek();
+        while ($current->lte($chartEnd)) {
+            $weeks[] = $current->copy();
+            $current->addWeek();
+        }
+
+        return view('admin.core.projects.resource-gantt', compact(
+            'project', 'resources', 'chartStart', 'chartEnd', 'totalDays', 'weeks'
+        ));
+    }
+
     public function destroy(Project $project)
     {
         $project->delete();

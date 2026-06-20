@@ -57,7 +57,7 @@ class SiteController extends Controller
 
     public function show(Site $site)
     {
-        $site->load('project', 'tasks', 'siteLogs', 'photos');
+        $site->load('project', 'tasks', 'siteLogs', 'photos', 'goodsReceivedNotes.items.material');
         return view('admin.core.sites.show', compact('site'));
     }
 

@@ -35,6 +35,7 @@ class MaterialController extends Controller
             'name' => 'required|string|max:255',
             'sku' => 'nullable|string|max:100|unique:materials,sku',
             'unit' => 'required|string|max:50',
+            'reorder_level' => 'nullable|numeric|min:0',
             'description' => 'nullable|string',
         ]);
 
@@ -60,6 +61,7 @@ class MaterialController extends Controller
             'name' => 'required|string|max:255',
             'sku' => 'nullable|string|max:100|unique:materials,sku,' . $material->id,
             'unit' => 'required|string|max:50',
+            'reorder_level' => 'nullable|numeric|min:0',
             'description' => 'nullable|string',
         ]);
 

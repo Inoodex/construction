@@ -105,6 +105,13 @@
                 <textarea name="description" id="description" class="form-textarea" rows="4">{{ old('description', $task->description) }}</textarea>
             </div>
 
+            <div class="mt-6 border-t pt-6">
+                <h5 class="mb-4 text-base font-semibold">Resource Allocations</h5>
+                <div id="resource-allocations">
+                    <div class="text-sm text-white-dark">Select a project above to see available resources.</div>
+                </div>
+            </div>
+
             <div class="mt-8 flex items-center gap-4">
                 <button type="submit" class="btn btn-primary px-10">Update Task</button>
                 <button type="button" onclick="window.location.href='{{ route('admin.core.tasks.index') }}'"
@@ -119,6 +126,8 @@
 const sites = @json($sites);
 const phases = @json($phases);
 const milestones = @json($milestones);
+const allResources = @json($resources);
+const existingAllocations = @json($task->resources->keyBy('project_resource_id'));
 const currentPhase = '{{ old('phase_id', $task->phase_id) }}';
 const currentMilestone = '{{ old('milestone_id', $task->milestone_id) }}';
 
@@ -164,5 +173,79 @@ function fetchMilestones(projectId) {
         msSelect.appendChild(opt);
     });
 }
+
+document.getElementById('project_id').addEventListener('change', function() {
+    renderResourceAllocations(this.value);
+});
+
+function renderResourceAllocations(projectId) {
+    const container = document.getElementById('resource-allocations');
+    if (!projectId) {
+        container.innerHTML = '<div class="text-sm text-white-dark">Select a project above to see available resources.</div>';
+        return;
+    }
+    const projectResources = allResources.filter(r => r.project_id == projectId);
+    if (projectResources.length === 0) {
+        container.innerHTML = '<div class="text-sm text-white-dark">No resources planned for this project.</div>';
+        return;
+    }
+    let html = '<div class="grid grid-cols-1 gap-4">';
+    projectResources.forEach(r => {
+        const alloc = existingAllocations[r.id];
+        const checked = alloc ? 'checked' : '';
+        const hiddenClass = alloc ? '' : 'hidden';
+        const qty = alloc ? alloc.allocated_quantity : 0;
+        const sd = alloc && alloc.start_date ? alloc.start_date.split(' ')[0] : '';
+        const ed = alloc && alloc.end_date ? alloc.end_date.split(' ')[0] : '';
+        const notes = alloc ? (alloc.notes || '') : '';
+        const unitLabel = r.unit ? ' (' + r.unit + ')' : '';
+        html += `
+            <div class="rounded-lg border p-4 dark:border-gray-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <span class="font-semibold">${r.name}</span>
+                        <span class="ml-2 badge badge-outline-${r.resource_type === 'labor' ? 'info' : r.resource_type === 'equipment' ? 'warning' : 'primary'} capitalize text-xs">${r.resource_type}</span>
+                        <span class="ml-2 text-xs text-white-dark">Available: ${parseFloat(r.quantity).toFixed(2)} ${r.unit || ''}</span>
+                    </div>
+                    <label class="flex items-center gap-2 text-sm">
+                        <input type="checkbox" class="form-checkbox resource-toggle" data-resource-id="${r.id}" onchange="toggleResourceRow(${r.id})" ${checked} />
+                        Allocate
+                    </label>
+                </div>
+                <div id="resource-row-${r.id}" class="mt-3 grid grid-cols-1 gap-3 md:grid-cols-4 ${hiddenClass}">
+                    <input type="hidden" name="resource_allocations[${r.id}][project_resource_id]" value="${r.id}" />
+                    <div class="form-group">
+                        <label class="text-xs text-white-dark">Quantity${unitLabel}</label>
+                        <input type="number" name="resource_allocations[${r.id}][allocated_quantity]" class="form-input" step="0.01" min="0" value="${qty}" />
+                    </div>
+                    <div class="form-group">
+                        <label class="text-xs text-white-dark">Start Date</label>
+                        <input type="date" name="resource_allocations[${r.id}][start_date]" class="form-input" value="${sd}" />
+                    </div>
+                    <div class="form-group">
+                        <label class="text-xs text-white-dark">End Date</label>
+                        <input type="date" name="resource_allocations[${r.id}][end_date]" class="form-input" value="${ed}" />
+                    </div>
+                    <div class="form-group">
+                        <label class="text-xs text-white-dark">Notes</label>
+                        <input type="text" name="resource_allocations[${r.id}][notes]" class="form-input" placeholder="Optional" value="${notes}" />
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function toggleResourceRow(id) {
+    const row = document.getElementById('resource-row-' + id);
+    row.classList.toggle('hidden');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const pid = document.getElementById('project_id').value;
+    if (pid) renderResourceAllocations(pid);
+});
 </script>
 @endpush

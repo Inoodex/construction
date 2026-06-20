@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Phase;
 use App\Models\Milestone;
 use App\Models\Project;
+use App\Models\ProjectResource;
 use App\Models\Site;
 use App\Models\Task;
 use App\Models\User;
@@ -49,7 +50,8 @@ class TaskController extends Controller
         $sites = Site::all();
         $phases = Phase::with('project')->get();
         $milestones = Milestone::with('project')->get();
-        return view('admin.core.tasks.create', compact('projects', 'users', 'sites', 'phases', 'milestones'));
+        $resources = ProjectResource::with('project')->get();
+        return view('admin.core.tasks.create', compact('projects', 'users', 'sites', 'phases', 'milestones', 'resources'));
     }
 
     public function store(Request $request)
@@ -66,9 +68,23 @@ class TaskController extends Controller
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'priority' => 'required|in:low,medium,high,critical',
             'status' => 'required|in:open,in_progress,review,closed',
+            'resource_allocations' => 'nullable|array',
+            'resource_allocations.*.project_resource_id' => 'required|exists:project_resources,id',
+            'resource_allocations.*.allocated_quantity' => 'required|numeric|min:0',
+            'resource_allocations.*.start_date' => 'nullable|date',
+            'resource_allocations.*.end_date' => 'nullable|date',
+            'resource_allocations.*.notes' => 'nullable|string|max:500',
         ]);
 
-        Task::create($validated);
+        $task = Task::create($validated);
+
+        if ($request->filled('resource_allocations')) {
+            foreach ($request->resource_allocations as $alloc) {
+                if (($alloc['allocated_quantity'] ?? 0) > 0) {
+                    $task->resources()->create($alloc);
+                }
+            }
+        }
 
         return redirect()->route('admin.core.tasks.index')
             ->with('success', 'Task created successfully.');
@@ -76,7 +92,7 @@ class TaskController extends Controller
 
     public function show(Task $task)
     {
-        $task->load('project', 'site', 'assignee', 'dependencies', 'dependentTasks');
+        $task->load('project', 'site', 'assignee', 'dependencies', 'dependentTasks', 'resources.projectResource');
         return view('admin.core.tasks.show', compact('task'));
     }
 
@@ -87,7 +103,9 @@ class TaskController extends Controller
         $sites = Site::all();
         $phases = Phase::with('project')->get();
         $milestones = Milestone::with('project')->get();
-        return view('admin.core.tasks.edit', compact('task', 'projects', 'users', 'sites', 'phases', 'milestones'));
+        $resources = ProjectResource::with('project')->get();
+        $task->load('resources');
+        return view('admin.core.tasks.edit', compact('task', 'projects', 'users', 'sites', 'phases', 'milestones', 'resources'));
     }
 
     public function update(Request $request, Task $task)
@@ -105,9 +123,24 @@ class TaskController extends Controller
             'priority' => 'required|in:low,medium,high,critical',
             'status' => 'required|in:open,in_progress,review,closed',
             'progress_percent' => 'nullable|integer|min:0|max:100',
+            'resource_allocations' => 'nullable|array',
+            'resource_allocations.*.project_resource_id' => 'required|exists:project_resources,id',
+            'resource_allocations.*.allocated_quantity' => 'required|numeric|min:0',
+            'resource_allocations.*.start_date' => 'nullable|date',
+            'resource_allocations.*.end_date' => 'nullable|date',
+            'resource_allocations.*.notes' => 'nullable|string|max:500',
         ]);
 
         $task->update($validated);
+
+        $task->resources()->delete();
+        if ($request->filled('resource_allocations')) {
+            foreach ($request->resource_allocations as $alloc) {
+                if (($alloc['allocated_quantity'] ?? 0) > 0) {
+                    $task->resources()->create($alloc);
+                }
+            }
+        }
 
         return redirect()->route('admin.core.tasks.index')
             ->with('success', 'Task updated successfully.');

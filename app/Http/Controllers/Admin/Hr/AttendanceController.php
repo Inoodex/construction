@@ -45,6 +45,8 @@ class AttendanceController extends Controller
             'attendances' => 'required|array',
             'attendances.*.employee_id' => 'required|exists:employees,id',
             'attendances.*.status' => 'required|in:present,absent,late,half-day,holiday',
+            'attendances.*.clock_in' => 'nullable|date_format:H:i',
+            'attendances.*.clock_out' => 'nullable|date_format:H:i',
             'attendances.*.note' => 'nullable|string|max:255',
         ]);
 
@@ -52,15 +54,64 @@ class AttendanceController extends Controller
         $count = 0;
 
         foreach ($validated['attendances'] as $att) {
+            $data = [
+                'status' => $att['status'],
+                'note' => $att['note'] ?? null,
+            ];
+
+            if (!empty($att['clock_in'])) {
+                $data['clock_in'] = $date . ' ' . $att['clock_in'];
+            }
+            if (!empty($att['clock_out'])) {
+                $data['clock_out'] = $date . ' ' . $att['clock_out'];
+            }
+
             Attendance::updateOrCreate(
                 ['employee_id' => $att['employee_id'], 'date' => $date],
-                ['status' => $att['status'], 'note' => $att['note'] ?? null]
+                $data
             );
             $count++;
         }
 
         return redirect()->route('admin.hr.attendance.index')
             ->with('success', "Attendance recorded for {$count} employees on {$date}.");
+    }
+
+    public function summary(Request $request)
+    {
+        $month = $request->input('month', now()->format('Y-m'));
+
+        $employees = Employee::active()->orderBy('full_name')->get();
+        $summary = [];
+
+        foreach ($employees as $emp) {
+            $records = Attendance::where('employee_id', $emp->id)
+                ->whereYear('date', substr($month, 0, 4))
+                ->whereMonth('date', substr($month, 5, 2))
+                ->get();
+
+            $summary[] = [
+                'employee' => $emp,
+                'present' => $records->where('status', 'present')->count(),
+                'absent' => $records->where('status', 'absent')->count(),
+                'late' => $records->where('status', 'late')->count(),
+                'half_day' => $records->where('status', 'half-day')->count(),
+                'holiday' => $records->where('status', 'holiday')->count(),
+                'total_hours' => $records->sum(fn($r) =>
+                    $r->clock_in && $r->clock_out
+                        ? max(0, $r->clock_out->diffInMinutes($r->clock_in) / 60)
+                        : 0
+                ),
+            ];
+        }
+
+        $months = [];
+        for ($i = 0; $i < 12; $i++) {
+            $m = now()->subMonths($i);
+            $months[$m->format('Y-m')] = $m->format('F Y');
+        }
+
+        return view('admin.hr.attendance.summary', compact('summary', 'month', 'months'));
     }
 
     public function destroy(Attendance $attendance)
