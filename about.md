@@ -86,6 +86,9 @@ employees → wage_slips (monthly pay calculation from attendance)
 
 equipment → equipment_maintenance (preventive/corrective/inspection tracking)
 
+fuel_logs (equipment fuel consumption tracking)
+toolbox_talks (safety briefing records)
+
 site_logs, site_photos (field reporting)
 inspection_checklists → inspection_checklist_items
 work_orders
@@ -164,12 +167,20 @@ report_templates, scheduled_reports
 - Resource Allocation Chart: Gantt timeline view at `projects/{id}/resource-gantt` + global picker at `resource-gantt`
 - Sidebar/Horizontal: Core → Execution → Allocation Chart
 
+### Error Handling
+- Custom error pages for 403, 404, 419, 500, and 503 — each with branded SVG illustration, descriptive message, and action buttons (Go Back / Go Home / Try Again / Log In)
+- `bootstrap/app.php` exception handler renders error views for `AuthenticationException`, `AccessDeniedHttpException`, `NotFoundHttpException`, `TokenMismatchException`, `ThrottleRequestsException`, `HttpException`, `ModelNotFoundException`, and `QueryException`
+- `QueryException` handler provides user-friendly messages for integrity constraint violations (foreign key conflicts), duplicate entries, and missing tables
+- Fallback catches all remaining `Throwable` and renders the 500 error page
+- `APP_DEBUG=false` by default; set to `true` in `.env` for development stack traces
+
 ### HR — Attendance & Timesheets
 - `Attendance` with `clock_in`/`clock_out` timestamps + status (present/absent/late/half-day/holiday)
 - Bulk daily register via create form with select-all status buttons + time inputs
 - Monthly summary per employee: counts by status + total worked hours
 - `Timesheet` entries: employee logs hours against a project with start/end time and description
 - Filterable timesheet list by employee, project, and date range
+- Sidebar sub-menu organized into 5 groups: People, Payroll, Equipment & Assets, Safety & Compliance, Training
 
 ### HR — Wage Slips
 - `WageSlip` auto-generated from attendance data per month
@@ -223,7 +234,7 @@ report_templates, scheduled_reports
 
 | File | Description |
 |---|---|
-| `routes/web.php` (644 lines) | All app routes: `/dashboard`, `/dashboard/settings|categories|roles`, `/dashboard/core/*`, `/dashboard/procurement/*`, `/dashboard/hr/*`, `/dashboard/reports/*`, `/dashboard/finance/*`, `/dashboard/approvals/*` |
+| `routes/web.php` (578 lines) | All app routes: `/dashboard`, `/dashboard/settings|categories|roles`, `/dashboard/core/*`, `/dashboard/procurement/*`, `/dashboard/hr/*`, `/dashboard/reports/*`, `/dashboard/finance/*`, `/dashboard/approvals/*` |
 | `routes/api.php` | Single Sanctum `/api/user` endpoint |
 | `routes/console.php` | Artisan commands |
 
