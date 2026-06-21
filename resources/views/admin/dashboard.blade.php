@@ -51,7 +51,7 @@
     <div class="panel stat-card">
         <div class="flex items-center justify-between">
             <div>
-                <p class="text-3xl font-bold text-success">RM{{ number_format($totalBudget/1000000, 1) }}M</p>
+                <p class="text-3xl font-bold text-success">BDT{{ number_format($totalBudget/10000000, 2) }}Cr</p>
                 <p class="mt-1 text-xs font-semibold uppercase tracking-wider text-gray-500">Total Budget</p>
                 <p class="mt-2 text-xs text-gray-400">{{ $totalSites }} sites</p>
             </div>
