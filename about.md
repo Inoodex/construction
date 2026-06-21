@@ -19,11 +19,11 @@ app/
 │   ├── Core/          → projects, sites, tasks, phases, milestones, work-orders, inspection-checklists, site-logs, site-photos, project-resources
 │   ├── Finance/       → budgets, boqs, tenders, invoices, ipas, bills, rate-analysis, chart-of-accounts, journal-entries, general-ledger, trial-balance, receivables, bank-guarantees, balance-sheet, income-statement, labour-entries, aging, cost-overrun-alerts, material-takeoffs
 │   ├── Procurement/   → vendors, materials, purchase-requisitions, purchase-orders, goods-received-notes, warehouses, stocks, material-transfers, material-issue-slips, material-wastages, subcontractors
-│   ├── Hr/            → employees, attendance, timesheets, wage-slips, equipment, leave-requests
+│   ├── Hr/            → employees, attendance, timesheets, wage-slips, equipment, leave-requests, training-records, ppe-issuances, incident-reports, certifications, hse-checklists, fuel-logs, toolbox-talks
 │   ├── Reports/       → financial, report-templates, scheduled-reports
 │   ├── ApprovalController, CategoryController, DashboardController, RoleController, SettingController
 ├── Imports/BoqItemsImport.php         # Excel BOQ import with validation
-├── Models/           → 78 Eloquent models (see below)
+├── Models/           → 86 Eloquent models (see below)
 ├── Traits/Approvable.php             # Polymorphic approval trait
 ├── Services/
 │   ├── ApprovalService.php            # Multi-level approval workflow engine
@@ -34,7 +34,7 @@ app/
 
 ---
 
-## Models (84 total)
+## Models (86 total)
 
 | Domain | Models |
 |---|---|
@@ -223,7 +223,7 @@ report_templates, scheduled_reports
 
 | File | Description |
 |---|---|
-| `routes/web.php` (562 lines) | All app routes: `/dashboard`, `/dashboard/settings|categories|roles`, `/dashboard/core/*`, `/dashboard/procurement/*`, `/dashboard/hr/*`, `/dashboard/reports/*`, `/dashboard/finance/*`, `/dashboard/approvals/*` |
+| `routes/web.php` (644 lines) | All app routes: `/dashboard`, `/dashboard/settings|categories|roles`, `/dashboard/core/*`, `/dashboard/procurement/*`, `/dashboard/hr/*`, `/dashboard/reports/*`, `/dashboard/finance/*`, `/dashboard/approvals/*` |
 | `routes/api.php` | Single Sanctum `/api/user` endpoint |
 | `routes/console.php` | Artisan commands |
 
@@ -237,6 +237,7 @@ core/      → projects, sites, tasks, phases, milestones, work-orders, inspecti
 finance/   → budgets, boqs, tenders, invoices, ipas, bills, rate-analysis, chart-of-accounts, journal-entries, general-ledger, trial-balance, receivables, bank-guarantees, balance-sheet, income-statement, labour-entries, aging, cost-overrun-alerts
 procurement/ → vendors, materials, requisitions, purchase-orders, goods-received-notes, warehouses, stocks, material-transfers, material-issue-slips, material-wastages, subcontractors
 hr/        → employees, attendance, timesheets, wage-slips, equipment, leaves, training-records, ppe-issuances, incident-reports, certifications, hse-checklists, fuel-logs, toolbox-talks
+            (sidebar categorized: People, Payroll, Equipment & Assets, Safety & Compliance, Training)
 reports/   → financial, report-templates, scheduled-reports
 approvals/ → index, show, workflows
 settings/  → index
@@ -252,7 +253,7 @@ dashboard.blade.php, index.blade.php
 | 1 | Core | Project Management, Task & Work Orders, Site Management |
 | 2 | Finance | Budgeting & Cost Control, Estimating & BOQ, Tender Management, Invoicing & AR, Accounts Payable, General Accounting, Bank Guarantees |
 | 3 | Procurement | Vendor Management, Procurement (PR/PO/GRN), Inventory & Warehouse, Subcontractor Management |
-| 4 | HR | HR & Payroll (Attendance, Timesheets, Wage Slips), Equipment & Assets, Safety & Compliance |
+| 4 | HR | HR & Payroll (People, Payroll, Equipment & Assets, Safety & Compliance, Training) |
 | 5 | Quality | Quality Control/QA, Risk Management |
 | 6 | Client | CRM & Clients, Document Management, Contract Management |
 | 7 | System | Settings & Configuration, Reports & Analytics |

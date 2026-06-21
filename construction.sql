@@ -270,7 +270,7 @@ CREATE TABLE `cache` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('inoodex-cache-tyro:user-1:roles',	'a:1:{i:0;s:11:\"super-admin\";}',	1782019204);
+('inoodex-cache-tyro:user-1:roles',	'a:1:{i:0;s:11:\"super-admin\";}',	1782021494);
 
 DROP TABLE IF EXISTS `cache_locks`;
 CREATE TABLE `cache_locks` (
@@ -513,6 +513,28 @@ CREATE TABLE `failed_jobs` (
   `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+DROP TABLE IF EXISTS `fuel_logs`;
+CREATE TABLE `fuel_logs` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `equipment_id` bigint unsigned NOT NULL,
+  `date` date NOT NULL,
+  `fuel_type` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'diesel',
+  `quantity` decimal(10,2) NOT NULL,
+  `unit` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'liters',
+  `unit_cost` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `total_cost` decimal(12,2) NOT NULL DEFAULT '0.00',
+  `meter_hours` int DEFAULT NULL,
+  `vendor` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `receipt_no` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `notes` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fuel_logs_equipment_id_foreign` (`equipment_id`),
+  CONSTRAINT `fuel_logs_equipment_id_foreign` FOREIGN KEY (`equipment_id`) REFERENCES `equipment` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
@@ -1197,7 +1219,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (97,	'2026_06_21_042956_create_incident_reports_table',	41),
 (98,	'2026_06_21_043849_create_certifications_table',	42),
 (99,	'2026_06_21_044528_create_hse_checklists_table',	43),
-(100,	'2026_06_21_044532_create_hse_checklist_items_table',	43);
+(100,	'2026_06_21_044532_create_hse_checklist_items_table',	43),
+(101,	'2026_06_21_050141_create_fuel_logs_table',	44),
+(102,	'2026_06_21_050143_create_toolbox_talks_table',	44);
 
 DROP TABLE IF EXISTS `milestones`;
 CREATE TABLE `milestones` (
@@ -1684,7 +1708,7 @@ CREATE TABLE `sessions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('UWafyWFrDBM1ySZgzlNnoYr7g1bhoBEQR6PeC7UB',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',	'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiMmVQZDlTR1NQcXdzYVh6enRWQjVDbmpoS0hQTDdBbnY1anB2c0FGNiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kYXNoYm9hcmQiO3M6NToicm91dGUiO3M6MjA6InR5cm8tZGFzaGJvYXJkLmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=',	1782018949),
+('UWafyWFrDBM1ySZgzlNnoYr7g1bhoBEQR6PeC7UB',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',	'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiMmVQZDlTR1NQcXdzYVh6enRWQjVDbmpoS0hQTDdBbnY1anB2c0FGNiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDQ6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kYXNoYm9hcmQvaHIvZXF1aXBtZW50IjtzOjU6InJvdXRlIjtzOjI0OiJhZG1pbi5oci5lcXVpcG1lbnQuaW5kZXgiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjEwOiJ0eXJvLWxvZ2luIjthOjE6e3M6NzoiY2FwdGNoYSI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7fQ==',	1782021353),
 ('zVBDacWDM7nf3RxLtmxggjxVCBupZnW4l4woZZih',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',	'YTo2OntzOjY6Il90b2tlbiI7czo0MDoieW91MnF2ZlFHWmg4amVEUnBQRWliZlRYMmVQMm5kOXRXZmZpNm1VYyI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjY2OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvZGFzaGJvYXJkL3JlcG9ydHMvZmluYW5jaWFsL2J1ZGdldC12cy1hY3R1YWwiO3M6NToicm91dGUiO3M6NDA6ImFkbWluLnJlcG9ydHMuZmluYW5jaWFsLmJ1ZGdldC12cy1hY3R1YWwiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjEwOiJ0eXJvLWxvZ2luIjthOjE6e3M6NzoiY2FwdGNoYSI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7fQ==',	1781959391);
 
 DROP TABLE IF EXISTS `settings`;
@@ -2012,6 +2036,26 @@ CREATE TABLE `timesheets` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
+DROP TABLE IF EXISTS `toolbox_talks`;
+CREATE TABLE `toolbox_talks` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `employee_id` bigint unsigned DEFAULT NULL,
+  `date` date NOT NULL,
+  `topic` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `duration_minutes` int DEFAULT NULL,
+  `location` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `attendees` text COLLATE utf8mb4_unicode_ci,
+  `discussion_points` text COLLATE utf8mb4_unicode_ci,
+  `action_items` text COLLATE utf8mb4_unicode_ci,
+  `notes` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `toolbox_talks_employee_id_foreign` (`employee_id`),
+  CONSTRAINT `toolbox_talks_employee_id_foreign` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 DROP TABLE IF EXISTS `training_records`;
 CREATE TABLE `training_records` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -2285,4 +2329,4 @@ CREATE TABLE `work_orders` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
--- 2026-06-21 05:16:07 UTC
+-- 2026-06-21 05:56:51 UTC
