@@ -38,13 +38,23 @@
                     <tr><td class="py-1 text-gray-500">Useful Life</td><td>{{ $equipment->useful_life_years }} years</td></tr>
                     <tr><td class="py-1 text-gray-500">Salvage Value</td><td>{{ number_format($equipment->salvage_value, 2) }}</td></tr>
                     <tr><td class="py-1 text-gray-500 font-semibold">Current Value</td><td class="font-bold">{{ number_format($equipment->current_value, 2) }}</td></tr>
+                    @if($equipment->acquisition_type === 'hired')
+                        <tr class="border-t"><td colspan="2" class="py-1 font-semibold text-info pt-2">Hire Details</td></tr>
+                        <tr><td class="py-1 text-gray-500">Hire Rate</td><td>{{ $equipment->hire_rate ? number_format($equipment->hire_rate, 2) . ($equipment->hire_rate_period ? ' / ' . $equipment->hire_rate_period : '') : '—' }}</td></tr>
+                        <tr><td class="py-1 text-gray-500">Hire Period</td><td>{{ $equipment->hire_start_date?->format('d M Y') ?? '—' }} — {{ $equipment->hire_end_date?->format('d M Y') ?? 'Ongoing' }}</td></tr>
+                        <tr><td class="py-1 text-gray-500">Hire Vendor</td><td>{{ $equipment->hire_vendor ?? '—' }}</td></tr>
+                    @endif
                 </table>
             </div>
             <div>
-                <h4 class="font-semibold mb-3">Usage</h4>
+                <h4 class="font-semibold mb-3">Usage & Allocation</h4>
                 <table class="w-full text-sm">
                     <tr><td class="py-1 text-gray-500 w-28">Location</td><td>{{ $equipment->location ?? '—' }}</td></tr>
                     <tr><td class="py-1 text-gray-500">Operator</td><td>{{ $equipment->operator ?? '—' }}</td></tr>
+                    <tr><td class="py-1 text-gray-500">Project</td><td>{{ $equipment->project?->name ?? '—' }}</td></tr>
+                    <tr><td class="py-1 text-gray-500">Site</td><td>{{ $equipment->site?->name ?? '—' }}</td></tr>
+                    <tr><td class="py-1 text-gray-500">Allocated</td><td>{{ $equipment->allocated_date?->format('d M Y') ?? '—' }}</td></tr>
+                    <tr><td class="py-1 text-gray-500">Deallocated</td><td>{{ $equipment->deallocated_date?->format('d M Y') ?? '—' }}</td></tr>
                     <tr><td class="py-1 text-gray-500 font-semibold">Meter Hours</td><td class="font-bold">{{ number_format($equipment->meter_hours) }}</td></tr>
                     <tr><td class="py-1 text-gray-500">Maint Interval</td><td>{{ $equipment->maintenance_interval_hours ? number_format($equipment->maintenance_interval_hours) . ' hrs' : '—' }}</td></tr>
                     <tr><td class="py-1 text-gray-500">Next Maint @</td><td>{{ $equipment->next_maintenance_hours ? number_format($equipment->next_maintenance_hours) . ' hrs' : '—' }}</td></tr>

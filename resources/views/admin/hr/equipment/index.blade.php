@@ -9,13 +9,13 @@
     </div>
 
     <div class="panel mt-6">
-        <form method="GET" class="mb-4 grid grid-cols-4 gap-4">
+        <form method="GET" class="mb-4 flex flex-nowrap items-end gap-2 overflow-x-auto">
             <div>
-                <label class="text-sm font-semibold">Search</label>
+                <label class="text-xs font-semibold">Search</label>
                 <input type="text" name="search" class="form-input" placeholder="Name / Code / Serial" value="{{ request('search') }}" />
             </div>
             <div>
-                <label class="text-sm font-semibold">Category</label>
+                <label class="text-xs font-semibold">Category</label>
                 <select name="category" class="form-select" onchange="this.form.submit()">
                     <option value="">All</option>
                     @foreach($categories as $cat)
@@ -24,7 +24,7 @@
                 </select>
             </div>
             <div>
-                <label class="text-sm font-semibold">Status</label>
+                <label class="text-xs font-semibold">Status</label>
                 <select name="status" class="form-select" onchange="this.form.submit()">
                     <option value="">All</option>
                     <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
@@ -33,13 +33,34 @@
                 </select>
             </div>
             <div>
-                <label class="text-sm font-semibold">Type</label>
+                <label class="text-xs font-semibold">Type</label>
                 <select name="acquisition_type" class="form-select" onchange="this.form.submit()">
                     <option value="">All</option>
                     <option value="owned" {{ request('acquisition_type') == 'owned' ? 'selected' : '' }}>Owned</option>
                     <option value="hired" {{ request('acquisition_type') == 'hired' ? 'selected' : '' }}>Hired</option>
                 </select>
             </div>
+            <div>
+                <label class="text-xs font-semibold">Project</label>
+                <select name="project_id" class="form-select" onchange="this.form.submit()">
+                    <option value="">All</option>
+                    @foreach($projects as $id => $name)
+                        <option value="{{ $id }}" {{ request('project_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="text-xs font-semibold">Site</label>
+                <select name="site_id" class="form-select" onchange="this.form.submit()">
+                    <option value="">All</option>
+                    @foreach($sites as $id => $name)
+                        <option value="{{ $id }}" {{ request('site_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            @if(request()->anyFilled(['search', 'category', 'status', 'acquisition_type', 'project_id', 'site_id']))
+                <a href="{{ route('admin.hr.equipment.index') }}" class="btn btn-outline-danger btn-sm">Reset</a>
+            @endif
         </form>
 
         <div class="overflow-x-auto">
@@ -49,6 +70,8 @@
                         <th>Code</th>
                         <th>Name</th>
                         <th>Category</th>
+                        <th>Project</th>
+                        <th>Site</th>
                         <th>Type</th>
                         <th>Meter Hrs</th>
                         <th class="text-right">Cost</th>
@@ -62,6 +85,8 @@
                             <td class="font-mono text-xs">{{ $eq->code }}</td>
                             <td class="font-semibold">{{ $eq->name }}</td>
                             <td>{{ $eq->category ?? '—' }}</td>
+                            <td class="text-xs">{{ $eq->project?->name ?? '—' }}</td>
+                            <td class="text-xs">{{ $eq->site?->name ?? '—' }}</td>
                             <td><span class="badge badge-{{ $eq->acquisition_type === 'owned' ? 'info' : 'warning' }}">{{ ucfirst($eq->acquisition_type) }}</span></td>
                             <td>{{ number_format($eq->meter_hours) }}</td>
                             <td class="text-right">{{ number_format($eq->purchase_cost, 0) }}</td>
@@ -80,7 +105,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="8" class="text-center text-gray-400 py-4">No equipment registered.</td></tr>
+                        <tr><td colspan="10" class="text-center text-gray-400 py-4">No equipment registered.</td></tr>
                     @endforelse
                 </tbody>
             </table>

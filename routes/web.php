@@ -178,6 +178,13 @@ use App\Http\Controllers\Admin\Hr\TimesheetController;
 use App\Http\Controllers\Admin\Hr\WageSlipController;
 use App\Http\Controllers\Admin\Hr\EquipmentController;
 use App\Http\Controllers\Admin\Hr\LeaveRequestController;
+use App\Http\Controllers\Admin\Hr\TrainingRecordController;
+use App\Http\Controllers\Admin\Hr\PpeIssuanceController;
+use App\Http\Controllers\Admin\Hr\IncidentReportController;
+use App\Http\Controllers\Admin\Hr\CertificationController;
+use App\Http\Controllers\Admin\Hr\HseChecklistController;
+use App\Http\Controllers\Admin\Hr\FuelLogController;
+use App\Http\Controllers\Admin\Hr\ToolboxTalkController;
 use App\Http\Controllers\Admin\Reports\ReportTemplateController;
 use App\Http\Controllers\Admin\Reports\ScheduledReportController;
 use App\Http\Controllers\Admin\Reports\FinancialReportController;
@@ -364,6 +371,62 @@ Route::prefix('dashboard/hr')->name('admin.hr.')->group(function () {
     Route::patch('leaves/{leave}/approve', [LeaveRequestController::class, 'approve'])->name('leaves.approve');
     Route::patch('leaves/{leave}/reject', [LeaveRequestController::class, 'reject'])->name('leaves.reject');
     Route::delete('leaves/{leave}', [LeaveRequestController::class, 'destroy'])->name('leaves.destroy');
+
+    Route::get('training-records', [TrainingRecordController::class, 'index'])->name('training-records.index');
+    Route::get('training-records/create', [TrainingRecordController::class, 'create'])->name('training-records.create');
+    Route::post('training-records', [TrainingRecordController::class, 'store'])->name('training-records.store');
+    Route::get('training-records/{trainingRecord}', [TrainingRecordController::class, 'show'])->name('training-records.show');
+    Route::get('training-records/{trainingRecord}/edit', [TrainingRecordController::class, 'edit'])->name('training-records.edit');
+    Route::put('training-records/{trainingRecord}', [TrainingRecordController::class, 'update'])->name('training-records.update');
+    Route::delete('training-records/{trainingRecord}', [TrainingRecordController::class, 'destroy'])->name('training-records.destroy');
+
+    Route::get('ppe-issuances', [PpeIssuanceController::class, 'index'])->name('ppe-issuances.index');
+    Route::get('ppe-issuances/create', [PpeIssuanceController::class, 'create'])->name('ppe-issuances.create');
+    Route::post('ppe-issuances', [PpeIssuanceController::class, 'store'])->name('ppe-issuances.store');
+    Route::get('ppe-issuances/{ppeIssuance}', [PpeIssuanceController::class, 'show'])->name('ppe-issuances.show');
+    Route::get('ppe-issuances/{ppeIssuance}/edit', [PpeIssuanceController::class, 'edit'])->name('ppe-issuances.edit');
+    Route::put('ppe-issuances/{ppeIssuance}', [PpeIssuanceController::class, 'update'])->name('ppe-issuances.update');
+    Route::delete('ppe-issuances/{ppeIssuance}', [PpeIssuanceController::class, 'destroy'])->name('ppe-issuances.destroy');
+
+    Route::get('incident-reports', [IncidentReportController::class, 'index'])->name('incident-reports.index');
+    Route::get('incident-reports/create', [IncidentReportController::class, 'create'])->name('incident-reports.create');
+    Route::post('incident-reports', [IncidentReportController::class, 'store'])->name('incident-reports.store');
+    Route::get('incident-reports/{incidentReport}', [IncidentReportController::class, 'show'])->name('incident-reports.show');
+    Route::get('incident-reports/{incidentReport}/edit', [IncidentReportController::class, 'edit'])->name('incident-reports.edit');
+    Route::put('incident-reports/{incidentReport}', [IncidentReportController::class, 'update'])->name('incident-reports.update');
+    Route::delete('incident-reports/{incidentReport}', [IncidentReportController::class, 'destroy'])->name('incident-reports.destroy');
+
+    Route::get('certifications', [CertificationController::class, 'index'])->name('certifications.index');
+    Route::get('certifications/create', [CertificationController::class, 'create'])->name('certifications.create');
+    Route::post('certifications', [CertificationController::class, 'store'])->name('certifications.store');
+    Route::get('certifications/{certification}', [CertificationController::class, 'show'])->name('certifications.show');
+    Route::get('certifications/{certification}/edit', [CertificationController::class, 'edit'])->name('certifications.edit');
+    Route::put('certifications/{certification}', [CertificationController::class, 'update'])->name('certifications.update');
+    Route::delete('certifications/{certification}', [CertificationController::class, 'destroy'])->name('certifications.destroy');
+
+    Route::get('hse-checklists', [HseChecklistController::class, 'index'])->name('hse-checklists.index');
+    Route::get('hse-checklists/create', [HseChecklistController::class, 'create'])->name('hse-checklists.create');
+    Route::post('hse-checklists', [HseChecklistController::class, 'store'])->name('hse-checklists.store');
+    Route::get('hse-checklists/{hseChecklist}', [HseChecklistController::class, 'show'])->name('hse-checklists.show');
+    Route::get('hse-checklists/{hseChecklist}/edit', [HseChecklistController::class, 'edit'])->name('hse-checklists.edit');
+    Route::put('hse-checklists/{hseChecklist}', [HseChecklistController::class, 'update'])->name('hse-checklists.update');
+    Route::delete('hse-checklists/{hseChecklist}', [HseChecklistController::class, 'destroy'])->name('hse-checklists.destroy');
+
+    Route::get('fuel-logs', [FuelLogController::class, 'index'])->name('fuel-logs.index');
+    Route::get('fuel-logs/create', [FuelLogController::class, 'create'])->name('fuel-logs.create');
+    Route::post('fuel-logs', [FuelLogController::class, 'store'])->name('fuel-logs.store');
+    Route::get('fuel-logs/{fuelLog}', [FuelLogController::class, 'show'])->name('fuel-logs.show');
+    Route::get('fuel-logs/{fuelLog}/edit', [FuelLogController::class, 'edit'])->name('fuel-logs.edit');
+    Route::put('fuel-logs/{fuelLog}', [FuelLogController::class, 'update'])->name('fuel-logs.update');
+    Route::delete('fuel-logs/{fuelLog}', [FuelLogController::class, 'destroy'])->name('fuel-logs.destroy');
+
+    Route::get('toolbox-talks', [ToolboxTalkController::class, 'index'])->name('toolbox-talks.index');
+    Route::get('toolbox-talks/create', [ToolboxTalkController::class, 'create'])->name('toolbox-talks.create');
+    Route::post('toolbox-talks', [ToolboxTalkController::class, 'store'])->name('toolbox-talks.store');
+    Route::get('toolbox-talks/{toolboxTalk}', [ToolboxTalkController::class, 'show'])->name('toolbox-talks.show');
+    Route::get('toolbox-talks/{toolboxTalk}/edit', [ToolboxTalkController::class, 'edit'])->name('toolbox-talks.edit');
+    Route::put('toolbox-talks/{toolboxTalk}', [ToolboxTalkController::class, 'update'])->name('toolbox-talks.update');
+    Route::delete('toolbox-talks/{toolboxTalk}', [ToolboxTalkController::class, 'destroy'])->name('toolbox-talks.destroy');
 });
 
 // Reports - Report Templates

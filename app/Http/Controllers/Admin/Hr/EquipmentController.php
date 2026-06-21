@@ -5,13 +5,15 @@ namespace App\Http\Controllers\Admin\Hr;
 use App\Http\Controllers\Controller;
 use App\Models\Equipment;
 use App\Models\EquipmentMaintenance;
+use App\Models\Project;
+use App\Models\Site;
 use Illuminate\Http\Request;
 
 class EquipmentController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Equipment::query();
+        $query = Equipment::with('project', 'site');
 
         if ($request->filled('category')) {
             $query->where('category', $request->category);
@@ -21,6 +23,12 @@ class EquipmentController extends Controller
         }
         if ($request->filled('acquisition_type')) {
             $query->where('acquisition_type', $request->acquisition_type);
+        }
+        if ($request->filled('project_id')) {
+            $query->where('project_id', $request->project_id);
+        }
+        if ($request->filled('site_id')) {
+            $query->where('site_id', $request->site_id);
         }
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
@@ -32,13 +40,17 @@ class EquipmentController extends Controller
 
         $equipment = $query->latest()->paginate(20);
         $categories = Equipment::select('category')->distinct()->whereNotNull('category')->pluck('category');
+        $projects = Project::orderBy('name')->pluck('name', 'id');
+        $sites = Site::orderBy('name')->pluck('name', 'id');
 
-        return view('admin.hr.equipment.index', compact('equipment', 'categories'));
+        return view('admin.hr.equipment.index', compact('equipment', 'categories', 'projects', 'sites'));
     }
 
     public function create()
     {
-        return view('admin.hr.equipment.create');
+        $projects = Project::orderBy('name')->get();
+        $sites = Site::orderBy('name')->get();
+        return view('admin.hr.equipment.create', compact('projects', 'sites'));
     }
 
     public function store(Request $request)
@@ -62,6 +74,15 @@ class EquipmentController extends Controller
             'meter_hours' => 'required|integer|min:0',
             'maintenance_interval_hours' => 'nullable|integer|min:0',
             'next_maintenance_hours' => 'nullable|integer|min:0',
+            'project_id' => 'nullable|exists:projects,id',
+            'site_id' => 'nullable|exists:sites,id',
+            'allocated_date' => 'nullable|date',
+            'deallocated_date' => 'nullable|date|after_or_equal:allocated_date',
+            'hire_rate' => 'nullable|numeric|min:0',
+            'hire_rate_period' => 'nullable|in:daily,weekly,monthly',
+            'hire_start_date' => 'nullable|date',
+            'hire_end_date' => 'nullable|date|after_or_equal:hire_start_date',
+            'hire_vendor' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
         ]);
 
@@ -75,13 +96,15 @@ class EquipmentController extends Controller
 
     public function show(Equipment $equipment)
     {
-        $equipment->load('maintenanceRecords');
+        $equipment->load('maintenanceRecords', 'project', 'site');
         return view('admin.hr.equipment.show', compact('equipment'));
     }
 
     public function edit(Equipment $equipment)
     {
-        return view('admin.hr.equipment.edit', compact('equipment'));
+        $projects = Project::orderBy('name')->get();
+        $sites = Site::orderBy('name')->get();
+        return view('admin.hr.equipment.edit', compact('equipment', 'projects', 'sites'));
     }
 
     public function update(Request $request, Equipment $equipment)
@@ -105,6 +128,15 @@ class EquipmentController extends Controller
             'meter_hours' => 'required|integer|min:0',
             'maintenance_interval_hours' => 'nullable|integer|min:0',
             'next_maintenance_hours' => 'nullable|integer|min:0',
+            'project_id' => 'nullable|exists:projects,id',
+            'site_id' => 'nullable|exists:sites,id',
+            'allocated_date' => 'nullable|date',
+            'deallocated_date' => 'nullable|date|after_or_equal:allocated_date',
+            'hire_rate' => 'nullable|numeric|min:0',
+            'hire_rate_period' => 'nullable|in:daily,weekly,monthly',
+            'hire_start_date' => 'nullable|date',
+            'hire_end_date' => 'nullable|date|after_or_equal:hire_start_date',
+            'hire_vendor' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
         ]);
 

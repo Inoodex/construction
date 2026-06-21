@@ -340,9 +340,10 @@
                         </div>
                     </button>
                     <ul x-cloak x-show="activeDropdown === 'hr'" x-collapse class="sub-menu text-gray-500">
+                        <!-- People -->
                         <li x-data="{ open: false }">
                             <a href="javascript:;" class="group block font-semibold" style="display: flex !important; width: 100%;" @click="open = !open">
-                                <span class="text-left text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300" style="text-align: left !important;">Employees</span>
+                                <span class="text-left text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300" style="text-align: left !important;">People</span>
                                 <svg class="h-3 w-3 transition-transform shrink-0" :class="{ 'rotate-90': open }" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
@@ -350,32 +351,65 @@
                             <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
                                 <li><a href="{{ route('admin.hr.employees.index') }}">All Employees</a></li>
                                 <li><a href="{{ route('admin.hr.employees.create') }}">Add Employee</a></li>
+                                <li><a href="{{ route('admin.hr.attendance.index') }}">Daily Register</a></li>
+                                <li><a href="{{ route('admin.hr.attendance.create') }}">Mark Attendance</a></li>
+                                <li><a href="{{ route('admin.hr.attendance.summary') }}">Monthly Summary</a></li>
+                                <li><a href="{{ route('admin.hr.timesheets.index') }}">Timesheets</a></li>
+                                <li><a href="{{ route('admin.hr.leaves.index') }}">Leave Requests</a></li>
                             </ul>
                         </li>
+                        <!-- Payroll -->
                         <li x-data="{ open: false }">
                             <a href="javascript:;" class="group block font-semibold" style="display: flex !important; width: 100%;" @click="open = !open">
-                                <span class="text-left text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300" style="text-align: left !important;">Attendance</span>
+                                <span class="text-left text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300" style="text-align: left !important;">Payroll</span>
                                 <svg class="h-3 w-3 transition-transform shrink-0" :class="{ 'rotate-90': open }" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                             </a>
                             <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
-                                <li><a href="{{ route('admin.hr.attendance.index') }}">Daily Register</a></li>
-                                <li><a href="{{ route('admin.hr.attendance.create') }}">Mark Attendance</a></li>
-                                <li><a href="{{ route('admin.hr.attendance.summary') }}">Monthly Summary</a></li>
+                                <li><a href="{{ route('admin.hr.wage-slips.index') }}">Wage Slips</a></li>
                             </ul>
                         </li>
-                        <li>
-                            <a href="{{ route('admin.hr.timesheets.index') }}" class="group block font-semibold">Timesheets</a>
+                        <!-- Equipment & Assets -->
+                        <li x-data="{ open: false }">
+                            <a href="javascript:;" class="group block font-semibold" style="display: flex !important; width: 100%;" @click="open = !open">
+                                <span class="text-left text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300" style="text-align: left !important;">Equipment & Assets</span>
+                                <svg class="h-3 w-3 transition-transform shrink-0" :class="{ 'rotate-90': open }" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </a>
+                            <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
+                                <li><a href="{{ route('admin.hr.equipment.index') }}">Equipment</a></li>
+                                <li><a href="{{ route('admin.hr.fuel-logs.index') }}">Fuel Logs</a></li>
+                                <li><a href="{{ route('admin.hr.ppe-issuances.index') }}">PPE Issuance</a></li>
+                            </ul>
                         </li>
-                        <li>
-                            <a href="{{ route('admin.hr.wage-slips.index') }}" class="group block font-semibold">Wage Slips</a>
+                        <!-- Safety & Compliance -->
+                        <li x-data="{ open: false }">
+                            <a href="javascript:;" class="group block font-semibold" style="display: flex !important; width: 100%;" @click="open = !open">
+                                <span class="text-left text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300" style="text-align: left !important;">Safety & Compliance</span>
+                                <svg class="h-3 w-3 transition-transform shrink-0" :class="{ 'rotate-90': open }" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </a>
+                            <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
+                                <li><a href="{{ route('admin.hr.incident-reports.index') }}">Incident Reports</a></li>
+                                <li><a href="{{ route('admin.hr.hse-checklists.index') }}">HSE Checklists</a></li>
+                                <li><a href="{{ route('admin.hr.toolbox-talks.index') }}">Toolbox Talks</a></li>
+                            </ul>
                         </li>
-                        <li>
-                            <a href="{{ route('admin.hr.equipment.index') }}" class="group block font-semibold">Equipment</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('admin.hr.leaves.index') }}" class="group block font-semibold">Leave Requests</a>
+                        <!-- Training -->
+                        <li x-data="{ open: false }">
+                            <a href="javascript:;" class="group block font-semibold" style="display: flex !important; width: 100%;" @click="open = !open">
+                                <span class="text-left text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300" style="text-align: left !important;">Training</span>
+                                <svg class="h-3 w-3 transition-transform shrink-0" :class="{ 'rotate-90': open }" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </a>
+                            <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
+                                <li><a href="{{ route('admin.hr.training-records.index') }}">Training Records</a></li>
+                                <li><a href="{{ route('admin.hr.certifications.index') }}">Certifications & Licences</a></li>
+                            </ul>
                         </li>
                     </ul>
                 </li>

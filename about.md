@@ -34,7 +34,7 @@ app/
 
 ---
 
-## Models (78 total)
+## Models (84 total)
 
 | Domain | Models |
 |---|---|
@@ -42,7 +42,7 @@ app/
 | **Core** | Project, Site, Task, Phase, Milestone, WorkOrder, InspectionChecklist, InspectionChecklistItem, SiteLog, SitePhoto, ProjectResource, TaskResource |
 | **Finance** | Budget, Boq, BoqItem, Invoice, InvoiceItem, Payment, InterimPaymentApplication, IpaItem, Bill, BillItem, BillPayment, RateAnalysis, RateAnalysisItem, CostOverrunAlert, ChartOfAccount, JournalEntry, JournalEntryItem, Receivable, ReceivablePayment, BankGuarantee, LabourEntry, MaterialTakeoff |
 | **Procurement** | Vendor, Material, PurchaseRequisition, PurchaseRequisitionItem, PurchaseOrder, PurchaseOrderItem, GoodsReceivedNote, GoodsReceivedNoteItem, Warehouse, Stock, MaterialTransfer, MaterialTransferItem, MaterialIssueSlip, MaterialIssueSlipItem, MaterialWastage, Subcontractor |
-| **HR** | Employee, Attendance, Timesheet, WageSlip, Equipment, EquipmentMaintenance, LeaveRequest |
+| **HR** | Employee, Attendance, Timesheet, WageSlip, Equipment, EquipmentMaintenance, LeaveRequest, TrainingRecord, PpeIssuance, IncidentReport, Certification, HseChecklist, HseChecklistItem, FuelLog, ToolboxTalk |
 | **Approvals** | Approval, ApprovalHistory, ApprovalMatrix, ApprovalWorkflow |
 | **Reports** | ReportTemplate, ScheduledReport |
 
@@ -180,9 +180,42 @@ report_templates, scheduled_reports
 
 ### HR — Equipment & Assets
 - `Equipment` registry: code, make/model, serial, acquisition type (owned/hired), purchase cost, depreciation tracking
+- **Hire rates & period**: hire_rate, rate_period (daily/weekly/monthly), hire_start/end_date, hire_vendor; shown in Financial panel for hired equipment
+- **Allocation to projects/sites**: FK columns + allocation/deallocation dates, filterable in list, selectable on create/edit, shown on show page
 - Meter/hour tracking with maintenance interval and next-due alert
 - `EquipmentMaintenance` records: preventive/corrective/inspection with cost, vendor, and next due date
 - Inline maintenance history on equipment show page with quick meter update
+
+### HR — Training & Certifications
+- `TrainingRecord`: tracks employee training with provider, dates, certificate no, expiry, and cost
+- Status workflow: planned → in-progress → completed → expired
+- Filterable list by employee and status
+
+### HR — PPE Issuance
+- `PpeIssuance`: issue/return tracking for personal protective equipment per employee
+- Fields: item name, category, quantity, size, condition on issue/return, return date
+- Filterable by employee, category, and returned status
+
+### HR — Safety & Compliance
+- `IncidentReport`: accident/incident tracking with type, severity, location, description
+- `Certification`: employee certification & licence tracking with issuing authority, certificate no, expiry, renewal reminders
+- Categories: certification, license, permit; statuses: active, expired, suspended, revoked
+- `HseChecklist` / `HseChecklistItem`: HSE-specific checklists with compliance items per type (general, fire, electrical, scaffolding, PPE, excavation)
+- Checklist items tracked as compliant/non-compliant, with findings and corrective actions
+- Types: accident, near-miss, injury, property-damage, fire, other
+- Severity: minor → moderate → serious → critical → fatal
+- Status workflow: open → under-investigation → closed
+- Rich detail view with root cause, corrective actions, investigation notes
+
+### HR — Fuel Consumption Logs
+- `FuelLog`: tracks equipment fuel consumption with fuel type (diesel/petrol/gas/other), quantity, unit (liters/gallons), unit cost, auto-calculated total cost
+- Fields: equipment, date, meter hours, vendor, receipt no, notes
+- Filterable by equipment and fuel type
+
+### HR — Toolbox Talk Records
+- `ToolboxTalk`: safety briefing records with conductor (employee), topic, date, duration, location
+- Attendees stored as free-text; includes discussion points and action items
+- Filterable by conductor and date range
 
 ---
 
@@ -190,7 +223,7 @@ report_templates, scheduled_reports
 
 | File | Description |
 |---|---|
-| `routes/web.php` (522 lines) | All app routes: `/dashboard`, `/dashboard/settings|categories|roles`, `/dashboard/core/*`, `/dashboard/procurement/*`, `/dashboard/hr/*`, `/dashboard/reports/*`, `/dashboard/finance/*`, `/dashboard/approvals/*` |
+| `routes/web.php` (562 lines) | All app routes: `/dashboard`, `/dashboard/settings|categories|roles`, `/dashboard/core/*`, `/dashboard/procurement/*`, `/dashboard/hr/*`, `/dashboard/reports/*`, `/dashboard/finance/*`, `/dashboard/approvals/*` |
 | `routes/api.php` | Single Sanctum `/api/user` endpoint |
 | `routes/console.php` | Artisan commands |
 
@@ -203,7 +236,7 @@ layouts/   → master, header, sidebar, footer, main, scripts
 core/      → projects, sites, tasks, phases, milestones, work-orders, inspection-checklists, site-logs, site-photos, project-resources
 finance/   → budgets, boqs, tenders, invoices, ipas, bills, rate-analysis, chart-of-accounts, journal-entries, general-ledger, trial-balance, receivables, bank-guarantees, balance-sheet, income-statement, labour-entries, aging, cost-overrun-alerts
 procurement/ → vendors, materials, requisitions, purchase-orders, goods-received-notes, warehouses, stocks, material-transfers, material-issue-slips, material-wastages, subcontractors
-hr/        → employees, attendance, timesheets, wage-slips, equipment, leaves
+hr/        → employees, attendance, timesheets, wage-slips, equipment, leaves, training-records, ppe-issuances, incident-reports, certifications, hse-checklists, fuel-logs, toolbox-talks
 reports/   → financial, report-templates, scheduled-reports
 approvals/ → index, show, workflows
 settings/  → index

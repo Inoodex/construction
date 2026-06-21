@@ -50,6 +50,26 @@ class Employee extends Model
         return $this->hasMany(WageSlip::class);
     }
 
+    public function trainingRecords()
+    {
+        return $this->hasMany(TrainingRecord::class);
+    }
+
+    public function ppeIssuances()
+    {
+        return $this->hasMany(PpeIssuance::class);
+    }
+
+    public function incidentReports()
+    {
+        return $this->hasMany(IncidentReport::class);
+    }
+
+    public function certifications()
+    {
+        return $this->hasMany(Certification::class);
+    }
+
     public function scopeActive($query)
     {
         return $query->where('status', 'active');

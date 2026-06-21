@@ -49,6 +49,32 @@
                         <option value="hired" {{ old('acquisition_type', $equipment->acquisition_type) == 'hired' ? 'selected' : '' }}>Hired</option>
                     </select>
                 </div>
+                {{-- Hire fields --}}
+                <div class="hire-field">
+                    <label class="text-sm font-semibold">Hire Rate</label>
+                    <input type="number" step="0.01" name="hire_rate" class="form-input" value="{{ old('hire_rate', $equipment->hire_rate) }}" min="0" />
+                </div>
+                <div class="hire-field">
+                    <label class="text-sm font-semibold">Rate Period</label>
+                    <select name="hire_rate_period" class="form-select">
+                        <option value="">—</option>
+                        <option value="daily" {{ old('hire_rate_period', $equipment->hire_rate_period) == 'daily' ? 'selected' : '' }}>Daily</option>
+                        <option value="weekly" {{ old('hire_rate_period', $equipment->hire_rate_period) == 'weekly' ? 'selected' : '' }}>Weekly</option>
+                        <option value="monthly" {{ old('hire_rate_period', $equipment->hire_rate_period) == 'monthly' ? 'selected' : '' }}>Monthly</option>
+                    </select>
+                </div>
+                <div class="hire-field">
+                    <label class="text-sm font-semibold">Hire Start Date</label>
+                    <input type="date" name="hire_start_date" class="form-input" value="{{ old('hire_start_date', $equipment->hire_start_date?->format('Y-m-d')) }}" />
+                </div>
+                <div class="hire-field">
+                    <label class="text-sm font-semibold">Hire End Date</label>
+                    <input type="date" name="hire_end_date" class="form-input" value="{{ old('hire_end_date', $equipment->hire_end_date?->format('Y-m-d')) }}" />
+                </div>
+                <div class="hire-field">
+                    <label class="text-sm font-semibold">Hire Vendor</label>
+                    <input type="text" name="hire_vendor" class="form-input" value="{{ old('hire_vendor', $equipment->hire_vendor) }}" />
+                </div>
                 <div>
                     <label class="text-sm font-semibold">Purchase Cost <span class="text-danger">*</span></label>
                     <input type="number" step="0.01" name="purchase_cost" class="form-input" required value="{{ old('purchase_cost', $equipment->purchase_cost) }}" />
@@ -80,6 +106,32 @@
                 <div>
                     <label class="text-sm font-semibold">Operator</label>
                     <input type="text" name="operator" class="form-input" value="{{ old('operator', $equipment->operator) }}" />
+                </div>
+                <div>
+                    <label class="text-sm font-semibold">Project</label>
+                    <select name="project_id" class="form-select">
+                        <option value="">None</option>
+                        @foreach($projects as $p)
+                            <option value="{{ $p->id }}" {{ old('project_id', $equipment->project_id) == $p->id ? 'selected' : '' }}>{{ $p->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="text-sm font-semibold">Site</label>
+                    <select name="site_id" class="form-select">
+                        <option value="">None</option>
+                        @foreach($sites as $s)
+                            <option value="{{ $s->id }}" {{ old('site_id', $equipment->site_id) == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="text-sm font-semibold">Allocated Date</label>
+                    <input type="date" name="allocated_date" class="form-input" value="{{ old('allocated_date', $equipment->allocated_date?->format('Y-m-d')) }}" />
+                </div>
+                <div>
+                    <label class="text-sm font-semibold">Deallocated Date</label>
+                    <input type="date" name="deallocated_date" class="form-input" value="{{ old('deallocated_date', $equipment->deallocated_date?->format('Y-m-d')) }}" />
                 </div>
                 <div>
                     <label class="text-sm font-semibold">Meter Hours <span class="text-danger">*</span></label>
