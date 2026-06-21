@@ -83,7 +83,7 @@
                 <p class="mt-1 text-xs font-semibold uppercase tracking-wider text-gray-500">Active Employees</p>
                 <p class="mt-2 text-xs text-gray-400">{{ $totalEmployees }} total &middot; {{ $todayAttendance }} today</p>
             </div>
-            <div class="flex h-12 w-12 items-center justify-center rounded-full bg-info/10 text-info">
+            <div class="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-info">
                 <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
             </div>
         </div>
@@ -360,7 +360,7 @@
                 <p class="text-xs text-gray-500">Total Tasks</p>
             </div>
             <div class="rounded-lg bg-success/5 p-3 text-center">
-                <p class="text-lg font-bold text-success">RM{{ number_format($totalInvoiceAmount/1000, 0) }}K</p>
+                <p class="text-lg font-bold text-success">BDT{{ number_format($totalInvoiceAmount/1000, 0) }}K</p>
                 <p class="text-xs text-gray-500">Invoiced Amount</p>
             </div>
             <div class="rounded-lg bg-warning/5 p-3 text-center">
