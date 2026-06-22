@@ -8,8 +8,8 @@
     </div>
 
     <div class="panel mt-6">
-        <form method="GET" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-            <div class="form-group">
+        <form method="GET" class="flex items-end gap-3 flex-wrap">
+            <div class="form-group flex-1 min-w-[140px]">
                 <label>Warehouse</label>
                 <select name="warehouse_id" class="form-select" onchange="document.getElementById('site_id').value=''">
                     <option value="">All Warehouses</option>
@@ -18,7 +18,7 @@
                     @endforeach
                 </select>
             </div>
-            <div class="form-group">
+            <div class="form-group flex-1 min-w-[140px]">
                 <label>Site</label>
                 <select name="site_id" id="site_id" class="form-select" onchange="document.getElementsByName('warehouse_id')[0].value=''">
                     <option value="">All Sites</option>
@@ -27,16 +27,16 @@
                     @endforeach
                 </select>
             </div>
-            <div class="form-group">
+            <div class="form-group flex-1 min-w-[140px]">
                 <label>From</label>
                 <input type="date" name="start_date" class="form-input" value="{{ $startDate }}" />
             </div>
-            <div class="form-group">
+            <div class="form-group flex-1 min-w-[140px]">
                 <label>To</label>
                 <input type="date" name="end_date" class="form-input" value="{{ $endDate }}" />
             </div>
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary w-full">Generate Report</button>
+            <div class="form-group shrink-0">
+                <button type="submit" class="btn btn-primary">Generate Report</button>
             </div>
         </form>
     </div>
@@ -117,12 +117,12 @@
                     </tfoot>
                 </table>
             </div>
-            <p class="text-xs text-white-dark mt-3">
+            {{-- <p class="text-xs text-white-dark mt-3">
                 <strong>Formula:</strong> Opening = Actual - Received + Issued + Transferred Out - Transferred In + Wastage.
                 Expected = Opening + Received - Issued - Transferred Out + Transferred In - Wastage.
                 Variance = Actual - Expected.
                 Non-zero variance indicates data discrepancies or unreported movements.
-            </p>
+            </p> --}}
         </div>
     @elseif(request()->hasAny(['warehouse_id', 'site_id']))
         <div class="panel mt-6">

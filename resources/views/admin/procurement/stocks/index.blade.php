@@ -19,32 +19,32 @@
 
     <div class="panel mt-6">
         <div class="mb-5">
-            <form action="{{ route('admin.procurement.stocks.index') }}" method="GET" class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                <select name="material_id" class="form-select">
+            <form action="{{ route('admin.procurement.stocks.index') }}" method="GET" class="flex items-center gap-3 flex-wrap">
+                <select name="material_id" class="form-select flex-1 min-w-[150px]">
                     <option value="">All Materials</option>
                     @foreach($materials as $material)
                         <option value="{{ $material->id }}" {{ request('material_id') == $material->id ? 'selected' : '' }}>{{ $material->name }}</option>
                     @endforeach
                 </select>
-                <select name="warehouse_id" class="form-select">
+                <select name="warehouse_id" class="form-select flex-1 min-w-[150px]">
                     <option value="">All Warehouses</option>
                     @foreach($warehouses as $warehouse)
                         <option value="{{ $warehouse->id }}" {{ request('warehouse_id') == $warehouse->id ? 'selected' : '' }}>{{ $warehouse->name }}</option>
                     @endforeach
                 </select>
-                <select name="location" class="form-select">
+                <select name="location" class="form-select flex-1 min-w-[120px]">
                     <option value="">All Locations</option>
                     <option value="warehouse" {{ request('location') == 'warehouse' ? 'selected' : '' }}>Warehouse</option>
                     <option value="site" {{ request('location') == 'site' ? 'selected' : '' }}>Site</option>
                 </select>
-                <select name="low_stock" class="form-select">
+                <select name="low_stock" class="form-select flex-1 min-w-[120px]">
                     <option value="">All Stock</option>
                     <option value="1" {{ request('low_stock') == '1' ? 'selected' : '' }}>Low Stock Only</option>
                 </select>
-                <div class="flex items-center gap-2">
-                    <button type="submit" class="btn btn-primary flex-1">Filter</button>
-                            @if(request()->anyFilled(['material_id', 'warehouse_id', 'location', 'low_stock']))
-                        <a href="{{ route('admin.procurement.stocks.index') }}" class="btn btn-outline-danger flex-1">Reset</a>
+                <div class="flex items-center gap-2 shrink-0">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                    @if(request()->anyFilled(['material_id', 'warehouse_id', 'location', 'low_stock']))
+                        <a href="{{ route('admin.procurement.stocks.index') }}" class="btn btn-outline-danger">Reset</a>
                     @endif
                 </div>
             </form>

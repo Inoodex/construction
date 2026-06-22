@@ -91,14 +91,14 @@
                         @endif
                     </div>
                 </div>
-                <div>
+                {{-- <div>
                     <label class="text-xs text-white-dark">Credit Limit</label>
                     <p class="font-semibold">{{ $vendor->credit_limit ? '৳' . number_format($vendor->credit_limit) : '—' }}</p>
-                </div>
-                <div>
+                </div> --}}
+                {{-- <div>
                     <label class="text-xs text-white-dark">Payment Terms</label>
                     <p class="font-semibold">{{ $vendor->payment_terms ?? '—' }}</p>
-                </div>
+                </div> --}}
                 <div>
                     <label class="text-xs text-white-dark">Performance Rating</label>
                     <p class="font-semibold">

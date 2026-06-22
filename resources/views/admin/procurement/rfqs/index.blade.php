@@ -66,14 +66,14 @@
                             <td>
                                 @php
                                     $statusClass = match($rfq->status) {
-                                        'draft' => 'bg-gray-500',
-                                        'sent' => 'bg-blue-500',
-                                        'closed' => 'bg-yellow-500',
-                                        'awarded' => 'bg-green-500',
-                                        default => 'bg-gray-500',
+                                        'draft' => 'badge-outline-secondary',
+                                        'sent' => 'badge-outline-info',
+                                        'closed' => 'badge-outline-warning',
+                                        'awarded' => 'badge-outline-success',
+                                        default => 'badge-outline-secondary',
                                     };
                                 @endphp
-                                <span class="badge {{ $statusClass }} text-white px-2 py-0.5 rounded text-xs">{{ ucfirst($rfq->status) }}</span>
+                                <span class="badge {{ $statusClass }} capitalize">{{ $rfq->status }}</span>
                             </td>
                             <td>{{ $rfq->creator?->name ?? '-' }}</td>
                             <td>

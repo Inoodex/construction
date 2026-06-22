@@ -153,4 +153,15 @@ class PurchaseRequisitionController extends Controller
         return redirect()->route('admin.procurement.requisitions.index')
             ->with('success', 'Requisition deleted successfully.');
     }
+
+    public function getItems(PurchaseRequisition $requisition)
+    {
+        $items = $requisition->items()->with('material')->get()->map(fn($i) => [
+            'material_id' => $i->material_id,
+            'material_name' => $i->material?->name,
+            'quantity' => $i->quantity,
+            'unit_price' => $i->estimated_unit_price,
+        ]);
+        return response()->json($items);
+    }
 }

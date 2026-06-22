@@ -7,7 +7,10 @@
         <h2 class="text-xl font-semibold uppercase">RFQ: {{ $rfq->rfq_number }}</h2>
         <div class="flex items-center gap-2">
             @if($rfq->status === 'draft')
-                <a href="{{ route('admin.procurement.rfqs.edit', $rfq) }}" class="btn btn-primary gap-2">Edit</a>
+                <a href="{{ route('admin.procurement.rfqs.edit', $rfq) }}" class="btn btn-primary gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    Edit
+                </a>
                 <form action="{{ route('admin.procurement.rfqs.send', $rfq) }}" method="POST" class="inline">
                     @csrf
                     @method('PUT')
@@ -21,7 +24,10 @@
                     <button type="submit" class="btn btn-warning gap-2">Close</button>
                 </form>
             @endif
-            <a href="{{ route('admin.procurement.rfqs.index') }}" class="btn btn-secondary gap-2">Back</a>
+            <a href="{{ route('admin.procurement.rfqs.index') }}" class="btn btn-secondary gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Back to List
+            </a>
         </div>
     </div>
 
@@ -37,14 +43,14 @@
                     <span class="text-white-dark">Status:</span>
                     @php
                         $statusClass = match($rfq->status) {
-                            'draft' => 'bg-gray-500',
-                            'sent' => 'bg-blue-500',
-                            'closed' => 'bg-yellow-500',
-                            'awarded' => 'bg-green-500',
-                            default => 'bg-gray-500',
+                            'draft' => 'badge-outline-secondary',
+                            'sent' => 'badge-outline-info',
+                            'closed' => 'badge-outline-warning',
+                            'awarded' => 'badge-outline-success',
+                            default => 'badge-outline-secondary',
                         };
                     @endphp
-                    <span class="badge {{ $statusClass }} text-white px-2 py-0.5 rounded text-xs">{{ ucfirst($rfq->status) }}</span>
+                    <span class="badge {{ $statusClass }} capitalize">{{ $rfq->status }}</span>
                 </div>
                 <div><span class="text-white-dark">Issue Date:</span> {{ $rfq->issue_date->format('d/m/Y') }}</div>
                 <div><span class="text-white-dark">Closing Date:</span> {{ $rfq->closing_date->format('d/m/Y') }}</div>
@@ -60,13 +66,13 @@
                         <span>{{ $rv->vendor->name }}</span>
                         @php
                             $vStatusClass = match($rv->status) {
-                                'invited' => 'bg-blue-500',
-                                'submitted' => 'bg-green-500',
-                                'declined' => 'bg-red-500',
-                                default => 'bg-gray-500',
+                                'invited' => 'badge-outline-info',
+                                'submitted' => 'badge-outline-success',
+                                'declined' => 'badge-outline-danger',
+                                default => 'badge-outline-secondary',
                             };
                         @endphp
-                        <span class="badge {{ $vStatusClass }} text-white px-2 py-0.5 rounded text-xs">{{ ucfirst($rv->status) }}</span>
+                        <span class="badge {{ $vStatusClass }} capitalize">{{ $rv->status }}</span>
                     </li>
                 @endforeach
             </ul>

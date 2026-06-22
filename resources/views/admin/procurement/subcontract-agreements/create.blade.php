@@ -60,7 +60,7 @@
                 </div>
                 <div class="form-group md:col-span-3">
                     <label for="scope_of_work">Scope of Work</label>
-                    <textarea name="scope_of_work" id="scope_of_work" class="form-textarea" rows="4">{{ old('scope_of_work') }}</textarea>
+                    <textarea name="scope_of_work" id="scope_of_work" class="form-textarea" rows="3">{{ old('scope_of_work') }}</textarea>
                 </div>
                 <div class="form-group md:col-span-3">
                     <label for="special_conditions">Special Conditions</label>

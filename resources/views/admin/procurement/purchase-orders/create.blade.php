@@ -125,5 +125,23 @@ function calcTotal() {
     });
     document.getElementById('grand-total').textContent = '৳' + total.toLocaleString();
 }
+
+document.getElementById('purchase_requisition_id').addEventListener('change', function() {
+    const val = this.value;
+    if (!val) return;
+    fetch(`/dashboard/procurement/requisitions/${val}/items`)
+        .then(r => r.json())
+        .then(items => {
+            document.getElementById('items-body').innerHTML = '';
+            itemIndex = 0;
+            items.forEach(item => {
+                addItem({
+                    material_id: item.material_id,
+                    quantity: item.quantity,
+                    unit_price: item.unit_price || '',
+                });
+            });
+        });
+});
 </script>
 @endpush

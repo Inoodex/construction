@@ -20,10 +20,13 @@
                     <select name="subcontract_agreement_id" id="subcontract_agreement_id" class="form-select" required>
                         <option value="">Select Agreement</option>
                         @foreach($agreements as $a)
-                            <option value="{{ $a->id }}" {{ old('subcontract_agreement_id') == $a->id ? 'selected' : '' }}
-                                data-retention="{{ $a->retention_percentage }}"
-                                data-subcontractor="{{ $a->subcontractor->name ?? '' }}">
-                                {{ $a->agreement_number }} — {{ $a->subcontractor->name ?? '' }}
+<option value="{{ $a->id }}" {{ old('subcontract_agreement_id') == $a->id ? 'selected' : '' }}
+    data-retention="{{ $a->retention_percentage }}"
+    data-subcontractor="{{ $a->subcontractor->name ?? '' }}"
+    data-start-date="{{ $a->start_date->format('Y-m-d') }}"
+    data-end-date="{{ $a->end_date?->format('Y-m-d') ?? '' }}"
+    data-contract-value="{{ $a->contract_value }}">
+    {{ $a->agreement_number }} — {{ $a->subcontractor->name ?? '' }}
                             </option>
                         @endforeach
                     </select>
@@ -75,6 +78,11 @@ document.getElementById('subcontract_agreement_id').addEventListener('change', f
     const opt = this.options[this.selectedIndex];
     const retention = opt ? parseFloat(opt.dataset.retention || 0) : 0;
     document.getElementById('retention-display').textContent = retention > 0 ? retention + '%' : '0%';
+    if (opt) {
+        if (opt.dataset.startDate) document.getElementById('period_start').value = opt.dataset.startDate;
+        if (opt.dataset.endDate) document.getElementById('period_end').value = opt.dataset.endDate;
+        if (opt.dataset.contractValue) document.getElementById('work_completed_value').value = opt.dataset.contractValue;
+    }
     recalc();
 });
 

@@ -59,16 +59,16 @@
                     </select>
                     @error('status') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <label for="credit_limit">Credit Limit (৳)</label>
                     <input type="number" step="0.01" min="0" name="credit_limit" id="credit_limit" class="form-input"
                         value="{{ old('credit_limit') }}" />
-                </div>
-                <div class="form-group">
+                </div> --}}
+                {{-- <div class="form-group">
                     <label for="payment_terms">Payment Terms</label>
                     <input type="text" name="payment_terms" id="payment_terms" class="form-input"
                         value="{{ old('payment_terms') }}" placeholder="e.g. Net 30, Net 60" />
-                </div>
+                </div> --}}
             </div>
 
             <div class="form-group mt-5">

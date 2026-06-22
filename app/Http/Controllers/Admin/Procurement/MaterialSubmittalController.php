@@ -40,7 +40,8 @@ class MaterialSubmittalController extends Controller
     public function create()
     {
         $projects = Project::all();
-        return view('admin.procurement.material-submittals.create', compact('projects'));
+        $materials = \App\Models\Material::orderBy('name')->get();
+        return view('admin.procurement.material-submittals.create', compact('projects', 'materials'));
     }
 
     public function store(Request $request)
@@ -83,7 +84,8 @@ class MaterialSubmittalController extends Controller
         }
 
         $projects = Project::all();
-        return view('admin.procurement.material-submittals.edit', compact('materialSubmittal', 'projects'));
+        $materials = \App\Models\Material::orderBy('name')->get();
+        return view('admin.procurement.material-submittals.edit', compact('materialSubmittal', 'projects', 'materials'));
     }
 
     public function update(Request $request, MaterialSubmittal $materialSubmittal)
@@ -162,7 +164,7 @@ class MaterialSubmittalController extends Controller
         $materialSubmittal->update($data);
 
         $label = str_replace('_', ' ', $validated['action']);
-        return back()->with('success', "Submittal {$label}.");
+        return redirect()->route('admin.procurement.material-submittals.index')->with('success', "Submittal {$label}.");
     }
 
     public function resubmitForm(MaterialSubmittal $materialSubmittal)

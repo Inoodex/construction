@@ -7,7 +7,10 @@
         <h2 class="text-xl font-semibold uppercase">{{ $materialSubmittal->submittal_number }}</h2>
         <div class="flex items-center gap-2">
             @if($materialSubmittal->status === 'draft')
-                <a href="{{ route('admin.procurement.material-submittals.edit', $materialSubmittal) }}" class="btn btn-primary gap-2">Edit</a>
+                <a href="{{ route('admin.procurement.material-submittals.edit', $materialSubmittal) }}" class="btn btn-primary gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    Edit
+                </a>
                 <form action="{{ route('admin.procurement.material-submittals.submit', $materialSubmittal) }}" method="POST" class="inline">
                     @csrf
                     @method('PUT')
@@ -20,10 +23,10 @@
                 </form>
             @endif
             @if($materialSubmittal->status === 'submitted')
-                <button type="button" class="btn btn-cyan gap-2" onclick="document.getElementById('review-form').classList.toggle('hidden')">Review</button>
+                <button type="button" class="btn btn-outline-info gap-2" onclick="document.getElementById('review-form').classList.toggle('hidden')">Review</button>
             @endif
             @if($materialSubmittal->status === 'rejected')
-                <a href="{{ route('admin.procurement.material-submittals.resubmit-form', $materialSubmittal) }}" class="btn btn-purple gap-2">Resubmit</a>
+                <a href="{{ route('admin.procurement.material-submittals.resubmit-form', $materialSubmittal) }}" class="btn btn-outline-warning gap-2">Resubmit</a>
             @endif
             @if(in_array($materialSubmittal->status, ['approved', 'approved_with_conditions', 'rejected']))
                 <form action="{{ route('admin.procurement.material-submittals.destroy', $materialSubmittal) }}" method="POST" class="inline" onsubmit="return confirm('Delete this submittal?')">
@@ -32,7 +35,10 @@
                     <button type="submit" class="btn btn-outline-danger">Delete</button>
                 </form>
             @endif
-            <a href="{{ route('admin.procurement.material-submittals.index') }}" class="btn btn-secondary gap-2">Back</a>
+            <a href="{{ route('admin.procurement.material-submittals.index') }}" class="btn btn-secondary gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Back to List
+            </a>
         </div>
     </div>
 
@@ -78,17 +84,17 @@
                     <span class="text-white-dark">Status:</span>
                     @php
                         $sc = match($materialSubmittal->status) {
-                            'draft' => 'bg-gray-500',
-                            'submitted' => 'bg-blue-500',
-                            'under_review' => 'bg-cyan-500',
-                            'approved' => 'bg-green-600',
-                            'approved_with_conditions' => 'bg-lime-600',
-                            'rejected' => 'bg-red-600',
-                            'resubmitted' => 'bg-purple-500',
-                            default => 'bg-gray-500',
+                            'draft' => 'badge-outline-secondary',
+                            'submitted' => 'badge-outline-info',
+                            'under_review' => 'badge-outline-warning',
+                            'approved' => 'badge-outline-success',
+                            'approved_with_conditions' => 'badge-outline-primary',
+                            'rejected' => 'badge-outline-danger',
+                            'resubmitted' => 'badge-outline-dark',
+                            default => 'badge-outline-secondary',
                         };
                     @endphp
-                    <span class="badge {{ $sc }} text-white px-2 py-0.5 rounded text-xs">{{ str_replace('_', ' ', ucfirst($materialSubmittal->status)) }}</span>
+                    <span class="badge {{ $sc }} capitalize">{{ str_replace('_', ' ', $materialSubmittal->status) }}</span>
                 </div>
                 <div><span class="text-white-dark">Material:</span> {{ $materialSubmittal->material_name }}</div>
                 <div><span class="text-white-dark">Quantity / Unit:</span> {{ $materialSubmittal->quantity_unit ?? '-' }}</div>

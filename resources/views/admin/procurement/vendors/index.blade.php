@@ -66,7 +66,7 @@
                             <th>Name</th>
                             <th>Contact</th>
                             <th>Trade Category</th>
-                            <th>Credit Limit</th>
+                            {{-- <th>Credit Limit</th> --}}
                             <th>Rating</th>
                             <th>Status</th>
                             <th>Qualification</th>
@@ -91,13 +91,13 @@
                                         <span class="text-white-dark">—</span>
                                     @endif
                                 </td>
-                                <td class="text-xs font-semibold">
+                                {{-- <td class="text-xs font-semibold">
                                     @if($vendor->credit_limit)
                                         ৳{{ number_format($vendor->credit_limit) }}
                                     @else
                                         <span class="text-white-dark">—</span>
                                     @endif
-                                </td>
+                                </td> --}}
                                 <td>
                                     @if($vendor->performance_rating)
                                         <div class="flex items-center gap-1">

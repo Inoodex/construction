@@ -34,7 +34,7 @@ class GoodsReceivedNoteController extends Controller
 
     public function create()
     {
-        $orders = PurchaseOrder::whereIn('status', ['ordered', 'partially_received'])->with('vendor', 'items.material', 'project.sites')->get();
+        $orders = PurchaseOrder::whereIn('status', ['ordered', 'partially_received'])->with('vendor', 'items.material', 'requisition.project')->get();
         $sites = Site::whereHas('project', fn($q) => $q->whereIn('status', ['active', 'on_hold']))->get();
         return view('admin.procurement.goods-received-notes.create', compact('orders', 'sites'));
     }

@@ -5,7 +5,10 @@
 @section('content')
     <div class="flex flex-wrap items-center justify-between gap-4">
         <h2 class="text-xl font-semibold uppercase">Edit Submittal: {{ $materialSubmittal->submittal_number }}</h2>
-        <a href="{{ route('admin.procurement.material-submittals.show', $materialSubmittal) }}" class="btn btn-secondary gap-2">Back</a>
+        <a href="{{ route('admin.procurement.material-submittals.show', $materialSubmittal) }}" class="btn btn-secondary gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Back
+        </a>
     </div>
 
     <div class="panel mt-6">
@@ -27,12 +30,17 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label for="material_name">Material Name <span class="text-danger">*</span></label>
+                    <select name="material_name" id="material_name" class="form-select" required>
+                        <option value="">Select Material</option>
+                        @foreach($materials as $material)
+                            <option value="{{ $material->name }}" {{ old('material_name', $materialSubmittal->material_name) == $material->name ? 'selected' : '' }}>{{ $material->name }} ({{ $material->sku ?? 'no SKU' }})</option>
+                        @endforeach
+                    </select>
+                </div>
+                 <div class="form-group">
                     <label for="quantity_unit">Quantity / Unit</label>
                     <input type="text" name="quantity_unit" id="quantity_unit" class="form-input" value="{{ old('quantity_unit', $materialSubmittal->quantity_unit) }}" />
-                </div>
-                <div class="form-group">
-                    <label for="material_name">Material Name <span class="text-danger">*</span></label>
-                    <input type="text" name="material_name" id="material_name" class="form-input" required value="{{ old('material_name', $materialSubmittal->material_name) }}" />
                 </div>
                 <div class="form-group">
                     <label for="manufacturer">Manufacturer</label>

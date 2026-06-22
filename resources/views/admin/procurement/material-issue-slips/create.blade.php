@@ -21,7 +21,7 @@
             <div class="grid grid-cols-1 gap-5 md:grid-cols-4">
                 <div class="form-group">
                     <label for="project_id">Project <span class="text-danger">*</span></label>
-                    <select name="project_id" id="project_id" class="form-select" required onchange="fetchSites(this.value)">
+                    <select name="project_id" id="project_id" class="form-select" required>
                         <option value="">Select Project</option>
                         @foreach($projects as $project)
                             <option value="{{ $project->id }}" {{ old('project_id') == $project->id ? 'selected' : '' }}>{{ $project->name }}</option>
@@ -84,16 +84,26 @@ const materials = @json($materials);
 const sites = @json($sites);
 let itemIndex = 0;
 
-document.getElementById('project_id').addEventListener('change', function() {
+function loadSites(projectId) {
     const siteSelect = document.getElementById('site_id');
     siteSelect.innerHTML = '<option value="">Select Site</option>';
-    sites.filter(s => s.project_id == this.value).forEach(site => {
+    if (!projectId) return;
+    sites.filter(s => s.project_id == projectId).forEach(site => {
         const opt = document.createElement('option');
         opt.value = site.id;
         opt.textContent = site.name;
         if ('{{ old('site_id') }}' == site.id) opt.selected = true;
         siteSelect.appendChild(opt);
     });
+}
+
+document.getElementById('project_id').addEventListener('change', function() {
+    loadSites(this.value);
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const pid = document.getElementById('project_id').value;
+    if (pid) loadSites(pid);
 });
 
 function addItem(data = {}) {

@@ -74,15 +74,15 @@
                             <td>
                                 @php
                                     $sc = match($a->status) {
-                                        'draft' => 'bg-gray-500',
-                                        'active' => 'bg-green-600',
-                                        'completed' => 'bg-blue-600',
-                                        'terminated' => 'bg-red-600',
-                                        'cancelled' => 'bg-yellow-600',
-                                        default => 'bg-gray-500',
+                                        'draft' => 'badge-outline-secondary',
+                                        'active' => 'badge-outline-success',
+                                        'completed' => 'badge-outline-info',
+                                        'terminated' => 'badge-outline-danger',
+                                        'cancelled' => 'badge-outline-warning',
+                                        default => 'badge-outline-secondary',
                                     };
                                 @endphp
-                                <span class="badge {{ $sc }} text-white px-2 py-0.5 rounded text-xs">{{ ucfirst($a->status) }}</span>
+                                <span class="badge {{ $sc }} capitalize">{{ $a->status }}</span>
                             </td>
                             <td>
                                 <div class="flex items-center justify-center gap-2">

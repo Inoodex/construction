@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="flex flex-wrap items-center justify-between gap-4">
-        <h2 class="text-xl font-semibold uppercase">Create RFQ</h2>
+        <h2 class="text-xl font-semibold uppercase">Create Request for Quotation</h2>
         <a href="{{ route('admin.procurement.rfqs.index') }}" class="btn btn-secondary gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
                 <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -46,7 +46,10 @@
             </div>
 
             <div class="mt-6">
-                <label class="text-lg font-semibold">Items <span class="text-danger">*</span></label>
+                <div class="flex items-center justify-between mb-2">
+                    <label class="text-lg font-semibold">Items <span class="text-danger">*</span></label>
+                    <button type="button" id="add-item" class="btn btn-sm btn-outline-secondary">+ Add Item</button>
+                </div>
                 <div id="items-container">
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-2 items-end item-row">
                         <div class="form-group">
@@ -71,7 +74,6 @@
                         </div>
                     </div>
                 </div>
-                <button type="button" id="add-item" class="btn btn-outline-secondary mt-2">+ Add Item</button>
             </div>
 
             <div class="mt-6">

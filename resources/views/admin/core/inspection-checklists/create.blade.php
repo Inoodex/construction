@@ -116,7 +116,7 @@ function addItem() {
             <input type="checkbox" name="items[${itemIndex}][is_checked]" value="1" class="form-checkbox h-4 w-4" />
             Pass
         </label>
-        <input type="text" name="items[${itemIndex}][remarks]" placeholder="Remark" class="form-input text-sm" style="width: 140px;" />
+        <input type="text" name="items[${itemIndex}][remarks]" placeholder="Remark" class="form-input text-sm" style="width: 440px;" />
         <button type="button" onclick="this.closest('.item-row').remove()" class="text-danger text-xs whitespace-nowrap hover:underline">Remove</button>
     `;
     container.appendChild(div);

@@ -67,17 +67,17 @@
                             <td>
                                 @php
                                     $sc = match($s->status) {
-                                        'draft' => 'bg-gray-500',
-                                        'submitted' => 'bg-blue-500',
-                                        'under_review' => 'bg-cyan-500',
-                                        'approved' => 'bg-green-600',
-                                        'approved_with_conditions' => 'bg-lime-600',
-                                        'rejected' => 'bg-red-600',
-                                        'resubmitted' => 'bg-purple-500',
-                                        default => 'bg-gray-500',
+                                        'draft' => 'badge-outline-secondary',
+                                        'submitted' => 'badge-outline-info',
+                                        'under_review' => 'badge-outline-warning',
+                                        'approved' => 'badge-outline-success',
+                                        'approved_with_conditions' => 'badge-outline-primary',
+                                        'rejected' => 'badge-outline-danger',
+                                        'resubmitted' => 'badge-outline-dark',
+                                        default => 'badge-outline-secondary',
                                     };
                                 @endphp
-                                <span class="badge {{ $sc }} text-white px-2 py-0.5 rounded text-xs">{{ str_replace('_', ' ', ucfirst($s->status)) }}</span>
+                                <span class="badge {{ $sc }} capitalize">{{ str_replace('_', ' ', $s->status) }}</span>
                             </td>
                             <td>
                                 <div class="flex items-center justify-center gap-2">

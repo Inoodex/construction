@@ -115,7 +115,7 @@ class RfqController extends Controller
         $rfq->load('items', 'vendors');
         $projects = Project::all();
         $materials = Material::all();
-        $vendors = Vendor::whereIn('status', ['active', 'approved'])->get();
+        $vendors = Vendor::whereIn('status', ['active', 'approved', 'pending'])->get();
         return view('admin.procurement.rfqs.edit', compact('rfq', 'projects', 'materials', 'vendors'));
     }
 

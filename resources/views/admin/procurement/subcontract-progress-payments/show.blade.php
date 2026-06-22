@@ -6,7 +6,10 @@
     <div class="flex flex-wrap items-center justify-between gap-4">
         <h2 class="text-xl font-semibold uppercase">{{ $subcontractProgressPayment->certificate_number }}</h2>
         <div class="flex gap-2">
-            <a href="{{ route('admin.procurement.subcontract-progress-payments.index') }}" class="btn btn-secondary">Back to List</a>
+            <a href="{{ route('admin.procurement.subcontract-progress-payments.index') }}" class="btn btn-secondary gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Back to List
+            </a>
         </div>
     </div>
 
@@ -79,6 +82,7 @@
             @if($subcontractProgressPayment->status === 'draft')
                 <form action="{{ route('admin.procurement.subcontract-progress-payments.status', $subcontractProgressPayment) }}" method="POST" class="mt-4">
                     @csrf
+                    @method('PUT')
                     <input type="hidden" name="status" value="submitted" />
                     <button type="submit" class="btn btn-info w-full">Submit for Certification</button>
                 </form>
@@ -86,6 +90,7 @@
                 <div class="mt-4 space-y-2">
                     <form action="{{ route('admin.procurement.subcontract-progress-payments.status', $subcontractProgressPayment) }}" method="POST">
                         @csrf
+                        @method('PUT')
                         <input type="hidden" name="status" value="certified" />
                         <button type="submit" class="btn btn-success w-full">Certify Payment</button>
                     </form>
@@ -94,6 +99,7 @@
                 <div class="mt-4 space-y-2">
                     <form action="{{ route('admin.procurement.subcontract-progress-payments.status', $subcontractProgressPayment) }}" method="POST">
                         @csrf
+                        @method('PUT')
                         <input type="hidden" name="status" value="paid" />
                         <div class="form-group">
                             <label class="text-xs">Retention Released (৳)</label>

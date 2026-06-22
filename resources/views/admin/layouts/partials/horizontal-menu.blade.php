@@ -172,8 +172,8 @@
                     </svg>
                 </a>
                 <ul class="sub-sub-menu">
-                    <li><a href="{{ route('admin.procurement.rfqs.index') }}">RFQs</a></li>
-                    <li><a href="{{ route('admin.procurement.requisitions.index') }}">Requisitions</a></li>
+                    <li><a href="{{ route('admin.procurement.rfqs.index') }}">Request for Quotation</a></li>
+                    <li><a href="{{ route('admin.procurement.requisitions.index') }}">Purchase Requisitions</a></li>
                     <li><a href="{{ route('admin.procurement.purchase-orders.index') }}">Purchase Orders</a></li>
                     <li><a href="{{ route('admin.procurement.goods-received-notes.index') }}">Goods Received</a></li>
                 </ul>

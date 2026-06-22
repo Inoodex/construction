@@ -57,10 +57,10 @@
                     <tbody>
                         @forelse($orders as $po)
                             <tr>
-                                <td><span class="font-mono text-xs font-semibold text-primary">{{ $po->po_number }}</span></td>
-                                <td class="text-xs">{{ $po->vendor->name ?? 'N/A' }}</td>
+                                <td><span class="font-semibold text-primary">{{ $po->po_number }}</span></td>
+                                <td>{{ $po->vendor->name ?? 'N/A' }}</td>
                                 <td class="font-semibold">৳{{ number_format($po->total_amount) }}</td>
-                                <td class="text-xs">{{ $po->order_date->format('d M Y') }}</td>
+                                <td>{{ $po->order_date->format('d M Y') }}</td>
                                 <td>
                                     @php
                                         $sc = ['draft' => 'badge-outline-secondary', 'ordered' => 'badge-outline-info', 'partially_received' => 'badge-outline-warning', 'received' => 'badge-outline-success', 'cancelled' => 'badge-outline-danger'];

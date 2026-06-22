@@ -216,6 +216,7 @@ Route::prefix('dashboard/procurement')->name('admin.procurement.')->group(functi
     Route::put('requisitions/{purchase_requisition}', [PurchaseRequisitionController::class, 'update'])->name('requisitions.update');
     Route::delete('requisitions/{purchase_requisition}', [PurchaseRequisitionController::class, 'destroy'])->name('requisitions.destroy');
     Route::post('requisitions/{purchase_requisition}/submit', [PurchaseRequisitionController::class, 'submitForApproval'])->name('requisitions.submit');
+    Route::get('requisitions/{purchase_requisition}/items', [PurchaseRequisitionController::class, 'getItems'])->name('requisitions.items');
 
     Route::get('purchase-orders', [PurchaseOrderController::class, 'index'])->name('purchase-orders.index');
     Route::get('purchase-orders/create', [PurchaseOrderController::class, 'create'])->name('purchase-orders.create');

@@ -64,9 +64,9 @@
                         <thead>
                             <tr>
                                 <th>Material</th>
-                                <th class="w-32">Qty Received</th>
-                                <th class="w-32">Qty Accepted</th>
-                                <th class="w-32">Qty Rejected</th>
+                                <th class="w-40">Qty Received</th>
+                                <th class="w-40">Qty Accepted</th>
+                                <th class="w-40">Qty Rejected</th>
                             </tr>
                         </thead>
                         <tbody id="items-body"></tbody>
@@ -93,7 +93,7 @@ function filterSites(poId) {
     siteSelect.innerHTML = '<option value="">Select Site</option>';
     if (!poId) return;
     const po = orders.find(o => o.id == poId);
-    const projectId = po?.project_id;
+    const projectId = po?.requisition?.project_id ?? po?.project_id;
     if (!projectId) return;
     allSites.filter(s => s.project_id == projectId).forEach(site => {
         const opt = document.createElement('option');

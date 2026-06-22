@@ -284,8 +284,8 @@
                                 </svg>
                             </a>
                             <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
-                                <li><a href="{{ route('admin.procurement.rfqs.index') }}" class="block">RFQs</a></li>
-                                <li><a href="{{ route('admin.procurement.requisitions.index') }}" class="block">Requisitions</a></li>
+                                <li><a href="{{ route('admin.procurement.rfqs.index') }}" class="block">Request for Quotation</a></li>
+                                <li><a href="{{ route('admin.procurement.requisitions.index') }}" class="block">Purchase Requisitions</a></li>
                                 <li><a href="{{ route('admin.procurement.purchase-orders.index') }}" class="block">Purchase Orders</a></li>
                                 <li><a href="{{ route('admin.procurement.goods-received-notes.index') }}" class="block">Goods Received</a></li>
                             </ul>
