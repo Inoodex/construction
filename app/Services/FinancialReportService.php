@@ -35,13 +35,13 @@ class FinancialReportService
         $budgets = $query->get();
 
         $totalBudgeted = $budgets->sum('budgeted_amount');
-        $totalActual = $budgets->sum('actual_amount');
+        $totalActual = $budgets->sum('actual_cost');
         $variance = $totalBudgeted - $totalActual;
         $variancePct = $totalBudgeted > 0 ? round(($variance / $totalBudgeted) * 100, 2) : 0;
 
         $costCodes = $budgets->groupBy('cost_code')->map(function ($items) {
             $b = $items->sum('budgeted_amount');
-            $a = $items->sum('actual_amount');
+            $a = $items->sum('actual_cost');
             return [
                 'budgeted' => $b,
                 'actual' => $a,
@@ -62,7 +62,7 @@ class FinancialReportService
 
         $summaries = $projects->map(function ($project) {
             $budgetAmount = $project->budgets->sum('budgeted_amount');
-            $actualCost = $project->budgets->sum('actual_amount');
+            $actualCost = $project->budgets->sum('actual_cost');
             $poTotal = $project->purchaseOrders->sum('total_amount');
             $invoicedTotal = $project->invoices->sum('total_amount');
             $paidTotal = $project->invoices->sum('paid_amount');

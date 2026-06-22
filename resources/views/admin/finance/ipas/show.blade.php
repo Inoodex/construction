@@ -23,7 +23,7 @@
         $badgeClass = ['draft' => 'badge-outline-secondary', 'submitted' => 'badge-outline-info', 'certified' => 'badge-outline-primary', 'approved' => 'badge-outline-success', 'rejected' => 'badge-outline-danger', 'paid' => 'badge-outline-dark'];
     @endphp
 
-    <div class="mt-6 grid gap-6 lg:grid-cols-6">
+    <div class="mt-6 grid gap-6 sm:grid-cols-3 lg:grid-cols-6">
         <div class="panel">
             <label class="text-xs text-white-dark">IPA Number</label>
             <p class="font-mono font-semibold text-primary">{{ $ipa->ipa_number }}</p>
@@ -50,7 +50,7 @@
         </div>
     </div>
 
-    <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+    <div class="mt-4 grid gap-4 sm:grid-cols-3 lg:grid-cols-5">
         <div class="panel bg-info/10 dark:bg-info/20">
             <label class="text-xs text-white-dark">Previous Cumulative</label>
             <p class="text-lg font-bold text-info">{{ number_format($ipa->previous_cumulative_amount) }}</p>
@@ -128,27 +128,18 @@
         <div id="addItemForm" class="mb-5 mt-3 hidden rounded-lg border p-4 dark:border-gray-700">
             <form action="{{ route('admin.finance.ipas.items.store', $ipa->id) }}" method="POST">
                 @csrf
-                <div class="grid grid-cols-1 gap-3 md:grid-cols-7">
-                    <div>
-                        <input type="text" name="item_number" placeholder="Item #" class="form-input" required />
-                    </div>
-                    <div class="md:col-span-2">
-                        <input type="text" name="description" placeholder="Description" class="form-input" required />
-                    </div>
-                    <div>
-                        <input type="text" name="unit" placeholder="Unit" class="form-input" required />
-                    </div>
-                    <div>
-                        <input type="number" step="0.0001" name="previous_quantity" placeholder="Prev Qty" class="form-input" value="0" />
-                    </div>
-                    <div>
-                        <input type="number" step="0.0001" name="current_quantity" placeholder="This Period" class="form-input" required />
-                    </div>
-                    <div>
-                        <input type="number" step="0.01" name="unit_price" placeholder="Unit Price" class="form-input" required />
-                    </div>
-                </div>
-                <div class="mt-2 grid grid-cols-1 gap-3 md:grid-cols-2">
+                <table class="w-full" style="table-layout: fixed;">
+                    <tr>
+                        <td style="width:10%"><input type="text" name="item_number" placeholder="Item #" class="form-input" required /></td>
+                        <td style="width:28%"><input type="text" name="description" placeholder="Description" class="form-input" required /></td>
+                        <td style="width:10%"><input type="text" name="unit" placeholder="Unit" class="form-input" required /></td>
+                        <td style="width:12%"><input type="number" step="0.0001" name="previous_quantity" placeholder="Prev Qty" class="form-input" value="0" /></td>
+                        <td style="width:14%"><input type="number" step="0.0001" name="current_quantity" placeholder="This Period" class="form-input" required /></td>
+                        <td style="width:14%"><input type="number" step="0.01" name="unit_price" placeholder="Unit Price" class="form-input" required /></td>
+                        <td style="width:12%"><button type="submit" class="btn btn-primary w-full">Add</button></td>
+                    </tr>
+                </table>
+                <div class="mt-2 flex flex-nowrap items-center gap-2">
                     <select name="boq_item_id" class="form-select">
                         <option value="">Link to BOQ item (optional)</option>
                         @foreach($boqItems as $bi)
@@ -157,7 +148,6 @@
                     </select>
                     <input type="text" name="notes" placeholder="Notes (optional)" class="form-input" />
                 </div>
-                <button type="submit" class="btn btn-primary mt-2">Add Item</button>
             </form>
         </div>
 
@@ -165,9 +155,7 @@
             <table class="table-hover w-full table-auto">
                 <thead>
                     <tr>
-                        <th>#</th>
-                        <th class="w-1/4">Description</th>
-                        <th>Unit</th>
+                        <th>Item / Description / Unit</th>
                         <th>Prev Qty</th>
                         <th>This Period</th>
                         <th>Cumulative</th>
@@ -181,9 +169,13 @@
                 <tbody>
                     @forelse($ipa->items as $item)
                         <tr>
-                            <td class="text-xs font-mono">{{ $item->item_number }}</td>
-                            <td class="text-xs">{{ $item->description }}</td>
-                            <td class="text-xs">{{ $item->unit }}</td>
+                            <td class="text-xs">
+                                <span class="font-mono font-semibold">{{ $item->item_number }}</span>
+                                <span class="text-white-dark">|</span>
+                                {{ $item->description }}
+                                <span class="text-white-dark">|</span>
+                                <span class="italic">{{ $item->unit }}</span>
+                            </td>
                             <td class="text-xs">{{ number_format($item->previous_quantity, 2) }}</td>
                             <td class="font-semibold text-primary">{{ number_format($item->current_quantity, 2) }}</td>
                             <td class="text-xs">{{ number_format($item->cumulative_quantity, 2) }}</td>
@@ -201,7 +193,7 @@
                             @endif
                         </tr>
                     @empty
-                        <tr><td colspan="{{ $ipa->status === 'draft' ? 11 : 10 }}" class="text-center">No items yet. Add BOQ progress items above.</td></tr>
+                        <tr><td colspan="{{ $ipa->status === 'draft' ? 9 : 8 }}" class="text-center">No items yet. Add BOQ progress items above.</td></tr>
                     @endforelse
                 </tbody>
             </table>

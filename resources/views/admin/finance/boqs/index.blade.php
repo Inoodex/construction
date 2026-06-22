@@ -38,7 +38,7 @@
                 <table class="table-hover w-full table-auto">
                     <thead>
                         <tr>
-                            <th>BOQ #</th>
+                            <th>BOQ</th>
                             <th>Title</th>
                             <th>Project</th>
                             <th>Items</th>
@@ -50,10 +50,10 @@
                     <tbody>
                         @forelse($boqs as $boq)
                             <tr>
-                                <td><span class="font-mono text-xs font-semibold text-primary">{{ $boq->boq_number }}</span></td>
+                                <td><span class="font-mono text-sm font-semibold text-primary">{{ $boq->boq_number }}</span></td>
                                 <td class="font-semibold">{{ $boq->title }}</td>
-                                <td class="text-xs">{{ $boq->project->name ?? 'N/A' }}</td>
-                                <td class="text-xs">{{ $boq->items->count() }}</td>
+                                <td>{{ $boq->project->name ?? 'N/A' }}</td>
+                                <td>{{ $boq->items->count() }}</td>
                                 <td class="font-semibold">৳{{ number_format($boq->total_amount) }}</td>
                                 <td>
                                     @php $sc = ['draft' => 'badge-outline-secondary', 'approved' => 'badge-outline-success', 'revised' => 'badge-outline-warning']; @endphp

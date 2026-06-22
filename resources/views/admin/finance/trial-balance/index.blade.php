@@ -53,7 +53,7 @@
                     </tr>
                 @else
                     <tr>
-                        <td colspan="5" class="text-center text-success">✓ Balanced</td>
+                        <td colspan="5" class="text-end text-xl text-success" style="padding-bottom: 2px">✓ Balanced</td>
                     </tr>
                 @endif
             </tfoot>

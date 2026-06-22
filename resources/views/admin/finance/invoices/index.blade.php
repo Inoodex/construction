@@ -55,12 +55,12 @@
                     <tbody>
                         @forelse($invoices as $inv)
                             <tr>
-                                <td><span class="font-mono text-xs font-semibold text-primary">{{ $inv->invoice_number }}</span></td>
+                                <td><span class="font-mono text-sm font-semibold text-primary">{{ $inv->invoice_number }}</span></td>
                                 <td class="font-semibold">{{ $inv->title }}</td>
-                                <td class="text-xs">{{ $inv->project->name ?? 'N/A' }}</td>
-                                <td class="text-xs">{{ $inv->issue_date->format('d M Y') }}</td>
-                                <td class="text-xs">{{ $inv->due_date->format('d M Y') }}</td>
-                                <td class="font-semibold">৳{{ number_format($inv->total_amount) }}</td>
+                                <td>{{ $inv->project->name ?? 'N/A' }}</td>
+                                <td>{{ $inv->issue_date->format('d M Y') }}</td>
+                                <td>{{ $inv->due_date->format('d M Y') }}</td>
+                                <td>৳{{ number_format($inv->total_amount) }}</td>
                                 <td class="font-semibold {{ $inv->due_amount > 0 ? 'text-danger' : 'text-success' }}">৳{{ number_format($inv->due_amount) }}</td>
                                 <td>
                                     @php $sc = ['draft' => 'badge-outline-secondary', 'sent' => 'badge-outline-info', 'partially_paid' => 'badge-outline-warning', 'paid' => 'badge-outline-success', 'overdue' => 'badge-outline-danger', 'cancelled' => 'badge-outline-dark']; @endphp

@@ -488,11 +488,11 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware('auth')->
     Route::get('budgets', [BudgetController::class, 'index'])->name('budgets.index');
     Route::get('budgets/create', [BudgetController::class, 'create'])->name('budgets.create');
     Route::post('budgets', [BudgetController::class, 'store'])->name('budgets.store');
+    Route::get('budgets/forecasting', [BudgetController::class, 'forecasting'])->name('budgets.forecasting');
     Route::get('budgets/{budget}', [BudgetController::class, 'show'])->name('budgets.show');
     Route::get('budgets/{budget}/edit', [BudgetController::class, 'edit'])->name('budgets.edit');
     Route::put('budgets/{budget}', [BudgetController::class, 'update'])->name('budgets.update');
     Route::delete('budgets/{budget}', [BudgetController::class, 'destroy'])->name('budgets.destroy');
-    Route::get('budgets/forecasting', [BudgetController::class, 'forecasting'])->name('budgets.forecasting');
 
     Route::get('material-takeoffs', [MaterialTakeoffController::class, 'index'])->name('material-takeoffs.index');
     Route::get('material-takeoffs/create', [MaterialTakeoffController::class, 'create'])->name('material-takeoffs.create');

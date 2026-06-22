@@ -40,13 +40,11 @@
                     <label for="budgeted_amount">Budgeted Amount <span class="text-danger">*</span></label>
                     <input type="number" step="0.01" min="0" name="budgeted_amount" id="budgeted_amount" class="form-input" required value="{{ old('budgeted_amount') }}" />
                 </div>
-                <div class="form-group">
-                    <label for="actual_amount">Actual Amount <span class="text-danger">*</span></label>
-                    <input type="number" step="0.01" min="0" name="actual_amount" id="actual_amount" class="form-input" required value="{{ old('actual_amount') }}" />
-                </div>
-                <div class="border-t pt-4 md:col-span-3">
-                    <h4 class="font-semibold mb-3">Earned Value Management</h4>
-                </div>
+            </div>
+            <hr class="my-6 border-gray-300" />
+            <h4 class="font-semibold mb-4 text-xl">Earned Value Management</h4>
+            <hr class="my-6 border-gray-300" />
+            <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
                 <div class="form-group">
                     <label for="planned_value">Planned Value (PV) <span class="text-danger">*</span></label>
                     <input type="number" step="0.01" min="0" name="planned_value" id="planned_value" class="form-input" required value="{{ old('planned_value', 0) }}" />

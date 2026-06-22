@@ -18,8 +18,8 @@ class CostOverrunService
             return null;
         }
 
-        $pct = ($budget->actual_amount / $budget->budgeted_amount) * 100;
-        $variance = $budget->budgeted_amount - $budget->actual_amount;
+        $pct = ($budget->actual_cost / $budget->budgeted_amount) * 100;
+        $variance = $budget->budgeted_amount - $budget->actual_cost;
 
         if ($pct < self::THRESHOLD_WARNING) {
             return null;
@@ -29,9 +29,9 @@ class CostOverrunService
             : ($pct >= self::THRESHOLD_DANGER ? 'danger' : 'warning');
 
         $message = match ($severity) {
-            'critical' => "Cost overrun critical: {$budget->cost_code} is at {$pct}% of budget (৳" . number_format($budget->actual_amount) . " vs ৳" . number_format($budget->budgeted_amount) . ")",
-            'danger'   => "Budget exhausted: {$budget->cost_code} has reached {$pct}% of budget (৳" . number_format($budget->actual_amount) . " vs ৳" . number_format($budget->budgeted_amount) . ")",
-            'warning'  => "Budget warning: {$budget->cost_code} is at {$pct}% of budget (৳" . number_format($budget->actual_amount) . " vs ৳" . number_format($budget->budgeted_amount) . ")",
+            'critical' => "Cost overrun critical: {$budget->cost_code} is at {$pct}% of budget (৳" . number_format($budget->actual_cost) . " vs ৳" . number_format($budget->budgeted_amount) . ")",
+            'danger'   => "Budget exhausted: {$budget->cost_code} has reached {$pct}% of budget (৳" . number_format($budget->actual_cost) . " vs ৳" . number_format($budget->budgeted_amount) . ")",
+            'warning'  => "Budget warning: {$budget->cost_code} is at {$pct}% of budget (৳" . number_format($budget->actual_cost) . " vs ৳" . number_format($budget->budgeted_amount) . ")",
         };
 
         $existing = CostOverrunAlert::where('budget_id', $budget->id)
@@ -41,7 +41,7 @@ class CostOverrunService
 
         if ($existing) {
             $existing->update([
-                'actual_amount'      => $budget->actual_amount,
+                'actual_amount'      => $budget->actual_cost,
                 'variance'           => $variance,
                 'variance_percentage' => round($pct, 2),
                 'message'            => $message,
@@ -54,7 +54,7 @@ class CostOverrunService
             'budget_id'           => $budget->id,
             'cost_code'           => $budget->cost_code,
             'budgeted_amount'     => $budget->budgeted_amount,
-            'actual_amount'       => $budget->actual_amount,
+            'actual_amount'       => $budget->actual_cost,
             'variance'            => $variance,
             'variance_percentage' => round($pct, 2),
             'severity'            => $severity,
@@ -70,7 +70,7 @@ class CostOverrunService
         $budgets = Budget::where('budgeted_amount', '>', 0)->get();
 
         foreach ($budgets as $budget) {
-            $pct = ($budget->actual_amount / $budget->budgeted_amount) * 100;
+            $pct = ($budget->actual_cost / $budget->budgeted_amount) * 100;
             if ($pct < self::THRESHOLD_WARNING) {
                 continue;
             }

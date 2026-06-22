@@ -48,7 +48,7 @@
                 </div>
                 <div class="form-group md:col-span-2">
                     <label for="description">Description</label>
-                    <input type="text" name="description" id="description" class="form-input" value="{{ old('description') }}" />
+                    <textarea name="description" id="description" class="form-textarea" rows="2">{{ old('description') }}</textarea>
                 </div>
             </div>
 

@@ -5,19 +5,28 @@
 @section('content')
     <div class="flex flex-wrap items-center justify-between gap-4">
         <h2 class="text-xl font-semibold uppercase">Forecasting (ETC / EAC)</h2>
-        <a href="{{ route('admin.finance.budgets.index') }}" class="btn btn-secondary gap-2">&larr; Back to Budgets</a>
+        <a href="{{ route('admin.finance.budgets.index') }}" class="btn btn-secondary gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            Back to List
+        </a>
     </div>
 
     <div class="panel mt-6">
-        <form method="GET" class="mb-4">
+        <form method="GET" class="mb-4 flex flex-nowrap items-end gap-2">
             <div>
-                <label class="text-sm font-semibold">Project</label>
-                <select name="project_id" class="form-select" onchange="this.form.submit()">
+                <label class="text-xs font-semibold">Project</label>
+                <select name="project_id" class="form-select">
                     <option value="">All Projects</option>
                     @foreach($projects as $p)
                         <option value="{{ $p->id }}" {{ request('project_id') == $p->id ? 'selected' : '' }}>{{ $p->name }}</option>
                     @endforeach
                 </select>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary">Filter</button>
+                @if(request('project_id'))
+                    <a href="{{ route('admin.finance.budgets.forecasting') }}" class="btn btn-outline-danger">Reset</a>
+                @endif
             </div>
         </form>
 
@@ -52,29 +61,33 @@
                         <th class="text-right">ETC</th>
                         <th class="text-right">EAC</th>
                         <th class="text-right">Variance</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($budgets as $b)
                         <tr>
                             <td class="font-semibold">{{ $b->project->name }}</td>
-                            <td class="font-mono text-xs">{{ $b->cost_code }}</td>
+                            <td>{{ $b->cost_code }}</td>
                             <td class="text-right">{{ number_format($b->budgeted_amount, 2) }}</td>
                             <td class="text-right">{{ number_format($b->planned_value, 2) }}</td>
                             <td class="text-right">{{ number_format($b->earned_value, 2) }}</td>
                             <td class="text-right">{{ number_format($b->actual_cost, 2) }}</td>
                             <td class="text-center">
-                                <span class="badge badge-{{ $b->spi >= 1 ? 'success' : 'danger' }}">{{ number_format($b->spi, 2) }}</span>
+                                <span class="badge badge-outline-{{ $b->spi >= 1 ? 'success' : 'danger' }}">{{ number_format($b->spi, 2) }}</span>
                             </td>
                             <td class="text-center">
-                                <span class="badge badge-{{ $b->cpi >= 1 ? 'success' : 'danger' }}">{{ number_format($b->cpi, 2) }}</span>
+                                <span class="badge badge-outline-{{ $b->cpi >= 1 ? 'success' : 'danger' }}">{{ number_format($b->cpi, 2) }}</span>
                             </td>
                             <td class="text-right">{{ number_format($b->etc, 2) }}</td>
                             <td class="text-right font-semibold">{{ number_format($b->eac, 2) }}</td>
                             <td class="text-right {{ $b->variance < 0 ? 'text-danger' : 'text-success' }}">{{ number_format($b->variance, 2) }}</td>
+                            <td>
+                                <a href="{{ route('admin.finance.budgets.edit', $b) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                            </td>
                         </tr>
                     @empty
-                        <tr><td colspan="11" class="text-center text-gray-400 py-4">No budgets found.</td></tr>
+                        <tr><td colspan="12" class="text-center text-gray-400 py-4">No budgets found.</td></tr>
                     @endforelse
                 </tbody>
             </table>

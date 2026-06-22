@@ -16,7 +16,6 @@ class Budget extends Model
         'cost_code',
         'description',
         'budgeted_amount',
-        'actual_amount',
         'planned_value',
         'earned_value',
         'actual_cost',
@@ -27,7 +26,6 @@ class Budget extends Model
 
     protected $casts = [
         'budgeted_amount' => 'decimal:2',
-        'actual_amount' => 'decimal:2',
         'planned_value' => 'decimal:2',
         'earned_value' => 'decimal:2',
         'actual_cost' => 'decimal:2',

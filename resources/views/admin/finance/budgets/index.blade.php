@@ -48,19 +48,19 @@
                     </thead>
                     <tbody>
                         @forelse($budgets as $b)
-                            @php $variance = $b->budgeted_amount - $b->actual_amount; @endphp
+                            @php $variance = $b->budgeted_amount - $b->actual_cost; @endphp
                             <tr>
-                                <td class="text-xs">{{ $b->project->name ?? 'N/A' }}</td>
+                                <td>{{ $b->project->name ?? 'N/A' }}</td>
                                 <td><span class="font-mono text-xs font-semibold text-primary">{{ $b->cost_code }}</span></td>
-                                <td class="text-xs max-w-[200px] truncate">{{ $b->description ?? '-' }}</td>
-                                <td class="font-semibold">৳{{ number_format($b->budgeted_amount) }}</td>
-                                <td class="font-semibold">৳{{ number_format($b->actual_amount) }}</td>
+                                <td>{{ $b->description ?? '-' }}</td>
+                                <td>৳{{ number_format($b->budgeted_amount) }}</td>
+                                <td>৳{{ number_format($b->actual_cost) }}</td>
                                 <td>
                                     <span class="font-semibold {{ $variance >= 0 ? 'text-success' : 'text-danger' }}">
                                         @if($variance >= 0)+@endif{{ number_format($variance) }}
                                     </span>
                                 </td>
-                                <td class="text-xs">{{ $b->financial_year ?? '-' }}</td>
+                                <td>{{ $b->financial_year ?? '-' }}</td>
                                 <td class="text-center">
                                     <div class="flex items-center justify-center gap-2">
                                         <a href="{{ route('admin.finance.budgets.show', $b->id) }}" class="btn btn-sm btn-outline-info">View</a>

@@ -19,7 +19,7 @@
 
     @php $sc = ['draft' => 'badge-outline-secondary', 'approved' => 'badge-outline-primary', 'paid' => 'badge-outline-success', 'overdue' => 'badge-outline-danger', 'cancelled' => 'badge-outline-dark']; @endphp
 
-    <div class="mt-6 grid gap-6 lg:grid-cols-5">
+    <div class="mt-6 grid gap-6 sm:grid-cols-3 lg:grid-cols-5">
         <div class="panel">
             <label class="text-xs text-white-dark">Bill Number</label>
             <p class="font-mono font-semibold text-primary">{{ $bill->bill_number }}</p>
@@ -42,7 +42,7 @@
         </div>
     </div>
 
-    <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="mt-4 grid gap-4 sm:grid-cols-3 lg:grid-cols-4">
         <div class="panel"><label class="text-xs text-white-dark">Bill Date</label><p>{{ $bill->bill_date->format('d M Y') }}</p></div>
         <div class="panel"><label class="text-xs text-white-dark">Due Date</label><p class="{{ $bill->due_amount > 0 && $bill->due_date->isPast() ? 'text-danger' : '' }}">{{ $bill->due_date->format('d M Y') }}</p></div>
         <div class="panel"><label class="text-xs text-white-dark">Total Amount</label><p class="text-lg font-bold text-primary">{{ number_format($bill->total_amount) }}</p></div>
@@ -58,20 +58,20 @@
         <div id="addItemForm" class="mb-5 mt-3 hidden rounded-lg border p-4 dark:border-gray-700">
             <form action="{{ route('admin.finance.bills.items.store', $bill->id) }}" method="POST">
                 @csrf
-                <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
-                    <div class="md:col-span-3">
-                        <input type="text" name="description" placeholder="Description" class="form-input" required />
-                    </div>
-                    <div><input type="number" step="0.0001" name="quantity" placeholder="Quantity" class="form-input" required /></div>
-                    <div><input type="number" step="0.01" name="unit_price" placeholder="Unit Price" class="form-input" required /></div>
-                    <div><button type="submit" class="btn btn-primary w-full">Add Item</button></div>
-                </div>
+                <table class="w-full" style="table-layout: fixed;">
+                    <tr>
+                        <td style="width:40%"><input type="text" name="description" placeholder="Description" class="form-input" required /></td>
+                        <td style="width:17%"><input type="number" step="0.0001" name="quantity" placeholder="Quantity" class="form-input" required /></td>
+                        <td style="width:17%"><input type="number" step="0.01" name="unit_price" placeholder="Unit Price" class="form-input" required /></td>
+                        <td style="width:13%"><button type="submit" class="btn btn-primary w-full">Add</button></td>
+                    </tr>
+                </table>
             </form>
         </div>
 
         <div class="overflow-x-auto">
             <table class="table-hover w-full table-auto">
-                <thead><tr><th>Description</th><th>Qty</th><th>Unit Price</th><th>Total</th><th class="text-center">Action</th></tr></thead>
+                <thead><tr><th>Description</th><th>Qty</th><th>Unit Price</th><th>Total</th><th>Action</th></tr></thead>
                 <tbody>
                     @forelse($bill->items as $item)
                         <tr>
@@ -91,12 +91,22 @@
                     @endforelse
                 </tbody>
                 <tfoot>
-                    <tr class="font-bold">
-                        <td colspan="3" class="text-right">Subtotal</td>
-                        <td>{{ number_format($bill->subtotal) }}</td><td></td>
+                    <tr><td colspan="5" class="pb-3"></td></tr>
+                    <tr class="text-sm">
+                        <td colspan="2"></td>
+                        <td class="text-right text-white-dark pr-20">Subtotal:</td>
+                        <td class="font-semibold">{{ number_format($bill->subtotal) }}</td><td></td>
                     </tr>
-                    <tr><td colspan="3" class="text-right">Tax ({{ $bill->tax_rate }}%)</td><td>{{ number_format($bill->tax_amount) }}</td><td></td></tr>
-                    <tr class="font-bold"><td colspan="3" class="text-right">Total</td><td>{{ number_format($bill->total_amount) }}</td><td></td></tr>
+                    <tr class="text-sm">
+                        <td colspan="2"></td>
+                        <td class="text-right text-white-dark pr-20">Tax({{ $bill->tax_rate }}%):</td>
+                        <td class="font-semibold">{{ number_format($bill->tax_amount) }}</td><td></td>
+                    </tr>
+                    <tr class="border-t border-gray-300 dark:border-gray-600">
+                        <td colspan="2"></td>
+                        <td class="pt-2 text-right text-base font-bold pr-20">Total:</td>
+                        <td class="pt-2 text-base font-bold text-primary">{{ number_format($bill->total_amount) }}</td><td></td>
+                    </tr>
                 </tfoot>
             </table>
         </div>
@@ -111,14 +121,16 @@
         <div id="addPaymentForm" class="mb-5 mt-3 hidden rounded-lg border p-4 dark:border-gray-700">
             <form action="{{ route('admin.finance.bills.payments.store', $bill->id) }}" method="POST">
                 @csrf
-                <div class="grid grid-cols-1 gap-3 md:grid-cols-5">
-                    <div><input type="number" step="0.01" name="amount" placeholder="Amount" class="form-input" required /></div>
-                    <div><input type="date" name="payment_date" class="form-input" required value="{{ now()->format('Y-m-d') }}" /></div>
-                    <div><input type="text" name="payment_method" placeholder="Method" class="form-input" /></div>
-                    <div><input type="text" name="reference" placeholder="Ref #" class="form-input" /></div>
-                    <div><button type="submit" class="btn btn-success w-full">Record</button></div>
-                </div>
-                <div class="mt-2"><textarea name="notes" class="form-input" rows="1" placeholder="Notes (optional)"></textarea></div>
+                <table class="w-full" style="table-layout: fixed;">
+                    <tr>
+                        <td style="width:18%"><input type="number" step="0.01" name="amount" placeholder="Amount" class="form-input" required /></td>
+                        <td style="width:18%"><input type="date" name="payment_date" class="form-input" required value="{{ now()->format('Y-m-d') }}" /></td>
+                        <td style="width:18%"><input type="text" name="payment_method" placeholder="Method" class="form-input" /></td>
+                        <td style="width:18%"><input type="text" name="reference" placeholder="Ref #" class="form-input" /></td>
+                        <td style="width:13%"><button type="submit" class="btn btn-success w-full">Record</button></td>
+                    </tr>
+                </table>
+                <div class="mt-2"><textarea name="notes" class="form-input" rows="2" placeholder="Notes (optional)"></textarea></div>
             </form>
         </div>
 

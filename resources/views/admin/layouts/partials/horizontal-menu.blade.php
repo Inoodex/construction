@@ -350,7 +350,7 @@
                     <li><a href="{{ route('admin.finance.general-ledger.index') }}">General Ledger</a></li>
                     <li><a href="{{ route('admin.finance.trial-balance.index') }}">Trial Balance</a></li>
                     <li><a href="{{ route('admin.finance.receivables.index') }}">Accounts Receivable</a></li>
-                    <li><a href="{{ route('admin.finance.bank-guarantees.index') }}">Bank Guarantees</a></li>
+                    {{-- <li><a href="{{ route('admin.finance.bank-guarantees.index') }}">Bank Guarantees</a></li> --}}
                     <li><a href="{{ route('admin.finance.balance-sheet.index') }}">Balance Sheet</a></li>
                     <li><a href="{{ route('admin.finance.income-statement.index') }}">Income Statement</a></li>
                 </ul>

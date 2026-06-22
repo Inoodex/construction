@@ -17,7 +17,7 @@
         </div>
     </div>
 
-    @php $variance = $budget->budgeted_amount - $budget->actual_amount; @endphp
+    @php $variance = $budget->budgeted_amount - $budget->actual_cost; @endphp
     <div class="mt-6 grid gap-6 lg:grid-cols-3">
         <div class="panel lg:col-span-2">
             <h5 class="mb-4 text-base font-semibold">Budget Information</h5>
@@ -54,7 +54,7 @@
                 </div>
                 <div class="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
                     <span class="text-xs text-gray-600 dark:text-gray-300">Actual</span>
-                    <span class="text-sm font-bold dark:text-white">৳{{ number_format($budget->actual_amount) }}</span>
+                    <span class="text-sm font-bold dark:text-white">৳{{ number_format($budget->actual_cost) }}</span>
                 </div>
                 <div class="flex items-center justify-between rounded-lg p-3 {{ $variance >= 0 ? 'bg-success/10' : 'bg-danger/10' }}">
                     <span class="text-xs font-semibold {{ $variance >= 0 ? 'text-success' : 'text-danger' }}">Variance</span>
@@ -63,7 +63,7 @@
                     </span>
                 </div>
                 @if($budget->budgeted_amount > 0)
-                    @php $pct = round(($budget->actual_amount / $budget->budgeted_amount) * 100, 1); @endphp
+                    @php $pct = round(($budget->actual_cost / $budget->budgeted_amount) * 100, 1); @endphp
                     <div class="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
                         <span class="text-xs text-gray-600 dark:text-gray-300">Utilization</span>
                         <span class="text-sm font-bold dark:text-white">{{ $pct }}%</span>

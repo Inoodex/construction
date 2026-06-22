@@ -91,7 +91,8 @@
                 <tbody>
                     @forelse($rateAnalysis->items as $item)
                         <tr>
-                            <td><span class="badge badge-outline-{{ ['labour' => 'info', 'material' => 'primary', 'equipment' => 'warning', 'subcontract' => 'secondary', 'overhead' => 'dark'] }}{{ $item->resource_type }} capitalize text-xs">{{ $item->resource_type }}</span></td>
+                            <td>@php $rt = ['labour' => 'info', 'material' => 'primary', 'equipment' => 'warning', 'subcontract' => 'secondary', 'overhead' => 'dark']; @endphp
+                                <span class="badge badge-outline-{{ $rt[$item->resource_type] ?? 'secondary' }} capitalize text-xs">{{ $item->resource_type }}</span></td>
                             <td class="text-xs">{{ $item->resource_description }}</td>
                             <td class="text-xs">{{ $item->unit }}</td>
                             <td class="text-xs">{{ number_format($item->quantity, 2) }}</td>

@@ -85,6 +85,6 @@ class InterimPaymentApplication extends Model
 
     public function items(): HasMany
     {
-        return $this->hasMany(IpaItem::class);
+        return $this->hasMany(IpaItem::class, 'ipa_id');
     }
 }
