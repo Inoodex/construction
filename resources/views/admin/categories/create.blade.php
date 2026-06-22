@@ -25,6 +25,14 @@
                         <option value="">Select Type</option>
                         <option value="trade_category" {{ old('type') == 'trade_category' ? 'selected' : '' }}>Trade Category</option>
                         <option value="resource_type" {{ old('type') == 'resource_type' ? 'selected' : '' }}>Resource Type</option>
+                        <option value="equipment_category" {{ old('type') == 'equipment_category' ? 'selected' : '' }}>Equipment Category</option>
+                        <option value="material_category" {{ old('type') == 'material_category' ? 'selected' : '' }}>Material Category</option>
+                        <option value="document_type" {{ old('type') == 'document_type' ? 'selected' : '' }}>Document Type</option>
+                        <option value="expense_type" {{ old('type') == 'expense_type' ? 'selected' : '' }}>Expense Type</option>
+                        <option value="skill_level" {{ old('type') == 'skill_level' ? 'selected' : '' }}>Skill Level</option>
+                        <option value="certification_type" {{ old('type') == 'certification_type' ? 'selected' : '' }}>Certification Type</option>
+                        <option value="incident_type" {{ old('type') == 'incident_type' ? 'selected' : '' }}>Incident Type</option>
+                        <option value="compliance_type" {{ old('type') == 'compliance_type' ? 'selected' : '' }}>Compliance Type</option>
                     </select>
                     @error('type') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>

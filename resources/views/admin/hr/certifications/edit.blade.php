@@ -5,10 +5,13 @@
 @section('content')
     <div class="flex flex-wrap items-center justify-between gap-4">
         <h2 class="text-xl font-semibold uppercase">Edit Certification</h2>
-        <a href="{{ route('admin.hr.certifications.index') }}" class="btn btn-secondary gap-2">&larr; Back</a>
+        <a href="{{ route('admin.hr.certifications.index') }}" class="btn btn-secondary gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+            Back
+        </a>
     </div>
 
-    <div class="panel mt-6 max-w-2xl">
+    <div class="panel mt-6">
         <form action="{{ route('admin.hr.certifications.update', $certification) }}" method="POST">
             @csrf @method('PUT')
             <div class="grid grid-cols-2 gap-4">

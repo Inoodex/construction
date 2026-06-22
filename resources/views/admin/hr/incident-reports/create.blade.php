@@ -8,7 +8,7 @@
         <a href="{{ route('admin.hr.incident-reports.index') }}" class="btn btn-secondary gap-2">&larr; Back</a>
     </div>
 
-    <div class="panel mt-6 max-w-3xl">
+    <div class="panel mt-6">
         <form action="{{ route('admin.hr.incident-reports.store') }}" method="POST">
             @csrf
             <div class="grid grid-cols-2 gap-4">

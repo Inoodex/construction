@@ -38,7 +38,7 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'type' => 'required|string|max:50|in:trade_category,resource_type',
+            'type' => 'required|string|max:50',
             'value' => 'required|string|max:255',
             'label' => 'nullable|string|max:255',
             'sort_order' => 'nullable|integer|min:0',
@@ -64,7 +64,7 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         $validated = $request->validate([
-            'type' => 'required|string|max:50|in:trade_category,resource_type',
+            'type' => 'required|string|max:50',
             'value' => 'required|string|max:255',
             'label' => 'nullable|string|max:255',
             'sort_order' => 'nullable|integer|min:0',

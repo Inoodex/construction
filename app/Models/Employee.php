@@ -30,6 +30,11 @@ class Employee extends Model
         'photo',
     ];
 
+    protected $casts = [
+        'date_of_birth' => 'date',
+        'joining_date' => 'date',
+    ];
+
     public function attendance()
     {
         return $this->hasMany(Attendance::class);

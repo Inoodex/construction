@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Hr;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Employee;
 use App\Models\PpeIssuance;
 use Illuminate\Http\Request;
@@ -35,7 +36,8 @@ class PpeIssuanceController extends Controller
     public function create()
     {
         $employees = Employee::active()->orderBy('full_name')->get();
-        return view('admin.hr.ppe-issuances.create', compact('employees'));
+        $categories = Category::byType('equipment_category')->orderBy('value')->get();
+        return view('admin.hr.ppe-issuances.create', compact('employees', 'categories'));
     }
 
     public function store(Request $request)
@@ -68,7 +70,8 @@ class PpeIssuanceController extends Controller
     public function edit(PpeIssuance $ppeIssuance)
     {
         $employees = Employee::active()->orderBy('full_name')->get();
-        return view('admin.hr.ppe-issuances.edit', compact('ppeIssuance', 'employees'));
+        $categories = Category::byType('equipment_category')->orderBy('value')->get();
+        return view('admin.hr.ppe-issuances.edit', compact('ppeIssuance', 'employees', 'categories'));
     }
 
     public function update(Request $request, PpeIssuance $ppeIssuance)

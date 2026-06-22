@@ -5,10 +5,13 @@
 @section('content')
     <div class="flex flex-wrap items-center justify-between gap-4">
         <h2 class="text-xl font-semibold uppercase">New PPE Issuance</h2>
-        <a href="{{ route('admin.hr.ppe-issuances.index') }}" class="btn btn-secondary gap-2">&larr; Back</a>
+        <a href="{{ route('admin.hr.ppe-issuances.index') }}" class="btn btn-secondary gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Back
+        </a>
     </div>
 
-    <div class="panel mt-6 max-w-2xl">
+    <div class="panel mt-6">
         <form action="{{ route('admin.hr.ppe-issuances.store') }}" method="POST">
             @csrf
             <div class="grid grid-cols-2 gap-4">
@@ -28,8 +31,13 @@
                     @error('item_name') <p class="text-danger text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="text-sm font-semibold">Category</label>
-                    <input type="text" name="category" class="form-input" value="{{ old('category') }}" placeholder="e.g. Helmet, Gloves, Vest" />
+                    <label class="text-sm font-semibold">Equipment Category</label>
+                    <select name="category" class="form-select">
+                        <option value="">Select Category</option>
+                        @foreach($categories as $cat)
+                            <option value="{{ $cat->value }}" {{ old('category') == $cat->value ? 'selected' : '' }}>{{ $cat->label }}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div>
                     <label class="text-sm font-semibold">Size</label>
@@ -52,10 +60,6 @@
                     <label class="text-sm font-semibold">Return Date</label>
                     <input type="date" name="return_date" class="form-input" value="{{ old('return_date') }}" />
                     @error('return_date') <p class="text-danger text-xs mt-1">{{ $message }}</p> @enderror
-                </div>
-                <div>
-                    <label class="text-sm font-semibold">Condition on Return</label>
-                    <input type="text" name="condition_on_return" class="form-input" value="{{ old('condition_on_return') }}" />
                 </div>
             </div>
             <div class="mt-4">

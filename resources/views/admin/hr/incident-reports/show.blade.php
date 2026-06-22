@@ -5,9 +5,17 @@
 @section('content')
     <div class="flex flex-wrap items-center justify-between gap-4">
         <h2 class="text-xl font-semibold uppercase">Incident Report</h2>
-        <div class="flex gap-2">
-            <a href="{{ route('admin.hr.incident-reports.edit', $incidentReport) }}" class="btn btn-outline-secondary">Edit</a>
-            <a href="{{ route('admin.hr.incident-reports.index') }}" class="btn btn-secondary gap-2">&larr; Back</a>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('admin.hr.incident-reports.edit', $incidentReport) }}" class="btn btn-primary gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                Edit
+            </a>
+            <a href="{{ route('admin.hr.incident-reports.index') }}" class="btn btn-secondary gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+                    <line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                Back to List
+            </a>
         </div>
     </div>
 
@@ -18,7 +26,7 @@
                 <tr><td class="py-1 text-gray-500 w-32">Date / Time</td><td>{{ $incidentReport->incident_date->format('d M Y') }}{{ $incidentReport->incident_time ? ' at ' . $incidentReport->incident_time->format('H:i') : '' }}</td></tr>
                 <tr><td class="py-1 text-gray-500">Type</td><td><span class="badge badge-outline-{{ $incidentReport->incident_type === 'accident' ? 'danger' : ($incidentReport->incident_type === 'near-miss' ? 'warning' : ($incidentReport->incident_type === 'injury' ? 'info' : 'secondary')) }}">{{ str_replace('-', ' ', ucfirst($incidentReport->incident_type)) }}</span></td></tr>
                 <tr><td class="py-1 text-gray-500">Severity</td><td>
-                    @php $sevCls = match($incidentReport->severity) { 'fatal' => 'badge-danger', 'critical' => 'badge-warning', 'serious' => 'badge-secondary', 'moderate' => 'badge-info', default => 'badge-success' }; @endphp
+                    @php $sevCls = match($incidentReport->severity) { 'fatal' => 'badge-outline-danger', 'critical' => 'badge-outline-warning', 'serious' => 'badge-outline-secondary', 'moderate' => 'badge-outline-info', default => 'badge-outline-success' }; @endphp
                     <span class="badge {{ $sevCls }}">{{ ucfirst($incidentReport->severity) }}</span>
                 </td></tr>
                 <tr><td class="py-1 text-gray-500">Location</td><td>{{ $incidentReport->location ?? '—' }}</td></tr>

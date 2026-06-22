@@ -350,9 +350,9 @@
                             </a>
                             <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
                                 <li><a href="{{ route('admin.hr.employees.index') }}">All Employees</a></li>
-                                <li><a href="{{ route('admin.hr.employees.create') }}">Add Employee</a></li>
+                                {{-- <li><a href="{{ route('admin.hr.employees.create') }}">Add Employee</a></li> --}}
                                 <li><a href="{{ route('admin.hr.attendance.index') }}">Daily Register</a></li>
-                                <li><a href="{{ route('admin.hr.attendance.create') }}">Mark Attendance</a></li>
+                                {{-- <li><a href="{{ route('admin.hr.attendance.create') }}">Mark Attendance</a></li> --}}
                                 <li><a href="{{ route('admin.hr.attendance.summary') }}">Monthly Summary</a></li>
                                 <li><a href="{{ route('admin.hr.timesheets.index') }}">Timesheets</a></li>
                                 <li><a href="{{ route('admin.hr.leaves.index') }}">Leave Requests</a></li>

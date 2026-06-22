@@ -5,10 +5,13 @@
 @section('content')
     <div class="flex flex-wrap items-center justify-between gap-4">
         <h2 class="text-xl font-semibold uppercase">Register Equipment</h2>
-        <a href="{{ route('admin.hr.equipment.index') }}" class="btn btn-secondary gap-2">&larr; Back</a>
+        <a href="{{ route('admin.hr.equipment.index') }}" class="btn btn-secondary gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Back
+        </a>
     </div>
 
-    <div class="panel mt-6 max-w-3xl">
+    <div class="panel mt-6">
         <form action="{{ route('admin.hr.equipment.store') }}" method="POST">
             @csrf
 
@@ -25,10 +28,15 @@
                 </div>
                 <div>
                     <label class="text-sm font-semibold">Category</label>
-                    <input type="text" name="category" class="form-input" value="{{ old('category') }}" placeholder="e.g. Excavator, Crane, Mixer" />
+                    <select name="category" class="form-select">
+                        <option value="">Select Category</option>
+                        @foreach($categories as $cat)
+                            <option value="{{ $cat }}" {{ old('category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div>
-                    <label class="text-sm font-semibold">Make</label>
+                    <label class="text-sm font-semibold">Manufacturer</label>
                     <input type="text" name="make" class="form-input" value="{{ old('make') }}" placeholder="e.g. Caterpillar" />
                 </div>
                 <div>
@@ -45,12 +53,12 @@
                 </div>
                 <div>
                     <label class="text-sm font-semibold">Acquisition Type <span class="text-danger">*</span></label>
-                    <select name="acquisition_type" class="form-select" required>
+                    <select name="acquisition_type" id="acquisition_type" class="form-select" required>
                         <option value="owned" {{ old('acquisition_type') == 'owned' ? 'selected' : '' }}>Owned</option>
                         <option value="hired" {{ old('acquisition_type') == 'hired' ? 'selected' : '' }}>Hired</option>
                     </select>
                 </div>
-                {{-- Hire fields (shown for hired equipment) --}}
+                <div id="hire_fields" class="contents">
                 <div class="hire-field">
                     <label class="text-sm font-semibold">Hire Rate</label>
                     <input type="number" step="0.01" name="hire_rate" class="form-input" value="{{ old('hire_rate') }}" min="0" />
@@ -76,21 +84,22 @@
                     <label class="text-sm font-semibold">Hire Vendor</label>
                     <input type="text" name="hire_vendor" class="form-input" value="{{ old('hire_vendor') }}" placeholder="Hiring company name" />
                 </div>
+                </div>
                 <div>
-                    <label class="text-sm font-semibold">Purchase Cost <span class="text-danger">*</span></label>
-                    <input type="number" step="0.01" name="purchase_cost" class="form-input" required value="{{ old('purchase_cost', 0) }}" />
+                    <label class="text-sm font-semibold">Purchase Cost</label>
+                    <input type="number" step="0.01" name="purchase_cost" class="form-input" value="{{ old('purchase_cost', 0) }}" />
                 </div>
                 <div>
                     <label class="text-sm font-semibold">Purchase Date</label>
                     <input type="date" name="purchase_date" class="form-input" value="{{ old('purchase_date') }}" />
                 </div>
                 <div>
-                    <label class="text-sm font-semibold">Useful Life (Years) <span class="text-danger">*</span></label>
-                    <input type="number" name="useful_life_years" class="form-input" required value="{{ old('useful_life_years', 5) }}" min="1" />
+                    <label class="text-sm font-semibold">Useful Life (Years)</label>
+                    <input type="number" name="useful_life_years" class="form-input" value="{{ old('useful_life_years', 5) }}" min="1" />
                 </div>
                 <div>
-                    <label class="text-sm font-semibold">Salvage Value <span class="text-danger">*</span></label>
-                    <input type="number" step="0.01" name="salvage_value" class="form-input" required value="{{ old('salvage_value', 0) }}" />
+                    <label class="text-sm font-semibold">Salvage Value</label>
+                    <input type="number" step="0.01" name="salvage_value" class="form-input" value="{{ old('salvage_value', 0) }}" />
                 </div>
                 <div>
                     <label class="text-sm font-semibold">Status <span class="text-danger">*</span></label>
@@ -103,10 +112,6 @@
                 <div>
                     <label class="text-sm font-semibold">Location</label>
                     <input type="text" name="location" class="form-input" value="{{ old('location') }}" />
-                </div>
-                <div>
-                    <label class="text-sm font-semibold">Operator</label>
-                    <input type="text" name="operator" class="form-input" value="{{ old('operator') }}" />
                 </div>
                 <div>
                     <label class="text-sm font-semibold">Project</label>
@@ -125,14 +130,6 @@
                             <option value="{{ $s->id }}" {{ old('site_id') == $s->id ? 'selected' : '' }}>{{ $s->name }}</option>
                         @endforeach
                     </select>
-                </div>
-                <div>
-                    <label class="text-sm font-semibold">Allocated Date</label>
-                    <input type="date" name="allocated_date" class="form-input" value="{{ old('allocated_date') }}" />
-                </div>
-                <div>
-                    <label class="text-sm font-semibold">Deallocated Date</label>
-                    <input type="date" name="deallocated_date" class="form-input" value="{{ old('deallocated_date') }}" />
                 </div>
                 <div>
                     <label class="text-sm font-semibold">Meter Hours <span class="text-danger">*</span></label>
@@ -156,4 +153,16 @@
             <button type="submit" class="btn btn-primary mt-4">Register Equipment</button>
         </form>
     </div>
+</div>
+
+@push('scripts')
+<script>
+    document.getElementById('acquisition_type').addEventListener('change', function() {
+        document.getElementById('hire_fields').style.display = this.value === 'hired' ? '' : 'none';
+    });
+    if (document.getElementById('acquisition_type').value !== 'hired') {
+        document.getElementById('hire_fields').style.display = 'none';
+    }
+</script>
+@endpush
 @endsection

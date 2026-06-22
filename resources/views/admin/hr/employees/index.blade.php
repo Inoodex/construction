@@ -8,11 +8,6 @@
         <h5 class="text-lg font-semibold dark:text-white-light">Employees</h5>
         <a href="{{ route('admin.hr.employees.create') }}" class="btn btn-primary">+ Add Employee</a>
     </div>
-
-    @if(session('success'))
-        <div class="mb-4 rounded-md bg-green-100 p-3 text-green-700">{{ session('success') }}</div>
-    @endif
-
     <form method="GET" class="mb-4 flex flex-wrap items-center gap-3">
         <input type="text" name="search" class="form-input flex-1" placeholder="Search name, code, phone..." value="{{ request('search') }}" />
         <select name="department" class="form-select flex-1">

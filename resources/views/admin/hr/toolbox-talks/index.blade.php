@@ -3,65 +3,77 @@
 @section('title', 'Toolbox Talks')
 
 @section('content')
-<div class="panel">
-    <div class="mb-5 flex items-center justify-between">
-        <h5 class="text-lg font-semibold dark:text-white-light">Toolbox Talks</h5>
-        <a href="{{ route('admin.hr.toolbox-talks.create') }}" class="btn btn-primary">+ New Toolbox Talk</a>
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <h2 class="text-xl font-semibold uppercase">Toolbox Talks</h2>
+        <a href="{{ route('admin.hr.toolbox-talks.create') }}" class="btn btn-primary gap-2">+ New Toolbox Talk</a>
     </div>
 
-    @if(session('success'))
-        <div class="mb-4 rounded-md bg-green-100 p-3 text-green-700">{{ session('success') }}</div>
-    @endif
-
-    <form method="GET" class="mb-4 flex flex-nowrap items-center gap-2 overflow-x-auto">
-        <select name="employee_id" class="form-select" onchange="this.form.submit()">
-            <option value="">All Conducted By</option>
-            @foreach($employees as $id => $name)
-                <option value="{{ $id }}" {{ request('employee_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
-            @endforeach
-        </select>
-        <input type="date" name="date_from" class="form-input" value="{{ request('date_from') }}" placeholder="From" onchange="this.form.submit()" />
-        <input type="date" name="date_to" class="form-input" value="{{ request('date_to') }}" placeholder="To" onchange="this.form.submit()" />
-        @if(request()->anyFilled(['employee_id', 'date_from', 'date_to']))
-            <a href="{{ route('admin.hr.toolbox-talks.index') }}" class="btn btn-outline-danger btn-sm">Reset</a>
+    <div class="panel mt-6">
+        @if(session('success'))
+            <div class="mb-4 rounded-md bg-green-100 p-3 text-green-700">{{ session('success') }}</div>
         @endif
-    </form>
 
-    <div class="overflow-x-auto">
-        <table class="table-hover w-full table-auto">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Topic</th>
-                    <th>Conducted By</th>
-                    <th>Duration</th>
-                    <th>Location</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($records as $r)
+        <form method="GET" class="mb-4 flex flex-nowrap items-end gap-2 overflow-x-auto">
+            <div>
+                <label class="text-xs font-semibold">Conducted By</label>
+                <select name="employee_id" class="form-select" style="min-width: 220px">
+                    <option value="">All Conducted By</option>
+                    @foreach($employees as $id => $name)
+                        <option value="{{ $id }}" {{ request('employee_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div>
+                <label class="text-xs font-semibold">From</label>
+                <input type="date" name="date_from" class="form-input" value="{{ request('date_from') }}" />
+            </div>
+            <div>
+                <label class="text-xs font-semibold">To</label>
+                <input type="date" name="date_to" class="form-input" value="{{ request('date_to') }}" />
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary">Filter</button>
+                @if(request()->anyFilled(['employee_id', 'date_from', 'date_to']))
+                    <a href="{{ route('admin.hr.toolbox-talks.index') }}" class="btn btn-outline-danger">Reset</a>
+                @endif
+            </div>
+        </form>
+
+        <div class="overflow-x-auto">
+            <table class="table-hover w-full table-auto">
+                <thead>
                     <tr>
-                        <td class="text-xs whitespace-nowrap">{{ $r->date->format('d M Y') }}</td>
-                        <td class="font-semibold">{{ $r->topic }}</td>
-                        <td class="text-xs">{{ $r->employee?->full_name ?? '—' }}</td>
-                        <td class="text-xs">{{ $r->duration_minutes ? $r->duration_minutes . ' min' : '—' }}</td>
-                        <td class="text-xs">{{ $r->location ?? '—' }}</td>
-                        <td class="flex gap-1">
-                            <a href="{{ route('admin.hr.toolbox-talks.show', $r) }}" class="btn btn-xs btn-outline-info">View</a>
-                            <a href="{{ route('admin.hr.toolbox-talks.edit', $r) }}" class="btn btn-xs btn-outline-secondary">Edit</a>
-                            <form action="{{ route('admin.hr.toolbox-talks.destroy', $r) }}" method="POST" class="inline" onsubmit="return confirm('Delete this record?')">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn btn-xs btn-outline-danger">×</button>
-                            </form>
-                        </td>
+                        <th>Date</th>
+                        <th>Topic</th>
+                        <th>Conducted By</th>
+                        <th>Duration</th>
+                        <th>Location</th>
+                        <th>Action</th>
                     </tr>
-                @empty
-                    <tr><td colspan="6" class="text-center text-gray-400 py-4">No toolbox talks found.</td></tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @forelse($records as $r)
+                        <tr>
+                            <td>{{ $r->date->format('d M Y') }}</td>
+                            <td>{{ $r->topic }}</td>
+                            <td>{{ $r->employee?->full_name ?? '—' }}</td>
+                            <td>{{ $r->duration_minutes ? $r->duration_minutes . ' min' : '—' }}</td>
+                            <td>{{ $r->location ?? '—' }}</td>
+                            <td class="flex items-center gap-1">
+                                <a href="{{ route('admin.hr.toolbox-talks.show', $r) }}" class="btn btn-sm btn-outline-info">View</a>
+                                <a href="{{ route('admin.hr.toolbox-talks.edit', $r) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                <form action="{{ route('admin.hr.toolbox-talks.destroy', $r) }}" method="POST" class="inline-flex" onsubmit="return confirm('Delete this record?')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="6" class="text-center text-gray-400 py-4">No toolbox talks found.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        <div class="mt-4">{{ $records->links() }}</div>
     </div>
-    <div class="mt-4">{{ $records->links() }}</div>
-</div>
 @endsection

@@ -5,16 +5,19 @@
 @section('content')
     <div class="flex flex-wrap items-center justify-between gap-4">
         <h2 class="text-xl font-semibold uppercase">Edit Fuel Log Entry</h2>
-        <a href="{{ route('admin.hr.fuel-logs.index') }}" class="btn btn-secondary gap-2">&larr; Back</a>
+        <a href="{{ route('admin.hr.fuel-logs.index') }}" class="btn btn-secondary gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            Back
+        </a>
     </div>
 
-    <div class="panel mt-6 max-w-2xl">
+    <div class="panel mt-6">
         <form action="{{ route('admin.hr.fuel-logs.update', $fuelLog) }}" method="POST">
             @csrf @method('PUT')
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="text-sm font-semibold">Equipment <span class="text-danger">*</span></label>
-                    <select name="equipment_id" class="form-select" required>
+                    <select name="equipment_id" id="equipment_id" class="form-select" required>
                         <option value="">Select equipment</option>
                         @foreach($equipment as $eq)
                             <option value="{{ $eq->id }}" {{ old('equipment_id', $fuelLog->equipment_id) == $eq->id ? 'selected' : '' }}>{{ $eq->name }} ({{ $eq->code }})</option>
@@ -55,7 +58,7 @@
                 </div>
                 <div>
                     <label class="text-sm font-semibold">Vendor</label>
-                    <input type="text" name="vendor" class="form-input" value="{{ old('vendor', $fuelLog->vendor) }}" />
+                    <input type="text" name="vendor" id="vendor" class="form-input" value="{{ old('vendor', $fuelLog->vendor) }}" />
                 </div>
                 <div>
                     <label class="text-sm font-semibold">Receipt No.</label>
@@ -70,3 +73,19 @@
         </form>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.getElementById('equipment_id').addEventListener('change', function() {
+        var eqId = this.value;
+        var vendorInput = document.getElementById('vendor');
+        if (eqId) {
+            fetch('/dashboard/hr/fuel-logs/equipment/' + eqId + '/details')
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    vendorInput.value = data.hire_vendor || data.last_vendor || '';
+                });
+        }
+    });
+</script>
+@endpush

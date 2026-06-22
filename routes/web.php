@@ -420,6 +420,7 @@ Route::prefix('dashboard/hr')->name('admin.hr.')->group(function () {
     Route::get('fuel-logs/{fuelLog}/edit', [FuelLogController::class, 'edit'])->name('fuel-logs.edit');
     Route::put('fuel-logs/{fuelLog}', [FuelLogController::class, 'update'])->name('fuel-logs.update');
     Route::delete('fuel-logs/{fuelLog}', [FuelLogController::class, 'destroy'])->name('fuel-logs.destroy');
+    Route::get('fuel-logs/equipment/{equipment}/details', [FuelLogController::class, 'equipmentDetails'])->name('fuel-logs.equipment-details');
 
     Route::get('toolbox-talks', [ToolboxTalkController::class, 'index'])->name('toolbox-talks.index');
     Route::get('toolbox-talks/create', [ToolboxTalkController::class, 'create'])->name('toolbox-talks.create');

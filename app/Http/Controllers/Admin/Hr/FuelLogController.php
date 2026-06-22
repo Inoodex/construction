@@ -95,4 +95,17 @@ class FuelLogController extends Controller
         $fuelLog->delete();
         return back()->with('success', 'Fuel log entry deleted.');
     }
+
+    public function equipmentDetails(Equipment $equipment)
+    {
+        $lastVendor = FuelLog::where('equipment_id', $equipment->id)
+            ->whereNotNull('vendor')
+            ->latest('date')
+            ->value('vendor');
+
+        return response()->json([
+            'hire_vendor' => $equipment->hire_vendor,
+            'last_vendor' => $lastVendor,
+        ]);
+    }
 }

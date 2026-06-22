@@ -5,9 +5,17 @@
 @section('content')
     <div class="flex flex-wrap items-center justify-between gap-4">
         <h2 class="text-xl font-semibold uppercase">{{ $equipment->name }}</h2>
-        <div class="flex gap-2">
-            <a href="{{ route('admin.hr.equipment.edit', $equipment) }}" class="btn btn-outline-secondary gap-2">Edit</a>
-            <a href="{{ route('admin.hr.equipment.index') }}" class="btn btn-secondary gap-2">&larr; Back</a>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('admin.hr.equipment.edit', $equipment) }}" class="btn btn-primary gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                Edit
+            </a>
+            <a href="{{ route('admin.hr.equipment.index') }}" class="btn btn-secondary gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+                    <line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                Back to List
+            </a>
         </div>
     </div>
 
@@ -22,11 +30,9 @@
                     <tr><td class="py-1 text-gray-500">Make / Model</td><td>{{ $equipment->make ?? '—' }} {{ $equipment->model ? '/ ' . $equipment->model : '' }}</td></tr>
                     <tr><td class="py-1 text-gray-500">Year</td><td>{{ $equipment->year ?? '—' }}</td></tr>
                     <tr><td class="py-1 text-gray-500">Serial #</td><td class="font-mono">{{ $equipment->serial_number ?? '—' }}</td></tr>
-                    <tr><td class="py-1 text-gray-500">Type</td><td><span class="badge badge-{{ $equipment->acquisition_type === 'owned' ? 'info' : 'warning' }}">{{ ucfirst($equipment->acquisition_type) }}</span></td></tr>
+                    <tr><td class="py-1 text-gray-500">Type</td><td><span class="badge badge-outline-info capitalize">{{ $equipment->acquisition_type }}</span></td></tr>
                     <tr><td class="py-1 text-gray-500">Status</td><td>
-                        <span class="badge badge-{{ $equipment->status === 'active' ? 'success' : ($equipment->status === 'under-maintenance' ? 'warning' : 'secondary') }}">
-                            {{ ucfirst($equipment->status) }}
-                        </span>
+                        <span class="badge {{ $equipment->status === 'active' ? 'badge-outline-success' : ($equipment->status === 'under-maintenance' ? 'badge-outline-warning' : 'badge-outline-secondary') }} capitalize">{{ $equipment->status === 'under-maintenance' ? 'Maint' : $equipment->status }}</span>
                     </td></tr>
                 </table>
             </div>
@@ -50,11 +56,8 @@
                 <h4 class="font-semibold mb-3">Usage & Allocation</h4>
                 <table class="w-full text-sm">
                     <tr><td class="py-1 text-gray-500 w-28">Location</td><td>{{ $equipment->location ?? '—' }}</td></tr>
-                    <tr><td class="py-1 text-gray-500">Operator</td><td>{{ $equipment->operator ?? '—' }}</td></tr>
                     <tr><td class="py-1 text-gray-500">Project</td><td>{{ $equipment->project?->name ?? '—' }}</td></tr>
                     <tr><td class="py-1 text-gray-500">Site</td><td>{{ $equipment->site?->name ?? '—' }}</td></tr>
-                    <tr><td class="py-1 text-gray-500">Allocated</td><td>{{ $equipment->allocated_date?->format('d M Y') ?? '—' }}</td></tr>
-                    <tr><td class="py-1 text-gray-500">Deallocated</td><td>{{ $equipment->deallocated_date?->format('d M Y') ?? '—' }}</td></tr>
                     <tr><td class="py-1 text-gray-500 font-semibold">Meter Hours</td><td class="font-bold">{{ number_format($equipment->meter_hours) }}</td></tr>
                     <tr><td class="py-1 text-gray-500">Maint Interval</td><td>{{ $equipment->maintenance_interval_hours ? number_format($equipment->maintenance_interval_hours) . ' hrs' : '—' }}</td></tr>
                     <tr><td class="py-1 text-gray-500">Next Maint @</td><td>{{ $equipment->next_maintenance_hours ? number_format($equipment->next_maintenance_hours) . ' hrs' : '—' }}</td></tr>

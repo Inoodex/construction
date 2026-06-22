@@ -9,10 +9,6 @@
         <a href="{{ route('admin.hr.leaves.create') }}" class="btn btn-primary">+ New Leave Request</a>
     </div>
 
-    @if(session('success'))
-        <div class="mb-4 rounded-md bg-green-100 p-3 text-green-700">{{ session('success') }}</div>
-    @endif
-
     {{-- <form method="GET" class="mb-4 flex flex-wrap items-center gap-3"> --}}
     <form method="GET" class="mb-4 flex flex-nowrap items-center gap-2 overflow-x-auto">
         <select name="employee_id" class="form-select">

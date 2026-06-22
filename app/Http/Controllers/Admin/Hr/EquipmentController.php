@@ -39,7 +39,7 @@ class EquipmentController extends Controller
         }
 
         $equipment = $query->latest()->paginate(20);
-        $categories = Equipment::select('category')->distinct()->whereNotNull('category')->pluck('category');
+        $categories = ['Heavy Machinery', 'Light Equipment', 'Vehicles', 'Power Tools', 'Safety Equipment', 'Surveying Instruments', 'Pumping Equipment', 'Generators'];
         $projects = Project::orderBy('name')->pluck('name', 'id');
         $sites = Site::orderBy('name')->pluck('name', 'id');
 
@@ -50,7 +50,8 @@ class EquipmentController extends Controller
     {
         $projects = Project::orderBy('name')->get();
         $sites = Site::orderBy('name')->get();
-        return view('admin.hr.equipment.create', compact('projects', 'sites'));
+        $categories = ['Heavy Machinery', 'Light Equipment', 'Vehicles', 'Power Tools', 'Safety Equipment', 'Surveying Instruments', 'Pumping Equipment', 'Generators'];
+        return view('admin.hr.equipment.create', compact('projects', 'sites', 'categories'));
     }
 
     public function store(Request $request)
@@ -64,20 +65,17 @@ class EquipmentController extends Controller
             'year' => 'nullable|integer|min:1900|max:2099',
             'serial_number' => 'nullable|string|max:100',
             'acquisition_type' => 'required|in:owned,hired',
-            'purchase_cost' => 'required|numeric|min:0',
+            'purchase_cost' => 'nullable|numeric|min:0',
             'purchase_date' => 'nullable|date',
-            'useful_life_years' => 'required|integer|min:1|max:50',
-            'salvage_value' => 'required|numeric|min:0',
+            'useful_life_years' => 'nullable|integer|min:1|max:100',
+            'salvage_value' => 'nullable|numeric|min:0',
             'status' => 'required|in:active,under-maintenance,retired',
             'location' => 'nullable|string|max:255',
-            'operator' => 'nullable|string|max:255',
             'meter_hours' => 'required|integer|min:0',
             'maintenance_interval_hours' => 'nullable|integer|min:0',
             'next_maintenance_hours' => 'nullable|integer|min:0',
             'project_id' => 'nullable|exists:projects,id',
             'site_id' => 'nullable|exists:sites,id',
-            'allocated_date' => 'nullable|date',
-            'deallocated_date' => 'nullable|date|after_or_equal:allocated_date',
             'hire_rate' => 'nullable|numeric|min:0',
             'hire_rate_period' => 'nullable|in:daily,weekly,monthly',
             'hire_start_date' => 'nullable|date',
@@ -85,8 +83,6 @@ class EquipmentController extends Controller
             'hire_vendor' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
         ]);
-
-        $validated['current_value'] = $request->purchase_cost;
 
         Equipment::create($validated);
 
@@ -104,7 +100,8 @@ class EquipmentController extends Controller
     {
         $projects = Project::orderBy('name')->get();
         $sites = Site::orderBy('name')->get();
-        return view('admin.hr.equipment.edit', compact('equipment', 'projects', 'sites'));
+        $categories = ['Heavy Machinery', 'Light Equipment', 'Vehicles', 'Power Tools', 'Safety Equipment', 'Surveying Instruments', 'Pumping Equipment', 'Generators'];
+        return view('admin.hr.equipment.edit', compact('equipment', 'projects', 'sites', 'categories'));
     }
 
     public function update(Request $request, Equipment $equipment)
@@ -118,20 +115,17 @@ class EquipmentController extends Controller
             'year' => 'nullable|integer|min:1900|max:2099',
             'serial_number' => 'nullable|string|max:100',
             'acquisition_type' => 'required|in:owned,hired',
-            'purchase_cost' => 'required|numeric|min:0',
+            'purchase_cost' => 'nullable|numeric|min:0',
             'purchase_date' => 'nullable|date',
-            'useful_life_years' => 'required|integer|min:1|max:50',
-            'salvage_value' => 'required|numeric|min:0',
+            'useful_life_years' => 'nullable|integer|min:1|max:100',
+            'salvage_value' => 'nullable|numeric|min:0',
             'status' => 'required|in:active,under-maintenance,retired',
             'location' => 'nullable|string|max:255',
-            'operator' => 'nullable|string|max:255',
             'meter_hours' => 'required|integer|min:0',
             'maintenance_interval_hours' => 'nullable|integer|min:0',
             'next_maintenance_hours' => 'nullable|integer|min:0',
             'project_id' => 'nullable|exists:projects,id',
             'site_id' => 'nullable|exists:sites,id',
-            'allocated_date' => 'nullable|date',
-            'deallocated_date' => 'nullable|date|after_or_equal:allocated_date',
             'hire_rate' => 'nullable|numeric|min:0',
             'hire_rate_period' => 'nullable|in:daily,weekly,monthly',
             'hire_start_date' => 'nullable|date',

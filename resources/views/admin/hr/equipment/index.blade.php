@@ -16,7 +16,7 @@
             </div>
             <div>
                 <label class="text-xs font-semibold">Category</label>
-                <select name="category" class="form-select" onchange="this.form.submit()">
+                <select name="category" class="form-select">
                     <option value="">All</option>
                     @foreach($categories as $cat)
                         <option value="{{ $cat }}" {{ request('category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
@@ -25,7 +25,7 @@
             </div>
             <div>
                 <label class="text-xs font-semibold">Status</label>
-                <select name="status" class="form-select" onchange="this.form.submit()">
+                <select name="status" class="form-select">
                     <option value="">All</option>
                     <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
                     <option value="under-maintenance" {{ request('status') == 'under-maintenance' ? 'selected' : '' }}>Under Maintenance</option>
@@ -34,7 +34,7 @@
             </div>
             <div>
                 <label class="text-xs font-semibold">Type</label>
-                <select name="acquisition_type" class="form-select" onchange="this.form.submit()">
+                <select name="acquisition_type" class="form-select">
                     <option value="">All</option>
                     <option value="owned" {{ request('acquisition_type') == 'owned' ? 'selected' : '' }}>Owned</option>
                     <option value="hired" {{ request('acquisition_type') == 'hired' ? 'selected' : '' }}>Hired</option>
@@ -42,7 +42,7 @@
             </div>
             <div>
                 <label class="text-xs font-semibold">Project</label>
-                <select name="project_id" class="form-select" onchange="this.form.submit()">
+                <select name="project_id" class="form-select">
                     <option value="">All</option>
                     @foreach($projects as $id => $name)
                         <option value="{{ $id }}" {{ request('project_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
@@ -51,16 +51,19 @@
             </div>
             <div>
                 <label class="text-xs font-semibold">Site</label>
-                <select name="site_id" class="form-select" onchange="this.form.submit()">
+                <select name="site_id" class="form-select">
                     <option value="">All</option>
                     @foreach($sites as $id => $name)
                         <option value="{{ $id }}" {{ request('site_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
                     @endforeach
                 </select>
             </div>
-            @if(request()->anyFilled(['search', 'category', 'status', 'acquisition_type', 'project_id', 'site_id']))
-                <a href="{{ route('admin.hr.equipment.index') }}" class="btn btn-outline-danger btn-sm">Reset</a>
-            @endif
+            <div>
+                <button type="submit" class="btn btn-primary">Filter</button>
+                @if(request()->anyFilled(['search', 'category', 'status', 'acquisition_type', 'project_id', 'site_id']))
+                    <a href="{{ route('admin.hr.equipment.index') }}" class="btn btn-outline-danger">Reset</a>
+                @endif
+            </div>
         </form>
 
         <div class="overflow-x-auto">
@@ -87,20 +90,26 @@
                             <td>{{ $eq->category ?? '—' }}</td>
                             <td class="text-xs">{{ $eq->project?->name ?? '—' }}</td>
                             <td class="text-xs">{{ $eq->site?->name ?? '—' }}</td>
-                            <td><span class="badge badge-{{ $eq->acquisition_type === 'owned' ? 'info' : 'warning' }}">{{ ucfirst($eq->acquisition_type) }}</span></td>
+                            <td><span class="badge badge-outline-info capitalize">{{ $eq->acquisition_type }}</span></td>
                             <td>{{ number_format($eq->meter_hours) }}</td>
                             <td class="text-right">{{ number_format($eq->purchase_cost, 0) }}</td>
                             <td>
-                                <span class="badge badge-{{ $eq->status === 'active' ? 'success' : ($eq->status === 'under-maintenance' ? 'warning' : 'secondary') }}">
-                                    {{ $eq->status === 'under-maintenance' ? 'Maint' : ucfirst($eq->status) }}
-                                </span>
+                                @php
+                                    $statusClass = match($eq->status) {
+                                        'active' => 'badge-outline-success',
+                                        'under-maintenance' => 'badge-outline-warning',
+                                        'retired' => 'badge-outline-secondary',
+                                        default => 'badge-outline-secondary'
+                                    };
+                                @endphp
+                                <span class="badge {{ $statusClass }} capitalize">{{ $eq->status === 'under-maintenance' ? 'Maint' : $eq->status }}</span>
                             </td>
                             <td class="flex gap-1">
-                                <a href="{{ route('admin.hr.equipment.show', $eq) }}" class="btn btn-xs btn-outline-info">View</a>
-                                <a href="{{ route('admin.hr.equipment.edit', $eq) }}" class="btn btn-xs btn-outline-secondary">Edit</a>
+                                <a href="{{ route('admin.hr.equipment.show', $eq) }}" class="btn btn-sm btn-outline-info">View</a>
+                                <a href="{{ route('admin.hr.equipment.edit', $eq) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
                                 <form action="{{ route('admin.hr.equipment.destroy', $eq) }}" method="POST" class="inline" onsubmit="return confirm('Delete this equipment?')">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-xs btn-outline-danger">Delete</button>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
                                 </form>
                             </td>
                         </tr>

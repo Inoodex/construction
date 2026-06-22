@@ -9,10 +9,6 @@
         <a href="{{ route('admin.hr.ppe-issuances.create') }}" class="btn btn-primary">+ New Issuance</a>
     </div>
 
-    @if(session('success'))
-        <div class="mb-4 rounded-md bg-green-100 p-3 text-green-700">{{ session('success') }}</div>
-    @endif
-
     <form method="GET" class="mb-4 flex flex-nowrap items-center gap-2 overflow-x-auto">
         <select name="employee_id" class="form-select" onchange="this.form.submit()">
             <option value="">All Employees</option>
@@ -48,15 +44,15 @@
                     <th>Issue Date</th>
                     <th>Return Date</th>
                     <th>Status</th>
-                    <th></th>
+                    <th style="text-align: center;">Action</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($records as $r)
                     <tr>
-                        <td class="font-semibold">{{ $r->employee->full_name }}</td>
+                        <td>{{ $r->employee->full_name }}</td>
                         <td>{{ $r->item_name }}</td>
-                        <td class="text-xs">{{ $r->category ?? '—' }}</td>
+                        <td>{{ $r->category ?? '—' }}</td>
                         <td>{{ $r->quantity }}</td>
                         <td>{{ $r->size ?? '—' }}</td>
                         <td>{{ $r->issue_date->format('d M Y') }}</td>
@@ -68,12 +64,12 @@
                                 <span class="badge badge-outline-warning">Issued</span>
                             @endif
                         </td>
-                        <td class="flex gap-1">
-                            <a href="{{ route('admin.hr.ppe-issuances.show', $r) }}" class="btn btn-xs btn-outline-info">View</a>
-                            <a href="{{ route('admin.hr.ppe-issuances.edit', $r) }}" class="btn btn-xs btn-outline-secondary">Edit</a>
+                        <td class="flex gap-1" style="justify-content: center;">
+                            <a href="{{ route('admin.hr.ppe-issuances.show', $r) }}" class="btn btn-sm btn-outline-info">View</a>
+                            <a href="{{ route('admin.hr.ppe-issuances.edit', $r) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
                             <form action="{{ route('admin.hr.ppe-issuances.destroy', $r) }}" method="POST" class="inline" onsubmit="return confirm('Delete this record?')">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="btn btn-xs btn-outline-danger">×</button>
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
                             </form>
                         </td>
                     </tr>
