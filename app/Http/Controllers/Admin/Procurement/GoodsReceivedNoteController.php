@@ -8,6 +8,7 @@ use App\Models\GoodsReceivedNoteItem;
 use App\Models\PurchaseOrder;
 use App\Models\Material;
 use App\Models\Site;
+use App\Models\Stock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -93,6 +94,36 @@ class GoodsReceivedNoteController extends Controller
     {
         $goodsReceivedNote->load('purchaseOrder.vendor', 'purchaseOrder.items.material', 'receiver', 'items.material');
         return view('admin.procurement.goods-received-notes.show', compact('goodsReceivedNote'));
+    }
+
+    public function verify(GoodsReceivedNote $goodsReceivedNote)
+    {
+        abort_if($goodsReceivedNote->status !== 'pending', 403, 'Only pending GRNs can be verified.');
+
+        DB::transaction(function () use ($goodsReceivedNote) {
+            $goodsReceivedNote->update(['status' => 'verified']);
+
+            foreach ($goodsReceivedNote->items as $item) {
+                if ($item->quantity_accepted > 0 && $goodsReceivedNote->site_id) {
+                    $stock = Stock::where('site_id', $goodsReceivedNote->site_id)
+                        ->where('material_id', $item->material_id)
+                        ->first();
+
+                    if ($stock) {
+                        $stock->increment('quantity', $item->quantity_accepted);
+                    } else {
+                        Stock::create([
+                            'site_id' => $goodsReceivedNote->site_id,
+                            'material_id' => $item->material_id,
+                            'quantity' => $item->quantity_accepted,
+                        ]);
+                    }
+                }
+            }
+        });
+
+        return redirect()->route('admin.procurement.goods-received-notes.show', $goodsReceivedNote)
+            ->with('success', 'GRN verified and stock updated.');
     }
 
     public function destroy(GoodsReceivedNote $goodsReceivedNote)

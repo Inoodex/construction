@@ -3,9 +3,9 @@
 @section('content')
 <table class="stats">
     <tr>
-        <td><div class="value" style="color:#4361ee">৳{{ number_format($totalBudgeted, 2) }}</div><div class="label">Total Budgeted</div></td>
-        <td><div class="value" style="color:#e2a03f">৳{{ number_format($totalActual, 2) }}</div><div class="label">Total Actual</div></td>
-        <td><div class="value" style="color:{{ $variance >= 0 ? '#00ab55' : '#e7515a' }}">৳{{ number_format($variance, 2) }}</div><div class="label">Variance</div></td>
+        <td><div class="value" style="color:#4361ee">{{ number_format($totalBudgeted, 2) }}</div><div class="label">Total Budgeted</div></td>
+        <td><div class="value" style="color:#e2a03f">{{ number_format($totalActual, 2) }}</div><div class="label">Total Actual</div></td>
+        <td><div class="value" style="color:{{ $variance >= 0 ? '#00ab55' : '#e7515a' }}">{{ number_format($variance, 2) }}</div><div class="label">Variance</div></td>
         <td><div class="value" style="color:{{ $variancePct >= 0 ? '#00ab55' : '#e7515a' }}">{{ $variancePct }}%</div><div class="label">Variance %</div></td>
     </tr>
 </table>

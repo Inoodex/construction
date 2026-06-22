@@ -101,6 +101,8 @@ CREATE TABLE `attendance` (
   CONSTRAINT `attendance_employee_id_foreign` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `attendance` (`id`, `employee_id`, `date`, `clock_in`, `clock_out`, `status`, `note`, `created_at`, `updated_at`) VALUES
+(1,	2,	'2026-06-22',	'2026-06-22 04:20:00',	'2026-06-22 12:45:00',	'present',	NULL,	'2026-06-22 00:12:38',	'2026-06-22 00:12:38');
 
 DROP TABLE IF EXISTS `bank_guarantees`;
 CREATE TABLE `bank_guarantees` (
@@ -144,6 +146,8 @@ CREATE TABLE `bill_items` (
   CONSTRAINT `bill_items_bill_id_foreign` FOREIGN KEY (`bill_id`) REFERENCES `bills` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `bill_items` (`id`, `bill_id`, `description`, `quantity`, `unit_price`, `total_price`, `created_at`, `updated_at`) VALUES
+(1,	1,	'test',	10.0000,	1500.00,	15000.00,	'2026-06-22 04:32:02',	'2026-06-22 04:32:02');
 
 DROP TABLE IF EXISTS `bill_payments`;
 CREATE TABLE `bill_payments` (
@@ -193,6 +197,8 @@ CREATE TABLE `bills` (
   CONSTRAINT `bills_vendor_id_foreign` FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `bills` (`id`, `project_id`, `vendor_id`, `bill_number`, `reference`, `title`, `bill_date`, `due_date`, `subtotal`, `tax_rate`, `tax_amount`, `total_amount`, `paid_amount`, `due_amount`, `status`, `notes`, `created_by`, `created_at`, `updated_at`) VALUES
+(1,	5,	7,	'BILL-20260622-XECZ',	'PO#1234',	'Bill-1',	'2026-06-22',	'2026-06-25',	15000.00,	2.50,	375.00,	15375.00,	0.00,	15375.00,	'draft',	NULL,	1,	'2026-06-22 04:27:09',	'2026-06-22 04:32:02');
 
 DROP TABLE IF EXISTS `boq_items`;
 CREATE TABLE `boq_items` (
@@ -212,6 +218,9 @@ CREATE TABLE `boq_items` (
   CONSTRAINT `boq_items_boq_id_foreign` FOREIGN KEY (`boq_id`) REFERENCES `boqs` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `boq_items` (`id`, `boq_id`, `item_number`, `description`, `unit`, `quantity`, `unit_price`, `total_price`, `notes`, `created_at`, `updated_at`) VALUES
+(1,	1,	'1',	'test',	'pcs',	10.0000,	1500.00,	15000.00,	NULL,	'2026-06-22 03:57:17',	'2026-06-22 03:57:17'),
+(2,	2,	'60mm MS Rod (Grade 60)',	'test',	'ton',	10.0000,	92000.00,	920000.00,	NULL,	'2026-06-22 06:13:30',	'2026-06-22 06:13:30');
 
 DROP TABLE IF EXISTS `boqs`;
 CREATE TABLE `boqs` (
@@ -234,7 +243,8 @@ CREATE TABLE `boqs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `boqs` (`id`, `project_id`, `boq_number`, `title`, `description`, `total_amount`, `status`, `created_by`, `created_at`, `updated_at`) VALUES
-(1,	5,	'BOQ-20260617-OR0D',	'e',	NULL,	0.00,	'draft',	1,	'2026-06-16 23:37:54',	'2026-06-16 23:37:54');
+(1,	5,	'BOQ-20260617-OR0D',	'BOQ 1',	NULL,	15000.00,	'approved',	1,	'2026-06-16 23:37:54',	'2026-06-22 06:10:58'),
+(2,	6,	'BOQ-20260622-NREW',	'BOQ2',	NULL,	920000.00,	'approved',	1,	'2026-06-22 06:11:17',	'2026-06-22 06:14:32');
 
 DROP TABLE IF EXISTS `budgets`;
 CREATE TABLE `budgets` (
@@ -259,6 +269,9 @@ CREATE TABLE `budgets` (
   CONSTRAINT `budgets_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `budgets` (`id`, `project_id`, `cost_code`, `description`, `budgeted_amount`, `actual_amount`, `planned_value`, `earned_value`, `actual_cost`, `financial_year`, `notes`, `created_by`, `created_at`, `updated_at`) VALUES
+(1,	5,	'101',	'Test',	2500000.00,	0.00,	2300000.00,	2150000.00,	2250000.00,	'2025-26',	NULL,	1,	'2026-06-22 03:45:23',	'2026-06-22 03:59:24'),
+(2,	6,	'1001',	NULL,	6500000.00,	0.00,	2000000.00,	1850000.00,	2100000.00,	'2026-27',	NULL,	1,	'2026-06-22 06:08:44',	'2026-06-22 06:08:44');
 
 DROP TABLE IF EXISTS `cache`;
 CREATE TABLE `cache` (
@@ -270,7 +283,7 @@ CREATE TABLE `cache` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('inoodex-cache-tyro:user-1:roles',	'a:1:{i:0;s:11:\"super-admin\";}',	1782045118);
+('inoodex-cache-tyro:user-1:roles',	'a:1:{i:0;s:11:\"super-admin\";}',	1782131182);
 
 DROP TABLE IF EXISTS `cache_locks`;
 CREATE TABLE `cache_locks` (
@@ -308,12 +321,12 @@ INSERT INTO `categories` (`id`, `type`, `value`, `label`, `is_active`, `sort_ord
 (8,	'trade_category',	'Cement',	'Cement',	1,	8,	'2026-06-17 23:36:17',	'2026-06-17 23:36:17'),
 (9,	'trade_category',	'Bricks',	'Bricks',	1,	9,	'2026-06-17 23:36:17',	'2026-06-17 23:36:17'),
 (10,	'trade_category',	'Sand',	'Sand',	1,	10,	'2026-06-17 23:36:17',	'2026-06-17 23:36:17'),
-(11,	'resource_type',	'labor',	'Labor',	1,	1,	'2026-06-17 23:36:17',	'2026-06-17 23:36:17'),
 (12,	'resource_type',	'labour',	'Labour',	1,	2,	'2026-06-17 23:36:17',	'2026-06-17 23:36:17'),
 (13,	'resource_type',	'equipment',	'Equipment',	1,	3,	'2026-06-17 23:36:17',	'2026-06-17 23:36:17'),
 (14,	'resource_type',	'material',	'Material',	1,	4,	'2026-06-17 23:36:17',	'2026-06-17 23:36:17'),
 (15,	'resource_type',	'subcontract',	'Subcontract',	1,	5,	'2026-06-17 23:36:17',	'2026-06-17 23:36:17'),
-(16,	'resource_type',	'overhead',	'Overhead',	1,	6,	'2026-06-17 23:36:17',	'2026-06-17 23:36:17');
+(16,	'resource_type',	'overhead',	'Overhead',	1,	6,	'2026-06-17 23:36:17',	'2026-06-17 23:36:17'),
+(17,	'equipment_category',	'Helmet',	'Helmet',	1,	0,	'2026-06-22 01:12:41',	'2026-06-22 01:12:41');
 
 DROP TABLE IF EXISTS `certifications`;
 CREATE TABLE `certifications` (
@@ -361,16 +374,12 @@ INSERT INTO `chart_of_accounts` (`id`, `account_code`, `name`, `type`, `normal_b
 (42,	'3-1000',	'Owner\'s Equity',	'equity',	'credit',	NULL,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
 (43,	'4-1000',	'Revenue',	'income',	'credit',	NULL,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
 (44,	'5-1000',	'Direct Costs',	'expense',	'debit',	NULL,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
-(45,	'5-2000',	'Overhead',	'expense',	'debit',	NULL,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
 (46,	'1-1010',	'Cash & Bank',	'asset',	'debit',	39,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
 (47,	'1-1020',	'Accounts Receivable',	'asset',	'debit',	39,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
 (48,	'1-1030',	'Inventory - Materials',	'asset',	'debit',	39,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
 (49,	'1-1040',	'Work in Progress',	'asset',	'debit',	39,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
 (50,	'2-1010',	'Accounts Payable',	'liability',	'credit',	41,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
-(51,	'2-1020',	'Accrued Expenses',	'liability',	'credit',	41,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
 (52,	'3-1010',	'Capital',	'equity',	'credit',	42,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
-(53,	'3-1020',	'Retained Earnings',	'equity',	'credit',	42,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
-(54,	'4-1010',	'Contract Revenue',	'income',	'credit',	43,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
 (55,	'5-1010',	'Material Costs',	'expense',	'debit',	44,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
 (56,	'5-1020',	'Labour Costs',	'expense',	'debit',	44,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
 (57,	'5-1030',	'Subcontractor Costs',	'expense',	'debit',	44,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
@@ -406,6 +415,8 @@ CREATE TABLE `cost_overrun_alerts` (
   CONSTRAINT `cost_overrun_alerts_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `cost_overrun_alerts` (`id`, `project_id`, `budget_id`, `cost_code`, `budgeted_amount`, `actual_amount`, `variance`, `variance_percentage`, `severity`, `message`, `status`, `created_by`, `acknowledged_at`, `acknowledged_by`, `resolution_notes`, `created_at`, `updated_at`) VALUES
+(1,	5,	1,	'101',	2500000.00,	2250000.00,	250000.00,	90.00,	'warning',	'Budget warning: 101 is at 90% of budget (৳2,250,000 vs ৳2,500,000)',	'open',	1,	NULL,	NULL,	NULL,	'2026-06-22 03:59:24',	'2026-06-22 03:59:24');
 
 DROP TABLE IF EXISTS `employees`;
 CREATE TABLE `employees` (
@@ -437,6 +448,8 @@ CREATE TABLE `employees` (
   UNIQUE KEY `employees_employee_code_unique` (`employee_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `employees` (`id`, `employee_code`, `full_name`, `father_name`, `mother_name`, `date_of_birth`, `gender`, `blood_group`, `phone`, `email`, `nid_number`, `present_address`, `permanent_address`, `designation`, `department`, `employment_type`, `joining_date`, `basic_salary`, `status`, `emergency_contact_name`, `emergency_contact_phone`, `photo`, `created_at`, `updated_at`) VALUES
+(2,	'0001',	'Md Rahim',	'Md Karim',	'Rahima Begum',	'2000-08-16',	'male',	'A+',	'01300000000',	'rahim@mail.com',	'1402136548',	'Mirpur, Dhaka',	'Rangpur',	'worker',	'steel',	'daily_wage',	'2026-03-01',	130000.00,	'active',	'Md Karim',	'01500000000',	NULL,	'2026-06-22 00:11:54',	'2026-06-22 06:04:08');
 
 DROP TABLE IF EXISTS `equipment`;
 CREATE TABLE `equipment` (
@@ -480,6 +493,8 @@ CREATE TABLE `equipment` (
   CONSTRAINT `equipment_site_id_foreign` FOREIGN KEY (`site_id`) REFERENCES `sites` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `equipment` (`id`, `code`, `name`, `category`, `make`, `model`, `year`, `serial_number`, `acquisition_type`, `hire_rate`, `hire_rate_period`, `hire_start_date`, `hire_end_date`, `hire_vendor`, `purchase_cost`, `purchase_date`, `useful_life_years`, `salvage_value`, `current_value`, `status`, `location`, `operator`, `meter_hours`, `maintenance_interval_hours`, `next_maintenance_hours`, `notes`, `created_at`, `updated_at`, `project_id`, `site_id`, `allocated_date`, `deallocated_date`) VALUES
+(1,	'35366-1716',	'Otho Kling',	'Power Tools',	'SDf',	'Despecto',	'1995',	'107',	'hired',	100.00,	'daily',	'2025-07-06',	'2026-04-16',	'Hansen Group',	614.00,	'2027-03-18',	39,	661.00,	614.00,	'retired',	'Sodalitas facilis cometes',	'Crustulum aufero beatus',	595,	620,	207,	'314',	'2026-06-22 00:26:18',	'2026-06-22 00:26:18',	5,	5,	'2026-04-11',	'2026-12-27');
 
 DROP TABLE IF EXISTS `equipment_maintenance`;
 CREATE TABLE `equipment_maintenance` (
@@ -537,6 +552,8 @@ CREATE TABLE `fuel_logs` (
   CONSTRAINT `fuel_logs_equipment_id_foreign` FOREIGN KEY (`equipment_id`) REFERENCES `equipment` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `fuel_logs` (`id`, `equipment_id`, `date`, `fuel_type`, `quantity`, `unit`, `unit_cost`, `total_cost`, `meter_hours`, `vendor`, `receipt_no`, `notes`, `created_at`, `updated_at`) VALUES
+(1,	1,	'2026-06-22',	'diesel',	1.00,	'liters',	100.00,	100.00,	12,	'Hansen Group',	'1234',	NULL,	'2026-06-22 01:00:15',	'2026-06-22 01:00:15');
 
 DROP TABLE IF EXISTS `goods_received_note_items`;
 CREATE TABLE `goods_received_note_items` (
@@ -555,6 +572,9 @@ CREATE TABLE `goods_received_note_items` (
   CONSTRAINT `goods_received_note_items_material_id_foreign` FOREIGN KEY (`material_id`) REFERENCES `materials` (`id`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `goods_received_note_items` (`id`, `goods_received_note_id`, `material_id`, `quantity_received`, `quantity_accepted`, `quantity_rejected`, `created_at`, `updated_at`) VALUES
+(2,	2,	4,	10.0000,	10.0000,	0.0000,	'2026-06-21 23:22:51',	'2026-06-21 23:22:51'),
+(3,	3,	5,	10.0000,	10.0000,	0.0000,	'2026-06-22 05:46:24',	'2026-06-22 05:46:24');
 
 DROP TABLE IF EXISTS `goods_received_notes`;
 CREATE TABLE `goods_received_notes` (
@@ -579,6 +599,9 @@ CREATE TABLE `goods_received_notes` (
   CONSTRAINT `goods_received_notes_site_id_foreign` FOREIGN KEY (`site_id`) REFERENCES `sites` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `goods_received_notes` (`id`, `purchase_order_id`, `grn_number`, `received_date`, `delivery_note`, `vehicle_number`, `received_by`, `status`, `created_at`, `updated_at`, `site_id`) VALUES
+(2,	2,	'GRN-20260622-C707',	'2026-06-22',	'123',	'12-3456',	1,	'pending',	'2026-06-21 23:22:51',	'2026-06-21 23:22:51',	5),
+(3,	3,	'GRN-20260622-6A43',	'2026-06-22',	'1234',	'05-6789',	1,	'verified',	'2026-06-22 05:46:24',	'2026-06-22 05:54:03',	6);
 
 DROP TABLE IF EXISTS `hse_checklist_items`;
 CREATE TABLE `hse_checklist_items` (
@@ -642,6 +665,8 @@ CREATE TABLE `incident_reports` (
   CONSTRAINT `incident_reports_employee_id_foreign` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `incident_reports` (`id`, `employee_id`, `incident_date`, `incident_time`, `location`, `incident_type`, `severity`, `description`, `immediate_action`, `root_cause`, `corrective_action`, `affected_persons`, `property_damage`, `reported_by`, `status`, `investigation_notes`, `created_at`, `updated_at`) VALUES
+(1,	2,	'2027-02-21',	'07:25:00',	'Tum conculco fuga aer virga.',	'injury',	'critical',	'Abutor sed defluo.',	'2025-07-28 09:42:23',	'Alivia.Mante15',	'Acies antiquus adulatio cuppedia aliquid comprehendo vero arx vomer.',	'Adficio amicitia stips.',	'2026-12-03 04:06:03',	'Nisi dede',	'closed',	'284',	'2026-06-22 01:25:10',	'2026-06-22 01:28:58');
 
 DROP TABLE IF EXISTS `inspection_checklist_items`;
 CREATE TABLE `inspection_checklist_items` (
@@ -658,6 +683,10 @@ CREATE TABLE `inspection_checklist_items` (
   CONSTRAINT `inspection_checklist_items_inspection_checklist_id_foreign` FOREIGN KEY (`inspection_checklist_id`) REFERENCES `inspection_checklists` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `inspection_checklist_items` (`id`, `inspection_checklist_id`, `item_name`, `is_checked`, `remarks`, `order_index`, `created_at`, `updated_at`) VALUES
+(1,	1,	'Barricades in place',	1,	'passed',	0,	'2026-06-21 22:09:12',	'2026-06-21 22:09:12'),
+(2,	1,	'Barricades in place 2',	1,	'passed',	2,	'2026-06-21 22:09:12',	'2026-06-21 22:09:12'),
+(3,	2,	'Barricades in place',	1,	NULL,	0,	'2026-06-22 05:31:09',	'2026-06-22 05:31:09');
 
 DROP TABLE IF EXISTS `inspection_checklists`;
 CREATE TABLE `inspection_checklists` (
@@ -678,6 +707,9 @@ CREATE TABLE `inspection_checklists` (
   CONSTRAINT `inspection_checklists_site_id_foreign` FOREIGN KEY (`site_id`) REFERENCES `sites` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `inspection_checklists` (`id`, `site_id`, `title`, `description`, `inspector_id`, `inspection_date`, `status`, `notes`, `created_at`, `updated_at`) VALUES
+(1,	5,	'Excavation Safety Check',	'Test',	1,	'2026-06-22',	'pending',	NULL,	'2026-06-21 22:09:12',	'2026-06-21 22:09:12'),
+(2,	6,	'Pile depth as per design',	NULL,	1,	'2026-06-22',	'passed',	NULL,	'2026-06-22 05:31:09',	'2026-06-22 05:31:09');
 
 DROP TABLE IF EXISTS `interim_payment_applications`;
 CREATE TABLE `interim_payment_applications` (
@@ -723,6 +755,9 @@ CREATE TABLE `interim_payment_applications` (
   CONSTRAINT `interim_payment_applications_submitted_by_foreign` FOREIGN KEY (`submitted_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `interim_payment_applications` (`id`, `project_id`, `ipa_number`, `title`, `application_date`, `period_start`, `period_end`, `previous_cumulative_amount`, `applied_amount`, `certified_amount`, `retention_rate`, `retention_amount`, `net_amount`, `paid_amount`, `status`, `submitted_by`, `certified_by`, `approved_by`, `invoice_id`, `submitted_at`, `certified_at`, `approved_at`, `notes`, `created_by`, `created_at`, `updated_at`) VALUES
+(1,	5,	'IPA-20260622-UND7',	'1st Interim Payment',	'2026-06-22',	'2026-01-01',	'2026-06-30',	0.00,	0.00,	0.00,	5.00,	0.00,	0.00,	0.00,	'draft',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	1,	'2026-06-22 04:08:50',	'2026-06-22 04:26:16'),
+(2,	6,	'IPA-20260622-2FHY',	'2nd Interim Payment',	'2026-06-22',	'2026-06-22',	'2026-06-27',	930000.00,	465000.00,	0.00,	5.00,	0.00,	0.00,	0.00,	'draft',	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	1,	'2026-06-22 06:16:40',	'2026-06-22 06:17:17');
 
 DROP TABLE IF EXISTS `invitation_links`;
 CREATE TABLE `invitation_links` (
@@ -766,6 +801,9 @@ CREATE TABLE `invoice_items` (
   CONSTRAINT `invoice_items_invoice_id_foreign` FOREIGN KEY (`invoice_id`) REFERENCES `invoices` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `invoice_items` (`id`, `invoice_id`, `description`, `quantity`, `unit_price`, `total_price`, `created_at`, `updated_at`) VALUES
+(1,	1,	'Test',	10.0000,	150.00,	1500.00,	'2026-06-22 04:05:49',	'2026-06-22 04:05:49'),
+(2,	2,	'60mm MS Rod (Grade 60)',	10.0000,	93000.00,	930000.00,	'2026-06-22 06:15:37',	'2026-06-22 06:15:37');
 
 DROP TABLE IF EXISTS `invoices`;
 CREATE TABLE `invoices` (
@@ -796,6 +834,9 @@ CREATE TABLE `invoices` (
   CONSTRAINT `invoices_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `invoices` (`id`, `project_id`, `invoice_number`, `title`, `description`, `issue_date`, `due_date`, `subtotal`, `tax_rate`, `tax_amount`, `retention_rate`, `retention_amount`, `total_amount`, `paid_amount`, `due_amount`, `status`, `created_by`, `created_at`, `updated_at`) VALUES
+(1,	5,	'INV-20260622-L8X9',	'Invoice 1',	NULL,	'2026-06-22',	'2026-06-29',	1500.00,	2.50,	37.50,	5.00,	75.00,	1462.50,	0.00,	1462.50,	'draft',	1,	'2026-06-22 04:04:37',	'2026-06-22 04:05:49'),
+(2,	6,	'INV-20260622-RQOO',	'Invoice 2',	NULL,	'2026-06-22',	'2026-06-29',	930000.00,	2.50,	23250.00,	5.00,	46500.00,	906750.00,	500000.00,	406750.00,	'draft',	1,	'2026-06-22 06:15:19',	'2026-06-22 06:16:03');
 
 DROP TABLE IF EXISTS `ipa_items`;
 CREATE TABLE `ipa_items` (
@@ -822,6 +863,8 @@ CREATE TABLE `ipa_items` (
   CONSTRAINT `ipa_items_ipa_id_foreign` FOREIGN KEY (`ipa_id`) REFERENCES `interim_payment_applications` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `ipa_items` (`id`, `ipa_id`, `boq_item_id`, `item_number`, `description`, `unit`, `previous_quantity`, `current_quantity`, `cumulative_quantity`, `unit_price`, `previous_amount`, `current_amount`, `cumulative_amount`, `notes`, `created_at`, `updated_at`) VALUES
+(2,	2,	NULL,	'60mm MS Rod (Grade 60)',	'test',	'ton',	10.0000,	5.0000,	15.0000,	93000.00,	930000.00,	465000.00,	1395000.00,	NULL,	'2026-06-22 06:17:17',	'2026-06-22 06:17:17');
 
 DROP TABLE IF EXISTS `job_batches`;
 CREATE TABLE `job_batches` (
@@ -871,7 +914,8 @@ CREATE TABLE `journal_entries` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `journal_entries` (`id`, `journal_number`, `date`, `description`, `type`, `status`, `created_by`, `created_at`, `updated_at`) VALUES
-(1,	'JV-20260618-001',	'2026-06-18',	NULL,	'general',	'posted',	1,	'2026-06-18 05:42:44',	'2026-06-18 05:42:44');
+(1,	'JV-20260618-001',	'2026-06-18',	NULL,	'general',	'posted',	1,	'2026-06-18 05:42:44',	'2026-06-18 05:42:44'),
+(2,	'JV-20260622-001',	'2026-06-22',	'test',	'general',	'posted',	1,	'2026-06-22 06:19:54',	'2026-06-22 06:19:54');
 
 DROP TABLE IF EXISTS `journal_entry_items`;
 CREATE TABLE `journal_entry_items` (
@@ -893,7 +937,9 @@ CREATE TABLE `journal_entry_items` (
 INSERT INTO `journal_entry_items` (`id`, `journal_entry_id`, `account_id`, `debit_amount`, `credit_amount`, `description`, `created_at`, `updated_at`) VALUES
 (1,	1,	40,	5000.00,	8000.00,	'asdf F',	'2026-06-18 05:42:44',	'2026-06-18 05:42:44'),
 (2,	1,	43,	6500.00,	5500.00,	'ZDFG',	'2026-06-18 05:42:44',	'2026-06-18 05:42:44'),
-(3,	1,	50,	5500.00,	3500.00,	'SDG',	'2026-06-18 05:42:44',	'2026-06-18 05:42:44');
+(3,	1,	50,	5500.00,	3500.00,	'SDG',	'2026-06-18 05:42:44',	'2026-06-18 05:42:44'),
+(4,	2,	48,	93000.00,	0.00,	'payment',	'2026-06-22 06:19:54',	'2026-06-22 06:19:54'),
+(5,	2,	55,	0.00,	93000.00,	'payment',	'2026-06-22 06:19:54',	'2026-06-22 06:19:54');
 
 DROP TABLE IF EXISTS `labour_entries`;
 CREATE TABLE `labour_entries` (
@@ -916,6 +962,8 @@ CREATE TABLE `labour_entries` (
   CONSTRAINT `labour_entries_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `labour_entries` (`id`, `project_id`, `employee_id`, `date`, `hours`, `hourly_rate`, `description`, `created_by`, `created_at`, `updated_at`) VALUES
+(1,	5,	2,	'2026-06-22',	8.00,	350.00,	NULL,	1,	'2026-06-22 03:53:11',	'2026-06-22 03:53:11');
 
 DROP TABLE IF EXISTS `leave_requests`;
 CREATE TABLE `leave_requests` (
@@ -937,6 +985,8 @@ CREATE TABLE `leave_requests` (
   CONSTRAINT `leave_requests_employee_id_foreign` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `leave_requests` (`id`, `employee_id`, `leave_type`, `start_date`, `end_date`, `reason`, `status`, `approved_by`, `remarks`, `created_at`, `updated_at`) VALUES
+(1,	2,	'sick',	'2026-06-23',	'2026-06-23',	NULL,	'approved',	1,	NULL,	'2026-06-22 00:15:43',	'2026-06-22 00:16:33');
 
 DROP TABLE IF EXISTS `material_issue_slip_items`;
 CREATE TABLE `material_issue_slip_items` (
@@ -953,6 +1003,9 @@ CREATE TABLE `material_issue_slip_items` (
   CONSTRAINT `material_issue_slip_items_material_issue_slip_id_foreign` FOREIGN KEY (`material_issue_slip_id`) REFERENCES `material_issue_slips` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `material_issue_slip_items` (`id`, `material_issue_slip_id`, `material_id`, `quantity`, `created_at`, `updated_at`) VALUES
+(2,	2,	4,	10.0000,	'2026-06-21 23:30:23',	'2026-06-21 23:30:23'),
+(3,	3,	5,	10.0000,	'2026-06-22 05:55:13',	'2026-06-22 05:55:13');
 
 DROP TABLE IF EXISTS `material_issue_slips`;
 CREATE TABLE `material_issue_slips` (
@@ -974,6 +1027,9 @@ CREATE TABLE `material_issue_slips` (
   CONSTRAINT `material_issue_slips_site_id_foreign` FOREIGN KEY (`site_id`) REFERENCES `sites` (`id`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `material_issue_slips` (`id`, `project_id`, `site_id`, `issued_to`, `issue_number`, `issue_date`, `created_at`, `updated_at`) VALUES
+(2,	5,	5,	2,	'ISS-20260622-CD60',	'2026-06-22',	'2026-06-21 23:30:23',	'2026-06-21 23:30:23'),
+(3,	6,	6,	2,	'ISS-20260622-2D1F',	'2026-06-22',	'2026-06-22 05:55:13',	'2026-06-22 05:55:13');
 
 DROP TABLE IF EXISTS `material_submittals`;
 CREATE TABLE `material_submittals` (
@@ -1007,6 +1063,9 @@ CREATE TABLE `material_submittals` (
   CONSTRAINT `material_submittals_submitted_by_foreign` FOREIGN KEY (`submitted_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `material_submittals` (`id`, `project_id`, `submittal_number`, `title`, `description`, `material_name`, `manufacturer`, `brand`, `model_reference`, `specification_details`, `quantity_unit`, `status`, `submitted_by`, `submitted_date`, `reviewed_by`, `review_date`, `review_comments`, `resubmission_deadline`, `created_at`, `updated_at`) VALUES
+(1,	5,	'MS-20260622-C1A5',	'Submittals 1',	NULL,	'Fresh Cement',	'Meghna Gorup',	'Fresh',	'1',	NULL,	'10 tons',	'submitted',	1,	'2026-06-22',	NULL,	NULL,	NULL,	NULL,	'2026-06-21 22:36:29',	'2026-06-21 22:39:30'),
+(5,	6,	'MS-20260622-8B88',	'MS Rod Grade 60 for Foundation',	'ASTM A615 Grade 60, yield 415 MPa',	'Rebar 16mm',	'Bashundhara Steel',	'BSRM',	'G60-60mm',	NULL,	'50ton',	'draft',	1,	NULL,	NULL,	NULL,	NULL,	NULL,	'2026-06-22 05:42:17',	'2026-06-22 05:42:17');
 
 DROP TABLE IF EXISTS `material_takeoffs`;
 CREATE TABLE `material_takeoffs` (
@@ -1045,6 +1104,8 @@ CREATE TABLE `material_transfer_items` (
   CONSTRAINT `material_transfer_items_material_transfer_id_foreign` FOREIGN KEY (`material_transfer_id`) REFERENCES `material_transfers` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `material_transfer_items` (`id`, `material_transfer_id`, `material_id`, `quantity`, `created_at`, `updated_at`) VALUES
+(3,	3,	5,	10.0000,	'2026-06-22 05:54:40',	'2026-06-22 05:54:40');
 
 DROP TABLE IF EXISTS `material_transfers`;
 CREATE TABLE `material_transfers` (
@@ -1071,6 +1132,8 @@ CREATE TABLE `material_transfers` (
   CONSTRAINT `material_transfers_to_warehouse_id_foreign` FOREIGN KEY (`to_warehouse_id`) REFERENCES `warehouses` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `material_transfers` (`id`, `from_warehouse_id`, `to_site_id`, `transfer_number`, `transfer_type`, `status`, `transfer_date`, `created_at`, `updated_at`, `from_site_id`, `to_warehouse_id`) VALUES
+(3,	3,	5,	'TRF-20260622-F9EC',	'warehouse_to_site',	'pending',	'2026-06-22',	'2026-06-22 05:54:40',	'2026-06-22 05:54:40',	NULL,	NULL);
 
 DROP TABLE IF EXISTS `material_wastages`;
 CREATE TABLE `material_wastages` (
@@ -1095,6 +1158,9 @@ CREATE TABLE `material_wastages` (
   CONSTRAINT `material_wastages_site_id_foreign` FOREIGN KEY (`site_id`) REFERENCES `sites` (`id`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `material_wastages` (`id`, `project_id`, `site_id`, `material_id`, `quantity`, `reason`, `reported_date`, `reported_by`, `created_at`, `updated_at`) VALUES
+(2,	5,	5,	4,	1.0000,	'wasted',	'2026-06-22',	1,	'2026-06-21 23:30:53',	'2026-06-21 23:30:53'),
+(3,	6,	6,	5,	0.5000,	'wasted',	'2026-06-22',	1,	'2026-06-22 05:56:06',	'2026-06-22 05:56:06');
 
 DROP TABLE IF EXISTS `materials`;
 CREATE TABLE `materials` (
@@ -1110,6 +1176,9 @@ CREATE TABLE `materials` (
   UNIQUE KEY `materials_sku_unique` (`sku`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `materials` (`id`, `name`, `sku`, `unit`, `reorder_level`, `description`, `created_at`, `updated_at`) VALUES
+(4,	'Fresh Cement',	'CMT-001',	'ton',	NULL,	NULL,	'2026-06-21 22:27:02',	'2026-06-22 05:38:49'),
+(5,	'60mm MS Rod (Grade 60)',	'R-001',	'ton',	NULL,	NULL,	'2026-06-22 05:38:36',	'2026-06-22 05:42:45');
 
 DROP TABLE IF EXISTS `migrations`;
 CREATE TABLE `migrations` (
@@ -1243,7 +1312,8 @@ CREATE TABLE `milestones` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `milestones` (`id`, `project_id`, `phase_id`, `name`, `description`, `target_date`, `achieved_date`, `status`, `created_at`, `updated_at`) VALUES
-(1,	5,	1,	'Foundation Complete',	NULL,	'2026-01-15',	'2026-01-12',	'achieved',	'2026-06-16 23:04:57',	'2026-06-16 23:04:57');
+(1,	5,	1,	'Foundation Complete',	NULL,	'2026-01-15',	'2026-01-12',	'achieved',	'2026-06-16 23:04:57',	'2026-06-16 23:04:57'),
+(2,	6,	2,	'Foundation Complete',	NULL,	'2026-07-08',	'2026-07-07',	'achieved',	'2026-06-22 05:12:52',	'2026-06-22 05:12:52');
 
 DROP TABLE IF EXISTS `password_reset_tokens`;
 CREATE TABLE `password_reset_tokens` (
@@ -1270,6 +1340,8 @@ CREATE TABLE `payments` (
   CONSTRAINT `payments_invoice_id_foreign` FOREIGN KEY (`invoice_id`) REFERENCES `invoices` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `payments` (`id`, `invoice_id`, `amount`, `payment_date`, `payment_method`, `reference`, `notes`, `created_at`, `updated_at`) VALUES
+(1,	2,	500000.00,	'2026-06-22',	'Bank',	'PO#1234',	NULL,	'2026-06-22 06:16:03',	'2026-06-22 06:16:03');
 
 DROP TABLE IF EXISTS `personal_access_tokens`;
 CREATE TABLE `personal_access_tokens` (
@@ -1308,7 +1380,8 @@ CREATE TABLE `phases` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `phases` (`id`, `project_id`, `name`, `description`, `start_date`, `end_date`, `status`, `order_index`, `created_at`, `updated_at`) VALUES
-(1,	5,	'Phase 1',	NULL,	'2026-01-01',	'2026-01-15',	'planned',	0,	'2026-06-16 22:53:02',	'2026-06-16 22:53:02');
+(1,	5,	'Foundation',	'Test',	'2026-01-01',	'2026-01-15',	'active',	1,	'2026-06-16 22:53:02',	'2026-06-21 21:41:06'),
+(2,	6,	'Foundation & Piling',	NULL,	'2026-07-01',	'2026-07-15',	'active',	1,	'2026-06-22 05:10:50',	'2026-06-22 05:11:54');
 
 DROP TABLE IF EXISTS `ppe_issuances`;
 CREATE TABLE `ppe_issuances` (
@@ -1330,6 +1403,8 @@ CREATE TABLE `ppe_issuances` (
   CONSTRAINT `ppe_issuances_employee_id_foreign` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `ppe_issuances` (`id`, `employee_id`, `item_name`, `category`, `issue_date`, `quantity`, `size`, `condition_on_issue`, `return_date`, `condition_on_return`, `notes`, `created_at`, `updated_at`) VALUES
+(1,	2,	'helmet',	'Helmet',	'2026-06-22',	1,	'10',	'new',	'2026-12-31',	NULL,	NULL,	'2026-06-22 01:17:57',	'2026-06-22 01:17:57');
 
 DROP TABLE IF EXISTS `privilege_role`;
 CREATE TABLE `privilege_role` (
@@ -1378,6 +1453,9 @@ CREATE TABLE `project_resources` (
   CONSTRAINT `project_resources_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `project_resources` (`id`, `project_id`, `resource_type`, `name`, `description`, `quantity`, `unit`, `unit_cost`, `total_cost`, `notes`, `created_at`, `updated_at`) VALUES
+(1,	5,	'equipment',	'Test 1',	'1. Test 2\r\n2. Test 2',	5.00,	'pcs',	1500.00,	7500.00,	NULL,	'2026-06-21 21:46:28',	'2026-06-21 21:46:28'),
+(2,	6,	'equipment',	'Pile Driving Rig',	NULL,	2.00,	'pcs',	15000.00,	30000.00,	NULL,	'2026-06-22 05:21:39',	'2026-06-22 05:21:39');
 
 DROP TABLE IF EXISTS `projects`;
 CREATE TABLE `projects` (
@@ -1397,7 +1475,8 @@ CREATE TABLE `projects` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `projects` (`id`, `name`, `description`, `budget`, `start_date`, `end_date`, `status`, `created_by`, `created_at`, `updated_at`) VALUES
-(5,	'Green Tower',	'Test',	450000000.00,	'2026-01-01',	'2027-12-31',	'active',	1,	'2026-06-16 21:57:55',	'2026-06-16 23:06:41');
+(5,	'Green Tower',	'Test',	450000000.00,	'2026-01-01',	'2027-12-31',	'active',	1,	'2026-06-16 21:57:55',	'2026-06-16 23:06:41'),
+(6,	'Rupayan City Uttara',	NULL,	45000000.00,	'2026-07-01',	'2030-06-30',	'active',	1,	'2026-06-22 05:09:39',	'2026-06-22 05:09:39');
 
 DROP TABLE IF EXISTS `purchase_order_items`;
 CREATE TABLE `purchase_order_items` (
@@ -1415,6 +1494,9 @@ CREATE TABLE `purchase_order_items` (
   CONSTRAINT `purchase_order_items_purchase_order_id_foreign` FOREIGN KEY (`purchase_order_id`) REFERENCES `purchase_orders` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `purchase_order_items` (`id`, `purchase_order_id`, `material_id`, `quantity`, `unit_price`, `created_at`, `updated_at`) VALUES
+(3,	2,	4,	10.0000,	13500.00,	'2026-06-21 23:14:28',	'2026-06-21 23:14:28'),
+(4,	3,	5,	10.0000,	95000.00,	'2026-06-22 05:45:36',	'2026-06-22 05:45:36');
 
 DROP TABLE IF EXISTS `purchase_orders`;
 CREATE TABLE `purchase_orders` (
@@ -1435,6 +1517,9 @@ CREATE TABLE `purchase_orders` (
   CONSTRAINT `purchase_orders_vendor_id_foreign` FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `purchase_orders` (`id`, `purchase_requisition_id`, `vendor_id`, `po_number`, `status`, `total_amount`, `order_date`, `created_at`, `updated_at`) VALUES
+(2,	2,	7,	'PO-20260622-949F',	'received',	135000.00,	'2026-06-22',	'2026-06-21 23:14:28',	'2026-06-21 23:22:51'),
+(3,	3,	8,	'PO-20260622-1377',	'received',	950000.00,	'2026-06-22',	'2026-06-22 05:45:36',	'2026-06-22 05:46:24');
 
 DROP TABLE IF EXISTS `purchase_requisition_items`;
 CREATE TABLE `purchase_requisition_items` (
@@ -1452,6 +1537,9 @@ CREATE TABLE `purchase_requisition_items` (
   CONSTRAINT `purchase_requisition_items_purchase_requisition_id_foreign` FOREIGN KEY (`purchase_requisition_id`) REFERENCES `purchase_requisitions` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `purchase_requisition_items` (`id`, `purchase_requisition_id`, `material_id`, `quantity`, `estimated_unit_price`, `created_at`, `updated_at`) VALUES
+(5,	2,	4,	10.0000,	13500.00,	'2026-06-21 23:08:16',	'2026-06-21 23:08:16'),
+(6,	3,	5,	10.0000,	95000.00,	'2026-06-22 05:44:36',	'2026-06-22 05:44:36');
 
 DROP TABLE IF EXISTS `purchase_requisitions`;
 CREATE TABLE `purchase_requisitions` (
@@ -1471,6 +1559,9 @@ CREATE TABLE `purchase_requisitions` (
   CONSTRAINT `purchase_requisitions_requested_by_foreign` FOREIGN KEY (`requested_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `purchase_requisitions` (`id`, `project_id`, `requested_by`, `requisition_number`, `status`, `required_date`, `created_at`, `updated_at`) VALUES
+(2,	5,	1,	'PR-20260622-6BBF',	'approved',	'2026-06-25',	'2026-06-21 23:08:16',	'2026-06-21 23:08:49'),
+(3,	6,	1,	'PR-20260622-D417',	'approved',	'2026-07-20',	'2026-06-22 05:44:36',	'2026-06-22 05:44:49');
 
 DROP TABLE IF EXISTS `quotation_items`;
 CREATE TABLE `quotation_items` (
@@ -1527,6 +1618,8 @@ CREATE TABLE `rate_analyses` (
   CONSTRAINT `rate_analyses_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `rate_analyses` (`id`, `project_id`, `ra_number`, `title`, `description`, `total_rate`, `status`, `created_by`, `created_at`, `updated_at`) VALUES
+(1,	5,	'RA-20260622-AYVQ',	'Rate Analysis 1',	NULL,	15000.00,	'approved',	1,	'2026-06-22 04:02:01',	'2026-06-22 04:02:37');
 
 DROP TABLE IF EXISTS `rate_analysis_items`;
 CREATE TABLE `rate_analysis_items` (
@@ -1546,6 +1639,8 @@ CREATE TABLE `rate_analysis_items` (
   CONSTRAINT `rate_analysis_items_rate_analysis_id_foreign` FOREIGN KEY (`rate_analysis_id`) REFERENCES `rate_analyses` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `rate_analysis_items` (`id`, `rate_analysis_id`, `resource_type`, `resource_description`, `unit`, `quantity`, `unit_rate`, `total_cost`, `notes`, `created_at`, `updated_at`) VALUES
+(1,	1,	'equipment',	'test',	'pcs',	10.0000,	1500.00,	15000.00,	NULL,	'2026-06-22 04:02:37',	'2026-06-22 04:02:37');
 
 DROP TABLE IF EXISTS `receivable_payments`;
 CREATE TABLE `receivable_payments` (
@@ -1563,6 +1658,9 @@ CREATE TABLE `receivable_payments` (
   CONSTRAINT `receivable_payments_receivable_id_foreign` FOREIGN KEY (`receivable_id`) REFERENCES `receivables` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `receivable_payments` (`id`, `receivable_id`, `amount`, `payment_date`, `payment_method`, `reference`, `notes`, `created_at`, `updated_at`) VALUES
+(1,	1,	1500000.00,	'2026-06-22',	'cash',	'1234',	NULL,	'2026-06-22 04:47:05',	'2026-06-22 04:47:05'),
+(2,	2,	15000.00,	'2026-06-22',	NULL,	NULL,	NULL,	'2026-06-22 06:21:37',	'2026-06-22 06:21:37');
 
 DROP TABLE IF EXISTS `receivables`;
 CREATE TABLE `receivables` (
@@ -1590,6 +1688,9 @@ CREATE TABLE `receivables` (
   CONSTRAINT `receivables_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `receivables` (`id`, `project_id`, `invoice_id`, `receivable_number`, `payer_name`, `description`, `amount`, `paid_amount`, `due_date`, `status`, `notes`, `created_by`, `created_at`, `updated_at`) VALUES
+(1,	5,	NULL,	'AR-20260622-001',	'Client 1',	NULL,	2500000.00,	1500000.00,	'2026-06-30',	'partial',	'paid',	1,	'2026-06-22 04:45:03',	'2026-06-22 04:47:05'),
+(2,	6,	NULL,	'AR-20260622-002',	'Client 2',	NULL,	50000.00,	15000.00,	'2026-07-01',	'partial',	NULL,	1,	'2026-06-22 06:21:21',	'2026-06-22 06:21:37');
 
 DROP TABLE IF EXISTS `report_templates`;
 CREATE TABLE `report_templates` (
@@ -1623,6 +1724,9 @@ CREATE TABLE `rfq_items` (
   CONSTRAINT `rfq_items_rfq_id_foreign` FOREIGN KEY (`rfq_id`) REFERENCES `rfqs` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `rfq_items` (`id`, `rfq_id`, `material_id`, `quantity`, `unit`, `created_at`, `updated_at`) VALUES
+(1,	1,	4,	10.00,	'ton',	'2026-06-21 23:03:30',	'2026-06-21 23:03:30'),
+(2,	2,	5,	10.00,	'ton',	'2026-06-22 05:43:52',	'2026-06-22 05:43:52');
 
 DROP TABLE IF EXISTS `rfq_vendors`;
 CREATE TABLE `rfq_vendors` (
@@ -1639,6 +1743,10 @@ CREATE TABLE `rfq_vendors` (
   CONSTRAINT `rfq_vendors_vendor_id_foreign` FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `rfq_vendors` (`id`, `rfq_id`, `vendor_id`, `status`, `created_at`, `updated_at`) VALUES
+(1,	1,	7,	'invited',	'2026-06-21 23:03:30',	'2026-06-21 23:03:30'),
+(2,	2,	7,	'invited',	'2026-06-22 05:43:52',	'2026-06-22 05:43:52'),
+(3,	2,	8,	'invited',	'2026-06-22 05:43:52',	'2026-06-22 05:43:52');
 
 DROP TABLE IF EXISTS `rfqs`;
 CREATE TABLE `rfqs` (
@@ -1661,6 +1769,9 @@ CREATE TABLE `rfqs` (
   CONSTRAINT `rfqs_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `rfqs` (`id`, `project_id`, `rfq_number`, `title`, `description`, `issue_date`, `closing_date`, `status`, `created_by`, `created_at`, `updated_at`) VALUES
+(1,	5,	'RFQ-20260622-36AC',	'Quotation 1',	'Test',	'2026-06-22',	'2026-06-29',	'closed',	1,	'2026-06-21 23:03:30',	'2026-06-21 23:04:47'),
+(2,	6,	'RFQ-20260622-AF9D',	'Quotation 2',	NULL,	'2026-06-22',	'2026-06-29',	'draft',	1,	'2026-06-22 05:43:52',	'2026-06-22 05:43:52');
 
 DROP TABLE IF EXISTS `roles`;
 CREATE TABLE `roles` (
@@ -1708,8 +1819,8 @@ CREATE TABLE `sessions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('NB5GU20rMB77XqutEHRu6MDlSELPHPckGYef42nj',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',	'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiTnJ2RzZxb054a0R6OUE5czNJZmJacW1NNmZlajdETEQ1VDZVbmFMQSI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjMxOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvZGFzaGJvYXJkIjtzOjU6InJvdXRlIjtzOjIwOiJ0eXJvLWRhc2hib2FyZC5pbmRleCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MTA6InR5cm8tbG9naW4iO2E6MTp7czo3OiJjYXB0Y2hhIjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9',	1782045114),
-('UWafyWFrDBM1ySZgzlNnoYr7g1bhoBEQR6PeC7UB',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',	'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiMmVQZDlTR1NQcXdzYVh6enRWQjVDbmpoS0hQTDdBbnY1anB2c0FGNiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kYXNoYm9hcmQiO3M6NToicm91dGUiO3M6MjA6InR5cm8tZGFzaGJvYXJkLmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=',	1782027643);
+('VjtoxlaxWoWGrAulGmEwMg528L25g5HnrJ94PvGf',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',	'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiOWtlMWNtRFF0RTF0cEd5ZWZCMGxPRVRWMHZuOVgwUWJsQ0FBN0VhSSI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjUzOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvZGFzaGJvYXJkL2ZpbmFuY2UvYmFsYW5jZS1zaGVldCI7czo1OiJyb3V0ZSI7czozMzoiYWRtaW4uZmluYW5jZS5iYWxhbmNlLXNoZWV0LmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=',	1782130907),
+('xKNSm9zGu951bE88s98LxHa50lKhzqEYCTF8z28T',	NULL,	'127.0.0.1',	'Symfony',	'YTozOntzOjY6Il90b2tlbiI7czo0MDoiVXBrMDl5eXBKbkwzWE9GZEdXbFk4T3c2YVB4c1lzQWFNSEZPakJoUCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NTQ6Imh0dHA6Ly9sb2NhbGhvc3QvZGFzaGJvYXJkL3JlcG9ydHMvZmluYW5jaWFsL2Nhc2gtZmxvdyI7czo1OiJyb3V0ZSI7czozMzoiYWRtaW4ucmVwb3J0cy5maW5hbmNpYWwuY2FzaC1mbG93Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==',	1782126099);
 
 DROP TABLE IF EXISTS `settings`;
 CREATE TABLE `settings` (
@@ -1753,6 +1864,8 @@ CREATE TABLE `site_logs` (
   CONSTRAINT `site_logs_submitted_by_foreign` FOREIGN KEY (`submitted_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `site_logs` (`id`, `site_id`, `submitted_by`, `report_type`, `title`, `description`, `log_date`, `weather_conditions`, `temperature`, `worker_count`, `work_completed`, `equipment_used`, `materials_received`, `issues_notes`, `status`, `created_at`, `updated_at`) VALUES
+(1,	5,	1,	'daily_log',	'Site clearing start',	NULL,	'2026-06-22',	'Partly cloudy',	28.5,	10,	'not yet',	'1. Test 1\r\n2. Test 2',	'1. Test 1\r\n2. Test 2',	'test',	'submitted',	'2026-06-21 21:39:41',	'2026-06-21 21:39:41');
 
 DROP TABLE IF EXISTS `site_photos`;
 CREATE TABLE `site_photos` (
@@ -1789,7 +1902,8 @@ CREATE TABLE `sites` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `sites` (`id`, `project_id`, `name`, `location_address`, `status`, `created_at`, `updated_at`) VALUES
-(5,	5,	'Green Tower - Main Site',	'Gulshan, Dhaka',	'active',	'2026-06-16 21:58:33',	'2026-06-16 21:58:33');
+(5,	5,	'Green Tower - Main Site',	'Gulshan, Dhaka',	'active',	'2026-06-16 21:58:33',	'2026-06-16 21:58:33'),
+(6,	6,	'Rupayan City Uttara - Main Site',	'Uttara, Dhaka',	'active',	'2026-06-22 05:14:15',	'2026-06-22 05:23:46');
 
 DROP TABLE IF EXISTS `social_accounts`;
 CREATE TABLE `social_accounts` (
@@ -1831,6 +1945,10 @@ CREATE TABLE `stocks` (
   CONSTRAINT `stocks_warehouse_id_foreign` FOREIGN KEY (`warehouse_id`) REFERENCES `warehouses` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `stocks` (`id`, `warehouse_id`, `site_id`, `material_id`, `quantity`, `min_stock`, `created_at`, `updated_at`) VALUES
+(5,	NULL,	5,	4,	12.0000,	10.0000,	'2026-06-21 23:24:14',	'2026-06-22 05:51:29'),
+(6,	NULL,	6,	5,	10.0000,	8.0000,	'2026-06-22 05:50:50',	'2026-06-22 05:54:03'),
+(7,	NULL,	5,	5,	10.0000,	0.0000,	'2026-06-22 05:54:40',	'2026-06-22 05:54:40');
 
 DROP TABLE IF EXISTS `subcontract_agreements`;
 CREATE TABLE `subcontract_agreements` (
@@ -1862,6 +1980,9 @@ CREATE TABLE `subcontract_agreements` (
   CONSTRAINT `subcontract_agreements_subcontractor_id_foreign` FOREIGN KEY (`subcontractor_id`) REFERENCES `subcontractors` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `subcontract_agreements` (`id`, `project_id`, `subcontractor_id`, `agreement_number`, `title`, `scope_of_work`, `agreement_date`, `start_date`, `end_date`, `contract_value`, `retention_percentage`, `payment_terms`, `special_conditions`, `insurance_requirements`, `status`, `created_by`, `created_at`, `updated_at`) VALUES
+(1,	5,	1,	'SCA-20260622-1331',	'Brick Work',	'Supply labor, tools, equipment, and supervision for concrete works',	'2026-06-22',	'2026-06-22',	'2026-12-31',	1500000.00,	15.00,	'monthly',	'no condition',	'n/a',	'active',	1,	'2026-06-21 23:44:08',	'2026-06-21 23:46:46'),
+(2,	NULL,	2,	'SCA-20260622-8678',	'Subcontract Agreement 2',	NULL,	'2026-06-22',	'2026-07-01',	'2027-12-31',	1250000.00,	5.00,	'monthly',	NULL,	NULL,	'completed',	1,	'2026-06-22 05:59:40',	'2026-06-22 05:59:50');
 
 DROP TABLE IF EXISTS `subcontract_progress_payments`;
 CREATE TABLE `subcontract_progress_payments` (
@@ -1890,6 +2011,8 @@ CREATE TABLE `subcontract_progress_payments` (
   CONSTRAINT `subcontract_progress_payments_subcontract_agreement_id_foreign` FOREIGN KEY (`subcontract_agreement_id`) REFERENCES `subcontract_agreements` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `subcontract_progress_payments` (`id`, `subcontract_agreement_id`, `certificate_number`, `period_start`, `period_end`, `work_completed_value`, `previous_certified_value`, `total_certified_to_date`, `retention_amount`, `retention_released`, `net_payable`, `status`, `certified_by`, `certified_at`, `notes`, `created_at`, `updated_at`) VALUES
+(1,	1,	'PPC-20260622-1B99',	'2026-06-22',	'2026-12-31',	1500000.00,	0.00,	1500000.00,	225000.00,	225000.00,	1275000.00,	'paid',	1,	'2026-06-22 00:04:27',	NULL,	'2026-06-21 23:59:01',	'2026-06-22 00:04:32');
 
 DROP TABLE IF EXISTS `subcontractors`;
 CREATE TABLE `subcontractors` (
@@ -1909,6 +2032,9 @@ CREATE TABLE `subcontractors` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `subcontractors` (`id`, `name`, `contact_name`, `email`, `phone`, `address`, `trade_category`, `specialization`, `license_number`, `status`, `performance_rating`, `created_at`, `updated_at`) VALUES
+(1,	'Rahman Construction Ltd',	'Adbul Gaffar',	'gaffar@mail.com',	'01087654321',	'Ashulia, Savar',	'Bricks',	'Concrete works',	'ABCD1234',	'active',	4,	'2026-06-21 23:40:23',	'2026-06-21 23:40:39'),
+(2,	'Al Mahmud Construction Ltd',	'Mahmud Al Hasan',	'mahmud@mail.com',	'01300000000',	NULL,	'Bricks',	NULL,	'ABCD7890',	'active',	5,	'2026-06-22 05:58:05',	'2026-06-22 05:58:41');
 
 DROP TABLE IF EXISTS `task_dependencies`;
 CREATE TABLE `task_dependencies` (
@@ -1920,6 +2046,8 @@ CREATE TABLE `task_dependencies` (
   CONSTRAINT `task_dependencies_task_id_foreign` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `task_dependencies` (`task_id`, `depends_on_task_id`) VALUES
+(6,	5);
 
 DROP TABLE IF EXISTS `task_resources`;
 CREATE TABLE `task_resources` (
@@ -1970,6 +2098,9 @@ CREATE TABLE `tasks` (
   CONSTRAINT `tasks_site_id_foreign` FOREIGN KEY (`site_id`) REFERENCES `sites` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `tasks` (`id`, `project_id`, `site_id`, `name`, `description`, `assigned_to`, `start_date`, `end_date`, `priority`, `status`, `progress_percent`, `created_at`, `updated_at`, `phase_id`, `milestone_id`) VALUES
+(5,	5,	5,	'Excavation',	NULL,	2,	'2026-06-25',	'2026-06-30',	'medium',	'open',	50,	'2026-06-21 21:44:59',	'2026-06-21 21:49:17',	1,	1),
+(6,	6,	6,	'Bore Pile Casting',	NULL,	2,	'2026-07-10',	'2026-07-15',	'medium',	'in_progress',	0,	'2026-06-22 05:16:08',	'2026-06-22 05:16:30',	2,	NULL);
 
 DROP TABLE IF EXISTS `tender_bids`;
 CREATE TABLE `tender_bids` (
@@ -2035,6 +2166,8 @@ CREATE TABLE `timesheets` (
   CONSTRAINT `timesheets_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `timesheets` (`id`, `employee_id`, `project_id`, `date`, `start_time`, `end_time`, `hours_worked`, `description`, `status`, `created_at`, `updated_at`) VALUES
+(1,	2,	5,	'2026-06-22',	'09:45:00',	'18:30:00',	8.00,	NULL,	'draft',	'2026-06-22 00:14:28',	'2026-06-22 00:14:28');
 
 DROP TABLE IF EXISTS `toolbox_talks`;
 CREATE TABLE `toolbox_talks` (
@@ -2124,7 +2257,8 @@ INSERT INTO `tyro_audit_logs` (`id`, `user_id`, `event`, `auditable_type`, `audi
 (27,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36\"}',	'2026-06-20 03:46:09'),
 (28,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36\"}',	'2026-06-20 11:05:48'),
 (29,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36\"}',	'2026-06-21 03:50:20'),
-(30,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36\"}',	'2026-06-21 12:26:50');
+(30,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36\"}',	'2026-06-21 12:26:50'),
+(31,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36\"}',	'2026-06-22 03:34:50');
 
 DROP TABLE IF EXISTS `tyro_media`;
 CREATE TABLE `tyro_media` (
@@ -2257,6 +2391,9 @@ CREATE TABLE `vendors` (
   CONSTRAINT `vendors_qualified_by_foreign` FOREIGN KEY (`qualified_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `vendors` (`id`, `name`, `contact_name`, `email`, `phone`, `address`, `trade_category`, `status`, `qualification_status`, `qualified_at`, `credit_limit`, `payment_terms`, `performance_rating`, `is_blacklisted`, `created_at`, `updated_at`, `qualified_by`) VALUES
+(7,	'Uttara Steel Ltd',	'Adbul Karim',	'abdulkarim@uttarasteel.com',	'01234567890',	'Sector-7, Uttara, Dhaka',	'Steel',	'active',	'qualified',	'2026-06-21 22:22:27',	0.00,	NULL,	4,	0,	'2026-06-21 22:20:09',	'2026-06-21 23:02:38',	1),
+(8,	'Bashundhara Steel Ltd',	'Monir Hossain',	'monir@bsl-bd.com',	'012000000',	NULL,	'Steel',	'active',	'qualified',	'2026-06-22 05:33:36',	0.00,	NULL,	4,	0,	'2026-06-22 05:33:09',	'2026-06-22 05:33:36',	1);
 
 DROP TABLE IF EXISTS `wage_slips`;
 CREATE TABLE `wage_slips` (
@@ -2284,6 +2421,8 @@ CREATE TABLE `wage_slips` (
   CONSTRAINT `wage_slips_employee_id_foreign` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `wage_slips` (`id`, `employee_id`, `period_start`, `period_end`, `total_days`, `present_days`, `absent_days`, `late_days`, `half_days`, `holidays`, `basic_pay`, `overtime_pay`, `allowances`, `deductions`, `net_pay`, `status`, `notes`, `created_at`, `updated_at`) VALUES
+(1,	2,	'2026-05-01',	'2026-05-31',	32,	0,	0,	0,	0,	0,	0.00,	0.00,	0.00,	0.00,	0.00,	'generated',	NULL,	'2026-06-22 00:17:15',	'2026-06-22 00:17:15');
 
 DROP TABLE IF EXISTS `warehouses`;
 CREATE TABLE `warehouses` (
@@ -2296,6 +2435,8 @@ CREATE TABLE `warehouses` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `warehouses` (`id`, `name`, `location_address`, `status`, `created_at`, `updated_at`) VALUES
+(3,	'Savar Main Yard',	'Ashulia, Savar',	'active',	'2026-06-21 22:45:28',	'2026-06-21 22:45:28');
 
 DROP TABLE IF EXISTS `work_orders`;
 CREATE TABLE `work_orders` (
@@ -2329,5 +2470,8 @@ CREATE TABLE `work_orders` (
   CONSTRAINT `work_orders_task_id_foreign` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `work_orders` (`id`, `project_id`, `task_id`, `site_id`, `work_order_number`, `title`, `instructions`, `assigned_to`, `issued_by`, `issue_date`, `due_date`, `completed_date`, `status`, `notes`, `created_at`, `updated_at`) VALUES
+(1,	5,	5,	5,	'WO-2026-0001',	'Excavation Work Order',	'work order created',	2,	1,	'2026-06-22',	'2026-06-30',	NULL,	'issued',	NULL,	'2026-06-21 21:50:16',	'2026-06-21 21:50:16'),
+(2,	6,	6,	6,	'WO-2026-0002',	'Pile Casting Work Order',	NULL,	2,	1,	'2026-06-22',	'2026-06-30',	NULL,	'issued',	NULL,	'2026-06-22 05:23:11',	'2026-06-22 05:23:11');
 
--- 2026-06-21 12:33:39 UTC
+-- 2026-06-22 12:22:31 UTC

@@ -111,7 +111,7 @@
     </li>
 
     <!-- Approvals -->
-    <li class="menu nav-item relative">
+    {{-- <li class="menu nav-item relative">
         <a href="javascript:;" class="nav-link">
             <div class="flex items-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="shrink-0">
@@ -131,7 +131,7 @@
                 <li><a href="{{ route('admin.approvals.workflows.index') }}">Approval Workflows</a></li>
             @endif
         </ul>
-    </li>
+    </li> --}}
 
     <!-- Procurement -->
     <li class="menu nav-item relative">
@@ -266,7 +266,7 @@
                 <ul class="sub-sub-menu">
                     <li><a href="{{ route('admin.hr.equipment.index') }}">Equipment</a></li>
                     <li><a href="{{ route('admin.hr.fuel-logs.index') }}">Fuel Logs</a></li>
-                    <li><a href="{{ route('admin.hr.ppe-issuances.index') }}">PPE Issuance</a></li>
+                    {{-- <li><a href="{{ route('admin.hr.ppe-issuances.index') }}">PPE Issuance</a></li> --}}
                 </ul>
             </li>
             <!-- Safety & Compliance -->
@@ -279,8 +279,8 @@
                 </a>
                 <ul class="sub-sub-menu">
                     <li><a href="{{ route('admin.hr.incident-reports.index') }}">Incident Reports</a></li>
-                    <li><a href="{{ route('admin.hr.hse-checklists.index') }}">HSE Checklists</a></li>
-                    <li><a href="{{ route('admin.hr.toolbox-talks.index') }}">Toolbox Talks</a></li>
+                    {{-- <li><a href="{{ route('admin.hr.hse-checklists.index') }}">HSE Checklists</a></li> --}}
+                    {{-- <li><a href="{{ route('admin.hr.toolbox-talks.index') }}">Toolbox Talks</a></li> --}}
                 </ul>
             </li>
             <!-- Training -->
@@ -320,17 +320,17 @@
                 <a href="javascript:;">Cost Control <svg class="h-3 w-3 rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
                 <ul class="sub-sub-menu">
                     <li><a href="{{ route('admin.finance.budgets.index') }}">Budgets</a></li>
-                    <li><a href="{{ route('admin.finance.budgets.forecasting') }}">Forecasting (EVM)</a></li>
+                    <li><a href="{{ route('admin.finance.budgets.forecasting') }}">Forecasting </a></li>
                     <li><a href="{{ route('admin.finance.cost-overrun-alerts.index') }}">Cost Alerts</a></li>
                     <li><a href="{{ route('admin.finance.labour-entries.index') }}">Labour Cost</a></li>
-                    <li><a href="{{ route('admin.finance.material-takeoffs.index') }}">Material Takeoffs</a></li>
+                    {{-- <li><a href="{{ route('admin.finance.material-takeoffs.index') }}">Material Takeoffs</a></li> --}}
                 </ul>
             </li>
             <li class="relative">
                 <a href="javascript:;">Estimating Analysis <svg class="h-3 w-3 rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
                 <ul class="sub-sub-menu">
                     <li><a href="{{ route('admin.finance.boqs.index') }}">Bill of Quantities</a></li>
-                    <li><a href="{{ route('admin.finance.rate-analysis.index') }}">Rate Analysis</a></li>
+                    {{-- <li><a href="{{ route('admin.finance.rate-analysis.index') }}">Rate Analysis</a></li> --}}
                     {{-- <li><a href="{{ route('admin.finance.tenders.index') }}">Tenders</a></li> --}}
                 </ul>
             </li>

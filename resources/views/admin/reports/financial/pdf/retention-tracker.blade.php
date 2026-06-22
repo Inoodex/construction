@@ -3,9 +3,9 @@
 @section('content')
 <table class="stats">
     <tr>
-        <td><div class="value" style="color:#4361ee">৳{{ number_format($totalRetention, 2) }}</div><div class="label">Total Retention</div></td>
-        <td><div class="value" style="color:#00ab55">৳{{ number_format($totalReleased, 2) }}</div><div class="label">Released</div></td>
-        <td><div class="value" style="color:#e7515a">৳{{ number_format($totalPending, 2) }}</div><div class="label">Pending</div></td>
+        <td><div class="value" style="color:#4361ee">{{ number_format($totalRetention, 2) }}</div><div class="label">Total Retention</div></td>
+        <td><div class="value" style="color:#00ab55">{{ number_format($totalReleased, 2) }}</div><div class="label">Released</div></td>
+        <td><div class="value" style="color:#e7515a">{{ number_format($totalPending, 2) }}</div><div class="label">Pending</div></td>
     </tr>
 </table>
 
@@ -19,9 +19,9 @@
         <tr>
             <td class="font-semibold">{{ $bp['project_name'] }}</td>
             <td class="text-center">{{ $bp['invoice_count'] }}</td>
-            <td class="text-right">৳{{ number_format($bp['total_retention'], 2) }}</td>
-            <td class="text-right text-success">৳{{ number_format($bp['released'], 2) }}</td>
-            <td class="text-right text-danger">৳{{ number_format($bp['pending'], 2) }}</td>
+            <td class="text-right">{{ number_format($bp['total_retention'], 2) }}</td>
+            <td class="text-right text-success">{{ number_format($bp['released'], 2) }}</td>
+            <td class="text-right text-danger">{{ number_format($bp['pending'], 2) }}</td>
             <td class="text-center">{{ $bp['release_pct'] }}%</td>
         </tr>
         @empty

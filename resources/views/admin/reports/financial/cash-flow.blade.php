@@ -2,10 +2,6 @@
 
 @section('title', 'Cash Flow Report')
 
-@push('styles')
-<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.46.0/dist/apexcharts.min.js"></script>
-@endpush
-
 @section('content')
 <div class="mb-6 flex items-center justify-between">
     <div>
@@ -81,6 +77,7 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.46.0/dist/apexcharts.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const isDark = document.documentElement.classList.contains('dark');

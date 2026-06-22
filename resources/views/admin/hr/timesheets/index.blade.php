@@ -11,10 +11,10 @@
     </div>
 
     <div class="panel mt-6">
-        <form method="GET" class="mb-4 grid grid-cols-4 gap-4">
+        <form method="GET" class="mb-4 flex flex-nowrap items-end gap-2 overflow-x-auto">
             <div>
-                <label class="text-sm font-semibold">Employee</label>
-                <select name="employee_id" class="form-select" onchange="this.form.submit()">
+                <label class="text-xs font-semibold">Employee</label>
+                <select name="employee_id" class="form-select">
                     <option value="">All</option>
                     @foreach($employees as $id => $name)
                         <option value="{{ $id }}" {{ request('employee_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
@@ -22,8 +22,8 @@
                 </select>
             </div>
             <div>
-                <label class="text-sm font-semibold">Project</label>
-                <select name="project_id" class="form-select" onchange="this.form.submit()">
+                <label class="text-xs font-semibold">Project</label>
+                <select name="project_id" class="form-select">
                     <option value="">All</option>
                     @foreach($projects as $p)
                         <option value="{{ $p->id }}" {{ request('project_id') == $p->id ? 'selected' : '' }}>{{ $p->name }}</option>
@@ -31,12 +31,18 @@
                 </select>
             </div>
             <div>
-                <label class="text-sm font-semibold">From</label>
-                <input type="date" name="date_from" class="form-input" value="{{ request('date_from') }}" onchange="this.form.submit()" />
+                <label class="text-xs font-semibold">From</label>
+                <input type="date" name="date_from" class="form-input" value="{{ request('date_from') }}" />
             </div>
             <div>
-                <label class="text-sm font-semibold">To</label>
-                <input type="date" name="date_to" class="form-input" value="{{ request('date_to') }}" onchange="this.form.submit()" />
+                <label class="text-xs font-semibold">To</label>
+                <input type="date" name="date_to" class="form-input" value="{{ request('date_to') }}" />
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary">Filter</button>
+                @if(request()->anyFilled(['employee_id', 'project_id', 'date_from', 'date_to']))
+                    <a href="{{ route('admin.hr.timesheets.index') }}" class="btn btn-outline-danger">Reset</a>
+                @endif
             </div>
         </form>
 
@@ -63,11 +69,11 @@
                             <td>{{ $t->start_time ? \Carbon\Carbon::parse($t->start_time)->format('H:i') : '-' }}</td>
                             <td>{{ $t->end_time ? \Carbon\Carbon::parse($t->end_time)->format('H:i') : '-' }}</td>
                             <td>{{ number_format($t->hours_worked, 1) }}</td>
-                            <td><span class="badge badge-{{ $t->status === 'approved' ? 'success' : ($t->status === 'rejected' ? 'danger' : 'secondary') }}">{{ ucfirst($t->status) }}</span></td>
+                            <td><span class="badge badge-outline-{{ $t->status === 'approved' ? 'success' : ($t->status === 'rejected' ? 'danger' : 'secondary') }}">{{ ucfirst($t->status) }}</span></td>
                             <td>
-                                <form action="{{ route('admin.hr.timesheets.destroy', $t) }}" method="POST" class="inline" onsubmit="return confirm('Delete this entry?')">
+                                <form action="{{ route('admin.hr.timesheets.destroy', $t) }}" method="POST" class="inline-flex" onsubmit="return confirm('Delete this entry?')">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:underline text-sm">Delete</button>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
                                 </form>
                             </td>
                         </tr>

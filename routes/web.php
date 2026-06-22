@@ -231,6 +231,7 @@ Route::prefix('dashboard/procurement')->name('admin.procurement.')->group(functi
     Route::get('goods-received-notes/create', [GoodsReceivedNoteController::class, 'create'])->name('goods-received-notes.create');
     Route::post('goods-received-notes', [GoodsReceivedNoteController::class, 'store'])->name('goods-received-notes.store');
     Route::get('goods-received-notes/{goods_received_note}', [GoodsReceivedNoteController::class, 'show'])->name('goods-received-notes.show');
+    Route::post('goods-received-notes/{goods_received_note}/verify', [GoodsReceivedNoteController::class, 'verify'])->name('goods-received-notes.verify');
     Route::delete('goods-received-notes/{goods_received_note}', [GoodsReceivedNoteController::class, 'destroy'])->name('goods-received-notes.destroy');
 
     Route::get('warehouses', [WarehouseController::class, 'index'])->name('warehouses.index');

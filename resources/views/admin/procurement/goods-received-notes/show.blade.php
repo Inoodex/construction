@@ -6,6 +6,15 @@
     <div class="flex flex-wrap items-center justify-between gap-4">
         <h2 class="text-xl font-semibold uppercase">Goods Received Note Details</h2>
         <div class="flex gap-2">
+            @if($goodsReceivedNote->status === 'pending')
+                <form action="{{ route('admin.procurement.goods-received-notes.verify', $goodsReceivedNote) }}" method="POST" onsubmit="return confirm('Verify this GRN and update stock?');">
+                    @csrf
+                    <button type="submit" class="btn btn-success gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        Verify
+                    </button>
+                </form>
+            @endif
             <a href="{{ route('admin.procurement.goods-received-notes.index') }}" class="btn btn-secondary gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
@@ -79,7 +88,7 @@
                 </div>
                 <div class="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
                     <span class="text-xs text-gray-600 dark:text-gray-300">Created</span>
-                    <span class="text-xs font-semibold dark:text-white">{{ $goodsReceivedNote->created_at->format('d M Y h:i A') }}</span>
+                    <span class="text-xs font-semibold dark:text-white">{{ $goodsReceivedNote->created_at->format('d M Y') }}</span>
                 </div>
             </div>
         </div>

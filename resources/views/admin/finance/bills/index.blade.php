@@ -63,10 +63,10 @@
                             <tr>
                                 <td><span class="font-mono text-xs font-semibold text-primary">{{ $bill->bill_number }}</span></td>
                                 <td class="font-semibold">{{ $bill->title }}</td>
-                                <td class="text-xs">{{ $bill->vendor->name ?? 'N/A' }}</td>
-                                <td class="text-xs">{{ $bill->project->name ?? 'N/A' }}</td>
-                                <td class="text-xs">{{ $bill->bill_date->format('d/m/Y') }}</td>
-                                <td class="text-xs {{ $bill->due_amount > 0 && $bill->due_date?->isPast() ? 'text-danger' : '' }}">{{ $bill->due_date->format('d/m/Y') }}</td>
+                                <td>{{ $bill->vendor->name ?? 'N/A' }}</td>
+                                <td>{{ $bill->project->name ?? 'N/A' }}</td>
+                                <td>{{ $bill->bill_date->format('d/m/Y') }}</td>
+                                <td {{ $bill->due_amount > 0 && $bill->due_date?->isPast() ? 'text-danger' : '' }}">{{ $bill->due_date->format('d/m/Y') }}</td>
                                 <td class="font-semibold">{{ number_format($bill->total_amount) }}</td>
                                 <td class="font-semibold {{ $bill->due_amount > 0 ? 'text-danger' : 'text-success' }}">{{ number_format($bill->due_amount) }}</td>
                                 <td>
