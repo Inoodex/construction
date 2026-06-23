@@ -70,6 +70,7 @@
                                 <td class="text-center">
                                     <div class="flex items-center justify-center gap-2">
                                         <a href="{{ route('admin.procurement.purchase-orders.show', $po->id) }}" class="btn btn-sm btn-outline-info">View</a>
+                                        <a href="{{ route('admin.procurement.purchase-orders.pdf', $po->id) }}" class="btn btn-sm btn-outline-success" target="_blank">PDF</a>
                                         <a href="{{ route('admin.procurement.purchase-orders.edit', $po->id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
                                         <form action="{{ route('admin.procurement.purchase-orders.destroy', $po->id) }}" method="POST" onsubmit="return confirm('Delete this PO?');">
                                             @csrf

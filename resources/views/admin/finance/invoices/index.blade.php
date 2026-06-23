@@ -69,6 +69,7 @@
                                 <td class="text-center">
                                     <div class="flex items-center justify-center gap-2">
                                         <a href="{{ route('admin.finance.invoices.show', $inv->id) }}" class="btn btn-sm btn-outline-info">View</a>
+                                        <a href="{{ route('admin.finance.invoices.pdf', $inv->id) }}" class="btn btn-sm btn-outline-success" target="_blank">PDF</a>
                                         <a href="{{ route('admin.finance.invoices.edit', $inv->id) }}" class="btn btn-sm btn-outline-warning">Edit</a>
                                         <form action="{{ route('admin.finance.invoices.destroy', $inv->id) }}" method="POST" onsubmit="return confirm('Delete this invoice?');">
                                             @csrf @method('DELETE')

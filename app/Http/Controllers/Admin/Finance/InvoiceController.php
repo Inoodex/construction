@@ -7,6 +7,7 @@ use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Payment;
 use App\Models\Project;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -67,6 +68,18 @@ class InvoiceController extends Controller
     {
         $invoice->load('project', 'creator', 'items', 'payments');
         return view('admin.finance.invoices.show', compact('invoice'));
+    }
+
+    public function printPdf(Invoice $invoice)
+    {
+        $invoice->load('project', 'items');
+        $inv = $invoice;
+        $pdf = Pdf::loadView('admin.finance.invoices.pdf.invoice', compact('inv'))
+            ->setPaper('a4', 'portrait')
+            ->setOption('defaultFont', 'sans-serif')
+            ->setOption('isRemoteEnabled', true)
+            ->setOption('isHtml5ParserEnabled', true);
+        return $pdf->stream('INV-' . $inv->invoice_number . '.pdf');
     }
 
     public function edit(Invoice $invoice)

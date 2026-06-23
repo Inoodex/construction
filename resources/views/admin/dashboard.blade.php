@@ -297,7 +297,7 @@
                 <tbody>
                     @forelse($recentIncidents as $inc)
                     <tr>
-                        <td class="text-xs font-semibold">{{ ucfirst(str_replace('_',' ',$inc->type)) }}</td>
+                        <td class="text-xs font-semibold">{{ ucfirst(str_replace('_',' ',$inc->incident_type)) }}</td>
                         <td>
                             @php
                                 $sc = ['minor'=>'success','moderate'=>'warning','serious'=>'warning','critical'=>'danger','fatal'=>'danger'];
@@ -308,7 +308,7 @@
                             @php $stc = ['open'=>'danger','under_investigation'=>'warning','closed'=>'success']; @endphp
                             <span class="badge badge-outline-{{ $stc[$inc->status] ?? 'secondary' }} text-xs">{{ ucfirst(str_replace('_',' ',$inc->status)) }}</span>
                         </td>
-                        <td class="text-xs text-gray-500">{{ $inc->date?->format('d M') ?? '-' }}</td>
+                        <td class="text-xs text-gray-500">{{ $inc->incident_date?->format('d M') ?? '-' }}</td>
                     </tr>
                     @empty
                     <tr><td colspan="4" class="text-center text-xs text-gray-400">No incidents recorded</td></tr>

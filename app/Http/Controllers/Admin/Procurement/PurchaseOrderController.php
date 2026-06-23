@@ -9,6 +9,7 @@ use App\Models\PurchaseOrderItem;
 use App\Models\PurchaseRequisition;
 use App\Models\Vendor;
 use App\Services\ApprovalService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -87,6 +88,18 @@ class PurchaseOrderController extends Controller
     {
         $purchaseOrder->load('vendor', 'requisition', 'items.material', 'approvals.history.approver');
         return view('admin.procurement.purchase-orders.show', compact('purchaseOrder'));
+    }
+
+    public function printPdf(PurchaseOrder $purchaseOrder)
+    {
+        $purchaseOrder->load('vendor', 'items.material');
+        $po = $purchaseOrder;
+        $pdf = Pdf::loadView('admin.procurement.purchase-orders.pdf.invoice', compact('po'))
+            ->setPaper('a4', 'portrait')
+            ->setOption('defaultFont', 'sans-serif')
+            ->setOption('isRemoteEnabled', true)
+            ->setOption('isHtml5ParserEnabled', true);
+        return $pdf->stream('PO-' . $po->po_number . '.pdf');
     }
 
     public function edit(PurchaseOrder $purchaseOrder)

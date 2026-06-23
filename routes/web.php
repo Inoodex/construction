@@ -226,6 +226,7 @@ Route::prefix('dashboard/procurement')->name('admin.procurement.')->group(functi
     Route::put('purchase-orders/{purchase_order}', [PurchaseOrderController::class, 'update'])->name('purchase-orders.update');
     Route::delete('purchase-orders/{purchase_order}', [PurchaseOrderController::class, 'destroy'])->name('purchase-orders.destroy');
     Route::post('purchase-orders/{purchase_order}/submit', [PurchaseOrderController::class, 'submitForApproval'])->name('purchase-orders.submit');
+    Route::get('purchase-orders/{purchase_order}/pdf', [PurchaseOrderController::class, 'printPdf'])->name('purchase-orders.pdf');
 
     Route::get('goods-received-notes', [GoodsReceivedNoteController::class, 'index'])->name('goods-received-notes.index');
     Route::get('goods-received-notes/create', [GoodsReceivedNoteController::class, 'create'])->name('goods-received-notes.create');
@@ -548,6 +549,7 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware('auth')->
     Route::get('invoices/{invoice}/edit', [InvoiceController::class, 'edit'])->name('invoices.edit');
     Route::put('invoices/{invoice}', [InvoiceController::class, 'update'])->name('invoices.update');
     Route::delete('invoices/{invoice}', [InvoiceController::class, 'destroy'])->name('invoices.destroy');
+    Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'printPdf'])->name('invoices.pdf');
     Route::post('invoices/{invoice}/items', [InvoiceController::class, 'addItem'])->name('invoices.items.store');
     Route::delete('invoices/{invoice}/items/{invoice_item}', [InvoiceController::class, 'removeItem'])->name('invoices.items.destroy');
     Route::post('invoices/{invoice}/payments', [InvoiceController::class, 'addPayment'])->name('invoices.payments.store');
