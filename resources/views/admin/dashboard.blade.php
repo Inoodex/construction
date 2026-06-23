@@ -308,7 +308,7 @@
                             @php $stc = ['open'=>'danger','under_investigation'=>'warning','closed'=>'success']; @endphp
                             <span class="badge badge-outline-{{ $stc[$inc->status] ?? 'secondary' }} text-xs">{{ ucfirst(str_replace('_',' ',$inc->status)) }}</span>
                         </td>
-                        <td class="text-xs text-gray-500">{{ $inc->date->format('d M') }}</td>
+                        <td class="text-xs text-gray-500">{{ $inc->date?->format('d M') ?? '-' }}</td>
                     </tr>
                     @empty
                     <tr><td colspan="4" class="text-center text-xs text-gray-400">No incidents recorded</td></tr>

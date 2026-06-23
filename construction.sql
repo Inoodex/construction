@@ -283,7 +283,7 @@ CREATE TABLE `cache` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('inoodex-cache-tyro:user-1:roles',	'a:1:{i:0;s:11:\"super-admin\";}',	1782191757);
+('inoodex-cache-tyro:user-1:roles',	'a:1:{i:0;s:11:\"super-admin\";}',	1782194215);
 
 DROP TABLE IF EXISTS `cache_locks`;
 CREATE TABLE `cache_locks` (
@@ -922,7 +922,8 @@ CREATE TABLE `journal_entries` (
 
 INSERT INTO `journal_entries` (`id`, `journal_number`, `date`, `description`, `type`, `status`, `created_by`, `created_at`, `updated_at`) VALUES
 (1,	'JV-20260618-001',	'2026-06-18',	NULL,	'general',	'posted',	1,	'2026-06-18 05:42:44',	'2026-06-18 05:42:44'),
-(2,	'JV-20260622-001',	'2026-06-22',	'test',	'general',	'posted',	1,	'2026-06-22 06:19:54',	'2026-06-22 06:19:54');
+(2,	'JV-20260622-001',	'2026-06-22',	'test',	'general',	'posted',	1,	'2026-06-22 06:19:54',	'2026-06-22 06:19:54'),
+(3,	'JV-20260623-001',	'2026-06-23',	NULL,	'general',	'posted',	1,	'2026-06-22 23:41:43',	'2026-06-22 23:41:43');
 
 DROP TABLE IF EXISTS `journal_entry_items`;
 CREATE TABLE `journal_entry_items` (
@@ -946,7 +947,9 @@ INSERT INTO `journal_entry_items` (`id`, `journal_entry_id`, `account_id`, `debi
 (2,	1,	43,	6500.00,	5500.00,	'ZDFG',	'2026-06-18 05:42:44',	'2026-06-18 05:42:44'),
 (3,	1,	50,	5500.00,	3500.00,	'SDG',	'2026-06-18 05:42:44',	'2026-06-18 05:42:44'),
 (4,	2,	48,	93000.00,	0.00,	'payment',	'2026-06-22 06:19:54',	'2026-06-22 06:19:54'),
-(5,	2,	55,	0.00,	93000.00,	'payment',	'2026-06-22 06:19:54',	'2026-06-22 06:19:54');
+(5,	2,	55,	0.00,	93000.00,	'payment',	'2026-06-22 06:19:54',	'2026-06-22 06:19:54'),
+(6,	3,	46,	50000.00,	0.00,	'test',	'2026-06-22 23:41:43',	'2026-06-22 23:41:43'),
+(7,	3,	47,	0.00,	50000.00,	NULL,	'2026-06-22 23:41:43',	'2026-06-22 23:41:43');
 
 DROP TABLE IF EXISTS `labour_entries`;
 CREATE TABLE `labour_entries` (
@@ -1828,7 +1831,7 @@ CREATE TABLE `sessions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('VHWSzaioIbr0zN774s79OnWTCJtwo3J6mKIxDhCl',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',	'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiQTFnMnhZUXNPU2tRa3ltZ09tTEJ2dnUwQ3hJV3dRR1lPWWY2TVBMSiI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjYyOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvZGFzaGJvYXJkL2ZpbmFuY2Uvam91cm5hbC1lbnRyaWVzL2NyZWF0ZSI7czo1OiJyb3V0ZSI7czozNjoiYWRtaW4uZmluYW5jZS5qb3VybmFsLWVudHJpZXMuY3JlYXRlIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=',	1782191625);
+('VHWSzaioIbr0zN774s79OnWTCJtwo3J6mKIxDhCl',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',	'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiQTFnMnhZUXNPU2tRa3ltZ09tTEJ2dnUwQ3hJV3dRR1lPWWY2TVBMSiI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjY3OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvZGFzaGJvYXJkL3JlcG9ydHMvZmluYW5jaWFsL3Byb2dyZXNzLXNjaGVkdWxlIjtzOjU6InJvdXRlIjtzOjQxOiJhZG1pbi5yZXBvcnRzLmZpbmFuY2lhbC5wcm9ncmVzcy1zY2hlZHVsZSI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MTA6InR5cm8tbG9naW4iO2E6MTp7czo3OiJjYXB0Y2hhIjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9',	1782193917);
 
 DROP TABLE IF EXISTS `settings`;
 CREATE TABLE `settings` (
@@ -2484,4 +2487,4 @@ INSERT INTO `work_orders` (`id`, `project_id`, `task_id`, `site_id`, `work_order
 (1,	5,	5,	5,	'WO-2026-0001',	'Excavation Work Order',	'work order created',	2,	1,	'2026-06-22',	'2026-06-30',	NULL,	'issued',	NULL,	'2026-06-21 21:50:16',	'2026-06-21 21:50:16'),
 (2,	6,	6,	6,	'WO-2026-0002',	'Pile Casting Work Order',	NULL,	2,	1,	'2026-06-22',	'2026-06-30',	NULL,	'issued',	NULL,	'2026-06-22 05:23:11',	'2026-06-22 05:23:11');
 
--- 2026-06-23 05:17:37 UTC
+-- 2026-06-23 05:53:17 UTC
