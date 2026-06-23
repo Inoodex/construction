@@ -163,7 +163,7 @@
             </div>
             <div class="flex items-center justify-between">
                 <span class="text-gray-500">PO Value</span>
-                <span class="font-semibold">RM{{ number_format($totalPOValue) }}</span>
+                <span class="font-semibold">BDT{{ number_format($totalPOValue) }}</span>
             </div>
             <a href="{{ route('admin.procurement.purchase-orders.index') }}" class="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline">
                 View POs <span>&rarr;</span>
@@ -243,7 +243,7 @@
                             <div class="text-xs font-semibold dark:text-white">{{ Str::limit($project->name, 25) }}</div>
                             <div class="text-xs text-gray-400">by {{ $project->creator->name ?? 'N/A' }}</div>
                         </td>
-                        <td class="text-xs font-semibold">RM{{ number_format($project->budget/1000000, 1) }}M</td>
+                        <td class="text-xs font-semibold">BDT{{ number_format($project->budget/1000000, 1) }}M</td>
                         <td>
                             @php $c = ['active'=>'success','planning'=>'warning','completed'=>'primary','on_hold'=>'danger']; @endphp
                             <span class="badge badge-outline-{{ $c[$project->status] ?? 'secondary' }} text-xs">{{ ucfirst(str_replace('_',' ',$project->status)) }}</span>
@@ -271,7 +271,7 @@
                     <tr>
                         <td class="text-xs font-semibold font-mono text-primary">{{ $po->po_number }}</td>
                         <td class="text-xs">{{ Str::limit($po->vendor->name ?? 'N/A', 18) }}</td>
-                        <td class="text-xs font-semibold">RM{{ number_format($po->total_amount) }}</td>
+                        <td class="text-xs font-semibold">BDT{{ number_format($po->total_amount) }}</td>
                         <td>
                             @php $c = ['draft'=>'secondary','ordered'=>'info','partially_received'=>'warning','received'=>'success','cancelled'=>'danger']; @endphp
                             <span class="badge badge-outline-{{ $c[$po->status] ?? 'secondary' }} text-xs">{{ ucfirst(str_replace('_',' ',$po->status)) }}</span>
