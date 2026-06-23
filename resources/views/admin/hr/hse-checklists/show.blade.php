@@ -25,7 +25,8 @@
             <table class="w-full text-sm">
                 <tr><td class="py-1 text-gray-500 w-32">Title</td><td class="font-semibold">{{ $hseChecklist->title }}</td></tr>
                 <tr><td class="py-1 text-gray-500">Type</td><td><span class="badge badge-outline-{{ $hseChecklist->checklist_type === 'fire' ? 'danger' : ($hseChecklist->checklist_type === 'ppe' ? 'success' : 'info') }}">{{ str_replace('-', ' ', ucfirst($hseChecklist->checklist_type)) }}</span></td></tr>
-                <tr><td class="py-1 text-gray-500">Location</td><td>{{ $hseChecklist->location ?? '—' }}</td></tr>
+                <tr><td class="py-1 text-gray-500">Project</td><td>{{ $hseChecklist->project?->name ?? '—' }}</td></tr>
+                <tr><td class="py-1 text-gray-500">Site</td><td>{{ $hseChecklist->site?->name ?? '—' }}</td></tr>
                 <tr><td class="py-1 text-gray-500">Inspection Date</td><td>{{ $hseChecklist->inspection_date->format('d M Y') }}</td></tr>
                 <tr><td class="py-1 text-gray-500">Status</td><td><span class="badge {{ $hseChecklist->status === 'closed' ? 'badge-outline-success' : 'badge-outline-warning' }}">{{ ucfirst($hseChecklist->status) }}</span></td></tr>
                 <tr><td class="py-1 text-gray-500">Closure Date</td><td>{{ $hseChecklist->closure_date?->format('d M Y') ?? '—' }}</td></tr>
@@ -35,8 +36,7 @@
         <div class="panel">
             <h4 class="font-semibold mb-3">Inspector</h4>
             <table class="w-full text-sm">
-                <tr><td class="py-1 text-gray-500 w-32">Name</td><td>{{ $hseChecklist->employee?->full_name ?? '—' }}</td></tr>
-                <tr><td class="py-1 text-gray-500">Designation</td><td>{{ $hseChecklist->employee?->designation ?? '—' }}</td></tr>
+                <tr><td class="py-1 text-gray-500 w-32">Name</td><td>{{ $hseChecklist->inspector?->name ?? '—' }}</td></tr>
             </table>
         </div>
 

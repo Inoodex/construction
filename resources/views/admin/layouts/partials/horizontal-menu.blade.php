@@ -266,7 +266,7 @@
                 <ul class="sub-sub-menu">
                     <li><a href="{{ route('admin.hr.equipment.index') }}">Equipment</a></li>
                     <li><a href="{{ route('admin.hr.fuel-logs.index') }}">Fuel Logs</a></li>
-                    {{-- <li><a href="{{ route('admin.hr.ppe-issuances.index') }}">PPE Issuance</a></li> --}}
+                    <li><a href="{{ route('admin.hr.ppe-issuances.index') }}">PPE Issuance</a></li>
                 </ul>
             </li>
             <!-- Safety & Compliance -->
@@ -279,7 +279,7 @@
                 </a>
                 <ul class="sub-sub-menu">
                     <li><a href="{{ route('admin.hr.incident-reports.index') }}">Incident Reports</a></li>
-                    {{-- <li><a href="{{ route('admin.hr.hse-checklists.index') }}">HSE Checklists</a></li> --}}
+                    <li><a href="{{ route('admin.hr.hse-checklists.index') }}">HSE Checklists</a></li>
                     {{-- <li><a href="{{ route('admin.hr.toolbox-talks.index') }}">Toolbox Talks</a></li> --}}
                 </ul>
             </li>
@@ -330,7 +330,7 @@
                 <a href="javascript:;">Estimating Analysis <svg class="h-3 w-3 rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
                 <ul class="sub-sub-menu">
                     <li><a href="{{ route('admin.finance.boqs.index') }}">Bill of Quantities</a></li>
-                    {{-- <li><a href="{{ route('admin.finance.rate-analysis.index') }}">Rate Analysis</a></li> --}}
+                    <li><a href="{{ route('admin.finance.rate-analysis.index') }}">Rate Analysis</a></li>
                     {{-- <li><a href="{{ route('admin.finance.tenders.index') }}">Tenders</a></li> --}}
                 </ul>
             </li>

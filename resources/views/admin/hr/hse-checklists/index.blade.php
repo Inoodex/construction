@@ -45,7 +45,7 @@
                     <tr>
                         <th>Title</th>
                         <th>Type</th>
-                        <th>Location</th>
+                        <th>Project / Site</th>
                         <th>Inspector</th>
                         <th>Date</th>
                         <th>Status</th>
@@ -57,8 +57,8 @@
                         <tr>
                             <td>{{ $r->title }}</td>
                             <td><span class="badge badge-outline-{{ $r->checklist_type === 'fire' ? 'danger' : ($r->checklist_type === 'ppe' ? 'success' : 'info') }}">{{ str_replace('-', ' ', ucfirst($r->checklist_type)) }}</span></td>
-                            <td>{{ $r->location ?? '—' }}</td>
-                            <td>{{ $r->employee?->full_name ?? '—' }}</td>
+                            <td>{{ $r->project?->name ?? '—' }} / {{ $r->site?->name ?? 'All' }}</td>
+                            <td>{{ $r->inspector?->name ?? '—' }}</td>
                             <td>{{ $r->inspection_date->format('d M Y') }}</td>
                             <td>
                                 <span class="badge {{ $r->status === 'closed' ? 'badge-outline-success' : 'badge-outline-warning' }}">{{ ucfirst($r->status) }}</span>

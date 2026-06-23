@@ -83,19 +83,23 @@ document.addEventListener('DOMContentLoaded', function () {
     const isDark = document.documentElement.classList.contains('dark');
     const textColor = isDark ? '#888ea8' : '#515365';
 
+    const months = @json($allMonths->pluck('month')->map(fn($m) => \Carbon\Carbon::createFromFormat('Y-m', $m)->format('M Y')));
+    const inflow = @json($allMonths->pluck('inflow')->map(fn($v) => (float) $v));
+    const outflow = @json($allMonths->pluck('outflow')->map(fn($v) => (float) $v));
+
     new ApexCharts(document.querySelector("#cashFlowChart"), {
         series: [{
             name: 'Inflow',
-            data: [{{ $allMonths->map(fn($m) => $m['inflow'])->implode(',') }}]
+            data: inflow
         }, {
             name: 'Outflow',
-            data: [{{ $allMonths->map(fn($m) => $m['outflow'])->implode(',') }}]
+            data: outflow
         }],
         chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent', stacked: false },
         colors: ['#00ab55', '#e7515a'],
         plotOptions: { bar: { horizontal: false, columnWidth: '55%', borderRadius: 4 } },
         xaxis: {
-            categories: [{{ $allMonths->map(fn($m) => "'".\Carbon\Carbon::createFromFormat('Y-m', $m['month'])->format('M Y')."'")->implode(',') }}],
+            categories: months,
             labels: { style: { colors: textColor, fontSize: '11px' } }
         },
         yaxis: { labels: { style: { colors: textColor, fontSize: '11px' }, formatter: v => '৳' + (v/1000000).toFixed(1) + 'M' } },

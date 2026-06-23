@@ -35,9 +35,41 @@ class BalanceSheetController extends Controller
             $sections[$account->type][] = [
                 'code' => $account->account_code,
                 'name' => $account->name,
-                'balance' => abs($balance),
+                'balance' => $balance,
             ];
-            $totals[$account->type] += abs($balance);
+            $totals[$account->type] += $balance;
+        }
+
+        // Calculate net income (income - expenses) for the period
+        $incomeExpenseAccounts = ChartOfAccount::active()->whereIn('type', ['income', 'expense'])->get();
+        $totalIncome = 0;
+        $totalExpense = 0;
+
+        foreach ($incomeExpenseAccounts as $account) {
+            $query = JournalEntryItem::where('account_id', $account->id)
+                ->whereHas('journalEntry', fn($q) => $q->where('status', 'posted')->where('date', '<=', $asOf));
+
+            $debit = (clone $query)->sum('debit_amount');
+            $credit = (clone $query)->sum('credit_amount');
+            $balance = $account->normal_balance === 'debit' ? $debit - $credit : $credit - $debit;
+
+            if ($account->type === 'income') {
+                $totalIncome += $balance;
+            } else {
+                $totalExpense += $balance;
+            }
+        }
+
+        $netIncome = $totalIncome - $totalExpense;
+
+        if (abs($netIncome) > 0.01) {
+            $label = $netIncome > 0 ? 'Current Year Earnings (Net Income)' : 'Current Year Loss (Net Loss)';
+            $sections['equity'][] = [
+                'code' => '--',
+                'name' => $label,
+                'balance' => $netIncome,
+            ];
+            $totals['equity'] += $netIncome;
         }
 
         $totalAssets = $totals['asset'];

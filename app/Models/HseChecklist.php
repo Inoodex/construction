@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class HseChecklist extends Model
 {
     protected $fillable = [
-        'title', 'checklist_type', 'location', 'inspection_date',
-        'employee_id', 'status', 'findings', 'corrective_actions',
+        'title', 'checklist_type', 'project_id', 'site_id', 'inspection_date',
+        'user_id', 'status', 'findings', 'corrective_actions',
         'closure_date', 'notes',
     ];
 
@@ -22,9 +22,19 @@ class HseChecklist extends Model
         ];
     }
 
-    public function employee(): BelongsTo
+    public function inspector(): BelongsTo
     {
-        return $this->belongsTo(Employee::class);
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
+    }
+
+    public function site(): BelongsTo
+    {
+        return $this->belongsTo(Site::class);
     }
 
     public function items(): HasMany

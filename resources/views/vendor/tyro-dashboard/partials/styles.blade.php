@@ -454,6 +454,18 @@
         line-height: 1.5;
     }
 
+    .form-input:disabled,
+    .form-select:disabled,
+    .form-textarea:disabled {
+        opacity: 0.35;
+        cursor: default;
+    }
+
+    .side-toggle {
+        display: inline-flex;
+        gap: 2px;
+    }
+
     .form-input::placeholder,
     .form-textarea::placeholder {
         color: var(--muted-foreground);

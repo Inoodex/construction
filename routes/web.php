@@ -407,6 +407,7 @@ Route::prefix('dashboard/hr')->name('admin.hr.')->group(function () {
     Route::delete('certifications/{certification}', [CertificationController::class, 'destroy'])->name('certifications.destroy');
 
     Route::get('hse-checklists', [HseChecklistController::class, 'index'])->name('hse-checklists.index');
+    Route::get('hse-checklists/sites-by-project', [HseChecklistController::class, 'sitesByProject'])->name('hse-checklists.sites-by-project');
     Route::get('hse-checklists/create', [HseChecklistController::class, 'create'])->name('hse-checklists.create');
     Route::post('hse-checklists', [HseChecklistController::class, 'store'])->name('hse-checklists.store');
     Route::get('hse-checklists/{hseChecklist}', [HseChecklistController::class, 'show'])->name('hse-checklists.show');

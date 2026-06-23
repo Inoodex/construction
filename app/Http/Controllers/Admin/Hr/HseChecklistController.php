@@ -3,15 +3,17 @@
 namespace App\Http\Controllers\Admin\Hr;
 
 use App\Http\Controllers\Controller;
-use App\Models\Employee;
 use App\Models\HseChecklist;
+use App\Models\Project;
+use App\Models\Site;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class HseChecklistController extends Controller
 {
     public function index(Request $request)
     {
-        $query = HseChecklist::with('employee');
+        $query = HseChecklist::with('inspector');
 
         if ($request->filled('checklist_type')) {
             $query->where('checklist_type', $request->checklist_type);
@@ -27,8 +29,9 @@ class HseChecklistController extends Controller
 
     public function create()
     {
-        $employees = Employee::active()->orderBy('full_name')->get();
-        return view('admin.hr.hse-checklists.create', compact('employees'));
+        $users = User::orderBy('name')->get();
+        $projects = Project::orderBy('name')->get();
+        return view('admin.hr.hse-checklists.create', compact('users', 'projects'));
     }
 
     public function store(Request $request)
@@ -36,9 +39,10 @@ class HseChecklistController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'checklist_type' => 'required|in:general,fire,electrical,scaffolding,ppe,excavation,other',
-            'location' => 'nullable|string|max:255',
+            'project_id' => 'nullable|exists:projects,id',
+            'site_id' => 'nullable|exists:sites,id',
             'inspection_date' => 'required|date',
-            'employee_id' => 'nullable|exists:employees,id',
+            'user_id' => 'nullable|exists:users,id',
             'status' => 'required|in:open,closed',
             'findings' => 'nullable|string',
             'corrective_actions' => 'nullable|string',
@@ -73,15 +77,16 @@ class HseChecklistController extends Controller
 
     public function show(HseChecklist $hseChecklist)
     {
-        $hseChecklist->load('employee', 'items');
+        $hseChecklist->load('inspector', 'items');
         return view('admin.hr.hse-checklists.show', compact('hseChecklist'));
     }
 
     public function edit(HseChecklist $hseChecklist)
     {
         $hseChecklist->load('items');
-        $employees = Employee::active()->orderBy('full_name')->get();
-        return view('admin.hr.hse-checklists.edit', compact('hseChecklist', 'employees'));
+        $users = User::orderBy('name')->get();
+        $projects = Project::orderBy('name')->get();
+        return view('admin.hr.hse-checklists.edit', compact('hseChecklist', 'users', 'projects'));
     }
 
     public function update(Request $request, HseChecklist $hseChecklist)
@@ -89,9 +94,10 @@ class HseChecklistController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'checklist_type' => 'required|in:general,fire,electrical,scaffolding,ppe,excavation,other',
-            'location' => 'nullable|string|max:255',
+            'project_id' => 'nullable|exists:projects,id',
+            'site_id' => 'nullable|exists:sites,id',
             'inspection_date' => 'required|date',
-            'employee_id' => 'nullable|exists:employees,id',
+            'user_id' => 'nullable|exists:users,id',
             'status' => 'required|in:open,closed',
             'findings' => 'nullable|string',
             'corrective_actions' => 'nullable|string',
@@ -143,5 +149,12 @@ class HseChecklistController extends Controller
     {
         $hseChecklist->delete();
         return back()->with('success', 'HSE checklist deleted.');
+    }
+
+    public function sitesByProject(Request $request)
+    {
+        $sites = Site::where('project_id', $request->project_id)
+            ->orderBy('name')->get(['id', 'name']);
+        return response()->json($sites);
     }
 }

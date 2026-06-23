@@ -2,9 +2,7 @@
 
 @section('title', 'Budget vs Actual Report')
 
-@push('styles')
-<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.46.0/dist/apexcharts.min.js"></script>
-@endpush
+
 
 @section('content')
 <div class="mb-6 flex items-center justify-between">
@@ -79,24 +77,28 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.46.0/dist/apexcharts.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const isDark = document.documentElement.classList.contains('dark');
     const textColor = isDark ? '#888ea8' : '#515365';
+    const codes = <?php echo json_encode($costCodes->keys()); ?>;
+    const budgeted = <?php echo json_encode($costCodes->map(fn($c) => $c['budgeted'])->values()); ?>;
+    const actual = <?php echo json_encode($costCodes->map(fn($c) => $c['actual'])->values()); ?>;
 
     new ApexCharts(document.querySelector("#budgetChart"), {
         series: [{
             name: 'Budgeted',
-            data: [{{ $costCodes->map(fn($c) => $c['budgeted'])->implode(',') }}]
+            data: budgeted
         }, {
             name: 'Actual',
-            data: [{{ $costCodes->map(fn($c) => $c['actual'])->implode(',') }}]
+            data: actual
         }],
         chart: { type: 'bar', height: 300, toolbar: { show: false }, background: 'transparent' },
         colors: ['#4361ee', '#e2a03f'],
         plotOptions: { bar: { horizontal: false, columnWidth: '55%', borderRadius: 4 } },
         xaxis: {
-            categories: [{{ $costCodes->keys()->map(fn($k) => "'$k'")->implode(',') }}],
+            categories: codes,
             labels: { style: { colors: textColor, fontSize: '11px' } }
         },
         yaxis: { labels: { style: { colors: textColor, fontSize: '11px' } } },

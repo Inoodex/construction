@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\ChartOfAccount;
+use App\Models\JournalEntryItem;
 use App\Models\Project;
 use App\Models\Budget;
 use App\Models\Invoice;
@@ -182,44 +184,40 @@ class FinancialReportService
 
     public function cashFlow($projectId = null, $months = 12)
     {
-        $inflowQuery = Invoice::select(
-            DB::raw("DATE_FORMAT(due_date, '%Y-%m') as month"),
-            DB::raw('SUM(due_amount) as expected_inflow')
-        );
+        $startDate = now()->subMonths(3)->startOfMonth();
+        $endDate = $startDate->copy()->addMonths($months);
 
-        $outflowQuery = PurchaseOrder::select(
-            DB::raw("DATE_FORMAT(order_date, '%Y-%m') as month"),
-            DB::raw('SUM(total_amount) as expected_outflow')
-        );
+        // Find Cash & Bank account(s)
+        $cashAccounts = ChartOfAccount::where('account_code', 'LIKE', '1-1010%')
+            ->orWhere('name', 'LIKE', '%Cash%')
+            ->orWhere('name', 'LIKE', '%Bank%')
+            ->pluck('id');
 
-        if ($projectId) {
-            $inflowQuery->where('project_id', $projectId);
-            $outflowQuery->where('project_id', $projectId);
-        }
-
-        $inflows = $inflowQuery->whereNotNull('due_date')
-            ->groupBy(DB::raw("DATE_FORMAT(due_date, '%Y-%m')"))
+        $jeQuery = JournalEntryItem::select(
+            DB::raw("DATE_FORMAT(je.date, '%Y-%m') as month"),
+            DB::raw('SUM(jei.debit_amount) as total_debit'),
+            DB::raw('SUM(jei.credit_amount) as total_credit')
+        )
+            ->from('journal_entry_items as jei')
+            ->join('journal_entries as je', 'je.id', '=', 'jei.journal_entry_id')
+            ->whereIn('jei.account_id', $cashAccounts)
+            ->where('je.status', 'posted')
+            ->where('je.date', '>=', $startDate)
+            ->where('je.date', '<', $endDate)
+            ->groupBy(DB::raw("DATE_FORMAT(je.date, '%Y-%m')"))
             ->orderBy('month')
-            ->take($months)
-            ->get()
-            ->keyBy('month');
-
-        $outflows = $outflowQuery->whereNotNull('order_date')
-            ->groupBy(DB::raw("DATE_FORMAT(order_date, '%Y-%m')"))
-            ->orderBy('month')
-            ->take($months)
             ->get()
             ->keyBy('month');
 
         $allMonths = collect();
-        $start = now()->subMonths(3);
         for ($i = 0; $i < $months; $i++) {
-            $m = $start->copy()->addMonths($i)->format('Y-m');
+            $m = $startDate->copy()->addMonths($i)->format('Y-m');
+            $row = $jeQuery[$m] ?? null;
             $allMonths[$m] = [
                 'month' => $m,
-                'inflow' => (float) ($inflows[$m]->expected_inflow ?? 0),
-                'outflow' => (float) ($outflows[$m]->expected_outflow ?? 0),
-                'net' => (float) (($inflows[$m]->expected_inflow ?? 0) - ($outflows[$m]->expected_outflow ?? 0)),
+                'inflow' => (float) ($row->total_debit ?? 0),
+                'outflow' => (float) ($row->total_credit ?? 0),
+                'net' => (float) (($row->total_debit ?? 0) - ($row->total_credit ?? 0)),
             ];
         }
 
@@ -227,13 +225,7 @@ class FinancialReportService
         $totalOutflow = $allMonths->sum('outflow');
         $netCashFlow = $totalInflow - $totalOutflow;
 
-        $payments = Payment::with('invoice.project')
-            ->when($projectId, fn($q) => $q->whereHas('invoice', fn($iq) => $iq->where('project_id', $projectId)))
-            ->latest()
-            ->take(10)
-            ->get();
-
-        return compact('allMonths', 'totalInflow', 'totalOutflow', 'netCashFlow', 'payments');
+        return compact('allMonths', 'totalInflow', 'totalOutflow', 'netCashFlow');
     }
 
     public function retentionTracker($projectId = null)
@@ -366,6 +358,7 @@ class FinancialReportService
                         'name' => $ms->name,
                         'status' => $ms->status,
                         'y' => round($plannedPoints[$idx] ?? 0, 2),
+                        'date_formatted' => Carbon::parse($dateLabel)->format('d M'),
                     ];
                 }
             }

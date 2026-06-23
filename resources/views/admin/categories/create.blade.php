@@ -39,7 +39,7 @@
                 <div class="form-group">
                     <label for="value">Value <span class="text-danger">*</span></label>
                     <input type="text" name="value" id="value" class="form-input" required value="{{ old('value') }}" placeholder="Internal identifier (e.g. steel)" />
-                    <span class="text-xs text-white-dark mt-1 block">Lowercase, stored in DB</span>
+                    {{-- <span class="text-xs text-white-dark mt-1 block">Lowercase, stored in DB</span> --}}
                     @error('value') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">

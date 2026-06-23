@@ -381,7 +381,7 @@
                             <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
                                 <li><a href="{{ route('admin.hr.equipment.index') }}">Equipment</a></li>
                                 <li><a href="{{ route('admin.hr.fuel-logs.index') }}">Fuel Logs</a></li>
-                                {{-- <li><a href="{{ route('admin.hr.ppe-issuances.index') }}">PPE Issuance</a></li> --}}
+                                <li><a href="{{ route('admin.hr.ppe-issuances.index') }}">PPE Issuance</a></li>
                             </ul>
                         </li>
                         <!-- Safety & Compliance -->
@@ -394,7 +394,7 @@
                             </a>
                             <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
                                 <li><a href="{{ route('admin.hr.incident-reports.index') }}">Incident Reports</a></li>
-                                {{-- <li><a href="{{ route('admin.hr.hse-checklists.index') }}">HSE Checklists</a></li> --}}
+                                <li><a href="{{ route('admin.hr.hse-checklists.index') }}">HSE Checklists</a></li>
                                 {{-- <li><a href="{{ route('admin.hr.toolbox-talks.index') }}">Toolbox Talks</a></li> --}}
                             </ul>
                         </li>
@@ -476,7 +476,7 @@
                             </a>
                             <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
                                 <li><a href="{{ route('admin.finance.boqs.index') }}">Bill of Quantities</a></li>
-                                {{-- <li><a href="{{ route('admin.finance.rate-analysis.index') }}">Rate Analysis</a></li> --}}
+                                <li><a href="{{ route('admin.finance.rate-analysis.index') }}">Rate Analysis</a></li>
                                 {{-- <li><a href="{{ route('admin.finance.tenders.index') }}">Tenders</a></li> --}}
                             </ul>
                         </li>

@@ -34,7 +34,7 @@ table.data .font-semibold { font-weight: 600; }
 <body>
 <div class="header">
     <h1>@yield('title')</h1>
-    <div class="subtitle">Generated: {{ now()->format('d M Y, h:i A') }}</div>
+    <div class="subtitle">Generated: {{ now()->format('d M Y') }}</div>
 </div>
 @yield('content')
 <div class="footer">Construction Management System — Financial Report</div>

@@ -283,7 +283,7 @@ CREATE TABLE `cache` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('inoodex-cache-tyro:user-1:roles',	'a:1:{i:0;s:11:\"super-admin\";}',	1782131182);
+('inoodex-cache-tyro:user-1:roles',	'a:1:{i:0;s:11:\"super-admin\";}',	1782191757);
 
 DROP TABLE IF EXISTS `cache_locks`;
 CREATE TABLE `cache_locks` (
@@ -624,9 +624,7 @@ CREATE TABLE `hse_checklists` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `checklist_type` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'general',
-  `location` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `inspection_date` date NOT NULL,
-  `employee_id` bigint unsigned DEFAULT NULL,
   `status` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'open',
   `findings` text COLLATE utf8mb4_unicode_ci,
   `corrective_actions` text COLLATE utf8mb4_unicode_ci,
@@ -634,11 +632,20 @@ CREATE TABLE `hse_checklists` (
   `notes` text COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
+  `user_id` bigint unsigned DEFAULT NULL,
+  `project_id` bigint unsigned DEFAULT NULL,
+  `site_id` bigint unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `hse_checklists_employee_id_foreign` (`employee_id`),
-  CONSTRAINT `hse_checklists_employee_id_foreign` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`) ON DELETE SET NULL
+  KEY `hse_checklists_user_id_foreign` (`user_id`),
+  KEY `hse_checklists_project_id_foreign` (`project_id`),
+  KEY `hse_checklists_site_id_foreign` (`site_id`),
+  CONSTRAINT `hse_checklists_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `hse_checklists_site_id_foreign` FOREIGN KEY (`site_id`) REFERENCES `sites` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `hse_checklists_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `hse_checklists` (`id`, `title`, `checklist_type`, `inspection_date`, `status`, `findings`, `corrective_actions`, `closure_date`, `notes`, `created_at`, `updated_at`, `user_id`, `project_id`, `site_id`) VALUES
+(1,	'Weekly Site Safety',	'general',	'2026-06-23',	'open',	'no problem found',	'n/a',	'2026-06-25',	'everything okay',	'2026-06-22 22:27:49',	'2026-06-22 22:28:53',	4,	6,	NULL);
 
 DROP TABLE IF EXISTS `incident_reports`;
 CREATE TABLE `incident_reports` (
@@ -1290,7 +1297,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (99,	'2026_06_21_044528_create_hse_checklists_table',	43),
 (100,	'2026_06_21_044532_create_hse_checklist_items_table',	43),
 (101,	'2026_06_21_050141_create_fuel_logs_table',	44),
-(102,	'2026_06_21_050143_create_toolbox_talks_table',	44);
+(102,	'2026_06_21_050143_create_toolbox_talks_table',	44),
+(103,	'2026_06_23_000001_replace_employee_id_with_user_id_in_hse_checklists',	45),
+(104,	'2026_06_23_000002_add_project_id_site_id_to_hse_checklists',	46);
 
 DROP TABLE IF EXISTS `milestones`;
 CREATE TABLE `milestones` (
@@ -1819,8 +1828,7 @@ CREATE TABLE `sessions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('VjtoxlaxWoWGrAulGmEwMg528L25g5HnrJ94PvGf',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',	'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiOWtlMWNtRFF0RTF0cEd5ZWZCMGxPRVRWMHZuOVgwUWJsQ0FBN0VhSSI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjUzOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvZGFzaGJvYXJkL2ZpbmFuY2UvYmFsYW5jZS1zaGVldCI7czo1OiJyb3V0ZSI7czozMzoiYWRtaW4uZmluYW5jZS5iYWxhbmNlLXNoZWV0LmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=',	1782130907),
-('xKNSm9zGu951bE88s98LxHa50lKhzqEYCTF8z28T',	NULL,	'127.0.0.1',	'Symfony',	'YTozOntzOjY6Il90b2tlbiI7czo0MDoiVXBrMDl5eXBKbkwzWE9GZEdXbFk4T3c2YVB4c1lzQWFNSEZPakJoUCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NTQ6Imh0dHA6Ly9sb2NhbGhvc3QvZGFzaGJvYXJkL3JlcG9ydHMvZmluYW5jaWFsL2Nhc2gtZmxvdyI7czo1OiJyb3V0ZSI7czozMzoiYWRtaW4ucmVwb3J0cy5maW5hbmNpYWwuY2FzaC1mbG93Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==',	1782126099);
+('VHWSzaioIbr0zN774s79OnWTCJtwo3J6mKIxDhCl',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36',	'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiQTFnMnhZUXNPU2tRa3ltZ09tTEJ2dnUwQ3hJV3dRR1lPWWY2TVBMSiI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjYyOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvZGFzaGJvYXJkL2ZpbmFuY2Uvam91cm5hbC1lbnRyaWVzL2NyZWF0ZSI7czo1OiJyb3V0ZSI7czozNjoiYWRtaW4uZmluYW5jZS5qb3VybmFsLWVudHJpZXMuY3JlYXRlIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=',	1782191625);
 
 DROP TABLE IF EXISTS `settings`;
 CREATE TABLE `settings` (
@@ -2258,7 +2266,8 @@ INSERT INTO `tyro_audit_logs` (`id`, `user_id`, `event`, `auditable_type`, `audi
 (28,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36\"}',	'2026-06-20 11:05:48'),
 (29,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36\"}',	'2026-06-21 03:50:20'),
 (30,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36\"}',	'2026-06-21 12:26:50'),
-(31,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36\"}',	'2026-06-22 03:34:50');
+(31,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36\"}',	'2026-06-22 03:34:50'),
+(32,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36\"}',	'2026-06-23 03:51:11');
 
 DROP TABLE IF EXISTS `tyro_media`;
 CREATE TABLE `tyro_media` (
@@ -2347,7 +2356,8 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `two_factor_secret`, `two_factor_recovery_codes`, `two_factor_confirmed_at`, `remember_token`, `created_at`, `updated_at`, `suspended_at`, `suspension_reason`, `profile_photo_path`, `use_gravatar`) VALUES
 (1,	'Project Administrator',	'hello@inoodex.com',	NULL,	'$2y$12$zo7SGTKVmrG9PeA.atYY9u7KIp5hn7GCYUXWUvJKdVjGxeuNealuu',	NULL,	NULL,	NULL,	NULL,	'2026-05-20 23:16:37',	'2026-05-20 23:16:37',	NULL,	NULL,	NULL,	0),
 (2,	'Site Engineer',	'engineer@construction.com',	NULL,	'$2y$12$BoQHxmVYvM6Mzv.Qz3ZYrOrPwnQSHISAcNxFoh2dfwcHctBQEAyQa',	NULL,	NULL,	NULL,	NULL,	'2026-05-20 23:17:33',	'2026-06-11 06:03:53',	NULL,	NULL,	NULL,	0),
-(3,	'Procurement Officer',	'procurement@construction.com',	NULL,	'$2y$12$CZJjnsrL1yZ9.aSMWNxWgurhwvliiKFLLGFykCkx5SpFN0vQAH826',	NULL,	NULL,	NULL,	NULL,	'2026-05-20 23:17:34',	'2026-06-11 06:03:45',	NULL,	NULL,	NULL,	0);
+(3,	'Procurement Officer',	'procurement@construction.com',	NULL,	'$2y$12$CZJjnsrL1yZ9.aSMWNxWgurhwvliiKFLLGFykCkx5SpFN0vQAH826',	NULL,	NULL,	NULL,	NULL,	'2026-05-20 23:17:34',	'2026-06-11 06:03:45',	NULL,	NULL,	NULL,	0),
+(4,	'HSE Inspector',	'inspector@example.com',	NULL,	'$2y$12$DGvGdBVq/9O7BwOxsTReT.Zx7O70.7ecJURkE4AuQxipbCI40SNha',	NULL,	NULL,	NULL,	NULL,	'2026-06-22 22:03:28',	'2026-06-22 22:03:28',	NULL,	NULL,	NULL,	0);
 
 DROP TABLE IF EXISTS `vendor_documents`;
 CREATE TABLE `vendor_documents` (
@@ -2474,4 +2484,4 @@ INSERT INTO `work_orders` (`id`, `project_id`, `task_id`, `site_id`, `work_order
 (1,	5,	5,	5,	'WO-2026-0001',	'Excavation Work Order',	'work order created',	2,	1,	'2026-06-22',	'2026-06-30',	NULL,	'issued',	NULL,	'2026-06-21 21:50:16',	'2026-06-21 21:50:16'),
 (2,	6,	6,	6,	'WO-2026-0002',	'Pile Casting Work Order',	NULL,	2,	1,	'2026-06-22',	'2026-06-30',	NULL,	'issued',	NULL,	'2026-06-22 05:23:11',	'2026-06-22 05:23:11');
 
--- 2026-06-22 12:22:31 UTC
+-- 2026-06-23 05:17:37 UTC

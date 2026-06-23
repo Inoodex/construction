@@ -33,16 +33,30 @@
                 </div>
                 <div>
                     <label class="text-sm font-semibold">Inspector</label>
-                    <select name="employee_id" class="form-select">
+                    <select name="user_id" class="form-select">
                         <option value="">Select inspector</option>
-                        @foreach($employees as $emp)
-                            <option value="{{ $emp->id }}" {{ old('employee_id', $hseChecklist->employee_id) == $emp->id ? 'selected' : '' }}>{{ $emp->full_name }}</option>
+                        @foreach($users as $u)
+                            <option value="{{ $u->id }}" {{ old('user_id', $hseChecklist->user_id) == $u->id ? 'selected' : '' }}>{{ $u->name }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div>
-                    <label class="text-sm font-semibold">Location</label>
-                    <input type="text" name="location" class="form-input" value="{{ old('location', $hseChecklist->location) }}" />
+                    <label class="text-sm font-semibold">Project</label>
+                    <select name="project_id" id="project_id" class="form-select">
+                        <option value="">Select project</option>
+                        @foreach($projects as $p)
+                            <option value="{{ $p->id }}" {{ old('project_id', $hseChecklist->project_id) == $p->id ? 'selected' : '' }}>{{ $p->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="text-sm font-semibold">Site</label>
+                    <select name="site_id" id="site_id" class="form-select">
+                        <option value="">Select site</option>
+                        @if($hseChecklist->site)
+                            <option value="{{ $hseChecklist->site_id }}" selected>{{ $hseChecklist->site->name }}</option>
+                        @endif
+                    </select>
                 </div>
                 <div>
                     <label class="text-sm font-semibold">Inspection Date <span class="text-danger">*</span></label>
@@ -113,6 +127,32 @@
 
 @push('scripts')
 <script>
+document.getElementById('project_id').addEventListener('change', function () {
+    const projectId = this.value;
+    const siteSelect = document.getElementById('site_id');
+    siteSelect.innerHTML = '<option value="">Select site</option>';
+    if (projectId) {
+        fetch('{{ route('admin.hr.hse-checklists.sites-by-project') }}?project_id=' + projectId)
+            .then(r => r.json())
+            .then(sites => {
+                sites.forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = s.id;
+                    opt.textContent = s.name;
+                    siteSelect.appendChild(opt);
+                });
+            });
+    }
+});
+// Pre-load sites if project already selected
+(function() {
+    const projectId = document.getElementById('project_id').value;
+    if (projectId) {
+        const event = new Event('change');
+        document.getElementById('project_id').dispatchEvent(event);
+    }
+})();
+
 let itemIndex = {{ max(count($hseChecklist->items), 1) }};
 function addItem() {
     const container = document.getElementById('items-container');

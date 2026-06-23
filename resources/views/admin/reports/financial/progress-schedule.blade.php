@@ -2,12 +2,9 @@
 
 @section('title', 'Progress & Schedule Report (S-Curve)')
 
-@push('styles')
-<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.46.0/dist/apexcharts.min.js"></script>
 <style>
     .milestone-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; }
 </style>
-@endpush
 
 @section('content')
 <div class="mb-6 flex items-center justify-between">
@@ -132,6 +129,7 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.46.0/dist/apexcharts.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const isDark = document.documentElement.classList.contains('dark');
@@ -140,13 +138,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     @forelse($allSeries as $series)
     (function() {
-        const plannedData = [{{ implode(',', $series['planned']) }}];
-        const actualData = [{{ implode(',', $series['actual']) }}];
-        const labels = [{{ collect($series['labels'])->map(fn($d) => "'".\Carbon\Carbon::parse($d)->format('d M')."'")->implode(',') }}];
+        const plannedData = <?php echo json_encode($series['planned']); ?>;
+        const actualData = <?php echo json_encode($series['actual']); ?>;
+        const labels = <?php echo json_encode(collect($series['labels'])->map(fn($d) => \Carbon\Carbon::parse($d)->format('d M'))->values()); ?>;
 
-        // Sample labels to avoid overcrowding (show every Nth label)
         const step = Math.max(1, Math.floor(labels.length / 20));
         const sampledLabels = labels.map((l, i) => i % step === 0 ? l : '');
+
+        const milestones = <?php echo json_encode($series['milestones']); ?>;
 
         new ApexCharts(document.querySelector("#sCurveChart_{{ $series['project']->id }}"), {
             series: [{
@@ -196,29 +195,27 @@ document.addEventListener('DOMContentLoaded', function () {
                 fontSize: '12px'
             },
             annotations: {
-                points: [
-                    @foreach($series['milestones'] as $ms)
-                    {
-                        x: '{{ \Carbon\Carbon::parse($ms['date'])->format('d M') }}',
-                        y: {{ $ms['y'] }},
+                points: milestones.map(function(ms) {
+                    return {
+                        x: ms.date_formatted || ms.date,
+                        y: ms.y,
                         marker: {
                             size: 6,
-                            fillColor: '{{ $ms['status'] === 'achieved' ? '#00ab55' : ($ms['status'] === 'missed' ? '#e7515a' : '#e2a03f') }}',
+                            fillColor: ms.status === 'achieved' ? '#00ab55' : (ms.status === 'missed' ? '#e7515a' : '#e2a03f'),
                             strokeColor: '#fff',
                             radius: 2
                         },
                         label: {
-                            text: '{{ $ms['name'] }}',
-                            borderColor: '{{ $ms['status'] === 'achieved' ? '#00ab55' : ($ms['status'] === 'missed' ? '#e7515a' : '#e2a03f') }}',
+                            text: ms.name,
+                            borderColor: ms.status === 'achieved' ? '#00ab55' : (ms.status === 'missed' ? '#e7515a' : '#e2a03f'),
                             style: {
                                 color: '#fff',
-                                background: '{{ $ms['status'] === 'achieved' ? '#00ab55' : ($ms['status'] === 'missed' ? '#e7515a' : '#e2a03f') }}',
+                                background: ms.status === 'achieved' ? '#00ab55' : (ms.status === 'missed' ? '#e7515a' : '#e2a03f'),
                                 fontSize: '9px'
                             }
                         }
-                    },
-                    @endforeach
-                ]
+                    };
+                })
             },
             tooltip: {
                 y: {
