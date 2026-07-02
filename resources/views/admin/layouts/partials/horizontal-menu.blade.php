@@ -131,7 +131,7 @@
                 <li><a href="{{ route('admin.approvals.workflows.index') }}">Approval Workflows</a></li>
             @endif
         </ul>
-    </li> --}}
+    </li>  --}}
 
     <!-- Procurement -->
     <li class="menu nav-item relative">
@@ -338,8 +338,9 @@
                 <a href="javascript:;">Billing & Payables <svg class="h-3 w-3 rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
                 <ul class="sub-sub-menu">
                     <li><a href="{{ route('admin.finance.invoices.index') }}">Invoices</a></li>
-                    <li><a href="{{ route('admin.finance.ipas.index') }}">IPAs</a></li>
+                    <li><a href="{{ route('admin.finance.ipas.index') }}">Interim Payment</a></li>
                     <li><a href="{{ route('admin.finance.bills.index') }}">Bills Payable</a></li>
+                    <li><a href="{{ route('admin.finance.expenses.index') }}">Expenses</a></li>
                 </ul>
             </li>
             <li class="relative">

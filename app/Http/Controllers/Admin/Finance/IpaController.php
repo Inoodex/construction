@@ -59,22 +59,30 @@ class IpaController extends Controller
 
         $ipa = InterimPaymentApplication::create($validated);
 
+        $this->autoCreateItemsFromBoq($ipa);
+
         return redirect()->route('admin.finance.ipas.show', $ipa->id)
-            ->with('success', 'IPA created. Add items now.');
+            ->with('success', 'IPA created with BOQ items.');
     }
 
     public function show(InterimPaymentApplication $ipa)
     {
         $ipa->load('project', 'creator', 'items', 'submittedBy', 'certifiedBy', 'approvedBy', 'invoice');
-        $boqItems = \App\Models\BoqItem::whereHas('boq', fn($q) => $q->where('project_id', $ipa->project_id))->get();
         $canSubmit = $ipa->status === 'draft' && $ipa->items()->count() > 0;
-        return view('admin.finance.ipas.show', compact('ipa', 'boqItems', 'canSubmit'));
+        return view('admin.finance.ipas.show', compact('ipa', 'canSubmit'));
     }
 
     public function edit(InterimPaymentApplication $ipa)
     {
         abort_if($ipa->status !== 'draft', 403, 'Only draft IPAs can be edited.');
+
+        if ($ipa->items()->count() === 0) {
+            $this->autoCreateItemsFromBoq($ipa);
+        }
+
+        $ipa->load('items');
         $projects = Project::all();
+
         return view('admin.finance.ipas.edit', compact('ipa', 'projects'));
     }
 
@@ -89,10 +97,32 @@ class IpaController extends Controller
             'period_end'       => 'required|date|after_or_equal:period_start',
             'retention_rate'   => 'required|numeric|min:0|max:100',
             'notes'            => 'nullable|string',
+            'items'            => 'nullable|array',
+            'items.*.id'              => 'required|exists:ipa_items,id',
+            'items.*.current_quantity'=> 'required|numeric|min:0',
+            'items.*.unit_price'      => 'required|numeric|min:0',
         ]);
 
         $ipa->update($validated);
-        return redirect()->route('admin.finance.ipas.index')
+
+        if ($request->has('items')) {
+            foreach ($request->items as $itemData) {
+                $item = IpaItem::findOrFail($itemData['id']);
+                $prevQty = $item->previous_quantity;
+                $cumQty = $prevQty + $itemData['current_quantity'];
+                $item->update([
+                    'current_quantity'   => $itemData['current_quantity'],
+                    'unit_price'         => $itemData['unit_price'],
+                    'cumulative_quantity'=> $cumQty,
+                    'previous_amount'    => $prevQty * $itemData['unit_price'],
+                    'current_amount'     => $itemData['current_quantity'] * $itemData['unit_price'],
+                    'cumulative_amount'  => $cumQty * $itemData['unit_price'],
+                ]);
+            }
+            $this->recalculateIpa($ipa);
+        }
+
+        return redirect()->route('admin.finance.ipas.show', $ipa->id)
             ->with('success', 'IPA updated successfully.');
     }
 
@@ -103,32 +133,6 @@ class IpaController extends Controller
         $ipa->delete();
         return redirect()->route('admin.finance.ipas.index')
             ->with('success', 'IPA deleted successfully.');
-    }
-
-    public function addItem(Request $request, InterimPaymentApplication $ipa)
-    {
-        abort_if($ipa->status !== 'draft', 403);
-        $validated = $request->validate([
-            'boq_item_id'       => 'nullable|exists:boq_items,id',
-            'item_number'       => 'required|string|max:50',
-            'description'       => 'required|string',
-            'unit'              => 'required|string|max:20',
-            'previous_quantity' => 'required|numeric|min:0',
-            'current_quantity'  => 'required|numeric|min:0.0001',
-            'unit_price'        => 'required|numeric|min:0',
-            'notes'             => 'nullable|string',
-        ]);
-
-        $validated['cumulative_quantity'] = $validated['previous_quantity'] + $validated['current_quantity'];
-        $validated['previous_amount'] = $validated['previous_quantity'] * $validated['unit_price'];
-        $validated['current_amount'] = $validated['current_quantity'] * $validated['unit_price'];
-        $validated['cumulative_amount'] = $validated['cumulative_quantity'] * $validated['unit_price'];
-        $validated['ipa_id'] = $ipa->id;
-
-        IpaItem::create($validated);
-        $this->recalculateIpa($ipa);
-
-        return back()->with('success', 'Item added to IPA.');
     }
 
     public function removeItem(InterimPaymentApplication $ipa, IpaItem $ipaItem)
@@ -154,7 +158,16 @@ class IpaController extends Controller
     {
         abort_if($ipa->status !== 'submitted', 403);
         $request->validate([
-            'certified_amount' => 'required|numeric|min:0|lte:applied_amount',
+            'certified_amount' => [
+                'required',
+                'numeric',
+                'min:0',
+                function ($attribute, $value, $fail) use ($ipa) {
+                    if ($value > $ipa->applied_amount) {
+                        $fail("The certified amount must be less than or equal to " . number_format($ipa->applied_amount) . ".");
+                    }
+                },
+            ],
         ]);
 
         $retentionAmount = $request->certified_amount * ($ipa->retention_rate / 100);
@@ -201,7 +214,7 @@ class IpaController extends Controller
         $invoice = Invoice::create([
             'project_id'      => $ipa->project_id,
             'invoice_number'  => 'INV-' . now()->format('Ymd') . '-' . strtoupper(Str::random(4)),
-            'title'           => 'IPA Invoice: ' . $ipa->ipa_number . ' - ' . $ipa->title,
+            'title'           => $ipa->ipa_number . ' - ' . $ipa->title,
             'issue_date'      => now()->format('Y-m-d'),
             'due_date'        => now()->addDays(30)->format('Y-m-d'),
             'subtotal'        => $ipa->certified_amount,
@@ -228,6 +241,38 @@ class IpaController extends Controller
         $ipa->update(['invoice_id' => $invoice->id]);
         return redirect()->route('admin.finance.invoices.show', $invoice->id)
             ->with('success', 'Invoice generated from certified IPA.');
+    }
+
+    private function autoCreateItemsFromBoq(InterimPaymentApplication $ipa): void
+    {
+        $boqItems = \App\Models\BoqItem::whereHas('boq', fn($q) => $q->where('project_id', $ipa->project_id))->get();
+
+        $lastIpaItems = IpaItem::whereHas('ipa', fn($q) => $q->where('project_id', $ipa->project_id)->whereIn('status', ['certified', 'approved', 'paid']))
+            ->get()
+            ->groupBy('boq_item_id');
+
+        foreach ($boqItems as $bi) {
+            $prevItems = $lastIpaItems->get($bi->id, collect());
+            $lastItem = $prevItems->sortByDesc('id')->first();
+            $prevQty = $lastItem?->cumulative_quantity ?? 0;
+
+            IpaItem::create([
+                'ipa_id'             => $ipa->id,
+                'boq_item_id'        => $bi->id,
+                'item_number'        => $bi->item_number,
+                'description'        => $bi->description,
+                'unit'               => $bi->unit,
+                'previous_quantity'  => $prevQty,
+                'current_quantity'   => 0,
+                'cumulative_quantity'=> $prevQty,
+                'unit_price'         => $bi->unit_price,
+                'previous_amount'    => $prevQty * $bi->unit_price,
+                'current_amount'     => 0,
+                'cumulative_amount'  => $prevQty * $bi->unit_price,
+            ]);
+        }
+
+        $this->recalculateIpa($ipa);
     }
 
     private function recalculateIpa(InterimPaymentApplication $ipa): void

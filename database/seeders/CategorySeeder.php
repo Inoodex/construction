@@ -29,6 +29,15 @@ class CategorySeeder extends Seeder
             ['type' => 'resource_type', 'value' => 'material', 'label' => 'Material', 'sort_order' => 4],
             ['type' => 'resource_type', 'value' => 'subcontract', 'label' => 'Subcontract', 'sort_order' => 5],
             ['type' => 'resource_type', 'value' => 'overhead', 'label' => 'Overhead', 'sort_order' => 6],
+            // Expense Types
+            ['type' => 'expense_type', 'value' => 'office_rent', 'label' => 'Office Rent', 'sort_order' => 1],
+            ['type' => 'expense_type', 'value' => 'utilities', 'label' => 'Utilities', 'sort_order' => 2],
+            ['type' => 'expense_type', 'value' => 'office_supplies', 'label' => 'Office Supplies', 'sort_order' => 3],
+            ['type' => 'expense_type', 'value' => 'travel', 'label' => 'Travel & Transport', 'sort_order' => 4],
+            ['type' => 'expense_type', 'value' => 'maintenance', 'label' => 'Maintenance & Repairs', 'sort_order' => 5],
+            ['type' => 'expense_type', 'value' => 'communication', 'label' => 'Communication', 'sort_order' => 6],
+            ['type' => 'expense_type', 'value' => 'marketing', 'label' => 'Marketing & Advertising', 'sort_order' => 7],
+            ['type' => 'expense_type', 'value' => 'it_software', 'label' => 'IT & Software', 'sort_order' => 8],
         ];
 
         foreach ($categories as $cat) {

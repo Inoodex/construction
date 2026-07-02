@@ -207,7 +207,7 @@ class ApprovalController extends Controller
 
             DB::commit();
 
-            return redirect()->route('admin.approvals.workflows')
+            return redirect()->route('admin.approvals.workflows.index')
                 ->with('success', 'Approval workflow created successfully!');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -274,7 +274,7 @@ class ApprovalController extends Controller
 
             DB::commit();
 
-            return redirect()->route('admin.approvals.workflows')
+            return redirect()->route('admin.approvals.workflows.index')
                 ->with('success', 'Approval workflow updated successfully!');
         } catch (\Exception $e) {
             DB::rollBack();

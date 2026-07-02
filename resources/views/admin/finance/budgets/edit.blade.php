@@ -41,8 +41,10 @@
                     <input type="number" step="0.01" min="0" name="budgeted_amount" id="budgeted_amount" class="form-input" required value="{{ old('budgeted_amount', $budget->budgeted_amount) }}" />
                 </div>
             </div>
-            <hr class="my-6 border-gray-300" />
-            <h4 class="font-semibold mb-4">Earned Value Management</h4>
+               <br>
+             {{-- <hr class="my-6 border-gray-300" />
+            <h4 class="font-semibold mb-4 text-xl">Earned Value Management</h4>
+            <hr class="my-6 border-gray-300" /> --}}
             <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
                 <div class="form-group">
                     <label for="planned_value">Planned Value (PV) <span class="text-danger">*</span></label>

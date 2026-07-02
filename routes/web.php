@@ -13,12 +13,14 @@ use App\Http\Controllers\Admin\Core\SitePhotoController;
 use App\Http\Controllers\Admin\Core\ProjectResourceController;
 use App\Http\Controllers\Admin\Core\WorkOrderController;
 use App\Http\Controllers\Admin\Core\InspectionChecklistController;
+use App\Http\Controllers\Admin\SearchController;
 
 Route::get('/', function () {
     return redirect()->route('tyro-login.login');
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('auth')->name('tyro-dashboard.index');
+Route::get('/dashboard/search', [SearchController::class, 'search'])->middleware('auth')->name('admin.search');
 
 Route::prefix('dashboard/settings')->name('admin.settings.')->group(function () {
     Route::get('/', [SettingController::class, 'index'])->name('index');
@@ -477,6 +479,7 @@ use App\Http\Controllers\Admin\Finance\RateAnalysisController;
 use App\Http\Controllers\Admin\Finance\CostOverrunAlertController;
 use App\Http\Controllers\Admin\Finance\IpaController;
 use App\Http\Controllers\Admin\Finance\BillController;
+use App\Http\Controllers\Admin\Finance\ExpenseController;
 use App\Http\Controllers\Admin\Finance\AgingReportController;
 use App\Http\Controllers\Admin\Finance\ChartOfAccountController;
 use App\Http\Controllers\Admin\Finance\JournalEntryController;
@@ -562,7 +565,6 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware('auth')->
     Route::get('ipas/{ipa}/edit', [IpaController::class, 'edit'])->name('ipas.edit');
     Route::put('ipas/{ipa}', [IpaController::class, 'update'])->name('ipas.update');
     Route::delete('ipas/{ipa}', [IpaController::class, 'destroy'])->name('ipas.destroy');
-    Route::post('ipas/{ipa}/items', [IpaController::class, 'addItem'])->name('ipas.items.store');
     Route::delete('ipas/{ipa}/items/{ipaItem}', [IpaController::class, 'removeItem'])->name('ipas.items.destroy');
     Route::post('ipas/{ipa}/submit', [IpaController::class, 'submit'])->name('ipas.submit');
     Route::post('ipas/{ipa}/certify', [IpaController::class, 'certify'])->name('ipas.certify');
@@ -581,6 +583,15 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware('auth')->
     Route::delete('bills/{bill}/items/{billItem}', [BillController::class, 'removeItem'])->name('bills.items.destroy');
     Route::post('bills/{bill}/payments', [BillController::class, 'addPayment'])->name('bills.payments.store');
     Route::delete('bills/{bill}/payments/{billPayment}', [BillController::class, 'removePayment'])->name('bills.payments.destroy');
+
+    Route::get('expenses', [ExpenseController::class, 'index'])->name('expenses.index');
+    Route::get('expenses/create', [ExpenseController::class, 'create'])->name('expenses.create');
+    Route::post('expenses', [ExpenseController::class, 'store'])->name('expenses.store');
+    Route::get('expenses/{expense}', [ExpenseController::class, 'show'])->name('expenses.show');
+    Route::get('expenses/{expense}/edit', [ExpenseController::class, 'edit'])->name('expenses.edit');
+    Route::put('expenses/{expense}', [ExpenseController::class, 'update'])->name('expenses.update');
+    Route::delete('expenses/{expense}', [ExpenseController::class, 'destroy'])->name('expenses.destroy');
+    Route::post('expenses/{expense}/mark-paid', [ExpenseController::class, 'markPaid'])->name('expenses.mark-paid');
 
     Route::get('chart-of-accounts', [ChartOfAccountController::class, 'index'])->name('chart-of-accounts.index');
     Route::get('chart-of-accounts/create', [ChartOfAccountController::class, 'create'])->name('chart-of-accounts.create');

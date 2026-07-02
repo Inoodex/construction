@@ -42,6 +42,64 @@
                 </ul>
             </div>
 
+            <div class="hidden sm:flex flex-1 max-w-md ltr:ml-4 rtl:mr-4 items-center relative" x-data="searchDropdown()" @click.outside="open = false">
+                <div class="flex w-full items-center rounded-full bg-white-light/40 px-3 dark:bg-dark/40">
+                    <input type="text" placeholder="Search pages..." x-model="q" @input.debounce.300ms="search()" @focus="open = true; if (results.length === 0) search()" @keydown.escape="open = false" @keydown.down.prevent="$nextTick(() => $refs.results?.querySelector('a')?.focus())" @keydown.up.prevent="highlight > 0 ? highlight-- : null" @keydown.enter="select()" class="form-input h-9 flex-1 border-0 bg-transparent p-0 text-xs focus:shadow-none" />
+                    <svg class="shrink-0 text-white-dark" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" stroke-width="1.5" opacity="0.5" />
+                        <path d="M18.5 18.5L22 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                    </svg>
+                </div>
+                <ul x-ref="results" x-show="open" x-cloak class="absolute top-full mt-1 w-full rounded-lg border border-white-light bg-white py-2 shadow-lg dark:border-gray-700 dark:bg-gray-800 z-50 max-h-80 overflow-y-auto">
+                    <template x-if="noMatch">
+                        <li><span class="block px-4 py-3 text-xs text-white-dark">No match found</span></li>
+                    </template>
+                    <template x-for="(item, i) in results" :key="item.url">
+                        <li>
+                            <a :href="item.url" class="flex items-center gap-2 px-4 py-2 text-xs hover:bg-primary/10 hover:text-primary" :class="{'bg-primary/10 text-primary': i === highlight}" @mouseenter="highlight = i">
+                                <span class="truncate" x-text="item.label"></span>
+                                <span class="shrink-0 rounded bg-white-dark/10 px-1.5 py-0.5 text-[10px] text-white-dark" x-text="item.section"></span>
+                            </a>
+                        </li>
+                    </template>
+                </ul>
+            </div>
+
+@push('scripts')
+<script>
+function searchDropdown() {
+    return {
+        q: '',
+        open: false,
+        results: [],
+        highlight: -1,
+        get noMatch() {
+            return this.q.length >= 3 && this.results.length === 0;
+        },
+        search() {
+            var url = '{{ route("admin.search") }}';
+            if (this.q.length < 3) {
+                url += '?suggest=1';
+            } else {
+                url += '?q=' + encodeURIComponent(this.q);
+            }
+            fetch(url)
+                .then(r => r.json())
+                .then(data => {
+                    this.results = data;
+                    this.highlight = -1;
+                });
+        },
+        select() {
+            if (this.highlight >= 0 && this.results[this.highlight]) {
+                window.location = this.results[this.highlight].url;
+            }
+        }
+    };
+}
+</script>
+@endpush
+
             <div
                 class="flex items-center space-x-1.5 ltr:ml-auto rtl:mr-auto rtl:space-x-reverse dark:text-[#d0d2d6] sm:flex-1 ltr:sm:ml-0 sm:rtl:mr-0 lg:space-x-2">
                 <div class="sm:ltr:mr-auto sm:rtl:ml-auto">

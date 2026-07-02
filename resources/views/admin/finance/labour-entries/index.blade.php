@@ -55,7 +55,7 @@
     <div class="overflow-x-auto">
         <table class="table-hover w-full table-auto">
             <thead>
-                <tr><th>Date</th><th>Project</th><th>Employee</th><th>Hours</th><th>Rate</th><th>Cost</th><th>Description</th><th></th></tr>
+                <tr><th>Date</th><th>Project</th><th>Employee</th><th>Hours</th><th>Rate</th><th>Cost</th><th>Description</th><th class="text-center">Action</th></tr>
             </thead>
             <tbody>
                 @forelse($entries as $e)
@@ -68,9 +68,9 @@
                         <td class="font-mono font-semibold">৳ {{ number_format($e->total_cost, 2) }}</td>
                         <td class="text-xs">{{ $e->description ?? '—' }}</td>
                         <td>
-                            <form action="{{ route('admin.finance.labour-entries.destroy', $e) }}" method="POST" onsubmit="return confirm('Delete?');">
+                            <form action="{{ route('admin.finance.labour-entries.destroy', $e) }}" method="POST" onsubmit="return confirm('Delete?');" class="flex justify-center">
                                 @csrf @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger">×</button>
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
                             </form>
                         </td>
                     </tr>

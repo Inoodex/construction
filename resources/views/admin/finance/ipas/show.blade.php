@@ -77,9 +77,6 @@
         <div class="flex items-center justify-between">
             <h5 class="text-base font-semibold">Progress Items</h5>
             <div class="flex gap-2">
-                @if($ipa->status === 'draft')
-                    <button type="button" onclick="document.getElementById('addItemForm').classList.toggle('hidden')" class="btn btn-sm btn-outline-primary">+ Add Item</button>
-                @endif
                 @if($canSubmit)
                     <form action="{{ route('admin.finance.ipas.submit', $ipa->id) }}" method="POST" class="inline" onsubmit="return confirm('Submit this IPA for certification?');">
                         @csrf
@@ -125,32 +122,6 @@
             </form>
         </div>
 
-        <div id="addItemForm" class="mb-5 mt-3 hidden rounded-lg border p-4 dark:border-gray-700">
-            <form action="{{ route('admin.finance.ipas.items.store', $ipa->id) }}" method="POST">
-                @csrf
-                <table class="w-full" style="table-layout: fixed;">
-                    <tr>
-                        <td style="width:10%"><input type="text" name="item_number" placeholder="Item #" class="form-input" required /></td>
-                        <td style="width:28%"><input type="text" name="description" placeholder="Description" class="form-input" required /></td>
-                        <td style="width:10%"><input type="text" name="unit" placeholder="Unit" class="form-input" required /></td>
-                        <td style="width:12%"><input type="number" step="0.0001" name="previous_quantity" placeholder="Prev Qty" class="form-input" value="0" /></td>
-                        <td style="width:14%"><input type="number" step="0.0001" name="current_quantity" placeholder="This Period" class="form-input" required /></td>
-                        <td style="width:14%"><input type="number" step="0.01" name="unit_price" placeholder="Unit Price" class="form-input" required /></td>
-                        <td style="width:12%"><button type="submit" class="btn btn-primary w-full">Add</button></td>
-                    </tr>
-                </table>
-                <div class="mt-2 flex flex-nowrap items-center gap-2">
-                    <select name="boq_item_id" class="form-select">
-                        <option value="">Link to BOQ item (optional)</option>
-                        @foreach($boqItems as $bi)
-                            <option value="{{ $bi->id }}">{{ $bi->item_number }} - {{ $bi->description }}</option>
-                        @endforeach
-                    </select>
-                    <input type="text" name="notes" placeholder="Notes (optional)" class="form-input" />
-                </div>
-            </form>
-        </div>
-
         <div class="overflow-x-auto">
             <table class="table-hover w-full table-auto">
                 <thead>
@@ -163,7 +134,6 @@
                         <th>Prev Amount</th>
                         <th>This Period</th>
                         <th>Cumulative</th>
-                        @if($ipa->status === 'draft')<th class="text-center">Action</th>@endif
                     </tr>
                 </thead>
                 <tbody>
@@ -183,17 +153,9 @@
                             <td class="text-xs">{{ number_format($item->previous_amount, 2) }}</td>
                             <td class="font-semibold">{{ number_format($item->current_amount, 2) }}</td>
                             <td class="font-semibold">{{ number_format($item->cumulative_amount, 2) }}</td>
-                            @if($ipa->status === 'draft')
-                                <td class="text-center">
-                                    <form action="{{ route('admin.finance.ipas.items.destroy', [$ipa->id, $item->id]) }}" method="POST" onsubmit="return confirm('Remove this item?');">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
-                                    </form>
-                                </td>
-                            @endif
                         </tr>
                     @empty
-                        <tr><td colspan="{{ $ipa->status === 'draft' ? 9 : 8 }}" class="text-center">No items yet. Add BOQ progress items above.</td></tr>
+                        <tr><td colspan="8" class="text-center">No items yet.</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -213,7 +175,7 @@
                 <h5 class="text-base font-semibold">Generated Invoice</h5>
                 <a href="{{ route('admin.finance.invoices.show', $ipa->invoice->id) }}" class="btn btn-sm btn-primary">View Invoice</a>
             </div>
-            <p class="mt-2 text-xs">Invoice #{{ $ipa->invoice->invoice_number }} — {{ number_format($ipa->invoice->total_amount) }} — <span class="badge badge-outline-{{ $ipa->invoice->status === 'paid' ? 'success' : 'warning' }} capitalize">{{ $ipa->invoice->status }}</span></p>
+            <p class="mt-2 text-xs">Invoice {{ $ipa->invoice->invoice_number }} — {{ number_format($ipa->invoice->total_amount) }} — <span class="badge badge-outline-{{ $ipa->invoice->status === 'paid' ? 'success' : 'warning' }} capitalize">{{ $ipa->invoice->status }}</span></p>
         </div>
     @endif
 
@@ -223,21 +185,21 @@
                 <div class="panel">
                     <label class="text-xs text-white-dark">Submitted By</label>
                     <p class="font-semibold">{{ $ipa->submittedBy?->name ?? 'N/A' }}</p>
-                    <p class="text-xs text-white-dark">{{ $ipa->submitted_at?->format('d M Y H:i') }}</p>
+                    <p class="text-xs text-white-dark">{{ $ipa->submitted_at?->format('d M Y') }}</p>
                 </div>
             @endif
             @if($ipa->certified_by)
                 <div class="panel">
                     <label class="text-xs text-white-dark">Certified By</label>
                     <p class="font-semibold">{{ $ipa->certifiedBy?->name ?? 'N/A' }}</p>
-                    <p class="text-xs text-white-dark">{{ $ipa->certified_at?->format('d M Y H:i') }}</p>
+                    <p class="text-xs text-white-dark">{{ $ipa->certified_at?->format('d M Y') }}</p>
                 </div>
             @endif
             @if($ipa->approved_by)
                 <div class="panel">
                     <label class="text-xs text-white-dark">Approved By</label>
                     <p class="font-semibold">{{ $ipa->approvedBy?->name ?? 'N/A' }}</p>
-                    <p class="text-xs text-white-dark">{{ $ipa->approved_at?->format('d M Y H:i') }}</p>
+                    <p class="text-xs text-white-dark">{{ $ipa->approved_at?->format('d M Y') }}</p>
                 </div>
             @endif
         </div>

@@ -5,10 +5,12 @@
 @section('content')
     <div class="flex flex-wrap items-center justify-between gap-4">
         <h2 class="text-xl font-semibold uppercase">Edit IPA: {{ $ipa->ipa_number }}</h2>
-        <a href="{{ route('admin.finance.ipas.index') }}" class="btn btn-secondary gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-            Back to List
-        </a>
+        <div class="flex gap-2">
+            <a href="{{ route('admin.finance.ipas.show', $ipa->id) }}" class="btn btn-secondary gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Cancel
+            </a>
+        </div>
     </div>
 
     <div class="panel mt-6">
@@ -50,10 +52,100 @@
                 </div>
             </div>
 
+            <div class="mt-8">
+                <h5 class="mb-4 text-base font-semibold">Progress Items</h5>
+                <div class="overflow-x-auto">
+                    <table class="table-hover w-full table-auto" id="itemsTable">
+                        <thead>
+                            <tr>
+                                <th>Item / Description / Unit</th>
+                                <th>Prev Qty</th>
+                                <th>This Period</th>
+                                <th>Cumulative</th>
+                                <th>Unit Price</th>
+                                <th>Prev Amount</th>
+                                <th>This Period</th>
+                                <th>Cumulative</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($ipa->items as $index => $item)
+                                <tr>
+                                    <td class="text-xs">
+                                        <span class="font-mono font-semibold">{{ $item->item_number }}</span>
+                                        <span class="text-white-dark">|</span>
+                                        {{ $item->description }}
+                                        <span class="text-white-dark">|</span>
+                                        <span class="italic">{{ $item->unit }}</span>
+                                    </td>
+                                    <td class="prev-qty text-xs" data-value="{{ $item->previous_quantity }}">{{ number_format($item->previous_quantity, 2) }}</td>
+                                    <td>
+                                        <input type="number" step="0.0001" min="0" name="items[{{ $index }}][current_quantity]" value="{{ old("items.$index.current_quantity", $item->current_quantity) }}" class="form-input current-qty" required />
+                                    </td>
+                                    <td class="cumulative-qty text-xs font-semibold">{{ number_format($item->cumulative_quantity, 2) }}</td>
+                                    <td>
+                                        <input type="number" step="0.01" min="0" name="items[{{ $index }}][unit_price]" value="{{ old("items.$index.unit_price", $item->unit_price) }}" class="form-input unit-price" required />
+                                    </td>
+                                    <td class="prev-amount text-xs">{{ number_format($item->previous_amount, 2) }}</td>
+                                    <td class="current-amount font-semibold">{{ number_format($item->current_amount, 2) }}</td>
+                                    <td class="cumulative-amount font-semibold">{{ number_format($item->cumulative_amount, 2) }}</td>
+                                    <td class="text-center">
+                                        <button type="submit" form="remove-item-{{ $item->id }}" class="btn btn-sm btn-outline-danger" onclick="return confirm('Remove this item from IPA?');">Remove</button>
+                                    </td>
+                                    <input type="hidden" name="items[{{ $index }}][id]" value="{{ $item->id }}" />
+                                </tr>
+                            @empty
+                                <tr><td colspan="9" class="text-center">No BOQ items found for this project.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <div class="mt-8 flex items-center gap-4">
-                <button type="submit" class="btn btn-primary px-10">Update IPA</button>
-                <button type="reset" class="btn btn-outline-danger">Reset</button>
+                <button type="submit" class="btn btn-primary px-10">Save Changes</button>
+                <a href="{{ route('admin.finance.ipas.show', $ipa->id) }}" class="btn btn-outline-danger">Cancel</a>
             </div>
         </form>
+
+        @foreach($ipa->items as $item)
+            <form id="remove-item-{{ $item->id }}" action="{{ route('admin.finance.ipas.items.destroy', [$ipa->id, $item->id]) }}" method="POST" class="hidden">
+                @csrf @method('DELETE')
+            </form>
+        @endforeach
     </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function recalcRow(row) {
+        var prevQty = parseFloat(row.querySelector('.prev-qty')?.dataset.value) || 0;
+        var currentQty = parseFloat(row.querySelector('.current-qty')?.value) || 0;
+        var unitPrice = parseFloat(row.querySelector('.unit-price')?.value) || 0;
+        var cumulativeQty = prevQty + currentQty;
+        var prevAmount = prevQty * unitPrice;
+        var currentAmount = currentQty * unitPrice;
+        var cumulativeAmount = cumulativeQty * unitPrice;
+
+        var cumQtyCell = row.querySelector('.cumulative-qty');
+        var prevAmtCell = row.querySelector('.prev-amount');
+        var curAmtCell = row.querySelector('.current-amount');
+        var cumAmtCell = row.querySelector('.cumulative-amount');
+
+        if (cumQtyCell) cumQtyCell.textContent = cumulativeQty.toFixed(2);
+        if (prevAmtCell) prevAmtCell.textContent = prevAmount.toFixed(2);
+        if (curAmtCell) curAmtCell.textContent = currentAmount.toFixed(2);
+        if (cumAmtCell) cumAmtCell.textContent = cumulativeAmount.toFixed(2);
+    }
+
+    document.querySelectorAll('#itemsTable tbody tr').forEach(function(row) {
+        var inputs = row.querySelectorAll('.current-qty, .unit-price');
+        inputs.forEach(function(input) {
+            input.addEventListener('input', function() { recalcRow(row); });
+        });
+    });
+});
+</script>
+@endpush

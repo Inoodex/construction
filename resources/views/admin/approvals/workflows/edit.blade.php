@@ -96,7 +96,9 @@ function addLevel(data = {}) {
     const row = document.createElement('tr');
     row.id = 'level-' + i;
     row.innerHTML = `
-        <td class="text-center font-semibold">${i + 1}</td>
+        <td class="text-center font-semibold">${i + 1}
+            <input type="hidden" name="matrices[${i}][approval_level]" value="${i + 1}">
+        </td>
         <td>
             <select name="matrices[${i}][role_id]" class="form-select" required>
                 <option value="">Select Role</option>

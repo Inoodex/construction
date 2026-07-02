@@ -92,9 +92,6 @@
                 <div class="form-group">
                     <label for="email" class="form-label">Email</label>
                     <input type="email" id="email" name="email" class="form-input @error('email') is-invalid @enderror" value="{{ old('email') }}" required autocomplete="email" autofocus placeholder="email@example.com">
-                    @error('email')
-                    <span class="error-message">{{ $message }}</span>
-                    @enderror
                 </div>
                 @endif
 

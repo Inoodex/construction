@@ -141,12 +141,12 @@ return Application::configure(basePath: dirname(__DIR__))
 
         /* ───── Fallback: any other exception ───── */
         $exceptions->render(function (\Throwable $e, $request) use ($errorView) {
-            if ($request->expectsJson()) {
-                return response()->json(['message' => 'Server error'], 500);
+            if ($e instanceof \Illuminate\Validation\ValidationException) {
+                return null;
             }
 
-            if ($e instanceof \Illuminate\Validation\ValidationException) {
-                throw $e;
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Server error'], 500);
             }
 
             return $errorView(500, '500');

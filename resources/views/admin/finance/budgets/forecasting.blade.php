@@ -15,14 +15,14 @@
         <form method="GET" class="mb-4 flex flex-nowrap items-end gap-2">
             <div>
                 <label class="text-xs font-semibold">Project</label>
-                <select name="project_id" class="form-select">
+                <select name="project_id" class="form-select" style="min-width:250px;">
                     <option value="">All Projects</option>
                     @foreach($projects as $p)
                         <option value="{{ $p->id }}" {{ request('project_id') == $p->id ? 'selected' : '' }}>{{ $p->name }}</option>
                     @endforeach
                 </select>
             </div>
-            <div>
+            <div class="flex items-center gap-2">
                 <button type="submit" class="btn btn-primary">Filter</button>
                 @if(request('project_id'))
                     <a href="{{ route('admin.finance.budgets.forecasting') }}" class="btn btn-outline-danger">Reset</a>

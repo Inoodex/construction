@@ -217,7 +217,7 @@
                 </li>
 
                 <!-- Approvals -->
-                {{-- <h2 class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
+                 {{-- <h2 class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
                     <span>Approvals</span>
                 </h2>
                 <li class="menu nav-item">
@@ -240,7 +240,7 @@
                             <li><a href="{{ route('admin.approvals.workflows.index') }}">Approval Workflows</a></li>
                         @endif
                     </ul>
-                </li> --}}
+                </li>  --}}
 
                 <!-- Procurement -->
                 <h2 class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
@@ -489,8 +489,9 @@
                             </a>
                             <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
                                 <li><a href="{{ route('admin.finance.invoices.index') }}">Invoices</a></li>
-                                <li><a href="{{ route('admin.finance.ipas.index') }}">IPAs</a></li>
+                                <li><a href="{{ route('admin.finance.ipas.index') }}">Interim Payment</a></li>
                                 <li><a href="{{ route('admin.finance.bills.index') }}">Bills Payable</a></li>
+                                <li><a href="{{ route('admin.finance.expenses.index') }}">Expenses</a></li>
                             </ul>
                         </li>
                         
