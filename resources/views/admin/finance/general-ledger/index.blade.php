@@ -36,9 +36,9 @@
                     <span class="ml-2 text-xs capitalize badge badge-outline-primary">{{ $entry['account']->type }}</span>
                 </div>
                 <div class="text-sm">
-                    <span class="mr-4">Debit: <span class="font-mono">{{ number_format($entry['total_debit'], 2) }}</span></span>
-                    <span class="mr-4">Credit: <span class="font-mono">{{ number_format($entry['total_credit'], 2) }}</span></span>
-                    <span>Balance: <span class="font-mono font-semibold">{{ number_format($entry['closing_balance'], 2) }}</span></span>
+                    <span class="mr-4">Debit: <span class="font-mono text-success">{{ number_format($entry['total_debit'], 2) }}</span></span>
+                    <span class="mr-4">Credit: <span class="font-mono text-danger">{{ number_format($entry['total_credit'], 2) }}</span></span>
+                    <span>Balance: <span class="font-mono font-semibold {{ $entry['closing_balance'] >= 0 ? 'text-success' : 'text-danger' }}">{{ number_format($entry['closing_balance'], 2) }}</span></span>
                 </div>
             </div>
             <div class="overflow-x-auto">
@@ -57,7 +57,8 @@
                         @if(count($entry['lines']) > 0 && request('from'))
                             <tr class="bg-gray-50 dark:bg-[#0e1a2b]">
                                 <td colspan="5" class="text-right text-xs text-white-dark">Opening Balance</td>
-                                <td class="text-right font-mono text-xs">{{ number_format($entry['closing_balance'] - array_sum(array_column($entry['lines'], 'debit')) + array_sum(array_column($entry['lines'], 'credit')), 2) }}</td>
+                                @php $openingBalance = $entry['closing_balance'] - array_sum(array_column($entry['lines'], 'debit')) + array_sum(array_column($entry['lines'], 'credit')); @endphp
+                                <td class="text-right font-mono text-xs {{ $openingBalance >= 0 ? 'text-success' : 'text-danger' }}">{{ number_format($openingBalance, 2) }}</td>
                             </tr>
                         @endif
                         @foreach($entry['lines'] as $line)
@@ -65,9 +66,9 @@
                                 <td>{{ $line['date']->format('d M Y') }}</td>
                                 <td class="font-mono text-xs">{{ $line['journal_number'] }}</td>
                                 <td class="text-xs">{{ $line['description'] ?? '—' }}</td>
-                                <td class="text-right font-mono">{{ $line['debit'] > 0 ? number_format($line['debit'], 2) : '—' }}</td>
-                                <td class="text-right font-mono">{{ $line['credit'] > 0 ? number_format($line['credit'], 2) : '—' }}</td>
-                                <td class="text-right font-mono font-semibold">{{ number_format($line['balance'], 2) }}</td>
+                                <td class="text-right font-mono {{ $line['debit'] > 0 ? 'text-success' : '' }}">{{ $line['debit'] > 0 ? number_format($line['debit'], 2) : '—' }}</td>
+                                <td class="text-right font-mono {{ $line['credit'] > 0 ? 'text-danger' : '' }}">{{ $line['credit'] > 0 ? number_format($line['credit'], 2) : '—' }}</td>
+                                <td class="text-right font-mono font-semibold {{ $line['balance'] >= 0 ? 'text-success' : 'text-danger' }}">{{ number_format($line['balance'], 2) }}</td>
                             </tr>
                         @endforeach
                     </tbody>

@@ -49,16 +49,16 @@
                             <td class="font-mono text-xs">{{ $item->account->account_code ?? '—' }}</td>
                             <td>{{ $item->account->name ?? '—' }}</td>
                             <td class="text-xs">{{ $item->description ?? '—' }}</td>
-                            <td class="text-right font-mono">{{ $item->debit_amount > 0 ? number_format($item->debit_amount, 2) : '—' }}</td>
-                            <td class="text-right font-mono">{{ $item->credit_amount > 0 ? number_format($item->credit_amount, 2) : '—' }}</td>
+                            <td class="text-right font-mono {{ $item->debit_amount > 0 ? 'text-success' : '' }}">{{ $item->debit_amount > 0 ? number_format($item->debit_amount, 2) : '—' }}</td>
+                            <td class="text-right font-mono {{ $item->credit_amount > 0 ? 'text-danger' : '' }}">{{ $item->credit_amount > 0 ? number_format($item->credit_amount, 2) : '—' }}</td>
                         </tr>
                     @endforeach
                 </tbody>
                 <tfoot>
                     <tr class="font-semibold">
                         <td colspan="3" class="text-right">Total:</td>
-                        <td class="text-right font-mono">{{ number_format($totalDebit, 2) }}</td>
-                        <td class="text-right font-mono">{{ number_format($totalCredit, 2) }}</td>
+                        <td class="text-right font-mono text-success">{{ number_format($totalDebit, 2) }}</td>
+                        <td class="text-right font-mono text-danger">{{ number_format($totalCredit, 2) }}</td>
                     </tr>
                 </tfoot>
             </table>

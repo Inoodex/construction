@@ -1,2 +1,2 @@
 <div class="mt-auto p-6 text-center dark:text-white-dark">
-    © {{ date('Y') }}. All rights reserved. &nbsp;|&nbsp; Developed by <a href="https://inoodex.com" target="_blank" class="text-primary underline">Inoodex</a>
+    © {{ date('Y') }}. All rights reserved &nbsp;|&nbsp; Developed by <a href="https://inoodex.com" target="_blank" class="text-primary underline">Inoodex</a>

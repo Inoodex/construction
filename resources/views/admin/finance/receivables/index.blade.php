@@ -51,8 +51,8 @@
                             <td class="font-semibold">{{ $r->payer_name }}</td>
                             <td class="text-xs">{{ $r->project?->name ?? '—' }}</td>
                             <td class="font-mono text-xs">{{ number_format($r->amount, 2) }}</td>
-                            <td class="font-mono text-xs">{{ number_format($r->paid_amount, 2) }}</td>
-                            <td class="font-mono text-xs font-semibold">{{ number_format($r->due_amount, 2) }}</td>
+                            <td class="font-mono text-xs text-success">{{ number_format($r->paid_amount, 2) }}</td>
+                            <td class="font-mono text-xs font-semibold {{ $r->due_amount > 0 ? 'text-danger' : 'text-success' }}">{{ number_format($r->due_amount, 2) }}</td>
                             <td>{{ $r->due_date->format('d M Y') }}</td>
                             <td>
                                 @php

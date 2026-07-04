@@ -35,7 +35,7 @@
                 @endforelse
                 <tr class="font-semibold border-t-2 border-gray-300">
                     <td colspan="2">Total Income</td>
-                    <td class="font-mono text-right">{{ number_format($totalIncome, 2) }}</td>
+                    <td class="font-mono text-right text-success">{{ number_format($totalIncome, 2) }}</td>
                 </tr>
 
                 <tr class="bg-gray-100 font-semibold dark:bg-gray-700">
@@ -45,14 +45,14 @@
                     <tr>
                         <td class="pl-6">{{ $row['name'] }}</td>
                         <td class="font-mono text-xs">{{ $row['code'] }}</td>
-                        <td class="font-mono text-right">{{ number_format($row['balance'], 2) }}</td>
+                        <td class="font-mono text-right {{ $row['balance'] >= 0 ? 'text-success' : 'text-danger' }}">{{ number_format($row['balance'], 2) }}</td>
                     </tr>
                 @empty
                     <tr><td colspan="3" class="pl-6 text-gray-500">No expenses recorded in this period.</td></tr>
                 @endforelse
                 <tr class="font-semibold border-t-2 border-gray-300">
                     <td colspan="2">Total Expenses</td>
-                    <td class="font-mono text-right">{{ number_format($totalExpenses, 2) }}</td>
+                    <td class="font-mono text-right text-danger">{{ number_format($totalExpenses, 2) }}</td>
                 </tr>
             </tbody>
             <tfoot>

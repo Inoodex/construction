@@ -24,8 +24,8 @@
             <div><span class="text-xs text-white-dark">Total Amount</span><p class="font-mono font-semibold">৳ {{ number_format($receivable->amount, 2) }}</p></div>
             <div><span class="text-xs text-white-dark">Due Date</span><p>{{ $receivable->due_date->format('d M Y') }}</p></div>
             <div><span class="text-xs text-white-dark">Project</span><p>{{ $receivable->project?->name ?? '—' }}</p></div>
-            <div><span class="text-xs text-white-dark">Paid</span><p class="font-mono">৳ {{ number_format($receivable->paid_amount, 2) }}</p></div>
-            <div><span class="text-xs text-white-dark">Due</span><p class="font-mono font-semibold text-danger">৳ {{ number_format($receivable->due_amount, 2) }}</p></div>
+            <div><span class="text-xs text-white-dark">Paid</span><p class="font-mono text-success">৳ {{ number_format($receivable->paid_amount, 2) }}</p></div>
+            <div><span class="text-xs text-white-dark">Due</span><p class="font-mono font-semibold {{ $receivable->due_amount > 0 ? 'text-danger' : 'text-success' }}">৳ {{ number_format($receivable->due_amount, 2) }}</p></div>
             <div>
                 <span class="text-xs text-white-dark">Status</span>
                 <p>@php $cls = match($receivable->status) { 'paid' => 'badge-outline-success', 'partial' => 'badge-outline-warning', 'overdue' => 'badge-outline-danger', default => 'badge-outline-secondary' }; @endphp

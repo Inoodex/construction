@@ -58,7 +58,7 @@
                             <td class="max-w-xs truncate">{{ $entry->description ?? '—' }}</td>
                             <td><span class="badge badge-outline-primary capitalize">{{ $entry->type }}</span></td>
                             <td class="text-center">{{ $entry->items->count() }}</td>
-                            <td class="font-mono text-xs">{{ number_format($entry->items->sum('debit_amount'), 2) }}</td>
+                            <td class="font-mono text-xs text-success">{{ number_format($entry->items->sum('debit_amount'), 2) }}</td>
                             <td>
                                 @if($entry->status == 'posted')
                                     <span class="badge badge-outline-success">Posted</span>

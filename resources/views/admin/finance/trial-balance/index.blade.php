@@ -32,8 +32,8 @@
                         <td class="font-mono text-xs">{{ $row['code'] }}</td>
                         <td>{{ $row['name'] }}</td>
                         <td><span class="badge badge-outline-primary capitalize">{{ $row['type'] }}</span></td>
-                        <td class="text-right font-mono">{{ $row['debit'] > 0 ? number_format($row['debit'], 2) : '—' }}</td>
-                        <td class="text-right font-mono">{{ $row['credit'] > 0 ? number_format($row['credit'], 2) : '—' }}</td>
+                        <td class="text-right font-mono {{ $row['debit'] > 0 ? 'text-success' : '' }}">{{ $row['debit'] > 0 ? number_format($row['debit'], 2) : '—' }}</td>
+                        <td class="text-right font-mono {{ $row['credit'] > 0 ? 'text-danger' : '' }}">{{ $row['credit'] > 0 ? number_format($row['credit'], 2) : '—' }}</td>
                     </tr>
                 @empty
                     <tr><td colspan="5" class="text-center text-gray-500">No transactions posted yet.</td></tr>
@@ -42,8 +42,8 @@
             <tfoot>
                 <tr class="font-semibold">
                     <td colspan="3" class="text-right">Total:</td>
-                    <td class="text-right font-mono">{{ number_format($totalDebit, 2) }}</td>
-                    <td class="text-right font-mono">{{ number_format($totalCredit, 2) }}</td>
+                    <td class="text-right font-mono text-success">{{ number_format($totalDebit, 2) }}</td>
+                    <td class="text-right font-mono text-danger">{{ number_format($totalCredit, 2) }}</td>
                 </tr>
                 @if(abs($totalDebit - $totalCredit) > 0.01)
                     <tr>

@@ -28,25 +28,25 @@
                         <tr>
                             <td class="pl-6">{{ $row['name'] }}</td>
                             <td class="font-mono text-xs">{{ $row['code'] }}</td>
-                            <td class="font-mono text-right">{{ number_format($row['balance'], 2) }}</td>
+                            <td class="font-mono text-right {{ $row['balance'] >= 0 ? 'text-success' : 'text-danger' }}">{{ number_format($row['balance'], 2) }}</td>
                         </tr>
                     @empty
                         <tr><td colspan="3" class="pl-6 text-gray-500">No {{ $section }} accounts with balance.</td></tr>
                     @endforelse
                     <tr class="font-semibold border-t-2 border-gray-300">
                         <td colspan="2">Total {{ $labels[$section] }}</td>
-                        <td class="font-mono text-right">{{ number_format($totals[$section], 2) }}</td>
+                        <td class="font-mono text-right {{ $totals[$section] >= 0 ? 'text-success' : 'text-danger' }}">{{ number_format($totals[$section], 2) }}</td>
                     </tr>
                 @endforeach
             </tbody>
             <tfoot>
                 <tr class="bg-gray-200 text-base font-bold dark:bg-gray-600">
                     <td colspan="2">Total Assets</td>
-                    <td class="font-mono text-right">{{ number_format($totalAssets, 2) }}</td>
+                    <td class="font-mono text-right {{ $totalAssets >= 0 ? 'text-success' : 'text-danger' }}">{{ number_format($totalAssets, 2) }}</td>
                 </tr>
                 <tr class="bg-gray-200 text-base font-bold dark:bg-gray-600">
                     <td colspan="2">Total Liabilities &amp; Equity</td>
-                    <td class="font-mono text-right">{{ number_format($totalLiabilitiesEquity, 2) }}</td>
+                    <td class="font-mono text-right {{ $totalLiabilitiesEquity >= 0 ? 'text-success' : 'text-danger' }}">{{ number_format($totalLiabilitiesEquity, 2) }}</td>
                 </tr>
                 @if(abs($difference) > 0.01)
                     <tr class="bg-red-100 text-base font-bold text-danger">
