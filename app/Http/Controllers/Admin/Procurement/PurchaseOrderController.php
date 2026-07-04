@@ -59,9 +59,12 @@ class PurchaseOrderController extends Controller
 
             $number = 'PO-' . now()->format('Ymd') . '-' . strtoupper(substr(uniqid(), -4));
 
+            $pr = $validated['purchase_requisition_id'] ? \App\Models\PurchaseRequisition::find($validated['purchase_requisition_id']) : null;
+
             $order = PurchaseOrder::create([
                 'purchase_requisition_id' => $validated['purchase_requisition_id'] ?? null,
                 'vendor_id' => $validated['vendor_id'],
+                'project_id' => $pr?->project_id,
                 'po_number' => $number,
                 'status' => 'draft',
                 'total_amount' => $total,

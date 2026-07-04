@@ -325,6 +325,7 @@ class RfqController extends Controller
 
             $po = PurchaseOrder::create([
                 'vendor_id' => $quotation->vendor_id,
+                'project_id' => $quotation->rfq->project_id,
                 'po_number' => $number,
                 'status' => 'draft',
                 'total_amount' => $total,

@@ -128,7 +128,7 @@ class FinancialReportService
             ];
         })->sortByDesc('total');
 
-        $byProject = $orders->groupBy('project_id')->map(function ($items) {
+        $byProject = $orders->groupBy(fn($po) => $po->project?->id ?? 0)->map(function ($items) {
             $project = $items->first()->project;
             return [
                 'project_name' => $project->name ?? 'Unknown',

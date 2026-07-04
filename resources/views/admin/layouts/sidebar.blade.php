@@ -302,7 +302,7 @@
                                 <li><a href="{{ route('admin.procurement.material-transfers.index') }}" class="block">Material Transfers</a></li>
                                 <li><a href="{{ route('admin.procurement.material-issue-slips.index') }}" class="block">Issue Slips</a></li>
                                 <li><a href="{{ route('admin.procurement.material-wastages.index') }}" class="block">Material Wastage</a></li>
-                                <li><a href="{{ route('admin.procurement.material-reconciliation.index') }}" class="block font-semibold text-primary">Material Reconciliation</a></li>
+                                <li><a href="{{ route('admin.procurement.material-reconciliation.index') }}" class="block">Material Reconciliation</a></li>
                             </ul>
                         </li>
                         <li x-data="{ open: false }">
