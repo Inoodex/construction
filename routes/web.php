@@ -637,7 +637,27 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware('auth')->
 });
 
 // Approvals - Approval Workflow Management
+use App\Http\Controllers\Admin\Crm\ClientController;
+use App\Http\Controllers\Admin\Crm\LeadController;
+use App\Http\Controllers\Admin\Crm\ProposalController;
 use App\Http\Controllers\Admin\ApprovalController;
+
+Route::prefix('dashboard/crm')->name('admin.crm.')->middleware('auth')->group(function () {
+    Route::resource('clients', ClientController::class);
+    Route::post('clients/{client}/contacts', [ClientController::class, 'addContact'])->name('clients.contacts.store');
+    Route::delete('clients/{client}/contacts/{contact}', [ClientController::class, 'removeContact'])->name('clients.contacts.destroy');
+    Route::post('clients/{client}/communications', [ClientController::class, 'addCommunication'])->name('clients.communications.store');
+    Route::post('clients/{client}/documents', [ClientController::class, 'uploadDocument'])->name('clients.documents.store');
+    Route::delete('clients/{client}/documents/{document}', [ClientController::class, 'deleteDocument'])->name('clients.documents.destroy');
+
+    Route::resource('leads', LeadController::class);
+    Route::post('leads/{lead}/communications', [LeadController::class, 'addCommunication'])->name('leads.communications.store');
+    Route::post('leads/{lead}/convert', [LeadController::class, 'convertToClient'])->name('leads.convert');
+
+    Route::resource('proposals', ProposalController::class);
+    Route::post('proposals/{proposal}/status', [ProposalController::class, 'updateStatus'])->name('proposals.status');
+});
+
 Route::prefix('dashboard/approvals')->name('admin.approvals.')->middleware('auth')->group(function () {
     // Workflow configuration (admin only) — must be before {approval} wildcard
     Route::prefix('workflows')->name('workflows.')->group(function () {

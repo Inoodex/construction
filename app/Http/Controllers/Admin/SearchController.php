@@ -108,6 +108,11 @@ class SearchController extends Controller
             ['label' => 'Bills Payable', 'url' => $r('admin.finance.bills.index'), 'section' => 'Finance'],
             ['label' => 'Expenses', 'url' => $r('admin.finance.expenses.index'), 'section' => 'Finance'],
 
+            // CRM
+            ['label' => 'Leads', 'url' => $r('admin.crm.leads.index'), 'section' => 'CRM'],
+            ['label' => 'Clients', 'url' => $r('admin.crm.clients.index'), 'section' => 'CRM'],
+            ['label' => 'Proposals', 'url' => $r('admin.crm.proposals.index'), 'section' => 'CRM'],
+
             // Reports
             ['label' => 'Budget vs Actual', 'url' => $r('admin.reports.financial.budget-vs-actual'), 'section' => 'Reports'],
             ['label' => 'Project Cost Summary', 'url' => $r('admin.reports.financial.project-cost-summary'), 'section' => 'Reports'],
