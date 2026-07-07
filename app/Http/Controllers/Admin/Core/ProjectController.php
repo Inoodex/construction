@@ -14,7 +14,7 @@ class ProjectController extends Controller
     {
         $user = $user ?? auth()->user();
 
-        return filled($user?->client_id);
+        return $user && $user->hasRole('client');
     }
 
     public function index(Request $request)

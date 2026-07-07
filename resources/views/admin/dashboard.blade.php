@@ -17,12 +17,11 @@
 @section('content')
 
 
-        @hasRole('client')
+        @if(auth()->user()?->hasRole('client'))
             <div class="mb-6 flex items-center justify-between">
                 <div>
                     <h1 class="text-2xl font-bold dark:text-white">Client Portal Dashboard</h1>
                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Welcome back, {{ auth()->user()?->name }} &mdash; {{ now()->format('l, d M Y') }}</p>
-                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Here you can review your projects and invoices at a glance.</p>
                 </div>
             </div>
 
@@ -79,10 +78,10 @@
                     </div>
                 </div>
             </div>
-        @endhasRole
+        @endif
 
 
-@hasRole('admin|super_admin')
+@if(auth()->user()?->hasRole('admin') || auth()->user()?->hasRole('super-admin'))
 
 
 {{-- Page Header --}}
@@ -466,7 +465,7 @@
 
 </div>
 
-@endhasRole
+@endif
 
 @endsection
 

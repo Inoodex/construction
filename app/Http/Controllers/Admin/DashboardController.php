@@ -58,7 +58,7 @@ class DashboardController extends Controller
         $totalPOValue = (clone $poBase)->sum('total_amount');
 
         $lowStockItems = Stock::with(['material', 'warehouse', 'site'])
-            ->when($projectIds, fn ($q) => $q->whereIn('project_id', $projectIds))
+            ->when($projectIds, fn ($q) => $q->whereHas('site', fn ($q2) => $q2->whereIn('project_id', $projectIds)))
             ->where(function ($q) {
                 $q->where(function ($q2) {
                     $q2->where('quantity', '>', 0)
