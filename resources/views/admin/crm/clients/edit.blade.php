@@ -6,7 +6,10 @@
 <div class="panel">
     <div class="mb-5 flex items-center justify-between">
         <h5 class="text-lg font-semibold dark:text-white-light">Edit Client</h5>
-        <a href="{{ route('admin.crm.clients.show', $client) }}" class="btn btn-outline-info">Cancel</a>
+        <a href="{{ route('admin.crm.clients.show', $client) }}" class="btn btn-outline-info gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Back to Client Details
+            </a>
     </div>
 
     <form action="{{ route('admin.crm.clients.update', $client) }}" method="POST">
@@ -40,7 +43,7 @@
 
         <div class="flex gap-2">
             <button type="submit" class="btn btn-primary">Update Client</button>
-            <a href="{{ route('admin.crm.clients.show', $client) }}" class="btn btn-outline-danger">Cancel</a>
+           
         </div>
     </form>
 </div>

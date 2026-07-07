@@ -42,6 +42,16 @@
                     @error('status') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
+                    <label for="client_id">Client</label>
+                    <select name="client_id" id="client_id" class="form-select">
+                        <option value="">No Client</option>
+                        @foreach($clients as $client)
+                            <option value="{{ $client->id }}" {{ old('client_id') == $client->id ? 'selected' : '' }}>{{ $client->company_name }}</option>
+                        @endforeach
+                    </select>
+                    @error('client_id') <span class="text-danger text-sm">{{ $message }}</span> @enderror
+                </div>
+                <div class="form-group">
                     <label for="start_date">Start Date <span class="text-danger">*</span></label>
                     <input type="date" name="start_date" id="start_date" class="form-input" required
                         value="{{ old('start_date') }}" />

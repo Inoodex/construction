@@ -3,109 +3,104 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Project;
-use App\Models\Site;
-use App\Models\Task;
-use App\Models\Vendor;
-use App\Models\PurchaseOrder;
-use App\Models\Stock;
-use App\Models\Material;
-use App\Models\MaterialWastage;
-use App\Models\Employee;
+use App\Models\Approval;
 use App\Models\Attendance;
+use App\Models\Bill;
+use App\Models\Certification;
+use App\Models\Employee;
 use App\Models\Equipment;
 use App\Models\EquipmentMaintenance;
-use App\Models\LeaveRequest;
 use App\Models\IncidentReport;
-use App\Models\TrainingRecord;
-use App\Models\Certification;
 use App\Models\Invoice;
-use App\Models\Bill;
-use App\Models\Approval;
-use HasinHayder\Tyro\Models\Role;
-use HasinHayder\Tyro\Models\Privilege;
+use App\Models\LeaveRequest;
+use App\Models\Project;
+use App\Models\PurchaseOrder;
+use App\Models\Site;
+use App\Models\Stock;
+use App\Models\Task;
+use App\Models\TrainingRecord;
+use App\Models\Vendor;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        // --- Core: Projects ---
-        $totalProjects      = Project::count();
-        $activeProjects     = Project::where('status', 'active')->count();
-        $planningProjects   = Project::where('status', 'planning')->count();
-        $completedProjects  = Project::where('status', 'completed')->count();
-        $totalBudget        = Project::sum('budget');
-        $totalSites         = Site::count();
+        $user = auth()->user();
+        $isClient = $user->hasRole('client');
+        $clientId = $isClient ? $user->client_id : null;
 
-        // --- Core: Tasks ---
-        $totalTasks         = Task::count();
-        $openTasks          = Task::where('status', 'open')->count();
-        $inProgressTasks    = Task::where('status', 'in_progress')->count();
-        $criticalTasks      = Task::where('priority', 'critical')->whereIn('status', ['open', 'in_progress'])->count();
+        $projectIds = $clientId ? Project::where('client_id', $clientId)->pluck('id') : null;
 
-        // --- Procurement: Vendors ---
-        $totalVendors       = Vendor::count();
-        $approvedVendors    = Vendor::where('status', 'approved')->count();
-        $pendingVendors     = Vendor::where('status', 'pending')->count();
+        $projectBase = Project::when($clientId, fn ($q) => $q->where('client_id', $clientId));
 
-        // --- Procurement: POs ---
-        $totalPOs           = PurchaseOrder::count();
-        $pendingPOs         = PurchaseOrder::whereIn('status', ['draft', 'ordered'])->count();
-        $totalPOValue       = PurchaseOrder::sum('total_amount');
+        $totalProjects = (clone $projectBase)->count();
+        $activeProjects = (clone $projectBase)->where('status', 'active')->count();
+        $planningProjects = (clone $projectBase)->where('status', 'planning')->count();
+        $completedProjects = (clone $projectBase)->where('status', 'completed')->count();
+        $totalBudget = (clone $projectBase)->sum('budget');
+        $totalSites = $clientId ? Site::whereIn('project_id', $projectIds)->count() : Site::count();
 
-        // --- Procurement: Low Stock ---
+        $taskBase = Task::when($projectIds, fn ($q) => $q->whereIn('project_id', $projectIds));
+        $totalTasks = (clone $taskBase)->count();
+        $openTasks = (clone $taskBase)->where('status', 'open')->count();
+        $inProgressTasks = (clone $taskBase)->where('status', 'in_progress')->count();
+        $criticalTasks = (clone $taskBase)->where('priority', 'critical')->whereIn('status', ['open', 'in_progress'])->count();
+
+        $vendorBase = Vendor::query();
+        $totalVendors = (clone $vendorBase)->count();
+        $approvedVendors = (clone $vendorBase)->where('status', 'approved')->count();
+        $pendingVendors = (clone $vendorBase)->where('status', 'pending')->count();
+
+        $poBase = PurchaseOrder::when($projectIds, fn ($q) => $q->whereIn('project_id', $projectIds));
+        $totalPOs = (clone $poBase)->count();
+        $pendingPOs = (clone $poBase)->whereIn('status', ['draft', 'ordered'])->count();
+        $totalPOValue = (clone $poBase)->sum('total_amount');
+
         $lowStockItems = Stock::with(['material', 'warehouse', 'site'])
+            ->when($projectIds, fn ($q) => $q->whereIn('project_id', $projectIds))
             ->where(function ($q) {
                 $q->where(function ($q2) {
                     $q2->where('quantity', '>', 0)
-                       ->where('min_stock', '>', 0)
-                       ->whereColumn('quantity', '<', 'min_stock');
+                        ->where('min_stock', '>', 0)
+                        ->whereColumn('quantity', '<', 'min_stock');
                 })->orWhere('quantity', '<=', 0);
             })
             ->orderBy('quantity', 'asc')
             ->take(10)
             ->get();
 
-        // --- HR: Employee ---
-        $totalEmployees     = Employee::count();
-        $activeEmployees    = Employee::where('status', 'active')->count();
+        $totalEmployees = Employee::count();
+        $activeEmployees = Employee::where('status', 'active')->count();
+        $todayAttendance = Attendance::whereDate('date', today())->count();
+        $totalLeavePending = LeaveRequest::where('status', 'pending')->count();
+        $totalEquipment = Equipment::count();
+        $activeMaintenance = EquipmentMaintenance::where('status', 'pending')->count();
+        $openIncidents = IncidentReport::whereIn('status', ['open', 'under_investigation'])->count();
+        $totalTraining = TrainingRecord::count();
+        $expiredCert = Certification::where('status', 'expired')->count();
 
-        // --- HR: Attendance ---
-        $todayAttendance    = Attendance::whereDate('date', today())->count();
-        $totalLeavePending  = LeaveRequest::where('status', 'pending')->count();
+        $invoiceBase = Invoice::when($projectIds, fn ($q) => $q->whereIn('project_id', $projectIds));
+        $totalInvoices = (clone $invoiceBase)->count();
+        $unpaidInvoices = (clone $invoiceBase)->whereIn('status', ['draft', 'sent', 'overdue'])->count();
+        $totalInvoiceAmount = (clone $invoiceBase)->sum('total_amount');
 
-        // --- HR: Equipment ---
-        $totalEquipment     = Equipment::count();
-        $activeMaintenance  = EquipmentMaintenance::where('status', 'pending')->count();
+        $billBase = Bill::when($projectIds, fn ($q) => $q->whereIn('project_id', $projectIds));
+        $totalBills = (clone $billBase)->count();
+        $unpaidBills = (clone $billBase)->whereIn('status', ['draft', 'sent', 'overdue'])->count();
 
-        // --- HR: Safety & Training ---
-        $openIncidents      = IncidentReport::whereIn('status', ['open', 'under_investigation'])->count();
-        $totalTraining      = TrainingRecord::count();
-        $expiredCert        = Certification::where('status', 'expired')->count();
+        $pendingApprovals = Approval::where('status', 'pending')->count();
 
-        // --- Finance: Invoices & Bills ---
-        $totalInvoices      = Invoice::count();
-        $unpaidInvoices     = Invoice::whereIn('status', ['draft', 'sent', 'overdue'])->count();
-        $totalInvoiceAmount = Invoice::sum('total_amount');
-        $totalBills         = Bill::count();
-        $unpaidBills        = Bill::whereIn('status', ['draft', 'sent', 'overdue'])->count();
-
-        // --- Approvals ---
-        $pendingApprovals   = Approval::where('status', 'pending')->count();
-
-        // --- Charts ---
-        $tasksByPriority = Task::select('priority', DB::raw('count(*) as count'))
+        $tasksByPriority = (clone $taskBase)->select('priority', DB::raw('count(*) as count'))
             ->groupBy('priority')
             ->pluck('count', 'priority');
 
-        $projectsByStatus = Project::select('status', DB::raw('count(*) as count'))
+        $projectsByStatus = (clone $projectBase)->select('status', DB::raw('count(*) as count'))
             ->groupBy('status')
             ->pluck('count', 'status');
 
-        // --- Recent Records ---
-        $recentProjects = Project::with('creator')->latest()->take(5)->get();
-        $recentPOs      = PurchaseOrder::with('vendor')->latest()->take(5)->get();
+        $recentProjects = (clone $projectBase)->with('creator')->latest()->take(5)->get();
+        $recentPOs = (clone $poBase)->with('vendor')->latest()->take(5)->get();
         $recentIncidents = IncidentReport::with('employee')->latest()->take(5)->get();
         $recentEmployees = Employee::latest()->take(5)->get();
 

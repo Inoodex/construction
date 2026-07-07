@@ -20,11 +20,71 @@
         [x-cloak] {
             display: none !important;
         }
+        :root {
+            --sidebar-width: 200px;
+        }
+        .sidebar {
+            width: var(--sidebar-width) !important;
+        }
         .main-container .main-content {
-            margin-left: 260px;
+            margin-left: var(--sidebar-width);
         }
         .toggle-sidebar .main-container .main-content {
             margin-left: 0;
+        }
+        .vertical .sidebar {
+            left: calc(-1 * var(--sidebar-width)) !important;
+        }
+        @media (min-width: 1024px) {
+            .vertical .sidebar {
+                left: 0 !important;
+            }
+            .main-container .main-content:where([dir=ltr], [dir=ltr] *) {
+                margin-left: var(--sidebar-width) !important;
+            }
+            .main-container .main-content:where([dir=rtl], [dir=rtl] *) {
+                margin-right: var(--sidebar-width) !important;
+            }
+            .vertical.toggle-sidebar .sidebar {
+                left: calc(-1 * var(--sidebar-width)) !important;
+            }
+            .collapsible-vertical .sidebar {
+                width: 70px !important;
+            }
+            .collapsible-vertical .sidebar:hover {
+                width: var(--sidebar-width) !important;
+            }
+            .collapsible-vertical.toggle-sidebar .sidebar {
+                width: var(--sidebar-width) !important;
+            }
+            .collapsible-vertical .main-content {
+                width: calc(100% - 70px) !important;
+                margin-left: 70px !important;
+            }
+            .collapsible-vertical.toggle-sidebar .main-content {
+                width: calc(100% - var(--sidebar-width)) !important;
+                margin-left: var(--sidebar-width) !important;
+            }
+        }
+        .horizontal .sidebar {
+            left: calc(-1 * var(--sidebar-width)) !important;
+            right: auto !important;
+        }
+        @media (min-width: 1024px) {
+            .horizontal.toggle-sidebar .sidebar {
+                left: calc(-1 * var(--sidebar-width)) !important;
+            }
+        }
+        .sidebar {
+            overflow-x: hidden !important;
+        }
+        .sidebar .perfect-scrollbar {
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+        }
+        .main-content {
+            min-width: 0 !important;
+            overflow-x: auto !important;
         }
         .horizontal-menu .sub-sub-menu {
             display: none;

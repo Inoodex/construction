@@ -1,7 +1,7 @@
 <!-- start sidebar section -->
 <div :class="{'dark text-white-dark' : $store.app.semidark}">
     <nav x-data="sidebar"
-        class="sidebar fixed bottom-0 top-0 z-50 h-full min-h-screen w-[260px] shadow-[5px_0_25px_0_rgba(94,92,154,0.1)] transition-all duration-300">
+        class="sidebar fixed bottom-0 top-0 z-50 h-full min-h-screen shadow-[5px_0_25px_0_rgba(94,92,154,0.1)] transition-all duration-300" style="width: 200px">
         <div class="h-full bg-white dark:bg-[#0e1726]">
             <div class="flex items-center justify-between px-4 py-3">
                 <a href="{{ route('tyro-dashboard.index') }}" class="main-logo flex shrink-0 items-center">
@@ -26,30 +26,38 @@
             <ul class="perfect-scrollbar relative h-[calc(100vh-80px)] space-y-0.5 overflow-y-auto overflow-x-hidden p-4 py-0 font-semibold"
                 x-data="{ activeDropdown: 'dashboard' }">
 
-                <!-- Dashboard -->
-                {{-- <li class="menu nav-item">
-                    <a href="{{ route('tyro-dashboard.index') }}">
-                        <button type="button" class="nav-link group"
-                            :class="{'active' : activeDropdown === 'dashboard'}"
-                            @click="activeDropdown === 'dashboard' ? activeDropdown = null : activeDropdown = 'dashboard'">
-                            <div class="flex items-center">
-                                <svg class="shrink-0 group-hover:!text-primary" width="20" height="20"
-                                    viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path opacity="0.5"
-                                        d="M2 12.2039C2 9.91549 2 8.77128 2.5192 7.82274C3.0384 6.87421 3.98695 6.28551 5.88403 5.10813L7.88403 3.86687C9.88939 2.62229 10.8921 2 12 2C13.1079 2 14.1106 2.62229 16.116 3.86687L18.116 5.10812C20.0131 6.28551 20.9616 6.87421 21.4808 7.82274C22 8.77128 22 9.91549 22 12.2039V13.725C22 17.6258 22 19.5763 20.8284 20.7881C19.6569 22 17.7712 22 14 22H10C6.22876 22 4.34315 22 3.17157 20.7881C2 19.5763 2 17.6258 2 13.725V12.2039Z"
-                                        fill="currentColor" />
-                                    <path
-                                        d="M9 17.25C8.58579 17.25 8.25 17.5858 8.25 18C8.25 18.4142 8.58579 18.75 9 18.75H15C15.4142 18.75 15.75 18.4142 15.75 18C15.75 17.5858 15.4142 17.25 15 17.25H9Z"
-                                        fill="currentColor" />
-                                </svg>
-                                <span
-                                    class="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Dashboard</span>
-                            </div>
-                        </button>
-                    </a>
-                </li> --}}
-
-                @if(auth()->user()?->hasRole('super-admin'))
+                @hasRole('client')
+                    <!-- Client Portal -->
+                    <h2 class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
+                        <span>Client Portal</span>
+                    </h2>
+                    <li class="nav-item">
+                        <ul>
+                            <li class="nav-item">
+                                <a href="{{ route('admin.core.projects.index') }}" class="group">
+                                    <div class="flex items-center">
+                                        <svg class="shrink-0 group-hover:!text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path opacity="0.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" fill="currentColor" />
+                                        </svg>
+                                        <span class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300">My Projects</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('admin.finance.invoices.index') }}" class="group">
+                                    <div class="flex items-center">
+                                        <svg class="shrink-0 group-hover:!text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path opacity="0.5" d="M4 4.69434V18.6943C4 20.3512 5.34315 21.6943 7 21.6943H17C18.6569 21.6943 20 20.3512 20 18.6943V8.69434C20 7.03748 18.6569 5.69434 17 5.69434H5C4.44772 5.69434 4 5.24662 4 4.69434Z" fill="currentColor" />
+                                            <path d="M7.25 11.6943C7.25 11.2801 7.58579 10.9443 8 10.9443H16C16.4142 10.9443 16.75 11.2801 16.75 11.6943C16.75 12.1085 16.4142 12.4443 16 12.4443H8C7.58579 12.4443 7.25 12.1085 7.25 11.6943Z" fill="currentColor" />
+                                        </svg>
+                                        <span class="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300">My Invoices</span>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                @else
+                    @if(auth()->user()?->hasRole('super-admin'))
                     <!-- Administration -->
                     <h2
                         class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
@@ -637,6 +645,7 @@
                 </li>
 
             </ul>
+        @endhasRole
         </div>
     </nav>
 </div>

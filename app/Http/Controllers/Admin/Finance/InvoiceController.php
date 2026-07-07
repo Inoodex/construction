@@ -18,6 +18,12 @@ class InvoiceController extends Controller
     {
         $query = Invoice::with('project');
 
+        $user = Auth::user();
+        if ($user->hasRole('client') && $user->client_id) {
+            $clientProjectIds = Project::where('client_id', $user->client_id)->pluck('id');
+            $query->whereIn('project_id', $clientProjectIds);
+        }
+
         if ($request->filled('project_id')) {
             $query->where('project_id', $request->project_id);
         }
@@ -26,13 +32,20 @@ class InvoiceController extends Controller
         }
 
         $invoices = $query->latest()->paginate(15);
-        $projects = Project::all();
+        $projects = $user->hasRole('client')
+            ? Project::where('client_id', $user->client_id)->get()
+            : Project::all();
+
         return view('admin.finance.invoices.index', compact('invoices', 'projects'));
     }
 
     public function create()
     {
-        $projects = Project::all();
+        $user = Auth::user();
+        $projects = $user->hasRole('client')
+            ? Project::where('client_id', $user->client_id)->get()
+            : Project::all();
+
         return view('admin.finance.invoices.create', compact('projects'));
     }
 
@@ -49,7 +62,7 @@ class InvoiceController extends Controller
             'status' => 'required|in:draft,sent,partially_paid,paid,overdue,cancelled',
         ]);
 
-        $validated['invoice_number'] = 'INV-' . now()->format('Ymd') . '-' . strtoupper(Str::random(4));
+        $validated['invoice_number'] = 'INV-'.now()->format('Ymd').'-'.strtoupper(Str::random(4));
         $validated['subtotal'] = 0;
         $validated['tax_amount'] = 0;
         $validated['retention_amount'] = 0;
@@ -67,6 +80,7 @@ class InvoiceController extends Controller
     public function show(Invoice $invoice)
     {
         $invoice->load('project', 'creator', 'items', 'payments');
+
         return view('admin.finance.invoices.show', compact('invoice'));
     }
 
@@ -79,12 +93,14 @@ class InvoiceController extends Controller
             ->setOption('defaultFont', 'sans-serif')
             ->setOption('isRemoteEnabled', true)
             ->setOption('isHtml5ParserEnabled', true);
-        return $pdf->stream('INV-' . $inv->invoice_number . '.pdf');
+
+        return $pdf->stream('INV-'.$inv->invoice_number.'.pdf');
     }
 
     public function edit(Invoice $invoice)
     {
         $projects = Project::all();
+
         return view('admin.finance.invoices.edit', compact('invoice', 'projects'));
     }
 
@@ -112,6 +128,7 @@ class InvoiceController extends Controller
         $invoice->payments()->delete();
         $invoice->items()->delete();
         $invoice->delete();
+
         return redirect()->route('admin.finance.invoices.index')
             ->with('success', 'Invoice deleted.');
     }
@@ -138,6 +155,7 @@ class InvoiceController extends Controller
     {
         $invoiceItem->delete();
         $this->recalculateInvoice($invoice);
+
         return back()->with('success', 'Item removed.');
     }
 
@@ -159,7 +177,9 @@ class InvoiceController extends Controller
         $dueAmount = $invoice->total_amount - $totalPaid;
 
         $status = $dueAmount <= 0 ? 'paid' : ($totalPaid > 0 ? 'partially_paid' : $invoice->status);
-        if ($invoice->status === 'draft') $status = 'draft';
+        if ($invoice->status === 'draft') {
+            $status = 'draft';
+        }
 
         $invoice->update([
             'paid_amount' => $totalPaid,

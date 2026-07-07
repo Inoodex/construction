@@ -16,6 +16,75 @@
 
 @section('content')
 
+
+        @hasRole('client')
+            <div class="mb-6 flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold dark:text-white">Client Portal Dashboard</h1>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Welcome back, {{ auth()->user()?->name }} &mdash; {{ now()->format('l, d M Y') }}</p>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Here you can review your projects and invoices at a glance.</p>
+                </div>
+            </div>
+
+            <div class="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <div class="panel stat-card">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-3xl font-bold text-primary">{{ $totalProjects }}</p>
+                            <p class="mt-1 text-xs font-semibold uppercase tracking-wider text-gray-500">My Projects</p>
+                            <p class="mt-2 text-xs text-gray-400">{{ $activeProjects }} active</p>
+                        </div>
+                        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+                            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel stat-card">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-3xl font-bold text-success">BDT{{ number_format($totalBudget/10000000, 2) }}Cr</p>
+                            <p class="mt-1 text-xs font-semibold uppercase tracking-wider text-gray-500">Project Budget</p>
+                            <p class="mt-2 text-xs text-gray-400">{{ $totalSites }} site(s)</p>
+                        </div>
+                        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-success/10 text-success">
+                            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel stat-card">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-3xl font-bold text-warning">{{ $unpaidInvoices }}</p>
+                            <p class="mt-1 text-xs font-semibold uppercase tracking-wider text-gray-500">Open Invoices</p>
+                            <p class="mt-2 text-xs text-gray-400">{{ $totalInvoices }} total</p>
+                        </div>
+                        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-warning/10 text-warning">
+                            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 3h10a2 2 0 012 2v14l-3-2-3 2-3-2-3 2V5a2 2 0 012-2z"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel stat-card">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-3xl font-bold text-danger">BDT{{ number_format($totalInvoiceAmount, 0) }}</p>
+                            <p class="mt-1 text-xs font-semibold uppercase tracking-wider text-gray-500">Outstanding Amount</p>
+                            <p class="mt-2 text-xs text-gray-400">Across your invoices</p>
+                        </div>
+                        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-danger/10 text-danger">
+                            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8v4l2 2m-2-8a8 8 0 100 16 8 8 0 000-16z"/></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endhasRole
+
+
+@hasRole('admin|super_admin')
+
+
 {{-- Page Header --}}
 <div class="mb-6 flex items-center justify-between">
     <div>
@@ -243,7 +312,7 @@
                             <div class="text-xs font-semibold dark:text-white">{{ Str::limit($project->name, 25) }}</div>
                             <div class="text-xs text-gray-400">by {{ $project->creator->name ?? 'N/A' }}</div>
                         </td>
-                        <td class="text-xs font-semibold">BDT{{ number_format($project->budget/1000000, 1) }}M</td>
+                        <td class="text-xs font-semibold">BDT{{ number_format($project->budget/10000000, 1) }}Cr</td>
                         <td>
                             @php $c = ['active'=>'success','planning'=>'warning','completed'=>'primary','on_hold'=>'danger']; @endphp
                             <span class="badge badge-outline-{{ $c[$project->status] ?? 'secondary' }} text-xs">{{ ucfirst(str_replace('_',' ',$project->status)) }}</span>
@@ -396,6 +465,8 @@
     </div>
 
 </div>
+
+@endhasRole
 
 @endsection
 

@@ -10,7 +10,7 @@
     </div>
 
     <form method="GET" class="mb-4 flex items-center gap-3">
-        <input type="text" name="search" class="form-input flex-1" placeholder="Search by company, contact, email..." value="{{ request('search') }}" />
+        <input type="text" name="search" class="form-input w-auto" placeholder="Search by company, contact, email..." value="{{ request('search') }}" />
         <select name="status" class="form-select">
             <option value="">All Status</option>
             @foreach($statuses as $s)

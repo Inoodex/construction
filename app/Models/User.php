@@ -3,21 +3,19 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Database\Factories\UserFactory;
+use HasinHayder\Tyro\Concerns\HasTyroRoles;
+use HasinHayder\TyroLogin\Traits\HasTwoFactorAuth;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use HasinHayder\Tyro\Concerns\HasTyroRoles;
-use HasinHayder\TyroLogin\Traits\HasTwoFactorAuth;
-
-
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasTyroRoles, HasTwoFactorAuth;
+    use HasApiTokens, HasTwoFactorAuth, HasTyroRoles;
 
-
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
     /**
@@ -52,5 +50,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class);
     }
 }
