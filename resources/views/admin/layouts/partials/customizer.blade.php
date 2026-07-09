@@ -90,7 +90,7 @@
             </div>
 
             <!-- Navigation Position -->
-            {{-- <div class="mb-3 rounded-md border border-dashed border-[#e0e6ed] p-3 dark:border-[#1b2e4b]">
+             <div class="mb-3 rounded-md border border-dashed border-[#e0e6ed] p-3 dark:border-[#1b2e4b]">
                 <h5 class="mb-1 text-base leading-none dark:text-white">Navigation Position</h5>
                 <p class="text-xs text-white-dark">Select the primary navigation paradigm for your app.</p>
                 <div class="mt-3 grid grid-cols-3 gap-2">
@@ -117,10 +117,10 @@
                         <span>Semi Dark (Sidebar & Header)</span>
                     </label>
                 </div>
-            </div> --}}
+            </div> 
 
             <!-- Layout Style -->
-            {{-- <div class="mb-3 rounded-md border border-dashed border-[#e0e6ed] p-3 dark:border-[#1b2e4b]">
+             <div class="mb-3 rounded-md border border-dashed border-[#e0e6ed] p-3 dark:border-[#1b2e4b]">
                 <h5 class="mb-1 text-base leading-none dark:text-white">Layout Style</h5>
                 <p class="text-xs text-white-dark">Select the primary layout style for your app.</p>
                 <div class="mt-3 flex gap-2">
@@ -135,7 +135,7 @@
                         Full
                     </button>
                 </div>
-            </div> --}}
+            </div> 
 
             <!-- Direction -->
             <div class="mb-3 rounded-md border border-dashed border-[#e0e6ed] p-3 dark:border-[#1b2e4b]">
@@ -156,7 +156,7 @@
             </div>
 
             <!-- Navbar Type -->
-            {{-- <div class="mb-3 rounded-md border border-dashed border-[#e0e6ed] p-3 dark:border-[#1b2e4b]">
+             <div class="mb-3 rounded-md border border-dashed border-[#e0e6ed] p-3 dark:border-[#1b2e4b]">
                 <h5 class="mb-1 text-base leading-none dark:text-white">Navbar Type</h5>
                 <p class="text-xs text-white-dark">Sticky or Floating.</p>
                 <div class="mt-3 flex items-center gap-3 text-primary">
@@ -176,7 +176,7 @@
                         <span>Static</span>
                     </label>
                 </div>
-            </div> --}}
+            </div> 
 
             <!-- Router Transition -->
             <div class="mb-3 rounded-md border border-dashed border-[#e0e6ed] p-3 dark:border-[#1b2e4b]">
