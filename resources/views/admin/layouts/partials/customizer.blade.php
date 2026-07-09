@@ -89,28 +89,11 @@
                 </div>
             </div>
 
-            <!-- Navigation Position -->
-             <div class="mb-3 rounded-md border border-dashed border-[#e0e6ed] p-3 dark:border-[#1b2e4b]">
-                <h5 class="mb-1 text-base leading-none dark:text-white">Navigation Position</h5>
-                <p class="text-xs text-white-dark">Select the primary navigation paradigm for your app.</p>
-                <div class="mt-3 grid grid-cols-3 gap-2">
-                    <button type="button" class="btn"
-                        :class="[$store.app.menu === 'horizontal' ? 'btn-primary' :'btn-outline-primary']"
-                        @click="$store.app.toggleMenu('horizontal')">
-                        Horizontal
-                    </button>
-                    <button type="button" class="btn"
-                        :class="[$store.app.menu === 'vertical' ? 'btn-primary' :'btn-outline-primary']"
-                        @click="$store.app.toggleMenu('vertical')">
-                        Vertical
-                    </button>
-                    <button type="button" class="btn"
-                        :class="[$store.app.menu === 'collapsible-vertical' ? 'btn-primary' :'btn-outline-primary']"
-                        @click="$store.app.toggleMenu('collapsible-vertical')">
-                        Collapsible
-                    </button>
-                </div>
-                <div class="mt-5 text-primary">
+            <!-- Sidebar appearance (navigation locked to vertical) -->
+            <div class="mb-3 rounded-md border border-dashed border-[#e0e6ed] p-3 dark:border-[#1b2e4b]">
+                <h5 class="mb-1 text-base leading-none dark:text-white">Sidebar</h5>
+                <p class="text-xs text-white-dark">Navigation is fixed to the vertical left sidebar.</p>
+                <div class="mt-3 text-primary">
                     <label class="mb-0 inline-flex">
                         <input x-model="$store.app.semidark" type="checkbox" :value="true" class="form-checkbox"
                             @change="$store.app.toggleSemidark()" />

@@ -2,7 +2,7 @@
     const $themeConfig = {
         locale: "en", // en, da, de, el, es, fr, hu, it, ja, pl, pt, ru, sv, tr, zh
         theme: "light", // light, dark, system
-        menu: "vertical", // vertical, collapsible-vertical, horizontal
+        menu: "vertical", // locked: vertical sidebar only
         layout: "full", // full, boxed-layout
         rtlClass: "ltr", // rtl, ltr
         animation: "", // animate__fadeIn, animate__fadeInDown, animate__fadeInUp, animate__fadeInLeft, animate__fadeInRight, animate__slideInDown, animate__slideInLeft, animate__slideInRight, animate__zoomIn
@@ -381,14 +381,11 @@
                 }
             },
 
-            // navigation menu
-            menu: Alpine.$persist($themeConfig.menu),
+            // navigation menu — locked to vertical sidebar only (not persisted)
+            menu: "vertical",
             toggleMenu(val) {
-                if (!val) {
-                    val = this.menu || $themeConfig.menu; // vertical, collapsible-vertical, horizontal
-                }
                 this.sidebar = false; // reset sidebar state
-                this.menu = val;
+                this.menu = "vertical"; // ignore horizontal / collapsible
             },
 
             // layout

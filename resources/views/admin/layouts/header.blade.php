@@ -234,6 +234,5 @@ function searchDropdown() {
                 </div>
             </div>
         </div>
-        @include('admin.layouts.partials.horizontal-menu')
     </div>
 </header>
