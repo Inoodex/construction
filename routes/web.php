@@ -636,6 +636,60 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware('auth')->
     Route::get('aging/ap', [AgingReportController::class, 'apAging'])->name('aging.ap');
 });
 
+// Quality Control - Quality Control/QA Module
+use App\Http\Controllers\Admin\Quality\NcrController;
+use App\Http\Controllers\Admin\Quality\PunchListController;
+use App\Http\Controllers\Admin\Quality\ItpController;
+use App\Http\Controllers\Admin\Quality\MaterialTestCertificateController;
+use App\Http\Controllers\Admin\Quality\CorrectiveActionController;
+
+Route::prefix('dashboard/quality')->name('admin.quality.')->middleware('auth')->group(function () {
+    // NCRs
+    Route::get('ncrs', [NcrController::class, 'index'])->name('ncrs.index');
+    Route::get('ncrs/create', [NcrController::class, 'create'])->name('ncrs.create');
+    Route::post('ncrs', [NcrController::class, 'store'])->name('ncrs.store');
+    Route::get('ncrs/{ncr}', [NcrController::class, 'show'])->name('ncrs.show');
+    Route::get('ncrs/{ncr}/edit', [NcrController::class, 'edit'])->name('ncrs.edit');
+    Route::put('ncrs/{ncr}', [NcrController::class, 'update'])->name('ncrs.update');
+    Route::delete('ncrs/{ncr}', [NcrController::class, 'destroy'])->name('ncrs.destroy');
+
+    // Punch Lists
+    Route::get('punch-lists', [PunchListController::class, 'index'])->name('punch-lists.index');
+    Route::get('punch-lists/create', [PunchListController::class, 'create'])->name('punch-lists.create');
+    Route::post('punch-lists', [PunchListController::class, 'store'])->name('punch-lists.store');
+    Route::get('punch-lists/{punchList}', [PunchListController::class, 'show'])->name('punch-lists.show');
+    Route::get('punch-lists/{punchList}/edit', [PunchListController::class, 'edit'])->name('punch-lists.edit');
+    Route::put('punch-lists/{punchList}', [PunchListController::class, 'update'])->name('punch-lists.update');
+    Route::delete('punch-lists/{punchList}', [PunchListController::class, 'destroy'])->name('punch-lists.destroy');
+
+    // ITPs
+    Route::get('itps', [ItpController::class, 'index'])->name('itps.index');
+    Route::get('itps/create', [ItpController::class, 'create'])->name('itps.create');
+    Route::post('itps', [ItpController::class, 'store'])->name('itps.store');
+    Route::get('itps/{itp}', [ItpController::class, 'show'])->name('itps.show');
+    Route::get('itps/{itp}/edit', [ItpController::class, 'edit'])->name('itps.edit');
+    Route::put('itps/{itp}', [ItpController::class, 'update'])->name('itps.update');
+    Route::delete('itps/{itp}', [ItpController::class, 'destroy'])->name('itps.destroy');
+
+    // Material Test Certificates
+    Route::get('material-test-certificates', [MaterialTestCertificateController::class, 'index'])->name('material-test-certificates.index');
+    Route::get('material-test-certificates/create', [MaterialTestCertificateController::class, 'create'])->name('material-test-certificates.create');
+    Route::post('material-test-certificates', [MaterialTestCertificateController::class, 'store'])->name('material-test-certificates.store');
+    Route::get('material-test-certificates/{materialTestCertificate}', [MaterialTestCertificateController::class, 'show'])->name('material-test-certificates.show');
+    Route::get('material-test-certificates/{materialTestCertificate}/edit', [MaterialTestCertificateController::class, 'edit'])->name('material-test-certificates.edit');
+    Route::put('material-test-certificates/{materialTestCertificate}', [MaterialTestCertificateController::class, 'update'])->name('material-test-certificates.update');
+    Route::delete('material-test-certificates/{materialTestCertificate}', [MaterialTestCertificateController::class, 'destroy'])->name('material-test-certificates.destroy');
+
+    // Corrective Actions
+    Route::get('corrective-actions', [CorrectiveActionController::class, 'index'])->name('corrective-actions.index');
+    Route::get('corrective-actions/create', [CorrectiveActionController::class, 'create'])->name('corrective-actions.create');
+    Route::post('corrective-actions', [CorrectiveActionController::class, 'store'])->name('corrective-actions.store');
+    Route::get('corrective-actions/{correctiveAction}', [CorrectiveActionController::class, 'show'])->name('corrective-actions.show');
+    Route::get('corrective-actions/{correctiveAction}/edit', [CorrectiveActionController::class, 'edit'])->name('corrective-actions.edit');
+    Route::put('corrective-actions/{correctiveAction}', [CorrectiveActionController::class, 'update'])->name('corrective-actions.update');
+    Route::delete('corrective-actions/{correctiveAction}', [CorrectiveActionController::class, 'destroy'])->name('corrective-actions.destroy');
+});
+
 // Approvals - Approval Workflow Management
 use App\Http\Controllers\Admin\Crm\ClientController;
 use App\Http\Controllers\Admin\Crm\LeadController;

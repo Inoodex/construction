@@ -21,7 +21,7 @@
             display: none !important;
         }
         :root {
-            --sidebar-width: 200px;
+            --sidebar-width: 240px;
         }
         .sidebar {
             width: var(--sidebar-width) !important;

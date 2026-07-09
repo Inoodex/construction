@@ -1,7 +1,7 @@
 <!-- start sidebar section -->
 <div :class="{'dark text-white-dark' : $store.app.semidark}">
     <nav x-data="sidebar"
-        class="sidebar fixed bottom-0 top-0 z-50 h-full min-h-screen shadow-[5px_0_25px_0_rgba(94,92,154,0.1)] transition-all duration-300" style="width: 200px">
+        class="sidebar fixed bottom-0 top-0 z-50 h-full shadow-[5px_0_25px_0_rgba(94,92,154,0.1)] transition-all duration-300">
         <div class="h-full bg-white dark:bg-[#0e1726]">
             <div class="flex items-center justify-between px-4 py-3">
                 <a href="{{ route('tyro-dashboard.index') }}" class="main-logo flex shrink-0 items-center">
@@ -23,7 +23,7 @@
                     </svg>
                 </a> -->
             </div>
-            <ul class="perfect-scrollbar relative h-[calc(100vh-80px)] space-y-0.5 overflow-y-auto overflow-x-hidden p-4 py-0 font-semibold"
+            <ul class="relative h-[calc(100vh-80px)] space-y-0.5 overflow-y-auto overflow-x-hidden p-4 py-0 font-semibold"
                 x-data="{ activeDropdown: 'dashboard' }">
 
                 @hasRole('client')
@@ -462,6 +462,53 @@
                                 </div>
                             </a>
                         </li>
+                    </ul>
+                </li>
+
+                <!-- Quality Control -->
+                <h2 class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
+                    <span>Quality Control</span>
+                </h2>
+                <li class="menu nav-item">
+                    <button type="button" class="nav-link group" :class="{'active' : activeDropdown === 'quality'}" @click="activeDropdown === 'quality' ? activeDropdown = null : activeDropdown = 'quality'">
+                        <div class="flex items-center">
+                            <svg class="shrink-0 group-hover:!text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path opacity="0.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" fill="currentColor" />
+                            </svg>
+                            <span class="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Quality Control</span>
+                        </div>
+                        <div class="rtl:rotate-180 transition-transform duration-300" :class="{'rotate-90' : activeDropdown === 'quality'}">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                    </button>
+                    <ul x-cloak x-show="activeDropdown === 'quality'" x-collapse class="sub-menu text-gray-500 list-none">
+                        <li x-data="{ open: false }">
+                            <a href="javascript:;" class="block font-semibold" style="display: flex !important; width: 100%;" @click="open = !open">
+                                <span class="text-left" style="text-align: left !important;">Non-Conformance</span>
+                                <svg class="h-3 w-3 transition-transform shrink-0" :class="{ 'rotate-90': open }" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </a>
+                            <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
+                                <li><a href="{{ route('admin.quality.ncrs.index') }}" class="block">Non-Conformance Reports</a></li>
+                                <li><a href="{{ route('admin.quality.corrective-actions.index') }}" class="block">Corrective Actions (CAR)</a></li>
+                            </ul>
+                        </li>
+                        <li x-data="{ open: false }">
+                            <a href="javascript:;" class="block font-semibold" style="display: flex !important; width: 100%;" @click="open = !open">
+                                <span class="text-left" style="text-align: left !important;">Inspections</span>
+                                <svg class="h-3 w-3 transition-transform shrink-0" :class="{ 'rotate-90': open }" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </a>
+                            <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
+                                <li><a href="{{ route('admin.quality.itps.index') }}" class="block">Inspection & Test Plans</a></li>
+                                <li><a href="{{ route('admin.quality.punch-lists.index') }}" class="block">Punch Lists (Snagging)</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="{{ route('admin.quality.material-test-certificates.index') }}">Material Test Certificates</a></li>
                     </ul>
                 </li>
 
