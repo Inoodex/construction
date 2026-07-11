@@ -224,6 +224,33 @@
                     </ul>
                 </li>
 
+                <!-- Document Management -->
+                <h2 class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
+                    <span>Document</span>
+                </h2>
+                <li class="menu nav-item">
+                    <button type="button" class="nav-link group" :class="{'active' : activeDropdown === 'documents'}" @click="activeDropdown === 'documents' ? activeDropdown = null : activeDropdown = 'documents'">
+                        <div class="flex items-center">
+                            <svg class="shrink-0 group-hover:!text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path opacity="0.5" d="M7 4V20H17C18.1046 20 19 19.1046 19 18V6C19 4.89543 18.1046 4 17 4H7Z" fill="currentColor" />
+                                <path d="M5 4C5 2.89543 5.89543 2 7 2H14L19 7V18C19 19.1046 18.1046 20 17 20H7C5.89543 20 5 19.1046 5 18V4Z" fill="currentColor" />
+                            </svg>
+                            <span class="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Documents</span>
+                        </div>
+                        <div class="rtl:rotate-180 transition-transform duration-300" :class="{'rotate-90' : activeDropdown === 'documents'}">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                    </button>
+                    <ul x-cloak x-show="activeDropdown === 'documents'" x-collapse class="sub-menu text-gray-500">
+                        <li><a href="{{ route('admin.core.documents.drawings.index') }}">Drawings</a></li>
+                        <li><a href="{{ route('admin.core.documents.rfis.index') }}">RFIs</a></li>
+                        <li><a href="{{ route('admin.core.documents.change-orders.index') }}">Change Orders</a></li>
+                        <li><a href="{{ route('admin.core.documents.transmittals.index') }}">Transmittals</a></li>
+                    </ul>
+                </li>
+
                 <!-- Approvals -->
                  {{-- <h2 class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
                     <span>Approvals</span>

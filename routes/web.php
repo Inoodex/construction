@@ -13,6 +13,10 @@ use App\Http\Controllers\Admin\Core\SitePhotoController;
 use App\Http\Controllers\Admin\Core\ProjectResourceController;
 use App\Http\Controllers\Admin\Core\WorkOrderController;
 use App\Http\Controllers\Admin\Core\InspectionChecklistController;
+use App\Http\Controllers\Admin\Core\DrawingController;
+use App\Http\Controllers\Admin\Core\RfiController;
+use App\Http\Controllers\Admin\Core\ChangeOrderController;
+use App\Http\Controllers\Admin\Core\DrawingTransmittalController;
 use App\Http\Controllers\Admin\SearchController;
 
 Route::get('/', function () {
@@ -154,6 +158,45 @@ Route::prefix('dashboard/core')->name('admin.core.')->group(function () {
         Route::get('{milestone}/edit', [MilestoneController::class, 'edit'])->name('edit');
         Route::put('{milestone}', [MilestoneController::class, 'update'])->name('update');
         Route::delete('{milestone}', [MilestoneController::class, 'destroy'])->name('destroy');
+    });
+
+    // Document Management
+    Route::prefix('documents')->name('documents.')->group(function () {
+        Route::get('drawings', [DrawingController::class, 'index'])->name('drawings.index');
+        Route::get('drawings/create', [DrawingController::class, 'create'])->name('drawings.create');
+        Route::post('drawings', [DrawingController::class, 'store'])->name('drawings.store');
+        Route::get('drawings/{drawing}', [DrawingController::class, 'show'])->name('drawings.show');
+        Route::get('drawings/{drawing}/edit', [DrawingController::class, 'edit'])->name('drawings.edit');
+        Route::put('drawings/{drawing}', [DrawingController::class, 'update'])->name('drawings.update');
+        Route::delete('drawings/{drawing}', [DrawingController::class, 'destroy'])->name('drawings.destroy');
+        Route::post('drawings/{drawing}/revisions', [DrawingController::class, 'addRevision'])->name('drawings.revisions.store');
+
+        Route::get('rfis', [RfiController::class, 'index'])->name('rfis.index');
+        Route::get('rfis/create', [RfiController::class, 'create'])->name('rfis.create');
+        Route::post('rfis', [RfiController::class, 'store'])->name('rfis.store');
+        Route::get('rfis/{rfi}', [RfiController::class, 'show'])->name('rfis.show');
+        Route::get('rfis/{rfi}/edit', [RfiController::class, 'edit'])->name('rfis.edit');
+        Route::put('rfis/{rfi}', [RfiController::class, 'update'])->name('rfis.update');
+        Route::delete('rfis/{rfi}', [RfiController::class, 'destroy'])->name('rfis.destroy');
+        Route::post('rfis/{rfi}/answer', [RfiController::class, 'answer'])->name('rfis.answer');
+
+        Route::get('change-orders', [ChangeOrderController::class, 'index'])->name('change-orders.index');
+        Route::get('change-orders/create', [ChangeOrderController::class, 'create'])->name('change-orders.create');
+        Route::post('change-orders', [ChangeOrderController::class, 'store'])->name('change-orders.store');
+        Route::get('change-orders/{changeOrder}', [ChangeOrderController::class, 'show'])->name('change-orders.show');
+        Route::get('change-orders/{changeOrder}/edit', [ChangeOrderController::class, 'edit'])->name('change-orders.edit');
+        Route::put('change-orders/{changeOrder}', [ChangeOrderController::class, 'update'])->name('change-orders.update');
+        Route::delete('change-orders/{changeOrder}', [ChangeOrderController::class, 'destroy'])->name('change-orders.destroy');
+        Route::post('change-orders/{changeOrder}/approve', [ChangeOrderController::class, 'approve'])->name('change-orders.approve');
+        Route::post('change-orders/{changeOrder}/reject', [ChangeOrderController::class, 'reject'])->name('change-orders.reject');
+
+        Route::get('transmittals', [DrawingTransmittalController::class, 'index'])->name('transmittals.index');
+        Route::get('transmittals/create', [DrawingTransmittalController::class, 'create'])->name('transmittals.create');
+        Route::post('transmittals', [DrawingTransmittalController::class, 'store'])->name('transmittals.store');
+        Route::get('transmittals/{transmittal}', [DrawingTransmittalController::class, 'show'])->name('transmittals.show');
+        Route::get('transmittals/{transmittal}/edit', [DrawingTransmittalController::class, 'edit'])->name('transmittals.edit');
+        Route::put('transmittals/{transmittal}', [DrawingTransmittalController::class, 'update'])->name('transmittals.update');
+        Route::delete('transmittals/{transmittal}', [DrawingTransmittalController::class, 'destroy'])->name('transmittals.destroy');
     });
 });
 
