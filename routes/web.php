@@ -17,6 +17,10 @@ use App\Http\Controllers\Admin\Core\DrawingController;
 use App\Http\Controllers\Admin\Core\RfiController;
 use App\Http\Controllers\Admin\Core\ChangeOrderController;
 use App\Http\Controllers\Admin\Core\DrawingTransmittalController;
+use App\Http\Controllers\Admin\Core\ContractController;
+use App\Http\Controllers\Admin\Core\ContractAmendmentController;
+use App\Http\Controllers\Admin\Core\ContractClaimController;
+use App\Http\Controllers\Admin\Core\ContractCloseoutController;
 use App\Http\Controllers\Admin\SearchController;
 
 Route::get('/', function () {
@@ -198,6 +202,39 @@ Route::prefix('dashboard/core')->name('admin.core.')->group(function () {
         Route::put('transmittals/{transmittal}', [DrawingTransmittalController::class, 'update'])->name('transmittals.update');
         Route::delete('transmittals/{transmittal}', [DrawingTransmittalController::class, 'destroy'])->name('transmittals.destroy');
     });
+
+    // Contracts
+    Route::get('contracts', [ContractController::class, 'index'])->name('contracts.index');
+    Route::get('contracts/create', [ContractController::class, 'create'])->name('contracts.create');
+    Route::post('contracts', [ContractController::class, 'store'])->name('contracts.store');
+    Route::get('contracts/{contract}', [ContractController::class, 'show'])->name('contracts.show');
+    Route::get('contracts/{contract}/edit', [ContractController::class, 'edit'])->name('contracts.edit');
+    Route::put('contracts/{contract}', [ContractController::class, 'update'])->name('contracts.update');
+    Route::delete('contracts/{contract}', [ContractController::class, 'destroy'])->name('contracts.destroy');
+
+    // Contract Amendments
+    Route::get('contract-amendments', [ContractAmendmentController::class, 'index'])->name('contract-amendments.index');
+    Route::get('contract-amendments/create', [ContractAmendmentController::class, 'create'])->name('contract-amendments.create');
+    Route::post('contract-amendments', [ContractAmendmentController::class, 'store'])->name('contract-amendments.store');
+    Route::get('contract-amendments/{contractAmendment}', [ContractAmendmentController::class, 'show'])->name('contract-amendments.show');
+    Route::get('contract-amendments/{contractAmendment}/edit', [ContractAmendmentController::class, 'edit'])->name('contract-amendments.edit');
+    Route::put('contract-amendments/{contractAmendment}', [ContractAmendmentController::class, 'update'])->name('contract-amendments.update');
+    Route::delete('contract-amendments/{contractAmendment}', [ContractAmendmentController::class, 'destroy'])->name('contract-amendments.destroy');
+
+    // Contract Claims
+    Route::get('contract-claims', [ContractClaimController::class, 'index'])->name('contract-claims.index');
+    Route::get('contract-claims/create', [ContractClaimController::class, 'create'])->name('contract-claims.create');
+    Route::post('contract-claims', [ContractClaimController::class, 'store'])->name('contract-claims.store');
+    Route::get('contract-claims/{contractClaim}', [ContractClaimController::class, 'show'])->name('contract-claims.show');
+    Route::get('contract-claims/{contractClaim}/edit', [ContractClaimController::class, 'edit'])->name('contract-claims.edit');
+    Route::put('contract-claims/{contractClaim}', [ContractClaimController::class, 'update'])->name('contract-claims.update');
+    Route::delete('contract-claims/{contractClaim}', [ContractClaimController::class, 'destroy'])->name('contract-claims.destroy');
+
+    // Contract Closeout
+    Route::get('contract-closeout', [ContractCloseoutController::class, 'index'])->name('contract-closeout.index');
+    Route::post('contract-closeout/{contract}', [ContractCloseoutController::class, 'store'])->name('contract-closeout.store');
+    Route::patch('contract-closeout/{item}/toggle', [ContractCloseoutController::class, 'toggle'])->name('contract-closeout.toggle');
+    Route::delete('contract-closeout/{item}', [ContractCloseoutController::class, 'destroy'])->name('contract-closeout.destroy');
 });
 
 // Procurement - Vendor Management
@@ -685,6 +722,7 @@ use App\Http\Controllers\Admin\Quality\PunchListController;
 use App\Http\Controllers\Admin\Quality\ItpController;
 use App\Http\Controllers\Admin\Quality\MaterialTestCertificateController;
 use App\Http\Controllers\Admin\Quality\CorrectiveActionController;
+use App\Http\Controllers\Admin\Quality\RiskController;
 
 Route::prefix('dashboard/quality')->name('admin.quality.')->middleware('auth')->group(function () {
     // NCRs
@@ -731,6 +769,15 @@ Route::prefix('dashboard/quality')->name('admin.quality.')->middleware('auth')->
     Route::get('corrective-actions/{correctiveAction}/edit', [CorrectiveActionController::class, 'edit'])->name('corrective-actions.edit');
     Route::put('corrective-actions/{correctiveAction}', [CorrectiveActionController::class, 'update'])->name('corrective-actions.update');
     Route::delete('corrective-actions/{correctiveAction}', [CorrectiveActionController::class, 'destroy'])->name('corrective-actions.destroy');
+
+    // Risks
+    Route::get('risks', [RiskController::class, 'index'])->name('risks.index');
+    Route::get('risks/create', [RiskController::class, 'create'])->name('risks.create');
+    Route::post('risks', [RiskController::class, 'store'])->name('risks.store');
+    Route::get('risks/{risk}', [RiskController::class, 'show'])->name('risks.show');
+    Route::get('risks/{risk}/edit', [RiskController::class, 'edit'])->name('risks.edit');
+    Route::put('risks/{risk}', [RiskController::class, 'update'])->name('risks.update');
+    Route::delete('risks/{risk}', [RiskController::class, 'destroy'])->name('risks.destroy');
 });
 
 // Approvals - Approval Workflow Management

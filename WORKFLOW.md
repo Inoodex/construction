@@ -314,7 +314,70 @@ Receivable
 
 Bank Guarantee
   ├── Type, amount, issuing bank, validity
+  ├── Optional link to Contract (contract_id FK)
   └── Status: active → released / expired
+```
+
+---
+
+## 5A. Contract Management
+
+### 5A.1 Main Contract Repository
+
+```
+Contract (main/prime contract between company and client)
+  ├── contract_number (auto-generated: CTR-{Ymd}-{0001})
+  ├── project_id, client_name, contract_type (main/subcontract/supply/consultancy)
+  ├── contract_value, currency, signing/commencement/completion dates
+  ├── retention_percentage, liquidated_damages_rate, advance_payment_percentage
+  ├── extended_completion_date (updated via amendments)
+  └── Status: draft → active → suspended → completed / terminated
+```
+
+**Computed values:**
+- `revisedContractValue()` = original + approved amendments
+- `totalAmendmentsValue()` = sum of approved amendment cost impacts
+- `closeoutChecklistComplete()` = all closeout items checked
+
+### 5A.2 Contract Amendments / Variations
+
+```
+ContractAmendment (formal change to a contract)
+  ├── amendment_number (auto-generated: AMD-{Ymd}-{0001})
+  ├── contract_id FK, title, description
+  ├── type: scope_change | time_extension | value_change | other
+  ├── cost_impact (+/-), time_impact_days (+/-)
+  └── Status: draft → submitted → approved / rejected
+```
+
+### 5A.3 Claims Management
+
+```
+ContractClaim (time extension / cost compensation claim)
+  ├── claim_number (auto-generated: CLM-{Ymd}-{0001})
+  ├── contract_id FK, title, description
+  ├── type: time_extension | cost_compensation | both
+  ├── claimed_amount, claimed_days
+  ├── granted_amount, granted_days (set during review)
+  └── Status: draft → submitted → under_review → granted / partially_granted / rejected
+```
+
+### 5A.4 Contract Closeout Checklist
+
+```
+ContractCloseoutItem (per contract)
+  ├── contract_id FK, item, description
+  ├── is_completed, completed_date, completed_by
+  └── order_index (for sorting)
+```
+
+**All items checked → contract eligible for completion status.**
+
+### 5A.5 Linked Entities
+
+```
+Bank Guarantees ──→ optional contract_id FK
+Change Orders ───→ optional contract_id FK
 ```
 
 ---
@@ -562,9 +625,12 @@ Export: PDF (DomPDF) / Excel (Maatwebsite)
 | **Super-admin bypass** | Super-admin role bypasses all permission checks via Gate::before |
 | **EVM** | SPI = EV/PV, CPI = EV/AC, ETC = (BAC-EV)/CPI, EAC = AC+ETC |
 | **Client scoping** | Client users only see their own projects/invoices/documents |
-| **Number generation** | Auto-generated: DRW-{PRJ}-{SEQ}, RFI-{PRJ}-{SEQ}, CO-{PRJ}-{SEQ}, TRM-{PRJ}-{SEQ} |
+| **Number generation** | Auto-generated: DRW-{PRJ}-{SEQ}, RFI-{PRJ}-{SEQ}, CO-{PRJ}-{SEQ}, TRM-{PRJ}-{SEQ}, CTR-{Ymd}-{0001}, AMD-{Ymd}-{0001}, CLM-{Ymd}-{0001} |
 | **Drawing revision control** | Only one revision marked as `is_current` at a time |
 | **File uploads** | Spatie MediaLibrary for drawings, RFIs, change orders, vendor docs, client docs |
+| **Contract value** | Revised contract value = original + approved amendments |
+| **Contract closeout** | Contract status → completed only if all closeout checklist items are checked |
+| **Claims workflow** | Claims go through draft → submitted → under_review → granted/rejected; granted amounts count toward total claims value |
 
 ---
 
@@ -609,7 +675,14 @@ CRM
 Quality Control
   ├── Non-Conformance (NCRs, Corrective Actions)
   ├── Inspections (ITPs, Punch Lists)
-  └── Material Test Certificates
+  ├── Material Test Certificates
+  └── Risk Register
+
+Contract Management
+  ├── Contracts (main repository)
+  ├── Amendments (contract variations)
+  ├── Claims (time/cost compensation)
+  └── Closeout Checklists
 
 Finance
   ├── Cost Control (Budgets, Forecasting, Cost Alerts, Labour Cost)
@@ -646,13 +719,13 @@ Reports
 
 | Category | Count |
 |----------|-------|
-| Controllers | 76 |
-| Models | 107 |
-| Migrations | 111 |
-| Blade View Directories | 85 |
+| Controllers | 80 |
+| Models | 111 |
+| Migrations | 116 |
+| Blade View Directories | 89 |
 | Route Groups | 9 major groups |
-| Sidebar Sections | 8 (Admin, Core, Documents, Procurement, HR, CRM, Quality, Finance, Reports) |
+| Sidebar Sections | 9 (Admin, Core, Documents, Procurement, HR, CRM, Quality, Contract Management, Finance, Reports) |
 
 ---
 
-_Last updated: 2026-07-11 — after Document Management module completion._
+_Last updated: 2026-07-11 — after Contract Management module completion._

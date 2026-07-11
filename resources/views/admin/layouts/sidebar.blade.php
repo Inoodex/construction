@@ -24,7 +24,31 @@
                 </a> -->
             </div>
             <ul class="relative h-[calc(100vh-80px)] space-y-0.5 overflow-y-auto overflow-x-hidden p-4 py-0 font-semibold"
-                x-data="{ activeDropdown: 'dashboard' }">
+                x-data="{ activeDropdown: '{{ match(true) {
+                    request()->routeIs('admin.core.sites.*') || request()->routeIs('admin.core.site-logs.*') || request()->routeIs('admin.core.site-photos.*') => 'site',
+                    request()->routeIs('admin.core.tasks.*') || request()->routeIs('admin.core.phases.*') || request()->routeIs('admin.core.milestones.*') => 'planning',
+                    request()->routeIs('admin.core.resources.*') || request()->routeIs('admin.core.work-orders.*') || request()->routeIs('admin.core.inspection-checklists.*') => 'execution',
+                    request()->routeIs('admin.core.documents.*') => 'documents',
+                    request()->routeIs('admin.core.contracts.*') || request()->routeIs('admin.core.contract-amendments.*') || request()->routeIs('admin.core.contract-claims.*') || request()->routeIs('admin.core.contract-closeout.*') => 'contracts',
+                    request()->routeIs('admin.procurement.vendors.*') || request()->routeIs('admin.procurement.materials.*') || request()->routeIs('admin.procurement.material-submittals.*') || request()->routeIs('admin.procurement.warehouses.*') || request()->routeIs('admin.procurement.rfqs.*') => 'procurement-ref',
+                    request()->routeIs('admin.procurement.purchase-requisitions.*') || request()->routeIs('admin.procurement.purchase-orders.*') || request()->routeIs('admin.procurement.goods-received-notes.*') => 'procurement-buy',
+                    request()->routeIs('admin.procurement.stocks.*') || request()->routeIs('admin.procurement.material-transfers.*') || request()->routeIs('admin.procurement.material-issue-slips.*') || request()->routeIs('admin.procurement.material-wastages.*') || request()->routeIs('admin.procurement.material-reconciliations.*') => 'inventory',
+                    request()->routeIs('admin.procurement.subcontractors.*') || request()->routeIs('admin.procurement.subcontract-agreements.*') || request()->routeIs('admin.procurement.subcontract-progress-payments.*') => 'subcontractors',
+                    request()->routeIs('admin.hr.employees.*') || request()->routeIs('admin.hr.attendance.*') || request()->routeIs('admin.hr.timesheets.*') || request()->routeIs('admin.hr.leave-requests.*') => 'people',
+                    request()->routeIs('admin.hr.wage-slips.*') => 'payroll',
+                    request()->routeIs('admin.hr.equipment.*') || request()->routeIs('admin.hr.fuel-logs.*') || request()->routeIs('admin.hr.ppe-issuances.*') => 'equipment',
+                    request()->routeIs('admin.hr.incident-reports.*') || request()->routeIs('admin.hr.hse-checklists.*') => 'safety',
+                    request()->routeIs('admin.hr.training-records.*') || request()->routeIs('admin.hr.certifications.*') => 'training',
+                    request()->routeIs('admin.crm.leads.*') || request()->routeIs('admin.crm.clients.*') || request()->routeIs('admin.crm.proposals.*') => 'crm',
+                    request()->routeIs('admin.quality.ncrs.*') || request()->routeIs('admin.quality.corrective-actions.*') => 'ncr',
+                    request()->routeIs('admin.quality.itps.*') || request()->routeIs('admin.quality.punch-lists.*') => 'inspections',
+                    request()->routeIs('admin.finance.budgets.*') || request()->routeIs('admin.finance.forecasting.*') || request()->routeIs('admin.finance.cost-alerts.*') || request()->routeIs('admin.finance.labour-costs.*') => 'cost-control',
+                    request()->routeIs('admin.finance.chart-of-accounts.*') || request()->routeIs('admin.finance.journal-entries.*') || request()->routeIs('admin.finance.general-ledger.*') || request()->routeIs('admin.finance.trial-balance.*') || request()->routeIs('admin.finance.receivables.*') || request()->routeIs('admin.finance.balance-sheet.*') || request()->routeIs('admin.finance.income-statement.*') => 'accounting',
+                    request()->routeIs('admin.finance.boqs.*') || request()->routeIs('admin.finance.rate-analyses.*') => 'estimating',
+                    request()->routeIs('admin.finance.invoices.*') || request()->routeIs('admin.finance.interim-payment-applications.*') || request()->routeIs('admin.finance.bills.*') || request()->routeIs('admin.finance.expenses.*') => 'billing',
+                    request()->routeIs('admin.finance.bank-guarantees.*') => 'bank-guarantees',
+                    default => ''
+                } }}' }">
 
                 @hasRole('client')
                     <!-- Client Portal -->
@@ -536,6 +560,34 @@
                             </ul>
                         </li>
                         <li><a href="{{ route('admin.quality.material-test-certificates.index') }}">Material Test Certificates</a></li>
+                        <li><a href="{{ route('admin.quality.risks.index') }}">Risk Register</a></li>
+                    </ul>
+                </li>
+
+                <!-- Contract Management -->
+                <h2 class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
+                    <span>Contract</span>
+                </h2>
+                <li class="menu nav-item">
+                    <button type="button" class="nav-link group" :class="{'active' : activeDropdown === 'contracts'}" @click="activeDropdown === 'contracts' ? activeDropdown = null : activeDropdown = 'contracts'">
+                        <div class="flex items-center">
+                            <svg class="shrink-0 group-hover:!text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path opacity="0.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" fill="currentColor" />
+                                <path d="M9 7h6m-6 4h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                            </svg>
+                            <span class="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Contracts</span>
+                        </div>
+                        <div class="rtl:rotate-180 transition-transform duration-300" :class="{'rotate-90' : activeDropdown === 'contracts'}">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                    </button>
+                    <ul x-cloak x-show="activeDropdown === 'contracts'" x-collapse class="sub-menu text-gray-500">
+                        <li><a href="{{ route('admin.core.contracts.index') }}">Contracts</a></li>
+                        <li><a href="{{ route('admin.core.contract-amendments.index') }}">Amendments</a></li>
+                        <li><a href="{{ route('admin.core.contract-claims.index') }}">Claims</a></li>
+                        <li><a href="{{ route('admin.core.contract-closeout.index') }}">Closeout Checklists</a></li>
                     </ul>
                 </li>
 
@@ -723,3 +775,58 @@
         </div>
     </nav>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var sidebar = document.querySelector('.sidebar .overflow-y-auto');
+    if (!sidebar) return;
+
+    var currentPath = window.location.pathname;
+
+    var links = sidebar.querySelectorAll('.sub-menu a[href]');
+    links.forEach(function(link) {
+        try {
+            var linkPath = new URL(link.href).pathname;
+            if (linkPath === currentPath) {
+                link.classList.add('active');
+
+                var parentUl = link.closest('.sub-menu');
+                if (parentUl) {
+                    var toggleBtn = parentUl.previousElementSibling;
+                    if (toggleBtn && toggleBtn.hasAttribute('@click')) {
+                        var match = toggleBtn.getAttribute('@click').match(/activeDropdown\s*===\s*'([^']+)'/);
+                        if (match) {
+                            var key = match[1];
+                            var alpineEl = sidebar.closest('[x-data]');
+                            if (alpineEl && alpineEl.__x && alpineEl.__x.$data) {
+                                alpineEl.__x.$data.activeDropdown = key;
+                            }
+                        }
+                    }
+                }
+            }
+        } catch(e) {}
+    });
+
+    var directLinks = sidebar.querySelectorAll(':scope > ul > li:not(.menu) > a[href], :scope > ul > li > ul > li > a[href]');
+    directLinks.forEach(function(link) {
+        try {
+            var linkPath = new URL(link.href).pathname;
+            if (linkPath === currentPath) {
+                link.classList.add('active');
+            }
+        } catch(e) {}
+    });
+
+    setTimeout(function() {
+        var active = sidebar.querySelector('.sub-menu a.active') || sidebar.querySelector('a.active');
+        if (active) {
+            var sidebarRect = sidebar.getBoundingClientRect();
+            var activeRect = active.getBoundingClientRect();
+            if (activeRect.top < sidebarRect.top || activeRect.bottom > sidebarRect.bottom) {
+                active.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            }
+        }
+    }, 350);
+});
+</script>
