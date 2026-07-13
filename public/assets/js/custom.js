@@ -158,24 +158,83 @@
         // sidebar section
         Alpine.data("sidebar", () => ({
             init() {
-                const selector = document.querySelector(
-                    '.sidebar ul a[href="' + window.location.pathname + '"]',
-                );
-                if (selector) {
-                    selector.classList.add("active");
-                    const ul = selector.closest("ul.sub-menu");
-                    if (ul) {
-                        let ele = ul
-                            .closest("li.menu")
-                            .querySelectorAll(".nav-link");
-                        if (ele) {
-                            ele = ele[0];
-                            setTimeout(() => {
-                                ele.click();
-                            });
+                const currentPath =
+                    window.location.pathname.replace(/\/$/, "") || "/";
+                const selector = Array.from(
+                    document.querySelectorAll(".sidebar ul a"),
+                ).find((link) => {
+                    try {
+                        const path =
+                            new URL(
+                                link.href,
+                                window.location.origin,
+                            ).pathname.replace(/\/$/, "") || "/";
+                        return path === currentPath;
+                    } catch (error) {
+                        return false;
+                    }
+                });
+
+                if (!selector) {
+                    return;
+                }
+
+                selector.classList.add("active");
+                const parentLi = selector.closest("li");
+                if (parentLi) {
+                    parentLi.classList.add("active");
+                }
+
+                const subMenu = selector.closest("ul.sub-menu");
+                if (subMenu) {
+                    const topMenu = subMenu.closest("li.menu");
+                    const nestedTogglers = [];
+                    let ancestor = selector.parentElement;
+
+                    while (ancestor && ancestor !== document.body) {
+                        if (ancestor.matches("li[x-data]")) {
+                            if (
+                                ancestor.__x &&
+                                ancestor.__x.$data &&
+                                typeof ancestor.__x.$data.open !== "undefined"
+                            ) {
+                                ancestor.__x.$data.open = true;
+                            }
+                            const toggler = ancestor.querySelector(
+                                'a[href="javascript:;"]',
+                            );
+                            if (toggler) {
+                                nestedTogglers.push(toggler);
+                            }
+                        }
+                        ancestor = ancestor.parentElement;
+                    }
+
+                    if (topMenu) {
+                        const topTrigger = topMenu.querySelector(".nav-link");
+                        if (
+                            topTrigger &&
+                            !topTrigger.classList.contains("active")
+                        ) {
+                            topTrigger.click();
                         }
                     }
+
+                    if (nestedTogglers.length) {
+                        setTimeout(() => {
+                            nestedTogglers.reverse().forEach((toggler) => {
+                                toggler.click();
+                            });
+                        }, 150);
+                    }
                 }
+
+                setTimeout(() => {
+                    selector.scrollIntoView({
+                        block: "center",
+                        behavior: "smooth",
+                    });
+                }, 250);
             },
         }));
 

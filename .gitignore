@@ -23,3 +23,6 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 .md
+
+# EnvKit — per-project PHP error log (do not commit)
+php_error.log
