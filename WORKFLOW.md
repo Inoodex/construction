@@ -435,6 +435,22 @@ Toolbox Talks (daily safety briefings)
   ├── Topic, attendees, date
   └── Record of who attended
 
+Permit to Work (PTW)
+  ├── Types: hot work, confined space, working at height, electrical, excavation, lifting, radiography
+  ├── Auto-generated permit numbers (PTW-YYYYMMDD-XXXX)
+  ├── Validity period (valid_from → valid_until)
+  ├── Status: draft → pending_approval → approved → active → completed/cancelled
+  ├── Required: hazards identified, safety measures, work description
+  └── Linked to project + site
+
+Safety Audits
+  ├── Types: internal, external, regulatory, client
+  ├── Auto-generated audit numbers (SA-YYYYMMDD-XXXX)
+  ├── Score (0-100)
+  ├── Findings, non-conformances, recommendations
+  ├── Status: scheduled → in_progress → completed → follow_up
+  └── Linked to project + site
+
 PPE Issuances
   ├── Employee, PPE type, issue date, condition
   └── Return tracking
@@ -555,6 +571,21 @@ FinancialReportService
   └── Retention Tracker (retention withheld vs released)
          ↓
 Export: PDF (DomPDF) / Excel (Maatwebsite)
+
+Custom Report Builder
+  ├── Select data source (projects, invoices, budgets, expenses, stocks, employees, HSE incidents)
+  ├── Choose columns to display (drag/reorder)
+  ├── Set filters (project, date range)
+  ├── Group by (project, status, date, type)
+  ├── Chart type (bar, line, pie, area, none)
+  ├── Preview report before saving
+  └── Save as template for reuse
+
+Scheduled Reports
+  ├── Link to report template
+  ├── Set frequency (daily, weekly, monthly)
+  ├── Add recipients (email list)
+  └── Auto-generate on schedule
 ```
 
 ---
@@ -666,7 +697,7 @@ HR & Payroll
   ├── People (All Employees, Daily Register, Monthly Summary, Timesheets, Leave Requests)
   ├── Payroll (Wage Slips)
   ├── Equipment & Assets (Equipment, Fuel Logs, PPE Issuance)
-  ├── Safety & Compliance (Incident Reports, HSE Checklists)
+  ├── Safety & Compliance (Incident Reports, HSE Checklists, Toolbox Talks, Permits to Work, Safety Audits)
   └── Training (Training Records, Certifications & Licences)
 
 CRM
@@ -687,10 +718,11 @@ Contract Management
 Finance
   ├── Cost Control (Budgets, Forecasting, Cost Alerts, Labour Cost)
   ├── Accounting (Chart of Accounts, Journal Vouchers, General Ledger, Trial Balance, AR, Balance Sheet, Income Statement)
-  ├── Estimating Analysis (BOQs, Rate Analysis)
+  ├── Estimating Analysis (BOQs, Rate Analysis, Tenders)
   └── Billing & Payables (Invoices, Interim Payment, Bills Payable, Expenses)
 
 Reports
+  ├── Custom Reports (Report Templates, Scheduled Reports)
   ├── Cost & Budgeting (Budget vs Actual, Project Cost Summary)
   ├── Financial Status (Invoice Status, Cash Flow, Retention Tracker)
   ├── Progress Reports (S-Curve, Labour & Equipment, Procurement Spend)
@@ -719,13 +751,13 @@ Reports
 
 | Category | Count |
 |----------|-------|
-| Controllers | 80 |
-| Models | 111 |
-| Migrations | 116 |
-| Blade View Directories | 89 |
+| Controllers | 82 |
+| Models | 114 |
+| Migrations | 119 |
+| Blade View Directories | 93 |
 | Route Groups | 9 major groups |
 | Sidebar Sections | 9 (Admin, Core, Documents, Procurement, HR, CRM, Quality, Contract Management, Finance, Reports) |
 
 ---
 
-_Last updated: 2026-07-11 — after Contract Management module completion._
+_Last updated: 2026-07-13 — after Tender Management, Safety & Compliance, and Reports & Analytics completion. All 22 modules from MODULES.md now complete._

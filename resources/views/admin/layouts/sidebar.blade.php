@@ -51,16 +51,17 @@
             elseif (str_starts_with($routeName, 'admin.hr.employees.') || str_starts_with($routeName, 'admin.hr.attendance.') || str_starts_with($routeName, 'admin.hr.timesheets.') || str_starts_with($routeName, 'admin.hr.leaves.')) $activeDropdown = 'people';
             elseif (str_starts_with($routeName, 'admin.hr.wage-slips.')) $activeDropdown = 'payroll';
             elseif (str_starts_with($routeName, 'admin.hr.equipment.') || str_starts_with($routeName, 'admin.hr.fuel-logs.') || str_starts_with($routeName, 'admin.hr.ppe-issuances.')) $activeDropdown = 'equipment';
-            elseif (str_starts_with($routeName, 'admin.hr.incident-reports.') || str_starts_with($routeName, 'admin.hr.hse-checklists.')) $activeDropdown = 'safety';
+            elseif (str_starts_with($routeName, 'admin.hr.incident-reports.') || str_starts_with($routeName, 'admin.hr.hse-checklists.') || str_starts_with($routeName, 'admin.hr.toolbox-talks.') || str_starts_with($routeName, 'admin.hr.permits-to-work.') || str_starts_with($routeName, 'admin.hr.safety-audits.')) $activeDropdown = 'safety';
             elseif (str_starts_with($routeName, 'admin.hr.training-records.') || str_starts_with($routeName, 'admin.hr.certifications.')) $activeDropdown = 'training';
             elseif (str_starts_with($routeName, 'admin.crm.')) $activeDropdown = 'crm';
             elseif (str_starts_with($routeName, 'admin.quality.ncrs.') || str_starts_with($routeName, 'admin.quality.corrective-actions.')) $activeDropdown = 'ncr';
             elseif (str_starts_with($routeName, 'admin.quality.itps.') || str_starts_with($routeName, 'admin.quality.punch-lists.')) $activeDropdown = 'inspections';
             elseif (str_starts_with($routeName, 'admin.finance.budgets.') || str_starts_with($routeName, 'admin.finance.forecasting.') || str_starts_with($routeName, 'admin.finance.cost-overrun-alerts.') || str_starts_with($routeName, 'admin.finance.labour-entries.')) $activeDropdown = 'cost-control';
             elseif (str_starts_with($routeName, 'admin.finance.chart-of-accounts.') || str_starts_with($routeName, 'admin.finance.journal-entries.') || str_starts_with($routeName, 'admin.finance.general-ledger.') || str_starts_with($routeName, 'admin.finance.trial-balance.') || str_starts_with($routeName, 'admin.finance.receivables.') || str_starts_with($routeName, 'admin.finance.balance-sheet.') || str_starts_with($routeName, 'admin.finance.income-statement.')) $activeDropdown = 'accounting';
-            elseif (str_starts_with($routeName, 'admin.finance.boqs.') || str_starts_with($routeName, 'admin.finance.rate-analysis.')) $activeDropdown = 'estimating';
+            elseif (str_starts_with($routeName, 'admin.finance.boqs.') || str_starts_with($routeName, 'admin.finance.rate-analysis.') || str_starts_with($routeName, 'admin.finance.tenders.')) $activeDropdown = 'estimating';
             elseif (str_starts_with($routeName, 'admin.finance.invoices.') || str_starts_with($routeName, 'admin.finance.ipas.') || str_starts_with($routeName, 'admin.finance.bills.') || str_starts_with($routeName, 'admin.finance.expenses.')) $activeDropdown = 'billing';
             elseif (str_starts_with($routeName, 'admin.finance.bank-guarantees.')) $activeDropdown = 'bank-guarantees';
+            elseif (str_starts_with($routeName, 'admin.reports.report-templates.') || str_starts_with($routeName, 'admin.reports.scheduled-reports.')) $activeDropdown = 'custom-reports';
             elseif (str_starts_with($routeName, 'admin.reports.')) $activeDropdown = 'reports';
             elseif (str_starts_with($routeName, 'admin.approvals.')) $activeDropdown = 'approvals';
             elseif (str_starts_with($routeName, 'admin.settings.') || str_starts_with($routeName, 'admin.categories.')) $activeDropdown = 'admin';
@@ -478,8 +479,9 @@
                 <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
                     <li><a href="{{ route('admin.hr.incident-reports.index') }}">Incident Reports</a></li>
                     <li><a href="{{ route('admin.hr.hse-checklists.index') }}">HSE Checklists</a></li>
-                    {{-- <li><a href="{{ route('admin.hr.toolbox-talks.index') }}">Toolbox Talks</a>
-            </li> --}}
+                    <li><a href="{{ route('admin.hr.toolbox-talks.index') }}">Toolbox Talks</a></li>
+                    <li><a href="{{ route('admin.hr.permits-to-work.index') }}">Permits to Work</a></li>
+                    <li><a href="{{ route('admin.hr.safety-audits.index') }}">Safety Audits</a></li>
             </ul>
             </li>
             <!-- Training -->
@@ -681,8 +683,7 @@
                 <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
                     <li><a href="{{ route('admin.finance.boqs.index') }}">Bill of Quantities</a></li>
                     <li><a href="{{ route('admin.finance.rate-analysis.index') }}">Rate Analysis</a></li>
-                    {{-- <li><a href="{{ route('admin.finance.tenders.index') }}">Tenders</a>
-            </li> --}}
+                    <li><a href="{{ route('admin.finance.tenders.index') }}">Tenders</a></li>
             </ul>
             </li>
             <li x-data="{ open: false }">
@@ -710,7 +711,25 @@
             </h2>
             <li class="nav-item">
                 <ul>
-                    {{-- Report Templates and Scheduled Reports hidden --}}
+                    <li class="menu nav-item">
+                        <button type="button" class="nav-link group" :class="{'active' : activeDropdown === 'custom-reports'}" @click="activeDropdown === 'custom-reports' ? activeDropdown = null : activeDropdown = 'custom-reports'">
+                            <div class="flex items-center">
+                                <svg class="shrink-0 group-hover:!text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path opacity="0.5" d="M9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4zm2 2H5V5h14v14zM19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2z" fill="currentColor" />
+                                </svg>
+                                <span class="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Custom Reports</span>
+                            </div>
+                            <div class="rtl:rotate-180 transition-transform duration-300" :class="{'rotate-90' : activeDropdown === 'custom-reports'}">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </div>
+                        </button>
+                        <ul x-cloak x-show="activeDropdown === 'custom-reports'" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
+                            <li><a href="{{ route('admin.reports.report-templates.index') }}" class="block">Report Templates</a></li>
+                            <li><a href="{{ route('admin.reports.scheduled-reports.index') }}" class="block">Scheduled Reports</a></li>
+                        </ul>
+                    </li>
                     <li class="menu nav-item">
                         <button type="button" class="nav-link group" :class="{'active' : activeDropdown === 'cost-budgeting'}" @click="activeDropdown === 'cost-budgeting' ? activeDropdown = null : activeDropdown = 'cost-budgeting'">
                             <div class="flex items-center">

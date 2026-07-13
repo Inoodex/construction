@@ -57,7 +57,7 @@ class TenderController extends Controller
 
     public function show(Tender $tender)
     {
-        $tender->load('project', 'creator', 'bids.vendor');
+        $tender->load(['project', 'creator', 'bids.vendor', 'packages']);
         $vendors = Vendor::where('status', 'approved')->get();
         return view('admin.finance.tenders.show', compact('tender', 'vendors'));
     }
@@ -141,5 +141,20 @@ class TenderController extends Controller
     {
         $tenderBid->delete();
         return back()->with('success', 'Bid removed from tender.');
+    }
+
+    public function evaluationMatrix(Tender $tender)
+    {
+        $tender->load(['bids.vendor', 'project', 'creator']);
+
+        return view('admin.finance.tenders.evaluation-matrix', compact('tender'));
+    }
+
+    public function awardLetter(Tender $tender)
+    {
+        $tender->load(['bids.vendor', 'project', 'creator']);
+        $awardedBid = $tender->bids()->where('status', 'awarded')->first();
+
+        return view('admin.finance.tenders.award-letter', compact('tender', 'awardedBid'));
     }
 }

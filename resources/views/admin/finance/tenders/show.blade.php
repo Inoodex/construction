@@ -10,6 +10,10 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                 Edit
             </a>
+            <a href="{{ route('admin.finance.tenders.evaluation-matrix', $tender) }}" class="btn btn-outline-warning">Evaluation Matrix</a>
+            @if($tender->bids->where('status', 'awarded')->count())
+                <a href="{{ route('admin.finance.tenders.award-letter', $tender) }}" class="btn btn-outline-success">Award Letter</a>
+            @endif
             <a href="{{ route('admin.finance.tenders.index') }}" class="btn btn-secondary gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                 Back to List
@@ -51,6 +55,63 @@
             <p>{{ $tender->description }}</p>
         </div>
     @endif
+
+    <div class="panel mt-6">
+        <h5 class="mb-4 text-lg font-semibold">Tender Package Documents</h5>
+        @if($tender->packages->count())
+            <div class="mb-4 space-y-2">
+                @foreach($tender->packages as $package)
+                    <div class="flex items-center justify-between rounded border border-gray-200 p-3 dark:border-gray-600">
+                        <div>
+                            <span class="font-semibold">{{ $package->document_name }}</span>
+                            <span class="ml-2 rounded bg-gray-100 px-2 py-0.5 text-xs dark:bg-gray-700">{{ ucfirst($package->document_type) }}</span>
+                            @if($package->description)
+                                <p class="mt-1 text-sm text-gray-500">{{ $package->description }}</p>
+                            @endif
+                        </div>
+                        <div class="flex items-center gap-2">
+                            @if($package->file_path)
+                                <a href="{{ asset('storage/' . $package->file_path) }}" target="_blank" class="btn btn-outline-primary btn-sm">Download</a>
+                            @endif
+                            <form action="{{ route('admin.finance.tenders.packages.destroy', [$tender, $package]) }}" method="POST" onsubmit="return confirm('Remove this document?')">
+                                @csrf @method('DELETE')
+                                <button class="btn btn-danger btn-sm">Remove</button>
+                            </form>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <p class="mb-4 text-gray-400">No documents uploaded yet.</p>
+        @endif
+
+        <form action="{{ route('admin.finance.tenders.packages.store', $tender) }}" method="POST" enctype="multipart/form-data" class="flex flex-wrap items-end gap-3">
+            @csrf
+            <div>
+                <label class="text-xs font-semibold">Document Name *</label>
+                <input type="text" name="document_name" required class="form-input mt-1">
+            </div>
+            <div>
+                <label class="text-xs font-semibold">Type *</label>
+                <select name="document_type" required class="form-select mt-1">
+                    <option value="boq">BOQ</option>
+                    <option value="specification">Specification</option>
+                    <option value="terms">Terms & Conditions</option>
+                    <option value="drawing">Drawing</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-xs font-semibold">Description</label>
+                <input type="text" name="description" class="form-input mt-1">
+            </div>
+            <div>
+                <label class="text-xs font-semibold">File</label>
+                <input type="file" name="file" class="form-input mt-1">
+            </div>
+            <button type="submit" class="btn btn-primary">Upload</button>
+        </form>
+    </div>
 
     <div class="panel mt-6">
         <div class="flex items-center justify-between">

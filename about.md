@@ -17,9 +17,9 @@ app/
 ├── Helpers/settings.php               # get_setting() helper
 ├── Http/Controllers/Admin/           # All controllers by domain
 │   ├── Core/          → projects, sites, tasks, phases, milestones, work-orders, inspection-checklists, site-logs, site-photos, project-resources
-│   ├── Finance/       → budgets, boqs, tenders, invoices, ipas, bills, rate-analysis, chart-of-accounts, journal-entries, general-ledger, trial-balance, receivables, bank-guarantees, balance-sheet, income-statement, labour-entries, aging, cost-overrun-alerts, material-takeoffs
+│   ├── Finance/       → budgets, boqs, tenders, tender-packages, invoices, ipas, bills, rate-analysis, chart-of-accounts, journal-entries, general-ledger, trial-balance, receivables, bank-guarantees, balance-sheet, income-statement, labour-entries, aging, cost-overrun-alerts, material-takeoffs
 │   ├── Procurement/   → vendors, materials, purchase-requisitions, purchase-orders, goods-received-notes, warehouses, stocks, material-transfers, material-issue-slips, material-wastages, subcontractors
-│   ├── Hr/            → employees, attendance, timesheets, wage-slips, equipment, leave-requests, training-records, ppe-issuances, incident-reports, certifications, hse-checklists, fuel-logs, toolbox-talks
+│   ├── Hr/            → employees, attendance, timesheets, wage-slips, equipment, leave-requests, training-records, ppe-issuances, incident-reports, certifications, hse-checklists, fuel-logs, toolbox-talks, permits-to-work, safety-audits
 │   ├── Reports/       → financial, report-templates, scheduled-reports
 │   ├── ApprovalController, CategoryController, DashboardController, RoleController, SettingController
 ├── Imports/BoqItemsImport.php         # Excel BOQ import with validation
@@ -34,15 +34,15 @@ app/
 
 ---
 
-## Models (86 total)
+## Models (89 total)
 
 | Domain | Models |
 |---|---|
 | **Auth/System** | User, Role, Category, Setting |
 | **Core** | Project, Site, Task, Phase, Milestone, WorkOrder, InspectionChecklist, InspectionChecklistItem, SiteLog, SitePhoto, ProjectResource, TaskResource |
-| **Finance** | Budget, Boq, BoqItem, Invoice, InvoiceItem, Payment, InterimPaymentApplication, IpaItem, Bill, BillItem, BillPayment, RateAnalysis, RateAnalysisItem, CostOverrunAlert, ChartOfAccount, JournalEntry, JournalEntryItem, Receivable, ReceivablePayment, BankGuarantee, LabourEntry, MaterialTakeoff |
+| **Finance** | Budget, Boq, BoqItem, TenderPackage, Invoice, InvoiceItem, Payment, InterimPaymentApplication, IpaItem, Bill, BillItem, BillPayment, RateAnalysis, RateAnalysisItem, CostOverrunAlert, ChartOfAccount, JournalEntry, JournalEntryItem, Receivable, ReceivablePayment, BankGuarantee, LabourEntry, MaterialTakeoff |
 | **Procurement** | Vendor, Material, PurchaseRequisition, PurchaseRequisitionItem, PurchaseOrder, PurchaseOrderItem, GoodsReceivedNote, GoodsReceivedNoteItem, Warehouse, Stock, MaterialTransfer, MaterialTransferItem, MaterialIssueSlip, MaterialIssueSlipItem, MaterialWastage, Subcontractor |
-| **HR** | Employee, Attendance, Timesheet, WageSlip, Equipment, EquipmentMaintenance, LeaveRequest, TrainingRecord, PpeIssuance, IncidentReport, Certification, HseChecklist, HseChecklistItem, FuelLog, ToolboxTalk |
+| **HR** | Employee, Attendance, Timesheet, WageSlip, Equipment, EquipmentMaintenance, LeaveRequest, TrainingRecord, PpeIssuance, IncidentReport, Certification, HseChecklist, HseChecklistItem, FuelLog, ToolboxTalk, PermitToWork, SafetyAudit |
 | **Approvals** | Approval, ApprovalHistory, ApprovalMatrix, ApprovalWorkflow |
 | **Reports** | ReportTemplate, ScheduledReport |
 
@@ -88,6 +88,9 @@ equipment → equipment_maintenance (preventive/corrective/inspection tracking)
 
 fuel_logs (equipment fuel consumption tracking)
 toolbox_talks (safety briefing records)
+tender_packages (documents attached to tenders: boq, specification, terms, drawing)
+permits_to_work (PTW: hot work, confined space, working at height, electrical, excavation)
+safety_audits (internal/external/regulatory/client audits with scoring)
 
 site_logs, site_photos (field reporting)
 inspection_checklists → inspection_checklist_items
@@ -217,6 +220,14 @@ report_templates, scheduled_reports
 - Severity: minor → moderate → serious → critical → fatal
 - Status workflow: open → under-investigation → closed
 - Rich detail view with root cause, corrective actions, investigation notes
+- `PermitToWork`: work permits for hazardous activities with auto-generated PTW numbers
+- Supports 8 permit types: hot work, confined space, working at height, electrical, excavation, lifting, radiography, other
+- Status workflow: draft → pending_approval → approved → active → completed/cancelled
+- Requires: hazards identified, safety measures, work description, validity period
+- `SafetyAudit`: safety audit records with auto-generated audit numbers
+- Supports 5 audit types: internal, external, regulatory, client, other
+- Score (0-100), findings, non-conformances, recommendations
+- Status workflow: scheduled → in_progress → completed → follow_up
 
 ### HR — Fuel Consumption Logs
 - `FuelLog`: tracks equipment fuel consumption with fuel type (diesel/petrol/gas/other), quantity, unit (liters/gallons), unit cost, auto-calculated total cost
@@ -228,13 +239,42 @@ report_templates, scheduled_reports
 - Attendees stored as free-text; includes discussion points and action items
 - Filterable by conductor and date range
 
+### HR — Permit to Work (PTW)
+- `PermitToWork`: formal work permits for hazardous activities
+- Auto-generated permit numbers: PTW-YYYYMMDD-XXXX
+- 8 permit types with type-specific hazards and safety measures
+- Validity period tracking (valid_from → valid_until)
+- Full approval workflow: draft → pending_approval → approved → active → completed/cancelled
+
+### HR — Safety Audits
+- `SafetyAudit`: scheduled and completed safety audit records
+- Auto-generated audit numbers: SA-YYYYMMDD-XXXX
+- Score tracking (0-100), findings, non-conformances, recommendations
+- 5 audit types: internal, external, regulatory, client, other
+- Status workflow: scheduled → in_progress → completed → follow_up
+
+### Tender Management
+- `TenderPackage`: documents attached to tenders (BOQ, specifications, terms, drawings)
+- Upload/download/delete tender documents
+- Evaluation Matrix: side-by-side bid comparison with scoring
+- Award Letter: printable letter for winning vendor
+
+### Custom Report Builder
+- Form-based report template builder with data source selection
+- Dynamic column picker with add/remove/reorder
+- Chart type selection (bar, line, pie, area)
+- Filter by project and date range
+- Group by project, status, date, or type
+- Preview reports before saving
+- 7 data sources: projects, invoices, budgets, expenses, stocks, employees, HSE incidents
+
 ---
 
 ## Routes
 
 | File | Description |
 |---|---|
-| `routes/web.php` (578 lines) | All app routes: `/dashboard`, `/dashboard/settings|categories|roles`, `/dashboard/core/*`, `/dashboard/procurement/*`, `/dashboard/hr/*`, `/dashboard/reports/*`, `/dashboard/finance/*`, `/dashboard/approvals/*` |
+| `routes/web.php` (827 lines) | All app routes: `/dashboard`, `/dashboard/settings|categories|roles`, `/dashboard/core/*`, `/dashboard/procurement/*`, `/dashboard/hr/*`, `/dashboard/reports/*`, `/dashboard/finance/*`, `/dashboard/approvals/*` |
 | `routes/api.php` | Single Sanctum `/api/user` endpoint |
 | `routes/console.php` | Artisan commands |
 
@@ -247,9 +287,9 @@ layouts/   → master, header, sidebar, footer, main, scripts
 core/      → projects, sites, tasks, phases, milestones, work-orders, inspection-checklists, site-logs, site-photos, project-resources
 finance/   → budgets, boqs, tenders, invoices, ipas, bills, rate-analysis, chart-of-accounts, journal-entries, general-ledger, trial-balance, receivables, bank-guarantees, balance-sheet, income-statement, labour-entries, aging, cost-overrun-alerts
 procurement/ → vendors, materials, requisitions, purchase-orders, goods-received-notes, warehouses, stocks, material-transfers, material-issue-slips, material-wastages, subcontractors
-hr/        → employees, attendance, timesheets, wage-slips, equipment, leaves, training-records, ppe-issuances, incident-reports, certifications, hse-checklists, fuel-logs, toolbox-talks
-            (sidebar categorized: People, Payroll, Equipment & Assets, Safety & Compliance, Training)
-reports/   → financial, report-templates, scheduled-reports
+hr/        → employees, attendance, timesheets, wage-slips, equipment, leaves, training-records, ppe-issuances, incident-reports, certifications, hse-checklists, fuel-logs, toolbox-talks, permits-to-work, safety-audits
+            (sidebar categorized: People, Payroll, Equipment & Assets, Safety & Compliance [with Toolbox Talks, PTW, Safety Audits], Training)
+reports/   → financial, report-templates (with custom builder UI), scheduled-reports
 approvals/ → index, show, workflows
 settings/  → index
 dashboard.blade.php, index.blade.php

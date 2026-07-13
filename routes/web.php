@@ -24,7 +24,7 @@ use App\Http\Controllers\Admin\Core\ContractCloseoutController;
 use App\Http\Controllers\Admin\SearchController;
 
 Route::get('/', function () {
-    return redirect()->route('tyro-login.login');
+    return view('landing');
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('auth')->name('tyro-dashboard.index');
@@ -267,6 +267,8 @@ use App\Http\Controllers\Admin\Hr\CertificationController;
 use App\Http\Controllers\Admin\Hr\HseChecklistController;
 use App\Http\Controllers\Admin\Hr\FuelLogController;
 use App\Http\Controllers\Admin\Hr\ToolboxTalkController;
+use App\Http\Controllers\Admin\Hr\PermitToWorkController;
+use App\Http\Controllers\Admin\Hr\SafetyAuditController;
 use App\Http\Controllers\Admin\Reports\ReportTemplateController;
 use App\Http\Controllers\Admin\Reports\ScheduledReportController;
 use App\Http\Controllers\Admin\Reports\FinancialReportController;
@@ -514,6 +516,22 @@ Route::prefix('dashboard/hr')->name('admin.hr.')->group(function () {
     Route::get('toolbox-talks/{toolboxTalk}/edit', [ToolboxTalkController::class, 'edit'])->name('toolbox-talks.edit');
     Route::put('toolbox-talks/{toolboxTalk}', [ToolboxTalkController::class, 'update'])->name('toolbox-talks.update');
     Route::delete('toolbox-talks/{toolboxTalk}', [ToolboxTalkController::class, 'destroy'])->name('toolbox-talks.destroy');
+
+    Route::get('permits-to-work', [PermitToWorkController::class, 'index'])->name('permits-to-work.index');
+    Route::get('permits-to-work/create', [PermitToWorkController::class, 'create'])->name('permits-to-work.create');
+    Route::post('permits-to-work', [PermitToWorkController::class, 'store'])->name('permits-to-work.store');
+    Route::get('permits-to-work/{permitToWork}', [PermitToWorkController::class, 'show'])->name('permits-to-work.show');
+    Route::get('permits-to-work/{permitToWork}/edit', [PermitToWorkController::class, 'edit'])->name('permits-to-work.edit');
+    Route::put('permits-to-work/{permitToWork}', [PermitToWorkController::class, 'update'])->name('permits-to-work.update');
+    Route::delete('permits-to-work/{permitToWork}', [PermitToWorkController::class, 'destroy'])->name('permits-to-work.destroy');
+
+    Route::get('safety-audits', [SafetyAuditController::class, 'index'])->name('safety-audits.index');
+    Route::get('safety-audits/create', [SafetyAuditController::class, 'create'])->name('safety-audits.create');
+    Route::post('safety-audits', [SafetyAuditController::class, 'store'])->name('safety-audits.store');
+    Route::get('safety-audits/{safetyAudit}', [SafetyAuditController::class, 'show'])->name('safety-audits.show');
+    Route::get('safety-audits/{safetyAudit}/edit', [SafetyAuditController::class, 'edit'])->name('safety-audits.edit');
+    Route::put('safety-audits/{safetyAudit}', [SafetyAuditController::class, 'update'])->name('safety-audits.update');
+    Route::delete('safety-audits/{safetyAudit}', [SafetyAuditController::class, 'destroy'])->name('safety-audits.destroy');
 });
 
 // Reports - Report Templates
@@ -522,6 +540,7 @@ Route::prefix('dashboard/reports')->name('admin.reports.')->group(function () {
     Route::get('report-templates/create', [ReportTemplateController::class, 'create'])->name('report-templates.create');
     Route::post('report-templates', [ReportTemplateController::class, 'store'])->name('report-templates.store');
     Route::get('report-templates/{report_template}', [ReportTemplateController::class, 'show'])->name('report-templates.show');
+    Route::get('report-templates/{report_template}/preview', [ReportTemplateController::class, 'preview'])->name('report-templates.preview');
     Route::get('report-templates/{report_template}/edit', [ReportTemplateController::class, 'edit'])->name('report-templates.edit');
     Route::put('report-templates/{report_template}', [ReportTemplateController::class, 'update'])->name('report-templates.update');
     Route::delete('report-templates/{report_template}', [ReportTemplateController::class, 'destroy'])->name('report-templates.destroy');
@@ -554,6 +573,7 @@ use App\Http\Controllers\Admin\Finance\BudgetController;
 use App\Http\Controllers\Admin\Finance\MaterialTakeoffController;
 use App\Http\Controllers\Admin\Finance\BoqController;
 use App\Http\Controllers\Admin\Finance\TenderController;
+use App\Http\Controllers\Admin\Finance\TenderPackageController;
 use App\Http\Controllers\Admin\Finance\InvoiceController;
 use App\Http\Controllers\Admin\Finance\RateAnalysisController;
 use App\Http\Controllers\Admin\Finance\CostOverrunAlertController;
@@ -624,6 +644,10 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware('auth')->
     Route::post('tenders/{tender}/bids', [TenderController::class, 'addBid'])->name('tenders.bids.store');
     Route::put('tenders/{tender}/bids/{tender_bid}', [TenderController::class, 'updateBid'])->name('tenders.bids.update');
     Route::delete('tenders/{tender}/bids/{tender_bid}', [TenderController::class, 'removeBid'])->name('tenders.bids.destroy');
+    Route::get('tenders/{tender}/evaluation-matrix', [TenderController::class, 'evaluationMatrix'])->name('tenders.evaluation-matrix');
+    Route::get('tenders/{tender}/award-letter', [TenderController::class, 'awardLetter'])->name('tenders.award-letter');
+    Route::post('tenders/{tender}/packages', [TenderPackageController::class, 'store'])->name('tenders.packages.store');
+    Route::delete('tenders/{tender}/packages/{tenderPackage}', [TenderPackageController::class, 'destroy'])->name('tenders.packages.destroy');
 
     Route::get('invoices', [InvoiceController::class, 'index'])->name('invoices.index');
     Route::get('invoices/create', [InvoiceController::class, 'create'])->name('invoices.create');

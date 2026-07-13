@@ -42,4 +42,9 @@ class Tender extends Model
     {
         return $this->hasMany(TenderBid::class);
     }
+
+    public function packages(): HasMany
+    {
+        return $this->hasMany(TenderPackage::class);
+    }
 }

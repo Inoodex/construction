@@ -1,4 +1,4 @@
-# Construction Management System — Laravel Modules
+﻿# Construction Management System — Laravel Modules
 
 > A reference guide for building a Construction Management ERP in Laravel.
 
@@ -10,29 +10,29 @@
 
 #### 1.1 Project Management _(Must Have)_
 
-- Projects, phases, milestones, timelines (প্রজেক্ট, পর্যায়, মাইলস্টোন, টাইমলাইন)
-- Gantt chart / schedule view (গ্যান্ট চার্ট / শিডিউল ভিউ)
-- Progress tracking (%) (প্রগতি ট্র্যাকিং (%))
-- Resource planning per project (প্রতি প্রজেক্টের জন্য রিসোর্স পরিকল্পনা)
-- Multi-site / multi-project support (মাল্টি-সাইট / মাল্টি-প্রজেক্ট সাপোর্ট)
-- Project status workflows (Planning → Active → On Hold → Completed) (প্রজেক্ট স্ট্যাটাস ওয়ার্কফ্লো (পরিকল্পনা → সক্রিয় → স্থগিত → সম্পন্ন))
+- [x] Projects, phases, milestones, timelines (প্রজেক্ট, পর্যায়, মাইলস্টোন, টাইমলাইন)
+- [x] Gantt chart / schedule view (গ্যান্ট চার্ট / শিডিউল ভিউ)
+- [x] Progress tracking (%) (প্রগতি ট্র্যাকিং (%))
+- [x] Resource planning per project (প্রতি প্রজেক্টের জন্য রিসোর্স পরিকল্পনা)
+- [x] Multi-site / multi-project support (মাল্টি-সাইট / মাল্টি-প্রজেক্ট সাপোর্ট)
+- [x] Project status workflows (Planning → Active → On Hold → Completed) (প্রজেক্ট স্ট্যাটাস ওয়ার্কফ্লো (পরিকল্পনা → সক্রিয় → স্থগিত → সম্পন্ন))
 
 #### 1.2 Task & Work Orders _(Must Have)_
 
-- Task creation and assignment (টাস্ক তৈরি এবং অ্যাসাইনমেন্ট)
-- Work order generation (ওয়ার্ক অর্ডার জেনারেশন)
-- Priority levels (Low / Medium / High / Critical) (অগ্রাধিকার স্তর (নিম্ন / মাঝারি / উচ্চ / জরুরি))
-- Status workflows (Open → In Progress → Review → Closed) (স্ট্যাটাস ওয়ার্কফ্লো (খোলা → চলমান → রিভিউ → বন্ধ))
-- Task dependencies and blocking relationships (টাস্ক ডিপেন্ডেন্সি এবং ব্লকিং রিলেশনশিপ)
+- [x] Task creation and assignment (টাস্ক তৈরি এবং অ্যাসাইনমেন্ট)
+- [x] Work order generation (ওয়ার্ক অর্ডার জেনারেশন)
+- [x] Priority levels (Low / Medium / High / Critical) (অগ্রাধিকার স্তর (নিম্ন / মাঝারি / উচ্চ / জরুরি))
+- [x] Status workflows (Open → In Progress → Review → Closed) (স্ট্যাটাস ওয়ার্কফ্লো (খোলা → চলমান → রিভিউ → বন্ধ))
+- [x] Task dependencies and blocking relationships (টাস্ক ডিপেন্ডেন্সি এবং ব্লকিং রিলেশনশিপ)
 
 #### 1.3 Site Management _(Must Have)_
 
-- Site/location registry (সাইট/লোকেশন রেজিস্ট্রি)
-- Daily site logs and field reports (দৈনিক সাইট লগ এবং ফিল্ড রিপোর্ট)
-- Inspection checklists (ইন্সপেকশন চেকলিস্ট)
-- Material delivery tracking at site level (সাইট লেভেলে ম্যাটেরিয়াল ডেলিভারি ট্র্যাকিং)
-- Weather log integration (আবহাওয়া লগ ইন্টিগ্রেশন)
-- Site photo uploads (সাইট ফটো আপলোড)
+- [x] Site/location registry (সাইট/লোকেশন রেজিস্ট্রি)
+- [x] Daily site logs and field reports (দৈনিক সাইট লগ এবং ফিল্ড রিপোর্ট)
+- [x] Inspection checklists (ইন্সপেকশন চেকলিস্ট)
+- [x] Material delivery tracking at site level (সাইট লেভেলে ম্যাটেরিয়াল ডেলিভারি ট্র্যাকিং)
+- [x] Weather log integration (আবহাওয়া লগ ইন্টিগ্রেশন)
+- [x] Site photo uploads (সাইট ফটো আপলোড)
 
 ---
 
@@ -40,38 +40,38 @@
 
 #### 2.1 Budgeting & Cost Control _(Must Have)_
 
-- Project budget creation (প্রজেক্ট বাজেট তৈরি)
-- Cost code / WBS (Work Breakdown Structure) (কস্ট কোড / WBS (ওয়ার্ক ব্রেকডাউন স্ট্রাকচার))
-- Budget vs actual tracking (বাজেট বনাম প্রকৃত ট্র্যাকিং)
-- Cost overrun alerts (কস্ট ওভাররান অ্যালার্ট)
-- Forecast to complete (ETC / EAC) (সম্পন্ন করার পূর্বাভাস (ETC / EAC))
+- [x] Project budget creation (প্রজেক্ট বাজেট তৈরি)
+- [x] Cost code / WBS (Work Breakdown Structure) (কস্ট কোড / WBS (ওয়ার্ক ব্রেকডাউন স্ট্রাকচার))
+- [x] Budget vs actual tracking (বাজেট বনাম প্রকৃত ট্র্যাকিং)
+- [x] Cost overrun alerts (কস্ট ওভাররান অ্যালার্ট)
+- [x] Forecast to complete (ETC / EAC) (সম্পন্ন করার পূর্বাভাস (ETC / EAC))
 
 #### 2.2 Estimating & BOQ _(Must Have)_
 
-- Bill of Quantities (BOQ) builder (বিল অফ কোয়ান্টিটিজ (BOQ) বিল্ডার)
-- Cost estimation per line item (প্রতি লাইন আইটেমের জন্য কস্ট এস্টিমেশন)
-- Rate analysis and unit rate library (রেট অ্যানালাইসিস এবং ইউনিট রেট লাইব্রেরি)
-- Material takeoff sheets (ম্যাটেরিয়াল টেক-অফ শিট)
-- BOQ import via Excel (এক্সেল এর মাধ্যমে BOQ ইমপোর্ট)
+- [x] Bill of Quantities (BOQ) builder (বিল অফ কোয়ান্টিটিজ (BOQ) বিল্ডার)
+- [x] Cost estimation per line item (প্রতি লাইন আইটেমের জন্য কস্ট এস্টিমেশন)
+- [x] Rate analysis and unit rate library (রেট অ্যানালাইসিস এবং ইউনিট রেট লাইব্রেরি)
+- [x] Material takeoff sheets (ম্যাটেরিয়াল টেক-অফ শিট)
+- [x] BOQ import via Excel (এক্সেল এর মাধ্যমে BOQ ইমপোর্ট)
 
 #### 2.3 Tender Management _(Must Have)_
 
-- Pre-qualification of bidders (বিডারদের প্রি-কোয়ালিফিকেশন)
-- Tender package creation and distribution (টেন্ডার প্যাকেজ তৈরি এবং বিতরণ)
-- Bid submission tracking (বিড সাবমিশন ট্র্যাকিং)
-- Bid evaluation and comparison matrix (বিড মূল্যায়ন এবং তুলনা ম্যাট্রিক্স)
-- Award letters and tender closeout (অ্যাওয়ার্ড লেটার এবং টেন্ডার ক্লোজআউট)
+- [x] Pre-qualification of bidders (বিডারদের প্রি-কোয়ালিফিকেশন)
+- [x] Tender package creation and distribution (টেন্ডার প্যাকেজ তৈরি এবং বিতরণ)
+- [x] Bid submission tracking (বিড সাবমিশন ট্র্যাকিং)
+- [x] Bid evaluation and comparison matrix (বিড মূল্যায়ন এবং তুলনা ম্যাট্রিক্স)
+- [x] Award letters and tender closeout (অ্যাওয়ার্ড লেটার এবং টেন্ডার ক্লোজআউট)
 
 #### 2.4 Invoicing & Accounts _(Must Have)_
 
-- Client invoice generation (progress / milestone billing) (ক্লায়েন্ট ইনভয়েস জেনারেশন (প্রগ্রেস / মাইলস্টোন বিলিং))
-- Interim payment applications (IPA) (ইন্টারিম পেমেন্ট অ্যাপ্লিকেশন (IPA))
-- Accounts payable / receivable (দেনা হিসাব / পাওনা হিসাব)
-- Retention tracking and release (রিটেনশন ট্র্যাকিং এবং রিলিজ)
-- Bank guarantee tracking (ব্যাংক গ্যারান্টি ট্র্যাকিং)
-- Journal entries and general ledger (জার্নাল এন্ট্রি এবং জেনারেল লেজার)
-- Cash flow statements (ক্যাশ ফ্লো স্টেটমেন্ট)
-- Tax / VAT handling (ট্যাক্স / ভ্যাট হ্যান্ডলিং)
+- [x] Client invoice generation (progress / milestone billing) (ক্লায়েন্ট ইনভয়েস জেনারেশন (প্রগ্রেস / মাইলস্টোন বিলিং))
+- [x] Interim payment applications (IPA) (ইন্টারিম পেমেন্ট অ্যাপ্লিকেশন (IPA))
+- [x] Accounts payable / receivable (দেনা হিসাব / পাওনা হিসাব)
+- [x] Retention tracking and release (রিটেনশন ট্র্যাকিং এবং রিলিজ)
+- [x] Bank guarantee tracking (ব্যাংক গ্যারান্টি ট্র্যাকিং)
+- [x] Journal entries and general ledger (জার্নাল এন্ট্রি এবং জেনারেল লেজার)
+- [x] Cash flow statements (ক্যাশ ফ্লো স্টেটমেন্ট)
+- [x] Tax / VAT handling (ট্যাক্স / ভ্যাট হ্যান্ডলিং)
 
 ---
 
@@ -79,38 +79,38 @@
 
 #### 3.1 Vendor / Supplier Management _(Must Have)_
 
-- Vendor profiles, contact details, trade categories (ভেন্ডর প্রোফাইল, কন্টাক্ট ডিটেইলস, ট্রেড ক্যাটাগরি)
-- Pre-qualification and approval status (প্রি-কোয়ালিফিকেশন এবং অ্যাপ্রুভাল স্ট্যাটাস)
-- Vendor performance ratings (ভেন্ডর পারফরম্যান্স রেটিং)
-- Payment terms and credit limits (পেমেন্ট শর্তাবলী এবং ক্রেডিট লিমিট)
-- Blacklist / suspension tracking (ব্ল্যাকলিস্ট / সাসপেনশন ট্র্যাকিং)
+- [x] Vendor profiles, contact details, trade categories (ভেন্ডর প্রোফাইল, কন্টাক্ট ডিটেইলস, ট্রেড ক্যাটাগরি)
+- [x] Pre-qualification and approval status (প্রি-কোয়ালিফিকেশন এবং অ্যাপ্রুভাল স্ট্যাটাস)
+- [x] Vendor performance ratings (ভেন্ডর পারফরম্যান্স রেটিং)
+- [x] Payment terms and credit limits (পেমেন্ট শর্তাবলী এবং ক্রেডিট লিমিট)
+- [x] Blacklist / suspension tracking (ব্ল্যাকলিস্ট / সাসপেনশন ট্র্যাকিং)
 
 #### 3.2 Procurement _(Must Have)_
 
-- Purchase requisitions (PR) (পারচেজ রিকুইজিশন (PR))
-- Purchase orders (PO) (পারচেজ অর্ডার (PO))
-- Material approval / submittal process (ম্যাটেরিয়াল অ্যাপ্রুভাল / সাবমিটাল প্রসেস)
-- Vendor comparison and quotation analysis (ভেন্ডর তুলনা এবং কোটেশন অ্যানালাইসিস)
-- Goods received notes (GRN) (গুডস রিসিভড নোটস (GRN))
-- Multi-level approval workflows (মাল্টি-লেভেল অ্যাপ্রুভাল ওয়ার্কফ্লো)
+- [x] Purchase requisitions (PR) (পারচেজ রিকুইজিশন (PR))
+- [x] Purchase orders (PO) (পারচেজ অর্ডার (PO))
+- [x] Material approval / submittal process (ম্যাটেরিয়াল অ্যাপ্রুভাল / সাবমিটাল প্রসেস)
+- [x] Vendor comparison and quotation analysis (ভেন্ডর তুলনা এবং কোটেশন অ্যানালাইসিস)
+- [x] Goods received notes (GRN) (গুডস রিসিভড নোটস (GRN))
+- [x] Multi-level approval workflows (মাল্টি-লেভেল অ্যাপ্রুভাল ওয়ার্কফ্লো)
 
 #### 3.3 Inventory & Warehouse _(Must Have)_
 
-- Material stock management (multiple warehouses/sites) (ম্যাটেরিয়াল স্টক ম্যানেজমেন্ট (একাধিক ওয়্যারহাউস/সাইট))
-- Site-to-site material transfers (সাইট-টু-সাইট ম্যাটেরিয়াল ট্রান্সফার)
-- Material issue slips (ম্যাটেরিয়াল ইস্যু স্লিপ)
-- Wastage and loss tracking (অপচয় এবং ক্ষতি ট্র্যাকিং)
-- Reorder level alerts (পুনরায় অর্ডারের লেভেল অ্যালার্ট)
-- Material reconciliation reports (ম্যাটেরিয়াল রিকনসিলিয়েশন রিপোর্ট)
+- [x] Material stock management (multiple warehouses/sites) (ম্যাটেরিয়াল স্টক ম্যানেজমেন্ট (একাধিক ওয়্যারহাউস/সাইট))
+- [x] Site-to-site material transfers (সাইট-টু-সাইট ম্যাটেরিয়াল ট্রান্সফার)
+- [x] Material issue slips (ম্যাটেরিয়াল ইস্যু স্লিপ)
+- [x] Wastage and loss tracking (অপচয় এবং ক্ষতি ট্র্যাকিং)
+- [x] Reorder level alerts (পুনরায় অর্ডারের লেভেল অ্যালার্ট)
+- [x] Material reconciliation reports (ম্যাটেরিয়াল রিকনসিলিয়েশন রিপোর্ট)
 
 #### 3.4 Subcontractor Management _(Must Have)_
 
-- Subcontractor pre-qualification (সাবকন্ট্রাক্টর প্রি-কোয়ালিফিকেশন)
-- Subcontract agreements (সাবকন্ট্রাক্ট চুক্তি)
-- Scope of work definitions (কাজের পরিসর নির্ধারণ)
-- Progress payment certificates (প্রগ্রেস পেমেন্ট সার্টিফিকেট)
-- Retention tracking (রিটেনশন ট্র্যাকিং)
-- Subcontractor performance scoring (সাবকন্ট্রাক্টর পারফরম্যান্স স্কোরিং)
+- [x] Subcontractor pre-qualification (সাবকন্ট্রাক্টর প্রি-কোয়ালিফিকেশন)
+- [x] Subcontract agreements (সাবকন্ট্রাক্ট চুক্তি)
+- [x] Scope of work definitions (কাজের পরিসর নির্ধারণ)
+- [x] Progress payment certificates (প্রগ্রেস পেমেন্ট সার্টিফিকেট)
+- [x] Retention tracking (রিটেনশন ট্র্যাকিং)
+- [x] Subcontractor performance scoring (সাবকন্ট্রাক্টর পারফরম্যান্স স্কোরিং)
 
 ---
 
@@ -118,32 +118,32 @@
 
 #### 4.1 HR & Payroll _(Must Have)_
 
-- Worker / employee profiles (কর্মী / কর্মচারী প্রোফাইল)
-- Attendance and timesheet tracking (উপস্থিতি এবং টাইমশিট ট্র্যাকিং)
-- Labour cost allocation per project (প্রতি প্রজেক্টে লেবার কস্ট অ্যালোকেশন)
-- Wage slip generation (ওয়েজ স্লিপ জেনারেশন)
-- Leave and overtime management (ছুটি এবং ওভারটাইম ম্যানেজমেন্ট)
-- Training records and certifications (ট্রেনিং রেকর্ড এবং সার্টিফিকেশন)
-- PPE issuance tracking (পিপিই ইস্যু ট্র্যাকিং)
+- [x] Worker / employee profiles (কর্মী / কর্মচারী প্রোফাইল)
+- [x] Attendance and timesheet tracking (উপস্থিতি এবং টাইমশিট ট্র্যাকিং)
+- [x] Labour cost allocation per project (প্রতি প্রজেক্টে লেবার কস্ট অ্যালোকেশন)
+- [x] Wage slip generation (ওয়েজ স্লিপ জেনারেশন)
+- [x] Leave and overtime management (ছুটি এবং ওভারটাইম ম্যানেজমেন্ট)
+- [x] Training records and certifications (ট্রেনিং রেকর্ড এবং সার্টিফিকেশন)
+- [x] PPE issuance tracking (পিপিই ইস্যু ট্র্যাকিং)
 
 #### 4.2 Equipment & Assets _(Must Have)_
 
-- Equipment registry and specifications (ইকুইপমেন্ট রেজিস্ট্রি এবং স্পেসিফিকেশন)
-- Owned vs hired (rented) plant tracking (নিজস্ব বনাম ভাড়া করা প্ল্যান্ট ট্র্যাকিং)
-- Hire rates and hire period management (ভাড়া রেট এবং ভাড়া পিরিয়ড ম্যানেজমেন্ট)
-- Allocation to projects/sites (প্রজেক্ট/সাইটে অ্যালোকেশন)
-- Preventive maintenance schedules (প্রিভেন্টিভ মেইনটেইন্যান্স শিডিউল)
-- Fuel consumption logs (ফুয়েল কনজাম্পশন লগ)
-- Asset depreciation tracking (অ্যাসেট ডেপ্রিসিয়েশন ট্র্যাকিং)
+- [x] Equipment registry and specifications (ইকুইপমেন্ট রেজিস্ট্রি এবং স্পেসিফিকেশন)
+- [x] Owned vs hired (rented) plant tracking (নিজস্ব বনাম ভাড়া করা প্ল্যান্ট ট্র্যাকিং)
+- [x] Hire rates and hire period management (ভাড়া রেট এবং ভাড়া পিরিয়ড ম্যানেজমেন্ট)
+- [x] Allocation to projects/sites (প্রজেক্ট/সাইটে অ্যালোকেশন)
+- [x] Preventive maintenance schedules (প্রিভেন্টিভ মেইনটেইন্যান্স শিডিউল)
+- [x] Fuel consumption logs (ফুয়েল কনজাম্পশন লগ)
+- [x] Asset depreciation tracking (অ্যাসেট ডেপ্রিসিয়েশন ট্র্যাকিং)
 
 #### 4.3 Safety & Compliance _(Must Have)_
 
-- HSE (Health, Safety & Environment) checklists (এইচএসই (স্বাস্থ্য, নিরাপত্তা এবং পরিবেশ) চেকলিস্ট)
-- Incident and accident reports (ঘটনা এবং দুর্ঘটনা রিপোর্ট)
-- Permits to work (PTW) (কাজের পারমিট (PTW))
-- Certification and licence tracking (সার্টিফিকেশন এবং লাইসেন্স ট্র্যাকিং)
-- Toolbox talk records (টুলবক্স টক রেকর্ড)
-- Safety audit records (সেফটি অডিট রেকর্ড)
+- [x] HSE (Health, Safety & Environment) checklists (এইচএসই (স্বাস্থ্য, নিরাপত্তা এবং পরিবেশ) চেকলিস্ট)
+- [x] Incident and accident reports (ঘটনা এবং দুর্ঘটনা রিপোর্ট)
+- [x] Permits to work (PTW) (কাজের পারমিট (PTW))
+- [x] Certification and licence tracking (সার্টিফিকেশন এবং লাইসেন্স ট্র্যাকিং)
+- [x] Toolbox talk records (টুলবক্স টক রেকর্ড)
+- [x] Safety audit records (সেফটি অডিট রেকর্ড)
 
 ---
 
@@ -151,23 +151,23 @@
 
 #### 5.1 Quality Control / QA _(Must Have)_
 
-- Inspection and test plans (ITP) (ইন্সপেকশন এবং টেস্ট প্ল্যান (ITP))
-- Non-conformance reports (NCR) (নন-কনফরমেন্স রিপোর্ট (NCR))
-- Defect / punch list / snagging list (ডিফেক্ট / পাঞ্চ লিস্ট / স্ন্যাগিং লিস্ট)
-- Material test certificates (ম্যাটেরিয়াল টেস্ট সার্টিফিকেট)
-- Concrete mix design approvals (কংক্রিট মিক্স ডিজাইন অ্যাপ্রুভাল)
-- Quality audit records (কোয়ালিটি অডিট রেকর্ড)
-- Corrective action tracking (CAR) (কারেক্টিভ অ্যাকশন ট্র্যাকিং (CAR))
+- [x] Inspection and test plans (ITP) (ইন্সপেকশন এবং টেস্ট প্ল্যান (ITP))
+- [x] Non-conformance reports (NCR) (নন-কনফরমেন্স রিপোর্ট (NCR))
+- [x] Defect / punch list / snagging list (ডিফেক্ট / পাঞ্চ লিস্ট / স্ন্যাগিং লিস্ট)
+- [x] Material test certificates (ম্যাটেরিয়াল টেস্ট সার্টিফিকেট)
+- [x] Concrete mix design approvals (কংক্রিট মিক্স ডিজাইন অ্যাপ্রুভাল)
+- [x] Quality audit records (কোয়ালিটি অডিট রেকর্ড)
+- [x] Corrective action tracking (CAR) (কারেক্টিভ অ্যাকশন ট্র্যাকিং (CAR))
 
 #### 5.2 Risk Management _(Important)_
 
-- Risk register per project (প্রতি প্রজেক্টের জন্য রিস্ক রেজিস্টার)
-- Risk assessment matrix — probability × impact (রিস্ক অ্যাসেসমেন্ট ম্যাট্রিক্স — সম্ভাবনা × প্রভাব)
-- Risk owner assignment (রিস্ক ওনার অ্যাসাইনমেন্ট)
-- Mitigation plans (মিটিগেশন পরিকল্পনা)
-- Contingency plans (কন্টিনজেন্সি পরিকল্পনা)
-- Risk status tracking (Open → In Progress → Mitigated → Closed) (রিস্ক স্ট্যাটাস ট্র্যাকিং (খোলা → চলমান → প্রশমিত → বন্ধ))
-- Risk review dates (রিস্ক রিভিউ তারিখ)
+- [x] Risk register per project (প্রতি প্রজেক্টের জন্য রিস্ক রেজিস্টার)
+- [x] Risk assessment matrix — probability × impact (রিস্ক অ্যাসেসমেন্ট ম্যাট্রিক্স — সম্ভাবনা × প্রভাব)
+- [x] Risk owner assignment (রিস্ক ওনার অ্যাসাইনমেন্ট)
+- [x] Mitigation plans (মিটিগেশন পরিকল্পনা)
+- [x] Contingency plans (কন্টিনজেন্সি পরিকল্পনা)
+- [x] Risk status tracking (Open → In Progress → Mitigated → Closed) (রিস্ক স্ট্যাটাস ট্র্যাকিং (খোলা → চলমান → প্রশমিত → বন্ধ))
+- [x] Risk review dates (রিস্ক রিভিউ তারিখ)
 
 ---
 
@@ -175,31 +175,31 @@
 
 #### 6.1 CRM & Clients _(Important)_
 
-- Client profiles, contact details, documents (ক্লায়েন্ট প্রোফাইল, যোগাযোগের তথ্য, ডকুমেন্ট)
-- Lead / opportunity tracking with estimated value (আনুমানিক মূল্যসহ লিড / অপর্চুনিটি ট্র্যাকিং)
-- Proposals and quotations (প্রপোজাল এবং কোটেশন)
-- Communication history log (যোগাযোগের ইতিহাস লগ)
-- Lead status workflow (New → Contacted → Proposal Sent → Negotiation → Won / Lost) (লিড স্ট্যাটাস ওয়ার্কফ্লো (নতুন → যোগাযোগ করা হয়েছে → প্রস্তাব পাঠানো হয়েছে → আলোচনা → জেতা / হারানো))
-- Client portal — view project progress and invoices (optional) (ক্লায়েন্ট পোর্টাল — প্রজেক্টের অগ্রগতি এবং ইনভয়েস দেখার সুবিধা (ঐচ্ছিক))
+- [x] Client profiles, contact details, documents (ক্লায়েন্ট প্রোফাইল, যোগাযোগের তথ্য, ডকুমেন্ট)
+- [x] Lead / opportunity tracking with estimated value (আনুমানিক মূল্যসহ লিড / অপর্চুনিটি ট্র্যাকিং)
+- [x] Proposals and quotations (প্রপোজাল এবং কোটেশন)
+- [x] Communication history log (যোগাযোগের ইতিহাস লগ)
+- [x] Lead status workflow (New → Contacted → Proposal Sent → Negotiation → Won / Lost) (লিড স্ট্যাটাস ওয়ার্কফ্লো (নতুন → যোগাযোগ করা হয়েছে → প্রস্তাব পাঠানো হয়েছে → আলোচনা → জেতা / হারানো))
+- [x] Client portal — view project progress and invoices (optional) (ক্লায়েন্ট পোর্টাল — প্রজেক্টের অগ্রগতি এবং ইনভয়েস দেখার সুবিধা (ঐচ্ছিক))
 
 #### 6.2 Document Management _(Must Have)_
 
-- Drawing register and revision control (ড্রয়িং রেজিস্টার এবং রিভিশন কন্ট্রোল)
-- Shop drawings and as-built drawings (শপ ড্রয়িং এবং অ্যাজ-বিল্ট ড্রয়িং)
-- Drawing transmittals (ড্রয়িং ট্রান্সমিটালস)
-- RFIs (Request for Information) (আরএফআই (তথ্যের জন্য অনুরোধ))
-- Submittal tracking (সাবমিটাল ট্র্যাকিং)
-- Change orders / variation orders (চেঞ্জ অর্ডার / ভেরিয়েশন অর্ডার)
-- Version control and approval workflows (ভার্সন কন্ট্রোল এবং অ্যাপ্রুভাল ওয়ার্কফ্লো)
+- [x] Drawing register and revision control (ড্রয়িং রেজিস্টার এবং রিভিশন কন্ট্রোল)
+- [x] Shop drawings and as-built drawings (শপ ড্রয়িং এবং অ্যাজ-বিল্ট ড্রয়িং)
+- [x] Drawing transmittals (ড্রয়িং ট্রান্সমিটালস)
+- [x] RFIs (Request for Information) (আরএফআই (তথ্যের জন্য অনুরোধ))
+- [x] Submittal tracking (সাবমিটাল ট্র্যাকিং)
+- [x] Change orders / variation orders (চেঞ্জ অর্ডার / ভেরিয়েশন অর্ডার)
+- [x] Version control and approval workflows (ভার্সন কন্ট্রোল এবং অ্যাপ্রুভাল ওয়ার্কফ্লো)
 
 #### 6.3 Contract Management _(Must Have)_
 
-- Main contract repository (মূল কন্ট্রাক্ট রিপোজিটরি)
-- Contract variations / amendments (কন্ট্রাক্ট ভেরিয়েশন / সংশোধনী)
-- Claims management (ক্লেমস ম্যানেজমেন্ট)
-- Retention and milestone tracking (রিটেনশন এবং মাইলস্টোন ট্র্যাকিং)
-- Bank guarantee and insurance tracking (ব্যাংক গ্যারান্টি এবং ইন্স্যুরেন্স ট্র্যাকিং)
-- Contract closeout checklist (কন্ট্রাক্ট ক্লোজআউট চেকলিস্ট)
+- [x] Main contract repository (মূল কন্ট্রাক্ট রিপোজিটরি)
+- [x] Contract variations / amendments (কন্ট্রাক্ট ভেরিয়েশন / সংশোধনী)
+- [x] Claims management (ক্লেমস ম্যানেজমেন্ট)
+- [x] Retention and milestone tracking (রিটেনশন এবং মাইলস্টোন ট্র্যাকিং)
+- [x] Bank guarantee and insurance tracking (ব্যাংক গ্যারান্টি এবং ইন্স্যুরেন্স ট্র্যাকিং)
+- [x] Contract closeout checklist (কন্ট্রাক্ট ক্লোজআউট চেকলিস্ট)
 
 ---
 
@@ -207,23 +207,23 @@
 
 #### 7.1 Settings & Configuration _(Must Have)_
 
-- Company profile and branding (কোম্পানি প্রোফাইল এবং ব্র্যান্ডিং)
-- Financial year and currency setup (আর্থিক বছর এবং কারেন্সি সেটআপ)
-- Tax rate configuration (ট্যাক্স রেট কনফিগারেশন)
-- Approval matrix / workflow configuration (অ্যাপ্রুভাল ম্যাট্রিক্স / ওয়ার্কফ্লো কনফিগারেশন)
-- Number series for POs, invoices, work orders (পিও, ইনভয়েস, ওয়ার্ক অর্ডারের জন্য নম্বর সিরিজ)
-- Email / SMS gateway settings (ইমেইল / এসএমএস গেটওয়ে সেটিংস)
-- Multi-company / multi-branch support (optional) (মাল্টি-কোম্পানি / মাল্টি-ব্রাঞ্চ সাপোর্ট (ঐচ্ছিক))
+- [x] Company profile and branding (কোম্পানি প্রোফাইল এবং ব্র্যান্ডিং)
+- [x] Financial year and currency setup (আর্থিক বছর এবং কারেন্সি সেটআপ)
+- [x] Tax rate configuration (ট্যাক্স রেট কনফিগারেশন)
+- [x] Approval matrix / workflow configuration (অ্যাপ্রুভাল ম্যাট্রিক্স / ওয়ার্কফ্লো কনফিগারেশন)
+- [x] Number series for POs, invoices, work orders (পিও, ইনভয়েস, ওয়ার্ক অর্ডারের জন্য নম্বর সিরিজ)
+- [x] Email / SMS gateway settings (ইমেইল / এসএমএস গেটওয়ে সেটিংস)
+- [x] Multi-company / multi-branch support (optional) (মাল্টি-কোম্পানি / মাল্টি-ব্রাঞ্চ সাপোর্ট (ঐচ্ছিক))
 
 #### 7.2 Reports & Analytics _(Must Have)_
 
-- Executive dashboard with KPIs (কেপিআই সহ এক্সিকিউটিভ ড্যাশবোর্ড)
-- Cost and financial reports (কস্ট এবং ফিন্যান্সিয়াল রিপোর্ট)
-- Progress and schedule reports (S-curve) (প্রগ্রেস এবং শিডিউল রিপোর্ট (S-curve))
-- Labour and equipment utilisation reports (লেবার এবং ইকুইপমেন্ট ইউটিলাইজেশন রিপোর্ট)
-- Custom report builder (কাস্টম রিপোর্ট বিল্ডার)
-- Scheduled report delivery (email) (শিডিউলড রিপোর্ট ডেলিভারি (ইমেইল))
-- PDF / Excel export (পিডিএফ / এক্সেল এক্সপোর্ট)
+- [x] Executive dashboard with KPIs (কেপিআই সহ এক্সিকিউটিভ ড্যাশবোর্ড)
+- [x] Cost and financial reports (কস্ট এবং ফিন্যান্সিয়াল রিপোর্ট)
+- [x] Progress and schedule reports (S-curve) (প্রগ্রেস এবং শিডিউল রিপোর্ট (S-curve))
+- [x] Labour and equipment utilisation reports (লেবার এবং ইকুইপমেন্ট ইউটিলাইজেশন রিপোর্ট)
+- [x] Custom report builder (কাস্টম রিপোর্ট বিল্ডার)
+- [x] Scheduled report delivery (email) (শিডিউলড রিপোর্ট ডেলিভারি (ইমেইল))
+- [x] PDF / Excel export (পিডিএফ / এক্সেল এক্সপোর্ট)
 
 ---
 
@@ -333,50 +333,50 @@ Modules/
 
 একটি নির্মাণ প্রজেক্ট শুরু থেকে শেষ পর্যন্ত ট্র্যাক করার মূল মডিউল।
 
-- প্রজেক্ট তৈরি করা হয় (নাম, বাজেট, শুরু ও শেষ তারিখ)
-- প্রজেক্টকে ভাগ করা হয় **Phase** (পর্যায়) → **Milestone** (গুরুত্বপূর্ণ লক্ষ্যবিন্দু) → **Task** (কাজ)
-- **Gantt Chart** — একটি বার চার্ট যেখানে প্রতিটি কাজের সময়সীমা দেখা যায়
-- **S-Curve** — প্রজেক্টের অগ্রগতি একটি বাঁকা লাইনে দেখায়, পরিকল্পিত অগ্রগতির সাথে তুলনা করা যায়
+- [x] প্রজেক্ট তৈরি করা হয় (নাম, বাজেট, শুরু ও শেষ তারিখ)
+- [x] প্রজেক্টকে ভাগ করা হয় **Phase** (পর্যায়) → **Milestone** (গুরুত্বপূর্ণ লক্ষ্যবিন্দু) → **Task** (কাজ)
+- [x] **Gantt Chart** — একটি বার চার্ট যেখানে প্রতিটি কাজের সময়সীমা দেখা যায়
+- [x] **S-Curve** — প্রজেক্টের অগ্রগতি একটি বাঁকা লাইনে দেখায়, পরিকল্পিত অগ্রগতির সাথে তুলনা করা যায়
 
 ---
 
 ### ১.২ Task & Work Orders — টাস্ক ও ওয়ার্ক অর্ডার
 
-- **Task** — ছোট কাজের একক, যেমন "গেট নম্বর ৩-এর দরজা লাগানো"
-- **Work Order** — আনুষ্ঠানিক নির্দেশনা পত্র, কোনো কর্মী বা সাবকন্ট্রাক্টরকে একটি নির্দিষ্ট কাজ করতে বলা হয়
-- **Task Dependency** — একটি কাজ শেষ না হলে পরের কাজ শুরু হবে না
+- [x] **Task** — ছোট কাজের একক, যেমন "গেট নম্বর ৩-এর দরজা লাগানো"
+- [x] **Work Order** — আনুষ্ঠানিক নির্দেশনা পত্র, কোনো কর্মী বা সাবকন্ট্রাক্টরকে একটি নির্দিষ্ট কাজ করতে বলা হয়
+- [x] **Task Dependency** — একটি কাজ শেষ না হলে পরের কাজ শুরু হবে না
 
 ---
 
 ### ১.৩ Site Management — সাইট ম্যানেজমেন্ট
 
-- প্রতিটি নির্মাণ সাইটের দৈনিক কার্যক্রম রেকর্ড করা
-- **Daily Log** — আজকে সাইটে কী হলো, কতজন কাজ করলো, কী ডেলিভারি এলো
-- **Field Report** — সাইট ইঞ্জিনিয়ার মাঠ থেকে যে রিপোর্ট পাঠান
+- [x] প্রতিটি নির্মাণ সাইটের দৈনিক কার্যক্রম রেকর্ড করা
+- [x] **Daily Log** — আজকে সাইটে কী হলো, কতজন কাজ করলো, কী ডেলিভারি এলো
+- [x] **Field Report** — সাইট ইঞ্জিনিয়ার মাঠ থেকে যে রিপোর্ট পাঠান
 
 ---
 
 ### ৪.১ HR & Payroll — এইচআর ও বেতন
 
-- কর্মী নিয়োগ, উপস্থিতি, ছুটি, ওভারটাইম
-- বেতন স্লিপ তৈরি
-- প্রতিটি প্রজেক্টে কত শ্রম খরচ হলো তা হিসাব করা
-- পরিচিত মডিউল, বিশেষ ব্যাখ্যা প্রয়োজন নেই
+- [x] কর্মী নিয়োগ, উপস্থিতি, ছুটি, ওভারটাইম
+- [x] বেতন স্লিপ তৈরি
+- [x] প্রতিটি প্রজেক্টে কত শ্রম খরচ হলো তা হিসাব করা
+- [x] পরিচিত মডিউল, বিশেষ ব্যাখ্যা প্রয়োজন নেই
 
 ---
 
 ### ৭.১ Settings & Configuration — সেটিংস
 
-- কোম্পানির নাম, লোগো, ঠিকানা
-- ট্যাক্স / ভ্যাট রেট সেট করা
-- ইমেইল/SMS গেটওয়ে
+- [x] কোম্পানির নাম, লোগো, ঠিকানা
+- [x] ট্যাক্স / ভ্যাট রেট সেট করা
+- [x] ইমেইল/SMS গেটওয়ে
 
 ---
 
 ### ৭.২ Reports & Analytics — রিপোর্ট ও বিশ্লেষণ
 
-- বিভিন্ন মডিউলের ডেটা একত্রিত করে রিপোর্ট তৈরি
-- PDF / Excel এ ডাউনলোড
+- [x] বিভিন্ন মডিউলের ডেটা একত্রিত করে রিপোর্ট তৈরি
+- [x] PDF / Excel এ ডাউনলোড
 
 ---
 
@@ -421,8 +421,8 @@ Modules/
 
 **ETC ও EAC কী?**
 
-- **ETC (Estimate to Complete)** — এখন পর্যন্ত কাজের পর, বাকি কাজ শেষ করতে আর কত টাকা লাগবে
-- **EAC (Estimate at Completion)** — পুরো প্রজেক্ট শেষে মোট কত খরচ হবে বলে ধারণা করা হচ্ছে
+- [x] **ETC (Estimate to Complete)** — এখন পর্যন্ত কাজের পর, বাকি কাজ শেষ করতে আর কত টাকা লাগবে
+- [x] **EAC (Estimate at Completion)** — পুরো প্রজেক্ট শেষে মোট কত খরচ হবে বলে ধারণা করা হচ্ছে
 
 উদাহরণ: বাজেট ছিল ১ কোটি টাকা, এখন পর্যন্ত ৬০ লাখ খরচ হয়েছে, কিন্তু কাজ হয়েছে মাত্র ৫০%।
 তাহলে EAC = ১.২ কোটি → মানে ২০ লাখ টাকা বাজেট বেশি লাগবে।
@@ -518,10 +518,10 @@ Retention (৫%):      -৫০,০০০ টাকা
 **Pre-qualification কী?**
 সব সরবরাহকারী থেকে কেনাকাটা করা ঠিক নয়। আগে যাচাই করা হয় —
 
-- ট্রেড লাইসেন্স আছে কিনা
-- পণ্যের মান ঠিক আছে কিনা
-- সময়মতো সরবরাহ করতে পারে কিনা
-- আর্থিকভাবে সক্ষম কিনা
+- [x] ট্রেড লাইসেন্স আছে কিনা
+- [x] পণ্যের মান ঠিক আছে কিনা
+- [x] সময়মতো সরবরাহ করতে পারে কিনা
+- [x] আর্থিকভাবে সক্ষম কিনা
 
 **Performance Rating কী?**
 প্রতিটি অর্ডারের পর ভেন্ডরকে রেটিং দেওয়া হয়।
@@ -598,8 +598,8 @@ GRN ছাড়া পেমেন্ট হওয়া উচিত নয়
 
 **Owned vs Hired Plant কী?**
 
-- **Owned (নিজস্ব)** — কোম্পানির নিজের ক্রেন, এক্সকেভেটর
-- **Hired (ভাড়া)** — অন্যের কাছ থেকে ভাড়া নেওয়া যন্ত্রপাতি
+- [x] **Owned (নিজস্ব)** — কোম্পানির নিজের ক্রেন, এক্সকেভেটর
+- [x] **Hired (ভাড়া)** — অন্যের কাছ থেকে ভাড়া নেওয়া যন্ত্রপাতি
   দুটোর হিসাব আলাদাভাবে রাখতে হয়।
 
 **Preventive Maintenance কী?**
@@ -674,11 +674,11 @@ NCR পাওয়ার পর কন্ট্রাক্টর কী পদ
 **Risk Register কী?**
 একটি প্রজেক্টের সব সম্ভাব্য ঝুঁকির তালিকা। প্রতিটি ঝুঁকির জন্য লেখা থাকে:
 
-- ঝুঁকিটা কী
-- কতটা সম্ভব (১-৫)
-- হলে ক্ষতি কতটুকু (১-৫)
-- কে দায়িত্বশীল
-- কী করা হবে
+- [x] ঝুঁকিটা কী
+- [x] কতটা সম্ভব (১-৫)
+- [x] হলে ক্ষতি কতটুকু (১-৫)
+- [x] কে দায়িত্বশীল
+- [x] কী করা হবে
 
 **Risk Matrix কী?**
 
@@ -699,8 +699,8 @@ NCR পাওয়ার পর কন্ট্রাক্টর কী পদ
 
 **Mitigation vs Contingency পার্থক্য:**
 
-- **Mitigation (প্রতিরোধ)** — ঝুঁকি কমাতে আগে থেকে যা করবো। উদাহরণ: বন্যার ঝুঁকি → সাইটের চারদিকে বাঁধ দেওয়া।
-- **Contingency (বিকল্প পরিকল্পনা)** — ঝুঁকি তবুও ঘটলে কী করবো। উদাহরণ: বন্যা হয়েই গেলে → বিকল্প সাইটে সরঞ্জাম সরানোর পরিকল্পনা।
+- [x] **Mitigation (প্রতিরোধ)** — ঝুঁকি কমাতে আগে থেকে যা করবো। উদাহরণ: বন্যার ঝুঁকি → সাইটের চারদিকে বাঁধ দেওয়া।
+- [x] **Contingency (বিকল্প পরিকল্পনা)** — ঝুঁকি তবুও ঘটলে কী করবো। উদাহরণ: বন্যা হয়েই গেলে → বিকল্প সাইটে সরঞ্জাম সরানোর পরিকল্পনা।
 
 ---
 
@@ -708,8 +708,8 @@ NCR পাওয়ার পর কন্ট্রাক্টর কী পদ
 
 **Lead / Opportunity কী?**
 
-- **Lead** — কেউ আগ্রহ দেখিয়েছে কিন্তু এখনো নিশ্চিত নয়
-- **Opportunity** — সম্ভাবনা বেশি, আলোচনা চলছে
+- [x] **Lead** — কেউ আগ্রহ দেখিয়েছে কিন্তু এখনো নিশ্চিত নয়
+- [x] **Opportunity** — সম্ভাবনা বেশি, আলোচনা চলছে
 
 **Lead Status Workflow:**
 
@@ -728,9 +728,9 @@ Won ✅ / Lost ❌
 **Client Portal কী?**
 ক্লায়েন্ট নিজে লগইন করে দেখতে পারবেন:
 
-- প্রজেক্ট কতটুকু হয়েছে
-- কোন ইনভয়েস পেন্ডিং আছে
-- সাইটের সাম্প্রতিক ছবি
+- [x] প্রজেক্ট কতটুকু হয়েছে
+- [x] কোন ইনভয়েস পেন্ডিং আছে
+- [x] সাইটের সাম্প্রতিক ছবি
 
 ---
 
@@ -776,11 +776,11 @@ Drawing A-001, Revision 2 → দ্বিতীয় পরিবর্তন
 **Contract Closeout কী?**
 প্রজেক্ট শেষে আনুষ্ঠানিকভাবে সব বিষয় নিষ্পত্তি করার প্রক্রিয়া:
 
-- সব পেমেন্ট হয়েছে?
-- Retention ছেড়ে দেওয়া হয়েছে?
-- Bank Guarantee ফেরত দেওয়া হয়েছে?
-- As-built drawings জমা দেওয়া হয়েছে?
-- Punch list সম্পন্ন হয়েছে?
+- [x] সব পেমেন্ট হয়েছে?
+- [x] Retention ছেড়ে দেওয়া হয়েছে?
+- [x] Bank Guarantee ফেরত দেওয়া হয়েছে?
+- [x] As-built drawings জমা দেওয়া হয়েছে?
+- [x] Punch list সম্পন্ন হয়েছে?
   সব ঠিক হলে চুক্তি আনুষ্ঠানিকভাবে বন্ধ হয়।
 
 ---
