@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Contract;
 use App\Models\ContractAmendment;
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class ContractAmendmentController extends Controller
@@ -121,5 +122,12 @@ class ContractAmendmentController extends Controller
         $contractAmendment->delete();
 
         return back()->with('success', 'Amendment deleted successfully.');
+    }
+
+    public function printPdf(ContractAmendment $contractAmendment)
+    {
+        $contractAmendment->load('contract', 'requester', 'approver', 'creator');
+        $pdf = Pdf::loadView('admin.core.contract-amendments.pdf.amendment', compact('contractAmendment'));
+        return $pdf->stream();
     }
 }

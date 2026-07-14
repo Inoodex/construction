@@ -7,6 +7,7 @@ use App\Models\Proposal;
 use App\Models\ProposalItem;
 use App\Models\Lead;
 use App\Models\Client;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -104,6 +105,18 @@ class ProposalController extends Controller
         $proposal->load(['items', 'lead', 'client', 'creator']);
 
         return view('admin.crm.proposals.show', compact('proposal'));
+    }
+
+    public function printPdf(Proposal $proposal)
+    {
+        $proposal->load('items', 'lead', 'client');
+        $pdf = Pdf::loadView('admin.crm.proposals.pdf.proposal', compact('proposal'))
+            ->setPaper('a4', 'portrait')
+            ->setOption('defaultFont', 'sans-serif')
+            ->setOption('isRemoteEnabled', true)
+            ->setOption('isHtml5ParserEnabled', true);
+
+        return $pdf->stream('PRO-'.$proposal->proposal_number.'.pdf');
     }
 
     public function edit(Proposal $proposal)

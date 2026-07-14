@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PunchList;
 use App\Models\PunchListItem;
 use App\Models\Project;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class PunchListController extends Controller
@@ -152,5 +153,12 @@ class PunchListController extends Controller
     {
         $punchList->delete();
         return back()->with('success', 'Punch list deleted.');
+    }
+
+    public function printPdf(PunchList $punchList)
+    {
+        $punchList->load('project', 'creator', 'items');
+        $pdf = Pdf::loadView('admin.quality.punch-lists.pdf.punch-list', compact('punchList'));
+        return $pdf->stream();
     }
 }

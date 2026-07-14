@@ -67,6 +67,7 @@
                                 <td class="text-center">
                                     <div class="flex items-center justify-center gap-2">
                                         <a href="{{ route('admin.finance.ipas.show', $ipa->id) }}" class="btn btn-sm btn-outline-info">View</a>
+                                        <a href="{{ route('admin.finance.ipas.pdf', $ipa->id) }}" class="btn btn-sm btn-outline-success" target="_blank">PDF</a>
                                         @if($ipa->status === 'draft')
                                             <a href="{{ route('admin.finance.ipas.edit', $ipa->id) }}" class="btn btn-sm btn-outline-warning">Edit</a>
                                             <form action="{{ route('admin.finance.ipas.destroy', $ipa->id) }}" method="POST" onsubmit="return confirm('Delete this IPA?');">

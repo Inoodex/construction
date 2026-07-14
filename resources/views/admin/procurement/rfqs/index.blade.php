@@ -79,6 +79,7 @@
                             <td>
                                 <div class="flex items-center justify-center gap-2">
                                     <a href="{{ route('admin.procurement.rfqs.show', $rfq) }}" class="btn btn-sm btn-outline-info">View</a>
+                                    <a href="{{ route('admin.procurement.rfqs.pdf', $rfq->id) }}" target="_blank" class="btn btn-sm btn-outline-success">PDF</a>
                                     @if($rfq->status === 'draft')
                                         <a href="{{ route('admin.procurement.rfqs.edit', $rfq) }}" class="btn btn-sm btn-outline-primary">Edit</a>
                                     @endif

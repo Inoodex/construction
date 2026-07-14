@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\SubcontractAgreement;
 use App\Models\Subcontractor;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -74,6 +75,18 @@ class SubcontractAgreementController extends Controller
     {
         $subcontractAgreement->load('project', 'subcontractor', 'creator');
         return view('admin.procurement.subcontract-agreements.show', compact('subcontractAgreement'));
+    }
+
+    public function printPdf(SubcontractAgreement $subcontractAgreement)
+    {
+        $subcontractAgreement->load('project', 'subcontractor');
+        $pdf = Pdf::loadView('admin.procurement.subcontract-agreements.pdf.agreement', compact('subcontractAgreement'))
+            ->setPaper('a4', 'portrait')
+            ->setOption('defaultFont', 'sans-serif')
+            ->setOption('isRemoteEnabled', true)
+            ->setOption('isHtml5ParserEnabled', true);
+
+        return $pdf->stream('SCA-'.$subcontractAgreement->agreement_number.'.pdf');
     }
 
     public function edit(SubcontractAgreement $subcontractAgreement)

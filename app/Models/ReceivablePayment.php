@@ -13,6 +13,7 @@ class ReceivablePayment extends Model
         'payment_method',
         'reference',
         'notes',
+        'payment_account_id',
     ];
 
     protected function casts(): array

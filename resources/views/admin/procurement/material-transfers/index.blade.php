@@ -72,6 +72,7 @@
                                 <td class="text-center">
                                     <div class="flex items-center justify-center gap-2">
                                         <a href="{{ route('admin.procurement.material-transfers.show', $t->id) }}" class="btn btn-sm btn-outline-info">View</a>
+                                        <a href="{{ route('admin.procurement.material-transfers.pdf', $t->id) }}" target="_blank" class="btn btn-sm btn-outline-success">PDF</a>
                                         <form action="{{ route('admin.procurement.material-transfers.destroy', $t->id) }}" method="POST" onsubmit="return confirm('Delete this transfer?');">
                                             @csrf
                                             @method('DELETE')

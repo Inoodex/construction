@@ -7,6 +7,8 @@ use App\Models\Expense;
 use App\Models\Category;
 use App\Models\Project;
 use App\Models\Vendor;
+use App\Models\PaymentAccount;
+use App\Models\AccountTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -48,7 +50,8 @@ class ExpenseController extends Controller
         $categories = Category::byType('expense_type')->get();
         $projects = Project::all();
         $vendors = Vendor::all();
-        return view('admin.finance.expenses.create', compact('categories', 'projects', 'vendors'));
+        $accounts = \App\Models\PaymentAccount::where('status', 'active')->get();
+        return view('admin.finance.expenses.create', compact('categories', 'projects', 'vendors', 'accounts'));
     }
 
     public function store(Request $request)
@@ -66,6 +69,7 @@ class ExpenseController extends Controller
             'reference_number'    => 'nullable|string|max:100',
             'notes'               => 'nullable|string',
             'receipt'             => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'payment_account_id'  => 'nullable|exists:payment_accounts,id',
         ]);
 
         $validated['tax_amount'] = $validated['amount'] * ($validated['tax_rate'] / 100);
@@ -78,6 +82,23 @@ class ExpenseController extends Controller
         }
 
         Expense::create($validated);
+
+        if (!empty($validated['payment_account_id'])) {
+            $account = PaymentAccount::findOrFail($validated['payment_account_id']);
+            $newBalance = $account->current_balance - $validated['total_amount'];
+            $account->update(['current_balance' => $newBalance]);
+            AccountTransaction::create([
+                'payment_account_id' => $account->id,
+                'type' => 'debit',
+                'amount' => $validated['total_amount'],
+                'balance_after' => $newBalance,
+                'description' => "Expense: {$validated['title']}",
+                'transactable_type' => Expense::class,
+                'transactable_id' => Expense::latest()->first()->id,
+                'reference' => $validated['reference_number'] ?? null,
+                'transaction_date' => $validated['expense_date'],
+            ]);
+        }
 
         return redirect()->route('admin.finance.expenses.index')
             ->with('success', 'Expense created successfully.');

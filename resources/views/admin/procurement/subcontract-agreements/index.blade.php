@@ -87,6 +87,7 @@
                             <td>
                                 <div class="flex items-center justify-center gap-2">
                                     <a href="{{ route('admin.procurement.subcontract-agreements.show', $a) }}" class="btn btn-sm btn-outline-info">View</a>
+                                    <a href="{{ route('admin.procurement.subcontract-agreements.pdf', $a) }}" class="btn btn-sm btn-outline-success" target="_blank">PDF</a>
                                     @if(in_array($a->status, ['draft', 'active']))
                                         <a href="{{ route('admin.procurement.subcontract-agreements.edit', $a) }}" class="btn btn-sm btn-outline-primary">Edit</a>
                                     @endif

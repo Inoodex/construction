@@ -58,6 +58,7 @@
                             <td><span class="badge badge-{{ $ws->status === 'paid' ? 'success' : ($ws->status === 'cancelled' ? 'danger' : 'secondary') }}">{{ ucfirst($ws->status) }}</span></td>
                             <td class="flex gap-1">
                                 <a href="{{ route('admin.hr.wage-slips.show', $ws) }}" class="btn btn-sm btn-outline-info">View</a>
+                                <a href="{{ route('admin.hr.wage-slips.pdf', $ws) }}" class="btn btn-sm btn-outline-success" target="_blank">PDF</a>
                                 <a href="{{ route('admin.hr.wage-slips.print', $ws) }}" target="_blank" class="btn btn-sm btn-outline-primary">Print</a>
                                 <form action="{{ route('admin.hr.wage-slips.destroy', $ws) }}" method="POST" class="inline" onsubmit="return confirm('Delete this wage slip?')">
                                     @csrf @method('DELETE')

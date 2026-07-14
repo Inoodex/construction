@@ -81,6 +81,7 @@
                             </td>
                             <td class="flex gap-1" style="justify-content: center">
                                 <a href="{{ route('admin.quality.punch-lists.show', $r) }}" class="btn btn-sm btn-outline-info">View</a>
+                                <a href="{{ route('admin.quality.punch-lists.pdf', $r->id) }}" target="_blank" class="btn btn-sm btn-outline-success">PDF</a>
                                 <a href="{{ route('admin.quality.punch-lists.edit', $r) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
                                 <form action="{{ route('admin.quality.punch-lists.destroy', $r) }}" method="POST" class="inline" onsubmit="return confirm('Delete this punch list?')">
                                     @csrf @method('DELETE')

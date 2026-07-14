@@ -74,6 +74,7 @@
                         </td>
                         <td class="text-center">
                             <a href="{{ route('admin.finance.bank-guarantees.show', $g) }}" class="btn btn-sm btn-outline-info">View</a>
+                            <a href="{{ route('admin.finance.bank-guarantees.pdf', $g->id) }}" target="_blank" class="btn btn-sm btn-outline-success" style="margin-left:4px;">PDF</a>
                         </td>
                     </tr>
                 @empty

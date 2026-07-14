@@ -17,6 +17,7 @@ class BillPayment extends Model
         'payment_method',
         'reference',
         'notes',
+        'payment_account_id',
     ];
 
     protected $casts = [

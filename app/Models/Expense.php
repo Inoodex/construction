@@ -27,6 +27,7 @@ class Expense extends Model
         'receipt',
         'notes',
         'created_by',
+        'payment_account_id',
     ];
 
     protected $casts = [

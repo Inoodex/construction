@@ -10,6 +10,7 @@ use App\Models\PurchaseRequisitionItem;
 use App\Services\ApprovalService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 
 class PurchaseRequisitionController extends Controller
@@ -163,5 +164,12 @@ class PurchaseRequisitionController extends Controller
             'unit_price' => $i->estimated_unit_price,
         ]);
         return response()->json($items);
+    }
+
+    public function printPdf(PurchaseRequisition $requisition)
+    {
+        $requisition->load('project', 'requester', 'items.material');
+        $pdf = Pdf::loadView('admin.procurement.requisitions.pdf.requisition', compact('requisition'));
+        return $pdf->stream();
     }
 }

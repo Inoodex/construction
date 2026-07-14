@@ -139,6 +139,7 @@ Route::prefix('dashboard/core')->name('admin.core.')->group(function () {
     Route::post('work-orders', [WorkOrderController::class, 'store'])->name('work-orders.store');
     Route::get('work-orders/{work_order}', [WorkOrderController::class, 'show'])->name('work-orders.show');
     Route::get('work-orders/{work_order}/print', [WorkOrderController::class, 'print'])->name('work-orders.print');
+    Route::get('work-orders/{work_order}/pdf', [WorkOrderController::class, 'printPdf'])->name('work-orders.pdf');
     Route::get('work-orders/{work_order}/edit', [WorkOrderController::class, 'edit'])->name('work-orders.edit');
     Route::put('work-orders/{work_order}', [WorkOrderController::class, 'update'])->name('work-orders.update');
     Route::delete('work-orders/{work_order}', [WorkOrderController::class, 'destroy'])->name('work-orders.destroy');
@@ -179,6 +180,7 @@ Route::prefix('dashboard/core')->name('admin.core.')->group(function () {
         Route::get('rfis/create', [RfiController::class, 'create'])->name('rfis.create');
         Route::post('rfis', [RfiController::class, 'store'])->name('rfis.store');
         Route::get('rfis/{rfi}', [RfiController::class, 'show'])->name('rfis.show');
+        Route::get('rfis/{rfi}/pdf', [RfiController::class, 'printPdf'])->name('rfis.pdf');
         Route::get('rfis/{rfi}/edit', [RfiController::class, 'edit'])->name('rfis.edit');
         Route::put('rfis/{rfi}', [RfiController::class, 'update'])->name('rfis.update');
         Route::delete('rfis/{rfi}', [RfiController::class, 'destroy'])->name('rfis.destroy');
@@ -188,6 +190,7 @@ Route::prefix('dashboard/core')->name('admin.core.')->group(function () {
         Route::get('change-orders/create', [ChangeOrderController::class, 'create'])->name('change-orders.create');
         Route::post('change-orders', [ChangeOrderController::class, 'store'])->name('change-orders.store');
         Route::get('change-orders/{changeOrder}', [ChangeOrderController::class, 'show'])->name('change-orders.show');
+        Route::get('change-orders/{changeOrder}/pdf', [ChangeOrderController::class, 'printPdf'])->name('change-orders.pdf');
         Route::get('change-orders/{changeOrder}/edit', [ChangeOrderController::class, 'edit'])->name('change-orders.edit');
         Route::put('change-orders/{changeOrder}', [ChangeOrderController::class, 'update'])->name('change-orders.update');
         Route::delete('change-orders/{changeOrder}', [ChangeOrderController::class, 'destroy'])->name('change-orders.destroy');
@@ -198,6 +201,7 @@ Route::prefix('dashboard/core')->name('admin.core.')->group(function () {
         Route::get('transmittals/create', [DrawingTransmittalController::class, 'create'])->name('transmittals.create');
         Route::post('transmittals', [DrawingTransmittalController::class, 'store'])->name('transmittals.store');
         Route::get('transmittals/{transmittal}', [DrawingTransmittalController::class, 'show'])->name('transmittals.show');
+        Route::get('transmittals/{transmittal}/pdf', [DrawingTransmittalController::class, 'printPdf'])->name('transmittals.pdf');
         Route::get('transmittals/{transmittal}/edit', [DrawingTransmittalController::class, 'edit'])->name('transmittals.edit');
         Route::put('transmittals/{transmittal}', [DrawingTransmittalController::class, 'update'])->name('transmittals.update');
         Route::delete('transmittals/{transmittal}', [DrawingTransmittalController::class, 'destroy'])->name('transmittals.destroy');
@@ -208,6 +212,7 @@ Route::prefix('dashboard/core')->name('admin.core.')->group(function () {
     Route::get('contracts/create', [ContractController::class, 'create'])->name('contracts.create');
     Route::post('contracts', [ContractController::class, 'store'])->name('contracts.store');
     Route::get('contracts/{contract}', [ContractController::class, 'show'])->name('contracts.show');
+    Route::get('contracts/{contract}/pdf', [ContractController::class, 'printPdf'])->name('contracts.pdf');
     Route::get('contracts/{contract}/edit', [ContractController::class, 'edit'])->name('contracts.edit');
     Route::put('contracts/{contract}', [ContractController::class, 'update'])->name('contracts.update');
     Route::delete('contracts/{contract}', [ContractController::class, 'destroy'])->name('contracts.destroy');
@@ -217,6 +222,7 @@ Route::prefix('dashboard/core')->name('admin.core.')->group(function () {
     Route::get('contract-amendments/create', [ContractAmendmentController::class, 'create'])->name('contract-amendments.create');
     Route::post('contract-amendments', [ContractAmendmentController::class, 'store'])->name('contract-amendments.store');
     Route::get('contract-amendments/{contractAmendment}', [ContractAmendmentController::class, 'show'])->name('contract-amendments.show');
+    Route::get('contract-amendments/{contractAmendment}/pdf', [ContractAmendmentController::class, 'printPdf'])->name('contract-amendments.pdf');
     Route::get('contract-amendments/{contractAmendment}/edit', [ContractAmendmentController::class, 'edit'])->name('contract-amendments.edit');
     Route::put('contract-amendments/{contractAmendment}', [ContractAmendmentController::class, 'update'])->name('contract-amendments.update');
     Route::delete('contract-amendments/{contractAmendment}', [ContractAmendmentController::class, 'destroy'])->name('contract-amendments.destroy');
@@ -226,6 +232,7 @@ Route::prefix('dashboard/core')->name('admin.core.')->group(function () {
     Route::get('contract-claims/create', [ContractClaimController::class, 'create'])->name('contract-claims.create');
     Route::post('contract-claims', [ContractClaimController::class, 'store'])->name('contract-claims.store');
     Route::get('contract-claims/{contractClaim}', [ContractClaimController::class, 'show'])->name('contract-claims.show');
+    Route::get('contract-claims/{contractClaim}/pdf', [ContractClaimController::class, 'printPdf'])->name('contract-claims.pdf');
     Route::get('contract-claims/{contractClaim}/edit', [ContractClaimController::class, 'edit'])->name('contract-claims.edit');
     Route::put('contract-claims/{contractClaim}', [ContractClaimController::class, 'update'])->name('contract-claims.update');
     Route::delete('contract-claims/{contractClaim}', [ContractClaimController::class, 'destroy'])->name('contract-claims.destroy');
@@ -296,6 +303,7 @@ Route::prefix('dashboard/procurement')->name('admin.procurement.')->group(functi
     Route::get('requisitions/create', [PurchaseRequisitionController::class, 'create'])->name('requisitions.create');
     Route::post('requisitions', [PurchaseRequisitionController::class, 'store'])->name('requisitions.store');
     Route::get('requisitions/{purchase_requisition}', [PurchaseRequisitionController::class, 'show'])->name('requisitions.show');
+    Route::get('requisitions/{purchase_requisition}/pdf', [PurchaseRequisitionController::class, 'printPdf'])->name('requisitions.pdf');
     Route::get('requisitions/{purchase_requisition}/edit', [PurchaseRequisitionController::class, 'edit'])->name('requisitions.edit');
     Route::put('requisitions/{purchase_requisition}', [PurchaseRequisitionController::class, 'update'])->name('requisitions.update');
     Route::delete('requisitions/{purchase_requisition}', [PurchaseRequisitionController::class, 'destroy'])->name('requisitions.destroy');
@@ -316,6 +324,7 @@ Route::prefix('dashboard/procurement')->name('admin.procurement.')->group(functi
     Route::get('goods-received-notes/create', [GoodsReceivedNoteController::class, 'create'])->name('goods-received-notes.create');
     Route::post('goods-received-notes', [GoodsReceivedNoteController::class, 'store'])->name('goods-received-notes.store');
     Route::get('goods-received-notes/{goods_received_note}', [GoodsReceivedNoteController::class, 'show'])->name('goods-received-notes.show');
+    Route::get('goods-received-notes/{goods_received_note}/pdf', [GoodsReceivedNoteController::class, 'printPdf'])->name('goods-received-notes.pdf');
     Route::post('goods-received-notes/{goods_received_note}/verify', [GoodsReceivedNoteController::class, 'verify'])->name('goods-received-notes.verify');
     Route::delete('goods-received-notes/{goods_received_note}', [GoodsReceivedNoteController::class, 'destroy'])->name('goods-received-notes.destroy');
 
@@ -339,6 +348,7 @@ Route::prefix('dashboard/procurement')->name('admin.procurement.')->group(functi
     Route::get('material-transfers/create', [MaterialTransferController::class, 'create'])->name('material-transfers.create');
     Route::post('material-transfers', [MaterialTransferController::class, 'store'])->name('material-transfers.store');
     Route::get('material-transfers/{material_transfer}', [MaterialTransferController::class, 'show'])->name('material-transfers.show');
+    Route::get('material-transfers/{material_transfer}/pdf', [MaterialTransferController::class, 'printPdf'])->name('material-transfers.pdf');
     Route::delete('material-transfers/{material_transfer}', [MaterialTransferController::class, 'destroy'])->name('material-transfers.destroy');
     Route::put('material-transfers/{material_transfer}/status', [MaterialTransferController::class, 'updateStatus'])->name('material-transfers.status');
 
@@ -346,6 +356,7 @@ Route::prefix('dashboard/procurement')->name('admin.procurement.')->group(functi
     Route::get('material-issue-slips/create', [MaterialIssueSlipController::class, 'create'])->name('material-issue-slips.create');
     Route::post('material-issue-slips', [MaterialIssueSlipController::class, 'store'])->name('material-issue-slips.store');
     Route::get('material-issue-slips/{material_issue_slip}', [MaterialIssueSlipController::class, 'show'])->name('material-issue-slips.show');
+    Route::get('material-issue-slips/{material_issue_slip}/pdf', [MaterialIssueSlipController::class, 'printPdf'])->name('material-issue-slips.pdf');
     Route::delete('material-issue-slips/{material_issue_slip}', [MaterialIssueSlipController::class, 'destroy'])->name('material-issue-slips.destroy');
 
     Route::get('material-wastages', [MaterialWastageController::class, 'index'])->name('material-wastages.index');
@@ -368,6 +379,7 @@ Route::prefix('dashboard/procurement')->name('admin.procurement.')->group(functi
     Route::get('material-submittals/create', [MaterialSubmittalController::class, 'create'])->name('material-submittals.create');
     Route::post('material-submittals', [MaterialSubmittalController::class, 'store'])->name('material-submittals.store');
     Route::get('material-submittals/{materialSubmittal}', [MaterialSubmittalController::class, 'show'])->name('material-submittals.show');
+    Route::get('material-submittals/{materialSubmittal}/pdf', [MaterialSubmittalController::class, 'printPdf'])->name('material-submittals.pdf');
     Route::get('material-submittals/{materialSubmittal}/edit', [MaterialSubmittalController::class, 'edit'])->name('material-submittals.edit');
     Route::put('material-submittals/{materialSubmittal}', [MaterialSubmittalController::class, 'update'])->name('material-submittals.update');
     Route::delete('material-submittals/{materialSubmittal}', [MaterialSubmittalController::class, 'destroy'])->name('material-submittals.destroy');
@@ -382,6 +394,7 @@ Route::prefix('dashboard/procurement')->name('admin.procurement.')->group(functi
     Route::get('rfqs/create', [RfqController::class, 'create'])->name('rfqs.create');
     Route::post('rfqs', [RfqController::class, 'store'])->name('rfqs.store');
     Route::get('rfqs/{rfq}', [RfqController::class, 'show'])->name('rfqs.show');
+    Route::get('rfqs/{rfq}/pdf', [RfqController::class, 'printPdf'])->name('rfqs.pdf');
     Route::get('rfqs/{rfq}/edit', [RfqController::class, 'edit'])->name('rfqs.edit');
     Route::put('rfqs/{rfq}', [RfqController::class, 'update'])->name('rfqs.update');
     Route::delete('rfqs/{rfq}', [RfqController::class, 'destroy'])->name('rfqs.destroy');
@@ -397,6 +410,7 @@ Route::prefix('dashboard/procurement')->name('admin.procurement.')->group(functi
     Route::get('subcontract-agreements/create', [SubcontractAgreementController::class, 'create'])->name('subcontract-agreements.create');
     Route::post('subcontract-agreements', [SubcontractAgreementController::class, 'store'])->name('subcontract-agreements.store');
     Route::get('subcontract-agreements/{subcontractAgreement}', [SubcontractAgreementController::class, 'show'])->name('subcontract-agreements.show');
+    Route::get('subcontract-agreements/{subcontractAgreement}/pdf', [SubcontractAgreementController::class, 'printPdf'])->name('subcontract-agreements.pdf');
     Route::get('subcontract-agreements/{subcontractAgreement}/edit', [SubcontractAgreementController::class, 'edit'])->name('subcontract-agreements.edit');
     Route::put('subcontract-agreements/{subcontractAgreement}', [SubcontractAgreementController::class, 'update'])->name('subcontract-agreements.update');
     Route::delete('subcontract-agreements/{subcontractAgreement}', [SubcontractAgreementController::class, 'destroy'])->name('subcontract-agreements.destroy');
@@ -408,6 +422,7 @@ Route::prefix('dashboard/procurement')->name('admin.procurement.')->group(functi
     Route::get('subcontract-progress-payments/create', [SubcontractProgressPaymentController::class, 'create'])->name('subcontract-progress-payments.create');
     Route::post('subcontract-progress-payments', [SubcontractProgressPaymentController::class, 'store'])->name('subcontract-progress-payments.store');
     Route::get('subcontract-progress-payments/{subcontractProgressPayment}', [SubcontractProgressPaymentController::class, 'show'])->name('subcontract-progress-payments.show');
+    Route::get('subcontract-progress-payments/{subcontractProgressPayment}/pdf', [SubcontractProgressPaymentController::class, 'printPdf'])->name('subcontract-progress-payments.pdf');
     Route::put('subcontract-progress-payments/{subcontractProgressPayment}/status', [SubcontractProgressPaymentController::class, 'updateStatus'])->name('subcontract-progress-payments.status');
     Route::delete('subcontract-progress-payments/{subcontractProgressPayment}', [SubcontractProgressPaymentController::class, 'destroy'])->name('subcontract-progress-payments.destroy');
 });
@@ -438,6 +453,7 @@ Route::prefix('dashboard/hr')->name('admin.hr.')->group(function () {
     Route::post('wage-slips', [WageSlipController::class, 'store'])->name('wage-slips.store');
     Route::get('wage-slips/{wageSlip}', [WageSlipController::class, 'show'])->name('wage-slips.show');
     Route::get('wage-slips/{wageSlip}/print', [WageSlipController::class, 'print'])->name('wage-slips.print');
+    Route::get('wage-slips/{wageSlip}/pdf', [WageSlipController::class, 'printPdf'])->name('wage-slips.pdf');
     Route::delete('wage-slips/{wageSlip}', [WageSlipController::class, 'destroy'])->name('wage-slips.destroy');
 
     Route::get('equipment', [EquipmentController::class, 'index'])->name('equipment.index');
@@ -587,6 +603,7 @@ use App\Http\Controllers\Admin\Finance\GeneralLedgerController;
 use App\Http\Controllers\Admin\Finance\TrialBalanceController;
 use App\Http\Controllers\Admin\Finance\ReceivableController;
 use App\Http\Controllers\Admin\Finance\BankGuaranteeController;
+use App\Http\Controllers\Admin\Finance\PaymentAccountController;
 use App\Http\Controllers\Admin\Finance\BalanceSheetController;
 use App\Http\Controllers\Admin\Finance\IncomeStatementController;
 use App\Http\Controllers\Admin\Finance\LabourEntryController;
@@ -616,6 +633,7 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware('auth')->
     Route::get('boqs/create', [BoqController::class, 'create'])->name('boqs.create');
     Route::post('boqs', [BoqController::class, 'store'])->name('boqs.store');
     Route::get('boqs/{boq}', [BoqController::class, 'show'])->name('boqs.show');
+    Route::get('boqs/{boq}/pdf', [BoqController::class, 'printPdf'])->name('boqs.pdf');
     Route::get('boqs/{boq}/edit', [BoqController::class, 'edit'])->name('boqs.edit');
     Route::put('boqs/{boq}', [BoqController::class, 'update'])->name('boqs.update');
     Route::delete('boqs/{boq}', [BoqController::class, 'destroy'])->name('boqs.destroy');
@@ -638,6 +656,7 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware('auth')->
     Route::get('tenders/create', [TenderController::class, 'create'])->name('tenders.create');
     Route::post('tenders', [TenderController::class, 'store'])->name('tenders.store');
     Route::get('tenders/{tender}', [TenderController::class, 'show'])->name('tenders.show');
+    Route::get('tenders/{tender}/pdf', [TenderController::class, 'printPdf'])->name('tenders.pdf');
     Route::get('tenders/{tender}/edit', [TenderController::class, 'edit'])->name('tenders.edit');
     Route::put('tenders/{tender}', [TenderController::class, 'update'])->name('tenders.update');
     Route::delete('tenders/{tender}', [TenderController::class, 'destroy'])->name('tenders.destroy');
@@ -666,6 +685,7 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware('auth')->
     Route::get('ipas/create', [IpaController::class, 'create'])->name('ipas.create');
     Route::post('ipas', [IpaController::class, 'store'])->name('ipas.store');
     Route::get('ipas/{ipa}', [IpaController::class, 'show'])->name('ipas.show');
+    Route::get('ipas/{ipa}/pdf', [IpaController::class, 'printPdf'])->name('ipas.pdf');
     Route::get('ipas/{ipa}/edit', [IpaController::class, 'edit'])->name('ipas.edit');
     Route::put('ipas/{ipa}', [IpaController::class, 'update'])->name('ipas.update');
     Route::delete('ipas/{ipa}', [IpaController::class, 'destroy'])->name('ipas.destroy');
@@ -680,6 +700,7 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware('auth')->
     Route::get('bills/create', [BillController::class, 'create'])->name('bills.create');
     Route::post('bills', [BillController::class, 'store'])->name('bills.store');
     Route::get('bills/{bill}', [BillController::class, 'show'])->name('bills.show');
+    Route::get('bills/{bill}/pdf', [BillController::class, 'printPdf'])->name('bills.pdf');
     Route::get('bills/{bill}/edit', [BillController::class, 'edit'])->name('bills.edit');
     Route::put('bills/{bill}', [BillController::class, 'update'])->name('bills.update');
     Route::delete('bills/{bill}', [BillController::class, 'destroy'])->name('bills.destroy');
@@ -717,6 +738,7 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware('auth')->
     Route::get('receivables/create', [ReceivableController::class, 'create'])->name('receivables.create');
     Route::post('receivables', [ReceivableController::class, 'store'])->name('receivables.store');
     Route::get('receivables/{receivable}', [ReceivableController::class, 'show'])->name('receivables.show');
+    Route::get('receivables/{receivable}/pdf', [ReceivableController::class, 'printPdf'])->name('receivables.pdf');
     Route::delete('receivables/{receivable}', [ReceivableController::class, 'destroy'])->name('receivables.destroy');
     Route::post('receivables/{receivable}/payments', [ReceivableController::class, 'addPayment'])->name('receivables.payments.store');
     Route::delete('receivables/{receivable}/payments/{payment}', [ReceivableController::class, 'removePayment'])->name('receivables.payments.destroy');
@@ -725,6 +747,7 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware('auth')->
     Route::get('bank-guarantees/create', [BankGuaranteeController::class, 'create'])->name('bank-guarantees.create');
     Route::post('bank-guarantees', [BankGuaranteeController::class, 'store'])->name('bank-guarantees.store');
     Route::get('bank-guarantees/{bankGuarantee}', [BankGuaranteeController::class, 'show'])->name('bank-guarantees.show');
+    Route::get('bank-guarantees/{bankGuarantee}/pdf', [BankGuaranteeController::class, 'printPdf'])->name('bank-guarantees.pdf');
     Route::patch('bank-guarantees/{bankGuarantee}/status', [BankGuaranteeController::class, 'updateStatus'])->name('bank-guarantees.status');
     Route::delete('bank-guarantees/{bankGuarantee}', [BankGuaranteeController::class, 'destroy'])->name('bank-guarantees.destroy');
 
@@ -738,6 +761,15 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware('auth')->
 
     Route::get('aging/ar', [AgingReportController::class, 'arAging'])->name('aging.ar');
     Route::get('aging/ap', [AgingReportController::class, 'apAging'])->name('aging.ap');
+
+    Route::get('payment-accounts', [PaymentAccountController::class, 'index'])->name('payment-accounts.index');
+    Route::get('payment-accounts/create', [PaymentAccountController::class, 'create'])->name('payment-accounts.create');
+    Route::post('payment-accounts', [PaymentAccountController::class, 'store'])->name('payment-accounts.store');
+    Route::get('payment-accounts/{paymentAccount}', [PaymentAccountController::class, 'show'])->name('payment-accounts.show');
+    Route::get('payment-accounts/{paymentAccount}/pdf', [PaymentAccountController::class, 'printPdf'])->name('payment-accounts.pdf');
+    Route::get('payment-accounts/{paymentAccount}/edit', [PaymentAccountController::class, 'edit'])->name('payment-accounts.edit');
+    Route::put('payment-accounts/{paymentAccount}', [PaymentAccountController::class, 'update'])->name('payment-accounts.update');
+    Route::delete('payment-accounts/{paymentAccount}', [PaymentAccountController::class, 'destroy'])->name('payment-accounts.destroy');
 });
 
 // Quality Control - Quality Control/QA Module
@@ -754,6 +786,7 @@ Route::prefix('dashboard/quality')->name('admin.quality.')->middleware('auth')->
     Route::get('ncrs/create', [NcrController::class, 'create'])->name('ncrs.create');
     Route::post('ncrs', [NcrController::class, 'store'])->name('ncrs.store');
     Route::get('ncrs/{ncr}', [NcrController::class, 'show'])->name('ncrs.show');
+    Route::get('ncrs/{ncr}/pdf', [NcrController::class, 'printPdf'])->name('ncrs.pdf');
     Route::get('ncrs/{ncr}/edit', [NcrController::class, 'edit'])->name('ncrs.edit');
     Route::put('ncrs/{ncr}', [NcrController::class, 'update'])->name('ncrs.update');
     Route::delete('ncrs/{ncr}', [NcrController::class, 'destroy'])->name('ncrs.destroy');
@@ -763,6 +796,7 @@ Route::prefix('dashboard/quality')->name('admin.quality.')->middleware('auth')->
     Route::get('punch-lists/create', [PunchListController::class, 'create'])->name('punch-lists.create');
     Route::post('punch-lists', [PunchListController::class, 'store'])->name('punch-lists.store');
     Route::get('punch-lists/{punchList}', [PunchListController::class, 'show'])->name('punch-lists.show');
+    Route::get('punch-lists/{punchList}/pdf', [PunchListController::class, 'printPdf'])->name('punch-lists.pdf');
     Route::get('punch-lists/{punchList}/edit', [PunchListController::class, 'edit'])->name('punch-lists.edit');
     Route::put('punch-lists/{punchList}', [PunchListController::class, 'update'])->name('punch-lists.update');
     Route::delete('punch-lists/{punchList}', [PunchListController::class, 'destroy'])->name('punch-lists.destroy');
@@ -823,6 +857,7 @@ Route::prefix('dashboard/crm')->name('admin.crm.')->middleware('auth')->group(fu
     Route::post('leads/{lead}/convert', [LeadController::class, 'convertToClient'])->name('leads.convert');
 
     Route::resource('proposals', ProposalController::class);
+    Route::get('proposals/{proposal}/pdf', [ProposalController::class, 'printPdf'])->name('proposals.pdf');
     Route::post('proposals/{proposal}/status', [ProposalController::class, 'updateStatus'])->name('proposals.status');
 });
 

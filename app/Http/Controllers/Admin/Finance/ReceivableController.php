@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Admin\Finance;
 use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\Receivable;
+use App\Models\PaymentAccount;
+use App\Models\AccountTransaction;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class ReceivableController extends Controller
@@ -61,7 +64,8 @@ class ReceivableController extends Controller
     public function show(Receivable $receivable)
     {
         $receivable->load('project', 'payments');
-        return view('admin.finance.receivables.show', compact('receivable'));
+        $accounts = \App\Models\PaymentAccount::where('status', 'active')->get();
+        return view('admin.finance.receivables.show', compact('receivable', 'accounts'));
     }
 
     public function destroy(Receivable $receivable)
@@ -79,10 +83,28 @@ class ReceivableController extends Controller
             'payment_method' => 'nullable|string|max:50',
             'reference' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
+            'payment_account_id' => 'nullable|exists:payment_accounts,id',
         ]);
 
         $receivable->payments()->create($validated);
         $receivable->increment('paid_amount', $validated['amount']);
+
+        if (!empty($validated['payment_account_id'])) {
+            $account = PaymentAccount::findOrFail($validated['payment_account_id']);
+            $newBalance = $account->current_balance + $validated['amount'];
+            $account->update(['current_balance' => $newBalance]);
+            AccountTransaction::create([
+                'payment_account_id' => $account->id,
+                'type' => 'credit',
+                'amount' => $validated['amount'],
+                'balance_after' => $newBalance,
+                'description' => "Receivable payment received for #{$receivable->receivable_number}",
+                'transactable_type' => \App\Models\ReceivablePayment::class,
+                'transactable_id' => $receivable->payments()->latest()->first()->id,
+                'reference' => $validated['reference'] ?? null,
+                'transaction_date' => $validated['payment_date'],
+            ]);
+        }
 
         if ($receivable->paid_amount >= $receivable->amount) {
             $receivable->update(['status' => 'paid']);
@@ -91,6 +113,18 @@ class ReceivableController extends Controller
         }
 
         return back()->with('success', 'Payment recorded successfully.');
+    }
+
+    public function printPdf(Receivable $receivable)
+    {
+        $receivable->load('project', 'payments');
+        $pdf = Pdf::loadView('admin.finance.receivables.pdf.receivable', compact('receivable'))
+            ->setPaper('a4', 'portrait')
+            ->setOption('defaultFont', 'sans-serif')
+            ->setOption('isRemoteEnabled', true)
+            ->setOption('isHtml5ParserEnabled', true);
+
+        return $pdf->stream('AR-'.$receivable->receivable_number.'.pdf');
     }
 
     public function removePayment(Receivable $receivable, $payment)

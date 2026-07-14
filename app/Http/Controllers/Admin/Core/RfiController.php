@@ -8,6 +8,7 @@ use App\Models\Project;
 use App\Models\Rfi;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 
 class RfiController extends Controller
@@ -184,5 +185,12 @@ class RfiController extends Controller
         ]);
 
         return back()->with('success', 'RFI answered successfully.');
+    }
+
+    public function printPdf(Rfi $rfi)
+    {
+        $rfi->load('project', 'drawing', 'raiser', 'assignee', 'answerer');
+        $pdf = Pdf::loadView('admin.core.documents.rfis.pdf.rfi', compact('rfi'));
+        return $pdf->stream();
     }
 }

@@ -104,6 +104,7 @@
                             </td>
                             <td class="flex gap-1" style="justify-content: center">
                                 <a href="{{ route('admin.quality.ncrs.show', $r) }}" class="btn btn-sm btn-outline-info">View</a>
+                                <a href="{{ route('admin.quality.ncrs.pdf', $r->id) }}" target="_blank" class="btn btn-sm btn-outline-success">PDF</a>
                                 <a href="{{ route('admin.quality.ncrs.edit', $r) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
                                 <form action="{{ route('admin.quality.ncrs.destroy', $r) }}" method="POST" class="inline" onsubmit="return confirm('Delete this NCR?')">
                                     @csrf @method('DELETE')

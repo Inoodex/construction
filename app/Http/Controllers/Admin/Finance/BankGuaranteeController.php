@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Finance;
 use App\Http\Controllers\Controller;
 use App\Models\BankGuarantee;
 use App\Models\Project;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class BankGuaranteeController extends Controller
@@ -102,5 +103,12 @@ class BankGuaranteeController extends Controller
         $bankGuarantee->delete();
         return redirect()->route('admin.finance.bank-guarantees.index')
             ->with('success', 'Bank guarantee deleted.');
+    }
+
+    public function printPdf(BankGuarantee $bankGuarantee)
+    {
+        $bankGuarantee->load('project');
+        $pdf = Pdf::loadView('admin.finance.bank-guarantees.pdf.guarantee', compact('bankGuarantee'));
+        return $pdf->stream();
     }
 }

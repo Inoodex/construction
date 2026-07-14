@@ -9,6 +9,7 @@ use App\Models\DrawingTransmittal;
 use App\Models\DrawingTransmittalItem;
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 
 class DrawingTransmittalController extends Controller
@@ -172,5 +173,12 @@ class DrawingTransmittalController extends Controller
 
         return redirect()->route('admin.core.documents.transmittals.index')
             ->with('success', 'Transmittal deleted successfully.');
+    }
+
+    public function printPdf(DrawingTransmittal $transmittal)
+    {
+        $transmittal->load('project', 'fromUser', 'items.drawing', 'items.revision');
+        $pdf = Pdf::loadView('admin.core.documents.transmittals.pdf.transmittal', compact('transmittal'));
+        return $pdf->stream();
     }
 }

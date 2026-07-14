@@ -8,6 +8,7 @@ use App\Models\Project;
 use App\Models\Task;
 use App\Models\Site;
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -85,6 +86,18 @@ class WorkOrderController extends Controller
     {
         $workOrder->load('project', 'task', 'site', 'assignee', 'issuer');
         return view('admin.core.work-orders.print', compact('workOrder'));
+    }
+
+    public function printPdf(WorkOrder $workOrder)
+    {
+        $workOrder->load('project', 'task', 'site', 'assignee', 'issuer');
+        $pdf = Pdf::loadView('admin.core.work-orders.pdf.work-order', compact('workOrder'))
+            ->setPaper('a4', 'portrait')
+            ->setOption('defaultFont', 'sans-serif')
+            ->setOption('isRemoteEnabled', true)
+            ->setOption('isHtml5ParserEnabled', true);
+
+        return $pdf->stream('WO-'.$workOrder->work_order_number.'.pdf');
     }
 
     public function edit(WorkOrder $workOrder)

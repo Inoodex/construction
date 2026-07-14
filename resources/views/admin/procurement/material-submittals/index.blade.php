@@ -82,6 +82,7 @@
                             <td>
                                 <div class="flex items-center justify-center gap-2">
                                     <a href="{{ route('admin.procurement.material-submittals.show', $s) }}" class="btn btn-sm btn-outline-info">View</a>
+                                    <a href="{{ route('admin.procurement.material-submittals.pdf', $s->id) }}" target="_blank" class="btn btn-sm btn-outline-success">PDF</a>
                                     @if(in_array($s->status, ['draft', 'resubmitted']))
                                         <a href="{{ route('admin.procurement.material-submittals.edit', $s) }}" class="btn btn-sm btn-outline-primary">Edit</a>
                                     @endif

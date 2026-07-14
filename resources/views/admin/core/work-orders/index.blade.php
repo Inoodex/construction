@@ -76,7 +76,7 @@
                                 <td class="text-center">
                                     <div class="flex items-center justify-center gap-1">
                                         <a href="{{ route('admin.core.work-orders.show', $wo) }}" class="btn btn-sm btn-outline-info">View</a>
-                                        {{-- <a href="{{ route('admin.core.work-orders.print', $wo) }}" target="_blank" class="btn btn-sm btn-outline-secondary">Print</a> --}}
+                                        <a href="{{ route('admin.core.work-orders.pdf', $wo) }}" class="btn btn-sm btn-outline-success" target="_blank">PDF</a>
                                         <a href="{{ route('admin.core.work-orders.edit', $wo) }}" class="btn btn-sm btn-outline-primary">Edit</a>
                                         <form action="{{ route('admin.core.work-orders.destroy', $wo) }}" method="POST" onsubmit="return confirm('Delete this work order?');">
                                             @csrf @method('DELETE')

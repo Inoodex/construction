@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class BoqController extends Controller
 {
@@ -151,5 +152,12 @@ class BoqController extends Controller
             ['ITEM-001', 'Sample item description', 'ea', 10, 1500, 'Optional notes'],
         ];
         return Excel::download(new ReportExport($data, $headings, 'BOQ Import Template'), 'boq-import-template.xlsx');
+    }
+
+    public function printPdf(Boq $boq)
+    {
+        $boq->load('project', 'creator', 'items');
+        $pdf = Pdf::loadView('admin.finance.boqs.pdf.boq', compact('boq'));
+        return $pdf->stream();
     }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Contract;
 use App\Models\ContractClaim;
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class ContractClaimController extends Controller
@@ -126,5 +127,12 @@ class ContractClaimController extends Controller
         $contractClaim->delete();
 
         return back()->with('success', 'Claim deleted successfully.');
+    }
+
+    public function printPdf(ContractClaim $contractClaim)
+    {
+        $contractClaim->load('contract', 'submitter', 'reviewer', 'creator');
+        $pdf = Pdf::loadView('admin.core.contract-claims.pdf.claim', compact('contractClaim'));
+        return $pdf->stream();
     }
 }

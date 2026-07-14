@@ -76,6 +76,7 @@
                                 <td class="text-center">
                                     <div class="flex items-center justify-center gap-2">
                                         <a href="{{ route('admin.finance.bills.show', $bill->id) }}" class="btn btn-sm btn-outline-info">View</a>
+                                        <a href="{{ route('admin.finance.bills.pdf', $bill->id) }}" class="btn btn-sm btn-outline-success" target="_blank">PDF</a>
                                         <a href="{{ route('admin.finance.bills.edit', $bill->id) }}" class="btn btn-sm btn-outline-warning">Edit</a>
                                         <form action="{{ route('admin.finance.bills.destroy', $bill->id) }}" method="POST" onsubmit="return confirm('Delete this bill?');">
                                             @csrf @method('DELETE')

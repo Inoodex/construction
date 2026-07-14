@@ -71,6 +71,7 @@
                                 <td class="text-center">
                                     <div class="flex items-center justify-center gap-1">
                                         <a href="{{ route('admin.core.documents.transmittals.show', $t) }}" class="btn btn-sm btn-outline-info">View</a>
+                                        <a href="{{ route('admin.core.documents.transmittals.pdf', $t->id) }}" target="_blank" class="btn btn-sm btn-outline-success">PDF</a>
                                         @if(!auth()->user()->hasRole('client'))
                                             <a href="{{ route('admin.core.documents.transmittals.edit', $t) }}" class="btn btn-sm btn-outline-primary">Edit</a>
                                             <form action="{{ route('admin.core.documents.transmittals.destroy', $t) }}" method="POST" onsubmit="return confirm('Delete this transmittal?');">

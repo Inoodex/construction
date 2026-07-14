@@ -84,6 +84,7 @@
                                 <td class="text-center">
                                     <div class="flex items-center justify-center gap-1">
                                         <a href="{{ route('admin.core.contract-claims.show', $claim) }}" class="btn btn-sm btn-outline-info">View</a>
+                                        <a href="{{ route('admin.core.contract-claims.pdf', $claim->id) }}" target="_blank" class="btn btn-sm btn-outline-success">PDF</a>
                                         <a href="{{ route('admin.core.contract-claims.edit', $claim) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
                                         <form action="{{ route('admin.core.contract-claims.destroy', $claim) }}" method="POST" onsubmit="return confirm('Delete this claim?');">
                                             @csrf @method('DELETE')

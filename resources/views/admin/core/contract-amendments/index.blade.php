@@ -81,6 +81,7 @@
                                 <td class="text-center">
                                     <div class="flex items-center justify-center gap-1">
                                         <a href="{{ route('admin.core.contract-amendments.show', $amd) }}" class="btn btn-sm btn-outline-info">View</a>
+                                        <a href="{{ route('admin.core.contract-amendments.pdf', $amd->id) }}" target="_blank" class="btn btn-sm btn-outline-success">PDF</a>
                                         <a href="{{ route('admin.core.contract-amendments.edit', $amd) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
                                         <form action="{{ route('admin.core.contract-amendments.destroy', $amd) }}" method="POST" onsubmit="return confirm('Delete this amendment?');">
                                             @csrf @method('DELETE')

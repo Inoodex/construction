@@ -123,11 +123,12 @@
                 @csrf
                 <table class="w-full" style="table-layout: fixed;">
                     <tr>
-                        <td style="width:18%"><input type="number" step="0.01" name="amount" placeholder="Amount" class="form-input" required /></td>
-                        <td style="width:18%"><input type="date" name="payment_date" class="form-input" required value="{{ now()->format('Y-m-d') }}" /></td>
-                        <td style="width:18%"><input type="text" name="payment_method" placeholder="Method" class="form-input" /></td>
-                        <td style="width:18%"><input type="text" name="reference" placeholder="Ref #" class="form-input" /></td>
-                        <td style="width:13%"><button type="submit" class="btn btn-success w-full">Record</button></td>
+                        <td style="width:14%"><input type="number" step="0.01" name="amount" placeholder="Amount" class="form-input" required /></td>
+                        <td style="width:14%"><input type="date" name="payment_date" class="form-input" required value="{{ now()->format('Y-m-d') }}" /></td>
+                        <td style="width:14%"><input type="text" name="payment_method" placeholder="Method" class="form-input" /></td>
+                        <td style="width:18%"><select name="payment_account_id" class="form-select"><option value="">Account</option>@foreach($accounts as $acc)<option value="{{ $acc->id }}">{{ $acc->name }}</option>@endforeach</select></td>
+                        <td style="width:14%"><input type="text" name="reference" placeholder="Ref #" class="form-input" /></td>
+                        <td style="width:12%"><button type="submit" class="btn btn-success w-full">Record</button></td>
                     </tr>
                 </table>
                 <div class="mt-2"><textarea name="notes" class="form-input" rows="2" placeholder="Notes (optional)"></textarea></div>

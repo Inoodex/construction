@@ -11,6 +11,7 @@ use App\Models\Site;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 
 class MaterialIssueSlipController extends Controller
@@ -91,5 +92,12 @@ class MaterialIssueSlipController extends Controller
         $materialIssueSlip->delete();
         return redirect()->route('admin.procurement.material-issue-slips.index')
             ->with('success', 'Issue slip deleted successfully.');
+    }
+
+    public function printPdf(MaterialIssueSlip $materialIssueSlip)
+    {
+        $materialIssueSlip->load('project', 'site', 'recipient', 'items.material');
+        $pdf = Pdf::loadView('admin.procurement.material-issue-slips.pdf.issue-slip', compact('materialIssueSlip'));
+        return $pdf->stream();
     }
 }

@@ -63,6 +63,15 @@
                         </select>
                     </div>
                     <div>
+                        <label class="text-xs">Account</label>
+                        <select name="payment_account_id" class="form-select">
+                            <option value="">Select Account</option>
+                            @foreach($accounts as $account)
+                                <option value="{{ $account->id }}">{{ $account->name }} ({{ ucfirst($account->type) }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
                         <label class="text-xs">Reference</label>
                         <input type="text" name="reference" class="form-input" placeholder="Ref #" />
                     </div>

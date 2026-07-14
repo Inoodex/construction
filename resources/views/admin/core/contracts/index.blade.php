@@ -88,6 +88,7 @@
                                 <td class="text-center">
                                     <div class="flex items-center justify-center gap-1">
                                         <a href="{{ route('admin.core.contracts.show', $contract) }}" class="btn btn-sm btn-outline-info">View</a>
+                                        <a href="{{ route('admin.core.contracts.pdf', $contract) }}" class="btn btn-sm btn-outline-success" target="_blank">PDF</a>
                                         <a href="{{ route('admin.core.contracts.edit', $contract) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
                                         <form action="{{ route('admin.core.contracts.destroy', $contract) }}" method="POST" onsubmit="return confirm('Delete this contract and all related data?');">
                                             @csrf @method('DELETE')

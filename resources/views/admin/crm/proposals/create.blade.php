@@ -6,7 +6,12 @@
 <div class="panel">
     <div class="mb-5 flex items-center justify-between">
         <h5 class="text-lg font-semibold dark:text-white-light">Create Proposal</h5>
-        <a href="{{ route('admin.crm.proposals.index') }}" class="btn btn-outline-danger">Back</a>
+        <a href="{{ route('admin.crm.proposals.index') }}" class="btn btn-outline-danger">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg> 
+            Back to Proposals</a>
     </div>
 
     <form action="{{ route('admin.crm.proposals.store') }}" method="POST">
@@ -18,7 +23,7 @@
                 <select name="lead_id" class="form-select">
                     <option value="">—</option>
                     @foreach($leads as $lead)
-                        <option value="{{ $lead->id }}" {{ old('lead_id', $selectedLead?->id) == $lead->id ? 'selected' : '' }}>{{ $lead->company_name }} ({{ $lead->status }})</option>
+                    <option value="{{ $lead->id }}" {{ old('lead_id', $selectedLead?->id) == $lead->id ? 'selected' : '' }}>{{ $lead->company_name }} ({{ $lead->status }})</option>
                     @endforeach
                 </select>
             </div>
@@ -27,7 +32,7 @@
                 <select name="client_id" class="form-select">
                     <option value="">—</option>
                     @foreach($clients as $client)
-                        <option value="{{ $client->id }}" {{ old('client_id', $selectedClient?->id) == $client->id ? 'selected' : '' }}>{{ $client->company_name }}</option>
+                    <option value="{{ $client->id }}" {{ old('client_id', $selectedClient?->id) == $client->id ? 'selected' : '' }}>{{ $client->company_name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -65,7 +70,7 @@
                         <tr>
                             <th class="w-2/5">Description</th>
                             <th class="w-20">Quantity</th>
-                            <th class="w-20">Unit</th>
+                            <th class="w-28">Unit</th>
                             <th class="w-28">Unit Price (৳)</th>
                             <th class="w-28">Total (৳)</th>
                             <th class="w-16 text-center"></th>
@@ -109,9 +114,10 @@
 
 @push('scripts')
 <script>
-let rowIndex = 1;
-function addRow() {
-    const html = `<tr>
+    let rowIndex = 1;
+
+    function addRow() {
+        const html = `<tr>
         <td><input type="text" name="items[${rowIndex}][description]" class="form-input text-xs" required placeholder="Item description" /></td>
         <td><input type="number" step="0.01" min="0.01" name="items[${rowIndex}][quantity]" class="form-input text-xs qty" value="1" required oninput="calcRow(${rowIndex})" /></td>
         <td><input type="text" name="items[${rowIndex}][unit]" class="form-input text-xs" placeholder="e.g. pcs" /></td>
@@ -119,35 +125,38 @@ function addRow() {
         <td><span class="row-total text-xs font-mono">0.00</span></td>
         <td class="text-center"><button type="button" class="btn btn-sm btn-outline-danger" onclick="removeRow(this)">×</button></td>
     </tr>`;
-    document.getElementById('items-body').insertAdjacentHTML('beforeend', html);
-    rowIndex++;
-}
-function removeRow(btn) {
-    const rows = document.querySelectorAll('#items-body tr');
-    if (rows.length > 1) {
-        btn.closest('tr').remove();
+        document.getElementById('items-body').insertAdjacentHTML('beforeend', html);
+        rowIndex++;
+    }
+
+    function removeRow(btn) {
+        const rows = document.querySelectorAll('#items-body tr');
+        if (rows.length > 1) {
+            btn.closest('tr').remove();
+            calcTotal();
+        }
+    }
+
+    function calcRow(i) {
+        const row = document.querySelectorAll('#items-body tr')[i];
+        if (!row) return;
+        const qty = parseFloat(row.querySelector('.qty').value) || 0;
+        const price = parseFloat(row.querySelector('.price').value) || 0;
+        row.querySelector('.row-total').textContent = (qty * price).toFixed(2);
         calcTotal();
     }
-}
-function calcRow(i) {
-    const row = document.querySelectorAll('#items-body tr')[i];
-    if (!row) return;
-    const qty = parseFloat(row.querySelector('.qty').value) || 0;
-    const price = parseFloat(row.querySelector('.price').value) || 0;
-    row.querySelector('.row-total').textContent = (qty * price).toFixed(2);
-    calcTotal();
-}
-function calcTotal() {
-    let subtotal = 0;
-    document.querySelectorAll('.row-total').forEach(el => subtotal += parseFloat(el.textContent) || 0);
-    document.getElementById('subtotal').textContent = subtotal.toFixed(2);
-    const taxRate = parseFloat(document.querySelector('[name=tax_rate]').value) || 0;
-    const taxAmount = subtotal * taxRate / 100;
-    document.getElementById('tax-display').textContent = taxAmount.toFixed(2);
-    document.getElementById('total').textContent = (subtotal + taxAmount).toFixed(2);
-}
-document.querySelector('[name=tax_rate]').addEventListener('input', calcTotal);
-calcRow(0);
+
+    function calcTotal() {
+        let subtotal = 0;
+        document.querySelectorAll('.row-total').forEach(el => subtotal += parseFloat(el.textContent) || 0);
+        document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+        const taxRate = parseFloat(document.querySelector('[name=tax_rate]').value) || 0;
+        const taxAmount = subtotal * taxRate / 100;
+        document.getElementById('tax-display').textContent = taxAmount.toFixed(2);
+        document.getElementById('total').textContent = (subtotal + taxAmount).toFixed(2);
+    }
+    document.querySelector('[name=tax_rate]').addEventListener('input', calcTotal);
+    calcRow(0);
 </script>
 @endpush
 @endsection

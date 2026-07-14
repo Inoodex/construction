@@ -11,6 +11,7 @@ use App\Models\Site;
 use App\Models\Stock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 
 class GoodsReceivedNoteController extends Controller
@@ -131,5 +132,12 @@ class GoodsReceivedNoteController extends Controller
         $goodsReceivedNote->delete();
         return redirect()->route('admin.procurement.goods-received-notes.index')
             ->with('success', 'GRN deleted successfully.');
+    }
+
+    public function printPdf(GoodsReceivedNote $goodsReceivedNote)
+    {
+        $goodsReceivedNote->load('purchaseOrder', 'site', 'receiver', 'items.material');
+        $pdf = Pdf::loadView('admin.procurement.goods-received-notes.pdf.grn', compact('goodsReceivedNote'));
+        return $pdf->stream();
     }
 }

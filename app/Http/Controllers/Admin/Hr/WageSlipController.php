@@ -7,6 +7,7 @@ use App\Models\Attendance;
 use App\Models\Employee;
 use App\Models\Timesheet;
 use App\Models\WageSlip;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -136,6 +137,18 @@ class WageSlipController extends Controller
     {
         $wageSlip->load('employee');
         return view('admin.hr.wage-slips.print', compact('wageSlip'));
+    }
+
+    public function printPdf(WageSlip $wageSlip)
+    {
+        $wageSlip->load('employee');
+        $pdf = Pdf::loadView('admin.hr.wage-slips.pdf.wage-slip', compact('wageSlip'))
+            ->setPaper('a4', 'portrait')
+            ->setOption('defaultFont', 'sans-serif')
+            ->setOption('isRemoteEnabled', true)
+            ->setOption('isHtml5ParserEnabled', true);
+
+        return $pdf->stream('WS-'.$wageSlip->id.'.pdf');
     }
 
     public function destroy(WageSlip $wageSlip)

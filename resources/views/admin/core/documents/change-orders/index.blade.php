@@ -85,6 +85,7 @@
                                 <td class="text-center">
                                     <div class="flex items-center justify-center gap-1">
                                         <a href="{{ route('admin.core.documents.change-orders.show', $co) }}" class="btn btn-sm btn-outline-info">View</a>
+                                        <a href="{{ route('admin.core.documents.change-orders.pdf', $co) }}" class="btn btn-sm btn-outline-success" target="_blank">PDF</a>
                                         @if(!auth()->user()->hasRole('client'))
                                             <a href="{{ route('admin.core.documents.change-orders.edit', $co) }}" class="btn btn-sm btn-outline-primary">Edit</a>
                                             <form action="{{ route('admin.core.documents.change-orders.destroy', $co) }}" method="POST" onsubmit="return confirm('Delete this change order?');">

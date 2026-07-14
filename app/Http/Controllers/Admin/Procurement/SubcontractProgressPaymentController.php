@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\SubcontractAgreement;
 use App\Models\SubcontractProgressPayment;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 
 class SubcontractProgressPaymentController extends Controller
@@ -109,5 +110,12 @@ class SubcontractProgressPaymentController extends Controller
         $subcontractProgressPayment->delete();
         return redirect()->route('admin.procurement.subcontract-progress-payments.index')
             ->with('success', 'Progress payment deleted.');
+    }
+
+    public function printPdf(SubcontractProgressPayment $subcontractProgressPayment)
+    {
+        $subcontractProgressPayment->load('agreement.subcontractor', 'agreement.project', 'certifier');
+        $pdf = Pdf::loadView('admin.procurement.subcontract-progress-payments.pdf.certificate', compact('subcontractProgressPayment'));
+        return $pdf->stream();
     }
 }

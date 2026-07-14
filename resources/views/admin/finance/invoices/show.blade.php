@@ -134,7 +134,7 @@
         <div id="addPaymentForm" class="mb-5 mt-3 hidden rounded-lg border p-4 dark:border-gray-700">
             <form action="{{ route('admin.finance.invoices.payments.store', $invoice->id) }}" method="POST">
                 @csrf
-                <div class="grid grid-cols-1 gap-3 md:grid-cols-4">
+                <div class="grid grid-cols-1 gap-3 md:grid-cols-5">
                     <div>
                         <input type="number" step="0.01" name="amount" placeholder="Amount" class="form-input" required />
                     </div>
@@ -143,6 +143,14 @@
                     </div>
                     <div>
                         <input type="text" name="payment_method" placeholder="Method (e.g. Bank)" class="form-input" />
+                    </div>
+                    <div>
+                        <select name="payment_account_id" class="form-select">
+                            <option value="">Select Account</option>
+                            @foreach($accounts as $account)
+                                <option value="{{ $account->id }}">{{ $account->name }} ({{ ucfirst($account->type) }})</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div>
                         <input type="text" name="reference" placeholder="Reference #" class="form-input" />

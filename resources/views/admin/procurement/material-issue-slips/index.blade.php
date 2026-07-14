@@ -57,6 +57,7 @@
                                 <td class="text-center">
                                     <div class="flex items-center justify-center gap-2">
                                         <a href="{{ route('admin.procurement.material-issue-slips.show', $slip->id) }}" class="btn btn-sm btn-outline-info">View</a>
+                                        <a href="{{ route('admin.procurement.material-issue-slips.pdf', $slip->id) }}" target="_blank" class="btn btn-sm btn-outline-success">PDF</a>
                                         <form action="{{ route('admin.procurement.material-issue-slips.destroy', $slip->id) }}" method="POST" onsubmit="return confirm('Delete this issue slip?');">
                                             @csrf
                                             @method('DELETE')

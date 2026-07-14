@@ -66,6 +66,7 @@
                                 <td class="text-center">
                                     <div class="flex items-center justify-center gap-2">
                                         <a href="{{ route('admin.finance.tenders.show', $t->id) }}" class="btn btn-sm btn-outline-info">View</a>
+                                        <a href="{{ route('admin.finance.tenders.pdf', $t->id) }}" target="_blank" class="btn btn-sm btn-outline-success">PDF</a>
                                         <a href="{{ route('admin.finance.tenders.edit', $t->id) }}" class="btn btn-sm btn-outline-warning">Edit</a>
                                         <form action="{{ route('admin.finance.tenders.destroy', $t->id) }}" method="POST" onsubmit="return confirm('Delete this tender?');">
                                             @csrf @method('DELETE')

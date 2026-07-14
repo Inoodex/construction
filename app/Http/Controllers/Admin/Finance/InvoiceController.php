@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Payment;
+use App\Models\PaymentAccount;
+use App\Models\AccountTransaction;
 use App\Models\Project;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -80,8 +82,9 @@ class InvoiceController extends Controller
     public function show(Invoice $invoice)
     {
         $invoice->load('project', 'creator', 'items', 'payments');
+        $accounts = \App\Models\PaymentAccount::where('status', 'active')->get();
 
-        return view('admin.finance.invoices.show', compact('invoice'));
+        return view('admin.finance.invoices.show', compact('invoice', 'accounts'));
     }
 
     public function printPdf(Invoice $invoice)
@@ -167,11 +170,29 @@ class InvoiceController extends Controller
             'payment_method' => 'nullable|string|max:50',
             'reference' => 'nullable|string|max:100',
             'notes' => 'nullable|string',
+            'payment_account_id' => 'nullable|exists:payment_accounts,id',
         ]);
 
         $validated['invoice_id'] = $invoice->id;
 
         Payment::create($validated);
+
+        if (!empty($validated['payment_account_id'])) {
+            $account = PaymentAccount::findOrFail($validated['payment_account_id']);
+            $newBalance = $account->current_balance + $validated['amount'];
+            $account->update(['current_balance' => $newBalance]);
+            AccountTransaction::create([
+                'payment_account_id' => $account->id,
+                'type' => 'credit',
+                'amount' => $validated['amount'],
+                'balance_after' => $newBalance,
+                'description' => "Payment received for Invoice #{$invoice->invoice_number}",
+                'transactable_type' => Payment::class,
+                'transactable_id' => Payment::latest()->first()->id,
+                'reference' => $validated['reference'] ?? null,
+                'transaction_date' => $validated['payment_date'],
+            ]);
+        }
 
         $totalPaid = $invoice->payments()->sum('amount');
         $dueAmount = $invoice->total_amount - $totalPaid;

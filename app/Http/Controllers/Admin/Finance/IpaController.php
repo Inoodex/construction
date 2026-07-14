@@ -7,6 +7,7 @@ use App\Models\InterimPaymentApplication;
 use App\Models\IpaItem;
 use App\Models\Project;
 use App\Models\Invoice;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -70,6 +71,18 @@ class IpaController extends Controller
         $ipa->load('project', 'creator', 'items', 'submittedBy', 'certifiedBy', 'approvedBy', 'invoice');
         $canSubmit = $ipa->status === 'draft' && $ipa->items()->count() > 0;
         return view('admin.finance.ipas.show', compact('ipa', 'canSubmit'));
+    }
+
+    public function printPdf(InterimPaymentApplication $ipa)
+    {
+        $ipa->load('project', 'items');
+        $pdf = Pdf::loadView('admin.finance.ipas.pdf.ipa', compact('ipa'))
+            ->setPaper('a4', 'portrait')
+            ->setOption('defaultFont', 'sans-serif')
+            ->setOption('isRemoteEnabled', true)
+            ->setOption('isHtml5ParserEnabled', true);
+
+        return $pdf->stream('IPA-'.$ipa->ipa_number.'.pdf');
     }
 
     public function edit(InterimPaymentApplication $ipa)

@@ -62,6 +62,7 @@
                                 <td class="text-center">
                                     <div class="flex items-center justify-center gap-2">
                                         <a href="{{ route('admin.finance.boqs.show', $boq->id) }}" class="btn btn-sm btn-outline-info">View</a>
+                                        <a href="{{ route('admin.finance.boqs.pdf', $boq->id) }}" target="_blank" class="btn btn-sm btn-outline-success">PDF</a>
                                         <a href="{{ route('admin.finance.boqs.edit', $boq->id) }}" class="btn btn-sm btn-outline-warning">Edit</a>
                                         <form action="{{ route('admin.finance.boqs.destroy', $boq->id) }}" method="POST" onsubmit="return confirm('Delete this BOQ?');">
                                             @csrf @method('DELETE')

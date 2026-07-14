@@ -51,6 +51,15 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label for="payment_account_id">Payment Account</label>
+                    <select name="payment_account_id" id="payment_account_id" class="form-select">
+                        <option value="">None</option>
+                        @foreach($accounts as $account)
+                            <option value="{{ $account->id }}" {{ old('payment_account_id') == $account->id ? 'selected' : '' }}>{{ $account->name }} ({{ ucfirst($account->type) }})</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group">
                     <label for="vendor_id">Vendor</label>
                     <select name="vendor_id" id="vendor_id" class="form-select">
                         <option value="">None</option>

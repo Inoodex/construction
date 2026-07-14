@@ -8,6 +8,7 @@ use App\Models\TenderBid;
 use App\Models\Project;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
@@ -156,5 +157,12 @@ class TenderController extends Controller
         $awardedBid = $tender->bids()->where('status', 'awarded')->first();
 
         return view('admin.finance.tenders.award-letter', compact('tender', 'awardedBid'));
+    }
+
+    public function printPdf(Tender $tender)
+    {
+        $tender->load('project', 'creator', 'bids.vendor');
+        $pdf = Pdf::loadView('admin.finance.tenders.pdf.tender', compact('tender'));
+        return $pdf->stream();
     }
 }

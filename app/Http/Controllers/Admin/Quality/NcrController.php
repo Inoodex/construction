@@ -7,6 +7,7 @@ use App\Models\Ncr;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class NcrController extends Controller
 {
@@ -115,5 +116,12 @@ class NcrController extends Controller
     {
         $ncr->delete();
         return back()->with('success', 'NCR deleted.');
+    }
+
+    public function printPdf(Ncr $ncr)
+    {
+        $ncr->load('project', 'identifier', 'creator');
+        $pdf = Pdf::loadView('admin.quality.ncrs.pdf.ncr', compact('ncr'));
+        return $pdf->stream();
     }
 }

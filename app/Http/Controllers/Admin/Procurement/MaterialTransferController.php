@@ -10,6 +10,7 @@ use App\Models\Site;
 use App\Models\Stock;
 use App\Models\Warehouse;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 
 class MaterialTransferController extends Controller
@@ -130,5 +131,12 @@ class MaterialTransferController extends Controller
         $materialTransfer->delete();
         return redirect()->route('admin.procurement.material-transfers.index')
             ->with('success', 'Transfer deleted successfully.');
+    }
+
+    public function printPdf(MaterialTransfer $materialTransfer)
+    {
+        $materialTransfer->load('fromWarehouse', 'fromSite', 'toSite', 'toWarehouse', 'items.material');
+        $pdf = Pdf::loadView('admin.procurement.material-transfers.pdf.transfer', compact('materialTransfer'));
+        return $pdf->stream();
     }
 }

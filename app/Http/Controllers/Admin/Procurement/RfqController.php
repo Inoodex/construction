@@ -16,6 +16,7 @@ use App\Models\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class RfqController extends Controller
 {
@@ -184,6 +185,13 @@ class RfqController extends Controller
         $rfq->delete();
         return redirect()->route('admin.procurement.rfqs.index')
             ->with('success', 'RFQ deleted successfully.');
+    }
+
+    public function printPdf(Rfq $rfq)
+    {
+        $rfq->load('project', 'creator', 'items.material', 'vendors.vendor');
+        $pdf = Pdf::loadView('admin.procurement.rfqs.pdf.rfq', compact('rfq'));
+        return $pdf->stream();
     }
 
     public function send(Rfq $rfq)

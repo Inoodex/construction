@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ChangeOrder;
 use App\Models\Project;
 use App\Models\Rfi;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -106,6 +107,18 @@ class ChangeOrderController extends Controller
         }
 
         return view('admin.core.documents.change-orders.show', compact('changeOrder'));
+    }
+
+    public function printPdf(ChangeOrder $changeOrder)
+    {
+        $changeOrder->load('project', 'rfi', 'requester', 'approver');
+        $pdf = Pdf::loadView('admin.core.documents.change-orders.pdf.change-order', compact('changeOrder'))
+            ->setPaper('a4', 'portrait')
+            ->setOption('defaultFont', 'sans-serif')
+            ->setOption('isRemoteEnabled', true)
+            ->setOption('isHtml5ParserEnabled', true);
+
+        return $pdf->stream('CO-'.$changeOrder->change_order_number.'.pdf');
     }
 
     public function edit(ChangeOrder $changeOrder)

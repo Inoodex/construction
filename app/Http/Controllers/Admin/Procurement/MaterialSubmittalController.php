@@ -7,6 +7,7 @@ use App\Models\MaterialSubmittal;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Auth;
 
 class MaterialSubmittalController extends Controller
@@ -199,5 +200,12 @@ class MaterialSubmittalController extends Controller
 
         return redirect()->route('admin.procurement.material-submittals.show', $materialSubmittal)
             ->with('success', 'Submittal resubmitted for review.');
+    }
+
+    public function printPdf(MaterialSubmittal $materialSubmittal)
+    {
+        $materialSubmittal->load('project', 'submitter', 'reviewer');
+        $pdf = Pdf::loadView('admin.procurement.material-submittals.pdf.submittal', compact('materialSubmittal'));
+        return $pdf->stream();
     }
 }

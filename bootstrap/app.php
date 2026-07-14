@@ -121,11 +121,22 @@ return Application::configure(basePath: dirname(__DIR__))
 
             // Integrity constraint violation (foreign key)
             if ($sqlState === 23000 || str_contains($e->getMessage(), 'Integrity constraint violation')) {
-                $message = 'Cannot delete this record because it has related records linked to it. Remove or reassign them first.';
+                // Column cannot be null
+                if (preg_match("/Column '([^']+)' cannot be null/i", $e->getMessage(), $colMatch)) {
+                    $message = "The field \"{$colMatch[1]}\" is required and cannot be empty.";
+                    return back()->with('error', $message)->withInput();
+                }
+
+                // Duplicate entry
+                if (str_contains($e->getMessage(), 'Duplicate entry')) {
+                    return back()->with('error', 'A record with this value already exists. Please use a different value.')->withInput();
+                }
+
+                $message = 'A related record is missing or cannot be referenced. Please check your input.';
 
                 if (preg_match('/constraint fails \(`[^`]+`\.`[^`]+`, CONSTRAINT `[^`]+` FOREIGN KEY.*?REFERENCES `([^`]+)`/', $e->getMessage(), $m)) {
                     $parentTable = str_replace('_', ' ', $m[1]);
-                    $message = "Cannot delete this record because it has related {$parentTable} records. Remove or reassign them first.";
+                    $message = "A required {$parentTable} record was not found. Please select a valid option.";
                 }
 
                 return back()->with('error', $message)->withInput();

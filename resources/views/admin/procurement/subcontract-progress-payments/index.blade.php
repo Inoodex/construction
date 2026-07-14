@@ -67,6 +67,7 @@
                             </td>
                             <td class="text-center">
                                 <a href="{{ route('admin.procurement.subcontract-progress-payments.show', $p->id) }}" class="btn btn-sm btn-outline-info">View</a>
+                                <a href="{{ route('admin.procurement.subcontract-progress-payments.pdf', $p->id) }}" target="_blank" class="btn btn-sm btn-outline-success">PDF</a>
                             </td>
                         </tr>
                     @empty

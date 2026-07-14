@@ -87,6 +87,7 @@
                                 <td class="text-center">
                                     <div class="flex items-center justify-center gap-1">
                                         <a href="{{ route('admin.core.documents.rfis.show', $rfi) }}" class="btn btn-sm btn-outline-info">View</a>
+                                        <a href="{{ route('admin.core.documents.rfis.pdf', $rfi->id) }}" target="_blank" class="btn btn-sm btn-outline-success">PDF</a>
                                         @if(!auth()->user()->hasRole('client'))
                                             <a href="{{ route('admin.core.documents.rfis.edit', $rfi) }}" class="btn btn-sm btn-outline-primary">Edit</a>
                                             <form action="{{ route('admin.core.documents.rfis.destroy', $rfi) }}" method="POST" onsubmit="return confirm('Delete this RFI?');">

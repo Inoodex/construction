@@ -71,6 +71,7 @@
                                 <td class="text-center">
                                     <div class="flex items-center justify-center gap-2">
                                         <a href="{{ route('admin.procurement.requisitions.show', $pr) }}" class="btn btn-sm btn-outline-info">View</a>
+                                        <a href="{{ route('admin.procurement.requisitions.pdf', $pr->id) }}" target="_blank" class="btn btn-sm btn-outline-success">PDF</a>
                                         <a href="{{ route('admin.procurement.requisitions.edit', $pr) }}" class="btn btn-sm btn-outline-primary">Edit</a>
                                         <form action="{{ route('admin.procurement.requisitions.destroy', $pr) }}" method="POST" onsubmit="return confirm('Delete this requisition?');"> 
                                             @csrf

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Contract;
 use App\Models\Project;
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class ContractController extends Controller
@@ -69,7 +70,8 @@ class ContractController extends Controller
         ]);
 
         $validated['contract_number'] = (new Contract())->generateContractNumber();
-        $validated['created_by'] = auth()->id();
+        $validated['created_by'] = \App\Models\User::where('id', auth()->id())->exists() ? auth()->id() : null;
+        $validated['currency'] = $validated['currency'] ?? 'BDT';
 
         Contract::create($validated);
 
@@ -82,6 +84,18 @@ class ContractController extends Controller
         $contract->load('project', 'creator', 'amendments', 'claims', 'closeoutItems');
 
         return view('admin.core.contracts.show', compact('contract'));
+    }
+
+    public function printPdf(Contract $contract)
+    {
+        $contract->load('project');
+        $pdf = Pdf::loadView('admin.core.contracts.pdf.contract', compact('contract'))
+            ->setPaper('a4', 'portrait')
+            ->setOption('defaultFont', 'sans-serif')
+            ->setOption('isRemoteEnabled', true)
+            ->setOption('isHtml5ParserEnabled', true);
+
+        return $pdf->stream('CTR-'.$contract->contract_number.'.pdf');
     }
 
     public function edit(Contract $contract)

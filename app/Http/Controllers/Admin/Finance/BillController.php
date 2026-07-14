@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Bill;
 use App\Models\BillItem;
 use App\Models\BillPayment;
+use App\Models\PaymentAccount;
+use App\Models\AccountTransaction;
 use App\Models\Project;
 use App\Models\Vendor;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -72,7 +75,20 @@ class BillController extends Controller
     public function show(Bill $bill)
     {
         $bill->load('project', 'vendor', 'creator', 'items', 'payments');
-        return view('admin.finance.bills.show', compact('bill'));
+        $accounts = \App\Models\PaymentAccount::where('status', 'active')->get();
+        return view('admin.finance.bills.show', compact('bill', 'accounts'));
+    }
+
+    public function printPdf(Bill $bill)
+    {
+        $bill->load('project', 'vendor', 'items', 'payments');
+        $pdf = Pdf::loadView('admin.finance.bills.pdf.bill', compact('bill'))
+            ->setPaper('a4', 'portrait')
+            ->setOption('defaultFont', 'sans-serif')
+            ->setOption('isRemoteEnabled', true)
+            ->setOption('isHtml5ParserEnabled', true);
+
+        return $pdf->stream('BILL-'.$bill->bill_number.'.pdf');
     }
 
     public function edit(Bill $bill)
@@ -141,10 +157,28 @@ class BillController extends Controller
             'payment_method' => 'nullable|string|max:50',
             'reference'     => 'nullable|string|max:100',
             'notes'         => 'nullable|string',
+            'payment_account_id' => 'nullable|exists:payment_accounts,id',
         ]);
 
         $validated['bill_id'] = $bill->id;
         BillPayment::create($validated);
+
+        if (!empty($validated['payment_account_id'])) {
+            $account = PaymentAccount::findOrFail($validated['payment_account_id']);
+            $newBalance = $account->current_balance - $validated['amount'];
+            $account->update(['current_balance' => $newBalance]);
+            AccountTransaction::create([
+                'payment_account_id' => $account->id,
+                'type' => 'debit',
+                'amount' => $validated['amount'],
+                'balance_after' => $newBalance,
+                'description' => "Payment made for Bill #{$bill->bill_number}",
+                'transactable_type' => BillPayment::class,
+                'transactable_id' => BillPayment::latest()->first()->id,
+                'reference' => $validated['reference'] ?? null,
+                'transaction_date' => $validated['payment_date'],
+            ]);
+        }
 
         $totalPaid = $bill->payments()->sum('amount');
         $dueAmount = $bill->total_amount - $totalPaid;

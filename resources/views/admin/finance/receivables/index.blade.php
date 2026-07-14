@@ -68,6 +68,7 @@
                             <td class="text-center">
                                 <div class="flex items-center justify-center gap-2">
                                     <a href="{{ route('admin.finance.receivables.show', $r) }}" class="btn btn-sm btn-outline-info">View</a>
+                                    <a href="{{ route('admin.finance.receivables.pdf', $r) }}" class="btn btn-sm btn-outline-success" target="_blank">PDF</a>
                                     <form action="{{ route('admin.finance.receivables.destroy', $r) }}" method="POST" onsubmit="return confirm('Delete?');">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
