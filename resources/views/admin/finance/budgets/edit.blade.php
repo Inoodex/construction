@@ -23,10 +23,12 @@
                             <option value="{{ $project->id }}" {{ old('project_id', $budget->project_id) == $project->id ? 'selected' : '' }}>{{ $project->name }}</option>
                         @endforeach
                     </select>
+                    @error('project_id') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label for="cost_code">Cost Code <span class="text-danger">*</span></label>
                     <input type="text" name="cost_code" id="cost_code" class="form-input" required value="{{ old('cost_code', $budget->cost_code) }}" />
+                    @error('cost_code') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label for="financial_year">Financial Year</label>
@@ -39,6 +41,7 @@
                 <div class="form-group">
                     <label for="budgeted_amount">Budgeted Amount <span class="text-danger">*</span></label>
                     <input type="number" step="0.01" min="0" name="budgeted_amount" id="budgeted_amount" class="form-input" required value="{{ old('budgeted_amount', $budget->budgeted_amount) }}" />
+                    @error('budgeted_amount') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
             </div>
                <br>
@@ -49,14 +52,17 @@
                 <div class="form-group">
                     <label for="planned_value">Planned Value (PV) <span class="text-danger">*</span></label>
                     <input type="number" step="0.01" min="0" name="planned_value" id="planned_value" class="form-input" required value="{{ old('planned_value', $budget->planned_value) }}" />
+                    @error('planned_value') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label for="earned_value">Earned Value (EV) <span class="text-danger">*</span></label>
                     <input type="number" step="0.01" min="0" name="earned_value" id="earned_value" class="form-input" required value="{{ old('earned_value', $budget->earned_value) }}" />
+                    @error('earned_value') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label for="actual_cost">Actual Cost (AC) <span class="text-danger">*</span></label>
                     <input type="number" step="0.01" min="0" name="actual_cost" id="actual_cost" class="form-input" required value="{{ old('actual_cost', $budget->actual_cost) }}" />
+                    @error('actual_cost') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group md:col-span-3">
                     <label for="notes">Notes</label>

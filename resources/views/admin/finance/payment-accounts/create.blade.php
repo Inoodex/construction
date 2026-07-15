@@ -11,7 +11,8 @@
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
                     <label class="text-xs text-white-dark">Account Name *</label>
-                    <input type="text" name="name" class="form-input mt-1" required value="{{ old('name') }}" placeholder="e.g. DBBL Savings Account" />
+                    <input type="text" name="name" class="form-input mt-1" required value="{{ old('name') }}" placeholder="Type account name" />
+                    @error('name') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label class="text-xs text-white-dark">Account Type *</label>
@@ -20,18 +21,20 @@
                         <option value="mfs" {{ old('type') == 'mfs' ? 'selected' : '' }}>MFS (Mobile Financial Service)</option>
                         <option value="cash" {{ old('type') == 'cash' ? 'selected' : '' }}>Cash</option>
                     </select>
+                    @error('type') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label class="text-xs text-white-dark">Account Number / Mobile No.</label>
-                    <input type="text" name="account_number" class="form-input mt-1" value="{{ old('account_number') }}" placeholder="Optional" />
+                    <input type="text" name="account_number" class="form-input mt-1" value="{{ old('account_number') }}" placeholder="Type account number or mobile number" />
                 </div>
                 <div>
                     <label class="text-xs text-white-dark">Bank / Provider Name</label>
-                    <input type="text" name="bank_name" class="form-input mt-1" value="{{ old('bank_name') }}" placeholder="e.g. Dutch-Bangla Bank, bKash" />
+                    <input type="text" name="bank_name" class="form-input mt-1" value="{{ old('bank_name') }}" placeholder="Type bank or provider name" />
                 </div>
                 <div>
                     <label class="text-xs text-white-dark">Opening Balance *</label>
                     <input type="number" name="opening_balance" step="0.01" min="0" class="form-input mt-1" required value="{{ old('opening_balance', '0') }}" />
+                    @error('opening_balance') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label class="text-xs text-white-dark">Notes</label>

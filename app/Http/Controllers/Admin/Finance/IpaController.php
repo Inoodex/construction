@@ -214,7 +214,7 @@ class IpaController extends Controller
         $request->validate(['notes' => 'required|string']);
         $ipa->update([
             'status' => 'rejected',
-            'notes'  => $ipa->notes . "\n[Rejected] " . $request->notes,
+            'notes'  => ($ipa->notes ?? '') . "\n[Rejected] " . $request->notes,
         ]);
         return back()->with('success', 'IPA rejected.');
     }

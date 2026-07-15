@@ -9,10 +9,6 @@
         <a href="{{ route('admin.finance.journal-entries.create') }}" class="btn btn-primary">+ New Journal Voucher</a>
     </div>
 
-    @if(session('success'))
-        <div class="mb-4 rounded-md bg-green-100 p-3 text-green-700">{{ session('success') }}</div>
-    @endif
-
     <form method="GET" class="mb-4 flex items-center gap-3">
         <input type="text" name="search" class="form-input flex-1" placeholder="Search by number or description..." value="{{ request('search') }}" />
         <select name="type" class="form-select flex-1">

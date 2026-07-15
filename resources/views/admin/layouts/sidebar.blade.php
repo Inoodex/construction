@@ -56,11 +56,10 @@
             elseif (str_starts_with($routeName, 'admin.crm.')) $activeDropdown = 'crm';
             elseif (str_starts_with($routeName, 'admin.quality.ncrs.') || str_starts_with($routeName, 'admin.quality.corrective-actions.')) $activeDropdown = 'ncr';
             elseif (str_starts_with($routeName, 'admin.quality.itps.') || str_starts_with($routeName, 'admin.quality.punch-lists.')) $activeDropdown = 'inspections';
-            elseif (str_starts_with($routeName, 'admin.finance.budgets.') || str_starts_with($routeName, 'admin.finance.forecasting.') || str_starts_with($routeName, 'admin.finance.cost-overrun-alerts.') || str_starts_with($routeName, 'admin.finance.labour-entries.')) $activeDropdown = 'cost-control';
-            elseif (str_starts_with($routeName, 'admin.finance.chart-of-accounts.') || str_starts_with($routeName, 'admin.finance.journal-entries.') || str_starts_with($routeName, 'admin.finance.general-ledger.') || str_starts_with($routeName, 'admin.finance.trial-balance.') || str_starts_with($routeName, 'admin.finance.receivables.') || str_starts_with($routeName, 'admin.finance.balance-sheet.') || str_starts_with($routeName, 'admin.finance.income-statement.')) $activeDropdown = 'accounting';
+            elseif (str_starts_with($routeName, 'admin.finance.budgets.') || str_starts_with($routeName, 'admin.finance.forecasting.') || str_starts_with($routeName, 'admin.finance.cost-overrun-alerts.') || str_starts_with($routeName, 'admin.finance.labour-entries.') || str_starts_with($routeName, 'admin.finance.material-takeoffs.')) $activeDropdown = 'cost-control';
+            elseif (str_starts_with($routeName, 'admin.finance.chart-of-accounts.') || str_starts_with($routeName, 'admin.finance.journal-entries.') || str_starts_with($routeName, 'admin.finance.general-ledger.') || str_starts_with($routeName, 'admin.finance.trial-balance.') || str_starts_with($routeName, 'admin.finance.receivables.') || str_starts_with($routeName, 'admin.finance.bank-guarantees.') || str_starts_with($routeName, 'admin.finance.balance-sheet.') || str_starts_with($routeName, 'admin.finance.income-statement.')) $activeDropdown = 'accounting';
             elseif (str_starts_with($routeName, 'admin.finance.boqs.') || str_starts_with($routeName, 'admin.finance.rate-analysis.') || str_starts_with($routeName, 'admin.finance.tenders.')) $activeDropdown = 'estimating';
             elseif (str_starts_with($routeName, 'admin.finance.invoices.') || str_starts_with($routeName, 'admin.finance.ipas.') || str_starts_with($routeName, 'admin.finance.bills.') || str_starts_with($routeName, 'admin.finance.expenses.')) $activeDropdown = 'billing';
-            elseif (str_starts_with($routeName, 'admin.finance.bank-guarantees.')) $activeDropdown = 'bank-guarantees';
             elseif (str_starts_with($routeName, 'admin.finance.payment-accounts.')) $activeDropdown = 'payment-accounts';
             elseif (str_starts_with($routeName, 'admin.reports.report-templates.') || str_starts_with($routeName, 'admin.reports.scheduled-reports.')) $activeDropdown = 'custom-reports';
             elseif (str_starts_with($routeName, 'admin.reports.')) $activeDropdown = 'reports';
@@ -105,7 +104,7 @@
                     </ul>
                 </li>
                 @else
-                @if(auth()->user()?->hasRole('super-admin'))
+                @hasPrivilege('admin.view')
                 <!-- Administration -->
                 <h2
                     class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
@@ -187,8 +186,9 @@
                         </li>
                     </ul>
                 </li>
-                @endif
+                @endhasPrivilege
 
+                @hasPrivilege('core.view')
                 <!-- Core -->
                 <h2 class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
                     <span>Core</span>
@@ -325,6 +325,8 @@
             </ul>
             </li> --}}
 
+            @endhasPrivilege
+            @hasPrivilege('procurement.view')
             <!-- Procurement -->
             <h2 class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
                 <span>Procurement</span>
@@ -404,6 +406,8 @@
                 </ul>
             </li>
 
+            @endhasPrivilege
+            @hasPrivilege('hr.view')
             <!-- HR -->
             <h2 class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
                 <span>HR & Payroll</span>
@@ -501,6 +505,8 @@
             </ul>
             </li>
 
+            @endhasPrivilege
+            @hasPrivilege('crm.view')
             <!-- CRM -->
             <h2 class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
                 <span>CRM</span>
@@ -544,6 +550,8 @@
                 </ul>
             </li>
 
+            @endhasPrivilege
+            @hasPrivilege('quality.view')
             <!-- Quality Control -->
             <h2 class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
                 <span>Quality Control</span>
@@ -618,7 +626,9 @@
                     <li><a href="{{ route('admin.core.contract-closeout.index') }}">Closeout Checklists</a></li>
                 </ul>
             </li>
+            @endhasPrivilege
 
+            @hasPrivilege('finance.view')
             <!-- Finance -->
             <h2 class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
                 <span>Finance</span>
@@ -651,9 +661,8 @@
                             <li><a href="{{ route('admin.finance.budgets.forecasting') }}">Forecasting</a></li>
                             <li><a href="{{ route('admin.finance.cost-overrun-alerts.index') }}">Cost Alerts</a></li>
                             <li><a href="{{ route('admin.finance.labour-entries.index') }}">Labour Cost</a></li>
-                            {{-- <li><a href="{{ route('admin.finance.material-takeoffs.index') }}">Material Takeoffs</a>
-                    </li> --}}
-            </ul>
+                            <li><a href="{{ route('admin.finance.material-takeoffs.index') }}">Material Takeoffs</a></li>
+                        </ul>
             </li>
             <li x-data="{ open: false }">
                 <a href="javascript:;" class="group block font-semibold" style="display: flex !important; width: 100%;" @click="open = !open">
@@ -679,9 +688,8 @@
                     <li><a href="{{ route('admin.finance.general-ledger.index') }}">General Ledger</a></li>
                     <li><a href="{{ route('admin.finance.trial-balance.index') }}">Trial Balance</a></li>
                     <li><a href="{{ route('admin.finance.receivables.index') }}">Accounts Receivable</a></li>
-                    {{-- <li><a href="{{ route('admin.finance.bank-guarantees.index') }}">Bank Guarantees</a>
-            </li> --}}
-            <li><a href="{{ route('admin.finance.balance-sheet.index') }}">Balance Sheet</a></li>
+                    <li><a href="{{ route('admin.finance.bank-guarantees.index') }}">Bank Guarantees</a></li>
+                    <li><a href="{{ route('admin.finance.balance-sheet.index') }}">Balance Sheet</a></li>
             <li><a href="{{ route('admin.finance.income-statement.index') }}">Income Statement</a></li>
             </ul>
             </li>
@@ -715,8 +723,9 @@
 
             </ul>
             </li>
+            @endhasPrivilege
 
-
+            @hasPrivilege('reports.view')
             <!-- Reports -->
             <h2 class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
                 <span>Reports</span>
@@ -828,6 +837,7 @@
                     </li>
                 </ul>
             </li>
+            @endhasPrivilege
 
             </ul>
             @endhasRole

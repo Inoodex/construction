@@ -101,7 +101,8 @@ class PaymentAccountController extends Controller
     public function destroy(PaymentAccount $paymentAccount)
     {
         if ($paymentAccount->transactions()->exists()) {
-            return back()->with('error', 'Cannot delete an account with transaction history.');
+            return redirect()->route('admin.finance.payment-accounts.index')
+                ->with('error', 'Cannot delete an account with transaction history.');
         }
 
         $paymentAccount->delete();

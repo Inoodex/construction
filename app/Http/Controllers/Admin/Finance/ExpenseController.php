@@ -11,6 +11,8 @@ use App\Models\PaymentAccount;
 use App\Models\AccountTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ExpenseController extends Controller
 {
@@ -81,24 +83,26 @@ class ExpenseController extends Controller
             $validated['receipt'] = $request->file('receipt')->store('expenses', 'public');
         }
 
-        Expense::create($validated);
+        $expense = Expense::create($validated);
 
-        if (!empty($validated['payment_account_id'])) {
-            $account = PaymentAccount::findOrFail($validated['payment_account_id']);
-            $newBalance = $account->current_balance - $validated['total_amount'];
-            $account->update(['current_balance' => $newBalance]);
-            AccountTransaction::create([
-                'payment_account_id' => $account->id,
-                'type' => 'debit',
-                'amount' => $validated['total_amount'],
-                'balance_after' => $newBalance,
-                'description' => "Expense: {$validated['title']}",
-                'transactable_type' => Expense::class,
-                'transactable_id' => Expense::latest()->first()->id,
-                'reference' => $validated['reference_number'] ?? null,
-                'transaction_date' => $validated['expense_date'],
-            ]);
-        }
+        DB::transaction(function () use ($validated, $expense) {
+            if (!empty($validated['payment_account_id'])) {
+                $account = PaymentAccount::findOrFail($validated['payment_account_id']);
+                $account->decrement('current_balance', $validated['total_amount']);
+                $newBalance = $account->fresh()->current_balance;
+                AccountTransaction::create([
+                    'payment_account_id' => $account->id,
+                    'type' => 'debit',
+                    'amount' => $validated['total_amount'],
+                    'balance_after' => $newBalance,
+                    'description' => "Expense: {$validated['title']}",
+                    'transactable_type' => Expense::class,
+                    'transactable_id' => $expense->id,
+                    'reference' => $validated['reference_number'] ?? null,
+                    'transaction_date' => $validated['expense_date'],
+                ]);
+            }
+        });
 
         return redirect()->route('admin.finance.expenses.index')
             ->with('success', 'Expense created successfully.');
@@ -115,7 +119,8 @@ class ExpenseController extends Controller
         $categories = Category::byType('expense_type')->get();
         $projects = Project::all();
         $vendors = Vendor::all();
-        return view('admin.finance.expenses.edit', compact('expense', 'categories', 'projects', 'vendors'));
+        $accounts = \App\Models\PaymentAccount::where('status', 'active')->get();
+        return view('admin.finance.expenses.edit', compact('expense', 'categories', 'projects', 'vendors', 'accounts'));
     }
 
     public function update(Request $request, Expense $expense)
@@ -133,6 +138,7 @@ class ExpenseController extends Controller
             'reference_number'    => 'nullable|string|max:100',
             'notes'               => 'nullable|string',
             'receipt'             => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'payment_account_id'  => 'nullable|exists:payment_accounts,id',
         ]);
 
         $validated['tax_amount'] = $validated['amount'] * ($validated['tax_rate'] / 100);
@@ -142,7 +148,45 @@ class ExpenseController extends Controller
             $validated['receipt'] = $request->file('receipt')->store('expenses', 'public');
         }
 
-        $expense->update($validated);
+        DB::transaction(function () use ($validated, $request, $expense) {
+            $oldAccountId = $expense->payment_account_id;
+            $oldTotalAmount = $expense->total_amount;
+            $newAccountId = $validated['payment_account_id'] ?? null;
+            $newTotalAmount = $validated['total_amount'];
+
+            $expense->update($validated);
+
+            if ($oldAccountId == $newAccountId && $oldTotalAmount == $newTotalAmount) {
+                return;
+            }
+
+            if ($oldAccountId) {
+                $oldAccount = PaymentAccount::find($oldAccountId);
+                if ($oldAccount) {
+                    $oldAccount->increment('current_balance', $oldTotalAmount);
+                    AccountTransaction::where('transactable_type', Expense::class)
+                        ->where('transactable_id', $expense->id)
+                        ->delete();
+                }
+            }
+
+            if ($newAccountId) {
+                $newAccount = PaymentAccount::findOrFail($newAccountId);
+                $newAccount->decrement('current_balance', $newTotalAmount);
+                $newBalance = $newAccount->fresh()->current_balance;
+                AccountTransaction::create([
+                    'payment_account_id' => $newAccount->id,
+                    'type' => 'debit',
+                    'amount' => $newTotalAmount,
+                    'balance_after' => $newBalance,
+                    'description' => "Expense: {$validated['title']}",
+                    'transactable_type' => Expense::class,
+                    'transactable_id' => $expense->id,
+                    'reference' => $validated['reference_number'] ?? null,
+                    'transaction_date' => $validated['expense_date'],
+                ]);
+            }
+        });
 
         return redirect()->route('admin.finance.expenses.index')
             ->with('success', 'Expense updated successfully.');
@@ -150,13 +194,32 @@ class ExpenseController extends Controller
 
     public function destroy(Expense $expense)
     {
-        $expense->delete();
+        DB::transaction(function () use ($expense) {
+            if ($expense->payment_account_id) {
+                $account = PaymentAccount::find($expense->payment_account_id);
+                if ($account) {
+                    $account->increment('current_balance', $expense->total_amount);
+                    AccountTransaction::where('transactable_type', Expense::class)
+                        ->where('transactable_id', $expense->id)
+                        ->delete();
+                }
+            }
+
+            if ($expense->receipt && Storage::disk('public')->exists($expense->receipt)) {
+                Storage::disk('public')->delete($expense->receipt);
+            }
+
+            $expense->delete();
+        });
+
         return redirect()->route('admin.finance.expenses.index')
             ->with('success', 'Expense deleted.');
     }
 
     public function markPaid(Expense $expense)
     {
+        abort_if($expense->status === 'paid', 400, 'Expense is already paid.');
+
         $expense->update(['status' => 'paid']);
         return back()->with('success', 'Expense marked as paid.');
     }

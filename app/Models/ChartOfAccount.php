@@ -35,6 +35,11 @@ class ChartOfAccount extends Model
         return $this->hasMany(self::class, 'parent_id');
     }
 
+    public function journalEntryItems()
+    {
+        return $this->hasMany(JournalEntryItem::class, 'account_id');
+    }
+
     public function scopeActive($query)
     {
         return $query->where('is_active', true);

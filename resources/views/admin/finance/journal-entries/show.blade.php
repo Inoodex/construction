@@ -11,6 +11,12 @@
             </svg>
             Back to List
         </a>
+        @if($entry->status === 'posted')
+            <form action="{{ route('admin.finance.journal-entries.void', $entry) }}" method="POST" style="display:inline;" onsubmit="return confirm('Void this journal entry? A reversing entry will be created.');">
+                @csrf
+                <button type="submit" class="btn btn-danger">Void Entry</button>
+            </form>
+        @endif
     </div>
 
     <div class="panel mt-6">

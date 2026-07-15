@@ -13,6 +13,7 @@
                 <div>
                     <label class="text-xs text-white-dark">Account Name *</label>
                     <input type="text" name="name" class="form-input mt-1" required value="{{ old('name', $paymentAccount->name) }}" />
+                    @error('name') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label class="text-xs text-white-dark">Account Type *</label>
@@ -21,6 +22,7 @@
                         <option value="mfs" {{ old('type', $paymentAccount->type) == 'mfs' ? 'selected' : '' }}>MFS (Mobile Financial Service)</option>
                         <option value="cash" {{ old('type', $paymentAccount->type) == 'cash' ? 'selected' : '' }}>Cash</option>
                     </select>
+                    @error('type') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label class="text-xs text-white-dark">Account Number / Mobile No.</label>
@@ -36,6 +38,7 @@
                         <option value="active" {{ old('status', $paymentAccount->status) == 'active' ? 'selected' : '' }}>Active</option>
                         <option value="inactive" {{ old('status', $paymentAccount->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
                     </select>
+                    @error('status') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div>
                     <label class="text-xs text-white-dark">Notes</label>

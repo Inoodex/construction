@@ -7,6 +7,7 @@ use App\Models\ChartOfAccount;
 use App\Models\JournalEntry;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class JournalEntryController extends Controller
 {
@@ -56,7 +57,21 @@ class JournalEntryController extends Controller
             'items.*.description' => 'nullable|string|max:255',
         ]);
 
-        // Validate at least one debit and one credit
+        foreach ($validated['items'] as $index => $item) {
+            $hasDebit = !empty($item['debit_amount']) && $item['debit_amount'] > 0;
+            $hasCredit = !empty($item['credit_amount']) && $item['credit_amount'] > 0;
+            if ($hasDebit && $hasCredit) {
+                return back()->withErrors([
+                    "items.{$index}.debit_amount" => 'Each line must have either a debit or a credit, not both.',
+                ])->withInput();
+            }
+            if (!$hasDebit && !$hasCredit) {
+                return back()->withErrors([
+                    "items.{$index}.debit_amount" => 'Each line must have a debit or credit amount.',
+                ])->withInput();
+            }
+        }
+
         $totalDebit = collect($validated['items'])->sum('debit_amount');
         $totalCredit = collect($validated['items'])->sum('credit_amount');
 
@@ -100,9 +115,45 @@ class JournalEntryController extends Controller
 
     public function destroy(JournalEntry $journalEntry)
     {
-        $journalEntry->delete();
+        if ($journalEntry->status === 'posted') {
+            return back()->withErrors(['error' => 'Posted journal entries cannot be deleted. Void or reverse the entry instead.']);
+        }
+
+        DB::transaction(function () use ($journalEntry) {
+            $journalEntry->items()->delete();
+            $journalEntry->delete();
+        });
 
         return redirect()->route('admin.finance.journal-entries.index')
             ->with('success', 'Journal entry deleted successfully.');
+    }
+
+    public function void(JournalEntry $journalEntry)
+    {
+        abort_unless($journalEntry->status === 'posted', 400, 'Only posted entries can be voided.');
+
+        DB::transaction(function () use ($journalEntry) {
+            $reversal = JournalEntry::create([
+                'journal_number' => 'JV-' . now()->format('Ymd') . '-' . strtoupper(Str::random(4)),
+                'date' => now()->format('Y-m-d'),
+                'description' => "Reversal of {$journalEntry->journal_number}: {$journalEntry->description}",
+                'type' => $journalEntry->type,
+                'status' => 'posted',
+                'created_by' => auth()->id(),
+            ]);
+
+            foreach ($journalEntry->items as $item) {
+                $reversal->items()->create([
+                    'account_id' => $item->account_id,
+                    'debit_amount' => $item->credit_amount,
+                    'credit_amount' => $item->debit_amount,
+                    'description' => "Reversal of line: {$item->description}",
+                ]);
+            }
+
+            $journalEntry->update(['status' => 'voided']);
+        });
+
+        return back()->with('success', 'Journal entry voided. A reversing entry has been created.');
     }
 }

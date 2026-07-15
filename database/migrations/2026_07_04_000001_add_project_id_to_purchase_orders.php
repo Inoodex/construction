@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('project_id')->nullable()->after('vendor_id')->constrained()->nullOnDelete();
         });
 
-        DB::statement('UPDATE purchase_orders po JOIN purchase_requisitions pr ON po.purchase_requisition_id = pr.id SET po.project_id = pr.project_id');
+        DB::statement('UPDATE purchase_orders SET project_id = (SELECT pr.project_id FROM purchase_requisitions pr WHERE pr.id = purchase_orders.purchase_requisition_id) WHERE purchase_requisition_id IS NOT NULL');
     }
 
     public function down(): void

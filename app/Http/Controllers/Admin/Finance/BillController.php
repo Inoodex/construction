@@ -13,6 +13,7 @@ use App\Models\Vendor;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class BillController extends Controller
@@ -112,15 +113,30 @@ class BillController extends Controller
         ]);
 
         $bill->update($validated);
+        $this->recalculateBill($bill);
         return redirect()->route('admin.finance.bills.index')
             ->with('success', 'Bill updated.');
     }
 
     public function destroy(Bill $bill)
     {
-        $bill->payments()->delete();
-        $bill->items()->delete();
-        $bill->delete();
+        DB::transaction(function () use ($bill) {
+            foreach ($bill->payments as $payment) {
+                if ($payment->payment_account_id) {
+                    $account = PaymentAccount::find($payment->payment_account_id);
+                    if ($account) {
+                        $account->increment('current_balance', $payment->amount);
+                        AccountTransaction::where('transactable_type', BillPayment::class)
+                            ->where('transactable_id', $payment->id)
+                            ->delete();
+                    }
+                }
+            }
+            $bill->payments()->delete();
+            $bill->items()->delete();
+            $bill->delete();
+        });
+
         return redirect()->route('admin.finance.bills.index')
             ->with('success', 'Bill deleted.');
     }
@@ -151,6 +167,8 @@ class BillController extends Controller
 
     public function addPayment(Request $request, Bill $bill)
     {
+        abort_if(in_array($bill->status, ['draft', 'cancelled']), 400, 'Payments cannot be recorded for draft or cancelled bills.');
+
         $validated = $request->validate([
             'amount'        => 'required|numeric|min:0.01',
             'payment_date'  => 'required|date',
@@ -160,51 +178,66 @@ class BillController extends Controller
             'payment_account_id' => 'nullable|exists:payment_accounts,id',
         ]);
 
-        $validated['bill_id'] = $bill->id;
-        BillPayment::create($validated);
+        DB::transaction(function () use ($validated, $bill) {
+            $validated['bill_id'] = $bill->id;
+            $billPayment = BillPayment::create($validated);
 
-        if (!empty($validated['payment_account_id'])) {
-            $account = PaymentAccount::findOrFail($validated['payment_account_id']);
-            $newBalance = $account->current_balance - $validated['amount'];
-            $account->update(['current_balance' => $newBalance]);
-            AccountTransaction::create([
-                'payment_account_id' => $account->id,
-                'type' => 'debit',
-                'amount' => $validated['amount'],
-                'balance_after' => $newBalance,
-                'description' => "Payment made for Bill #{$bill->bill_number}",
-                'transactable_type' => BillPayment::class,
-                'transactable_id' => BillPayment::latest()->first()->id,
-                'reference' => $validated['reference'] ?? null,
-                'transaction_date' => $validated['payment_date'],
+            if (!empty($validated['payment_account_id'])) {
+                $account = PaymentAccount::findOrFail($validated['payment_account_id']);
+                $account->decrement('current_balance', $validated['amount']);
+                $newBalance = $account->fresh()->current_balance;
+                AccountTransaction::create([
+                    'payment_account_id' => $account->id,
+                    'type' => 'debit',
+                    'amount' => $validated['amount'],
+                    'balance_after' => $newBalance,
+                    'description' => "Payment made for Bill #{$bill->bill_number}",
+                    'transactable_type' => BillPayment::class,
+                    'transactable_id' => $billPayment->id,
+                    'reference' => $validated['reference'] ?? null,
+                    'transaction_date' => $validated['payment_date'],
+                ]);
+            }
+
+            $totalPaid = $bill->payments()->sum('amount');
+            $dueAmount = $bill->total_amount - $totalPaid;
+            $status = $dueAmount <= 0 ? 'paid' : ($totalPaid > 0 ? 'approved' : $bill->status);
+
+            $bill->update([
+                'paid_amount' => $totalPaid,
+                'due_amount'  => max($dueAmount, 0),
+                'status'      => $status,
             ]);
-        }
-
-        $totalPaid = $bill->payments()->sum('amount');
-        $dueAmount = $bill->total_amount - $totalPaid;
-        $status = $dueAmount <= 0 ? 'paid' : ($totalPaid > 0 ? 'approved' : $bill->status);
-
-        $bill->update([
-            'paid_amount' => $totalPaid,
-            'due_amount'  => max($dueAmount, 0),
-            'status'      => $status,
-        ]);
+        });
 
         return back()->with('success', 'Payment recorded.');
     }
 
     public function removePayment(Bill $bill, BillPayment $payment)
     {
-        $payment->delete();
-        $totalPaid = $bill->payments()->sum('amount');
-        $dueAmount = $bill->total_amount - $totalPaid;
-        $status = $dueAmount <= 0 ? 'paid' : ($totalPaid > 0 ? 'approved' : $bill->status);
+        DB::transaction(function () use ($bill, $payment) {
+            if ($payment->payment_account_id) {
+                $account = PaymentAccount::find($payment->payment_account_id);
+                if ($account) {
+                    $account->increment('current_balance', $payment->amount);
+                    AccountTransaction::where('transactable_type', BillPayment::class)
+                        ->where('transactable_id', $payment->id)
+                        ->delete();
+                }
+            }
 
-        $bill->update([
-            'paid_amount' => $totalPaid,
-            'due_amount'  => max($dueAmount, 0),
-            'status'      => $status,
-        ]);
+            $payment->delete();
+
+            $totalPaid = $bill->payments()->sum('amount');
+            $dueAmount = $bill->total_amount - $totalPaid;
+            $status = $dueAmount <= 0 ? 'paid' : ($totalPaid > 0 ? 'approved' : 'draft');
+
+            $bill->update([
+                'paid_amount' => $totalPaid,
+                'due_amount'  => max($dueAmount, 0),
+                'status'      => $status,
+            ]);
+        });
 
         return back()->with('success', 'Payment removed.');
     }

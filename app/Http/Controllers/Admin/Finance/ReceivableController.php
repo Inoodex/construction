@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Admin\Finance;
 use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\Receivable;
+use App\Models\ReceivablePayment;
 use App\Models\PaymentAccount;
 use App\Models\AccountTransaction;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ReceivableController extends Controller
 {
@@ -68,9 +70,48 @@ class ReceivableController extends Controller
         return view('admin.finance.receivables.show', compact('receivable', 'accounts'));
     }
 
+    public function edit(Receivable $receivable)
+    {
+        $projects = Project::pluck('name', 'id');
+        return view('admin.finance.receivables.edit', compact('receivable', 'projects'));
+    }
+
+    public function update(Request $request, Receivable $receivable)
+    {
+        $validated = $request->validate([
+            'receivable_number' => 'required|string|max:50|unique:receivables,receivable_number,' . $receivable->id,
+            'project_id' => 'nullable|exists:projects,id',
+            'payer_name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'amount' => 'required|numeric|min:0',
+            'due_date' => 'required|date',
+            'notes' => 'nullable|string',
+        ]);
+
+        $receivable->update($validated);
+
+        return redirect()->route('admin.finance.receivables.index')
+            ->with('success', 'Receivable updated successfully.');
+    }
+
     public function destroy(Receivable $receivable)
     {
-        $receivable->delete();
+        DB::transaction(function () use ($receivable) {
+            foreach ($receivable->payments as $payment) {
+                if ($payment->payment_account_id) {
+                    $account = PaymentAccount::find($payment->payment_account_id);
+                    if ($account) {
+                        $account->decrement('current_balance', $payment->amount);
+                        AccountTransaction::where('transactable_type', ReceivablePayment::class)
+                            ->where('transactable_id', $payment->id)
+                            ->delete();
+                    }
+                }
+            }
+            $receivable->payments()->delete();
+            $receivable->delete();
+        });
+
         return redirect()->route('admin.finance.receivables.index')
             ->with('success', 'Receivable deleted successfully.');
     }
@@ -86,31 +127,33 @@ class ReceivableController extends Controller
             'payment_account_id' => 'nullable|exists:payment_accounts,id',
         ]);
 
-        $receivable->payments()->create($validated);
-        $receivable->increment('paid_amount', $validated['amount']);
+        DB::transaction(function () use ($validated, $receivable) {
+            $receivablePayment = $receivable->payments()->create($validated);
+            $receivable->increment('paid_amount', $validated['amount']);
 
-        if (!empty($validated['payment_account_id'])) {
-            $account = PaymentAccount::findOrFail($validated['payment_account_id']);
-            $newBalance = $account->current_balance + $validated['amount'];
-            $account->update(['current_balance' => $newBalance]);
-            AccountTransaction::create([
-                'payment_account_id' => $account->id,
-                'type' => 'credit',
-                'amount' => $validated['amount'],
-                'balance_after' => $newBalance,
-                'description' => "Receivable payment received for #{$receivable->receivable_number}",
-                'transactable_type' => \App\Models\ReceivablePayment::class,
-                'transactable_id' => $receivable->payments()->latest()->first()->id,
-                'reference' => $validated['reference'] ?? null,
-                'transaction_date' => $validated['payment_date'],
-            ]);
-        }
+            if (!empty($validated['payment_account_id'])) {
+                $account = PaymentAccount::findOrFail($validated['payment_account_id']);
+                $account->increment('current_balance', $validated['amount']);
+                $newBalance = $account->fresh()->current_balance;
+                AccountTransaction::create([
+                    'payment_account_id' => $account->id,
+                    'type' => 'credit',
+                    'amount' => $validated['amount'],
+                    'balance_after' => $newBalance,
+                    'description' => "Receivable payment received for #{$receivable->receivable_number}",
+                    'transactable_type' => ReceivablePayment::class,
+                    'transactable_id' => $receivablePayment->id,
+                    'reference' => $validated['reference'] ?? null,
+                    'transaction_date' => $validated['payment_date'],
+                ]);
+            }
 
-        if ($receivable->paid_amount >= $receivable->amount) {
-            $receivable->update(['status' => 'paid']);
-        } elseif ($receivable->paid_amount > 0) {
-            $receivable->update(['status' => 'partial']);
-        }
+            if ($receivable->paid_amount >= $receivable->amount) {
+                $receivable->update(['status' => 'paid']);
+            } elseif ($receivable->paid_amount > 0) {
+                $receivable->update(['status' => 'partial']);
+            }
+        });
 
         return back()->with('success', 'Payment recorded successfully.');
     }
@@ -130,14 +173,27 @@ class ReceivableController extends Controller
     public function removePayment(Receivable $receivable, $payment)
     {
         $payment = $receivable->payments()->findOrFail($payment);
-        $receivable->decrement('paid_amount', $payment->amount);
-        $payment->delete();
 
-        if ($receivable->paid_amount <= 0) {
-            $receivable->update(['status' => 'pending']);
-        } elseif ($receivable->paid_amount < $receivable->amount) {
-            $receivable->update(['status' => 'partial']);
-        }
+        DB::transaction(function () use ($receivable, $payment) {
+            if ($payment->payment_account_id) {
+                $account = PaymentAccount::find($payment->payment_account_id);
+                if ($account) {
+                    $account->decrement('current_balance', $payment->amount);
+                    AccountTransaction::where('transactable_type', ReceivablePayment::class)
+                        ->where('transactable_id', $payment->id)
+                        ->delete();
+                }
+            }
+
+            $receivable->decrement('paid_amount', $payment->amount);
+            $payment->delete();
+
+            if ($receivable->paid_amount <= 0) {
+                $receivable->update(['status' => 'pending']);
+            } elseif ($receivable->paid_amount < $receivable->amount) {
+                $receivable->update(['status' => 'partial']);
+            }
+        });
 
         return back()->with('success', 'Payment removed successfully.');
     }

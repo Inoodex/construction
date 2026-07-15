@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             ChartOfAccountSeeder::class,
             ClientRoleSeeder::class,
+            PrivilegeSeeder::class,
         ]);
     }
 }

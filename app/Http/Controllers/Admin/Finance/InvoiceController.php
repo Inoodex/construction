@@ -12,6 +12,7 @@ use App\Models\Project;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class InvoiceController extends Controller
@@ -102,7 +103,10 @@ class InvoiceController extends Controller
 
     public function edit(Invoice $invoice)
     {
-        $projects = Project::all();
+        $user = Auth::user();
+        $projects = $user->hasRole('client')
+            ? Project::where('client_id', $user->client_id)->get()
+            : Project::all();
 
         return view('admin.finance.invoices.edit', compact('invoice', 'projects'));
     }
@@ -121,6 +125,7 @@ class InvoiceController extends Controller
         ]);
 
         $invoice->update($validated);
+        $this->recalculateInvoice($invoice);
 
         return redirect()->route('admin.finance.invoices.index')
             ->with('success', 'Invoice updated.');
@@ -128,9 +133,22 @@ class InvoiceController extends Controller
 
     public function destroy(Invoice $invoice)
     {
-        $invoice->payments()->delete();
-        $invoice->items()->delete();
-        $invoice->delete();
+        DB::transaction(function () use ($invoice) {
+            foreach ($invoice->payments as $payment) {
+                if ($payment->payment_account_id) {
+                    $account = PaymentAccount::find($payment->payment_account_id);
+                    if ($account) {
+                        $account->decrement('current_balance', $payment->amount);
+                        AccountTransaction::where('transactable_type', Payment::class)
+                            ->where('transactable_id', $payment->id)
+                            ->delete();
+                    }
+                }
+            }
+            $invoice->payments()->delete();
+            $invoice->items()->delete();
+            $invoice->delete();
+        });
 
         return redirect()->route('admin.finance.invoices.index')
             ->with('success', 'Invoice deleted.');
@@ -164,6 +182,8 @@ class InvoiceController extends Controller
 
     public function addPayment(Request $request, Invoice $invoice)
     {
+        abort_if(in_array($invoice->status, ['draft', 'cancelled']), 400, 'Payments cannot be recorded for draft or cancelled invoices.');
+
         $validated = $request->validate([
             'amount' => 'required|numeric|min:0.01',
             'payment_date' => 'required|date',
@@ -173,56 +193,66 @@ class InvoiceController extends Controller
             'payment_account_id' => 'nullable|exists:payment_accounts,id',
         ]);
 
-        $validated['invoice_id'] = $invoice->id;
+        DB::transaction(function () use ($validated, $request, $invoice) {
+            $validated['invoice_id'] = $invoice->id;
+            $payment = Payment::create($validated);
 
-        Payment::create($validated);
+            if (!empty($validated['payment_account_id'])) {
+                $account = PaymentAccount::findOrFail($validated['payment_account_id']);
+                $account->increment('current_balance', $validated['amount']);
+                $newBalance = $account->fresh()->current_balance;
+                AccountTransaction::create([
+                    'payment_account_id' => $account->id,
+                    'type' => 'credit',
+                    'amount' => $validated['amount'],
+                    'balance_after' => $newBalance,
+                    'description' => "Payment received for Invoice #{$invoice->invoice_number}",
+                    'transactable_type' => Payment::class,
+                    'transactable_id' => $payment->id,
+                    'reference' => $validated['reference'] ?? null,
+                    'transaction_date' => $validated['payment_date'],
+                ]);
+            }
 
-        if (!empty($validated['payment_account_id'])) {
-            $account = PaymentAccount::findOrFail($validated['payment_account_id']);
-            $newBalance = $account->current_balance + $validated['amount'];
-            $account->update(['current_balance' => $newBalance]);
-            AccountTransaction::create([
-                'payment_account_id' => $account->id,
-                'type' => 'credit',
-                'amount' => $validated['amount'],
-                'balance_after' => $newBalance,
-                'description' => "Payment received for Invoice #{$invoice->invoice_number}",
-                'transactable_type' => Payment::class,
-                'transactable_id' => Payment::latest()->first()->id,
-                'reference' => $validated['reference'] ?? null,
-                'transaction_date' => $validated['payment_date'],
+            $totalPaid = $invoice->payments()->sum('amount');
+            $dueAmount = $invoice->total_amount - $totalPaid;
+            $status = $dueAmount <= 0 ? 'paid' : 'partially_paid';
+
+            $invoice->update([
+                'paid_amount' => $totalPaid,
+                'due_amount' => max($dueAmount, 0),
+                'status' => $status,
             ]);
-        }
-
-        $totalPaid = $invoice->payments()->sum('amount');
-        $dueAmount = $invoice->total_amount - $totalPaid;
-
-        $status = $dueAmount <= 0 ? 'paid' : ($totalPaid > 0 ? 'partially_paid' : $invoice->status);
-        if ($invoice->status === 'draft') {
-            $status = 'draft';
-        }
-
-        $invoice->update([
-            'paid_amount' => $totalPaid,
-            'due_amount' => max($dueAmount, 0),
-            'status' => $status,
-        ]);
+        });
 
         return back()->with('success', 'Payment recorded.');
     }
 
     public function removePayment(Invoice $invoice, Payment $payment)
     {
-        $payment->delete();
-        $totalPaid = $invoice->payments()->sum('amount');
-        $dueAmount = $invoice->total_amount - $totalPaid;
-        $status = $dueAmount <= 0 ? 'paid' : ($totalPaid > 0 ? 'partially_paid' : $invoice->status);
+        DB::transaction(function () use ($invoice, $payment) {
+            if ($payment->payment_account_id) {
+                $account = PaymentAccount::find($payment->payment_account_id);
+                if ($account) {
+                    $account->decrement('current_balance', $payment->amount);
+                    AccountTransaction::where('transactable_type', Payment::class)
+                        ->where('transactable_id', $payment->id)
+                        ->delete();
+                }
+            }
 
-        $invoice->update([
-            'paid_amount' => $totalPaid,
-            'due_amount' => max($dueAmount, 0),
-            'status' => $status,
-        ]);
+            $payment->delete();
+
+            $totalPaid = $invoice->payments()->sum('amount');
+            $dueAmount = $invoice->total_amount - $totalPaid;
+            $status = $dueAmount <= 0 ? 'paid' : ($totalPaid > 0 ? 'partially_paid' : 'sent');
+
+            $invoice->update([
+                'paid_amount' => $totalPaid,
+                'due_amount' => max($dueAmount, 0),
+                'status' => $status,
+            ]);
+        });
 
         return back()->with('success', 'Payment removed.');
     }
@@ -236,6 +266,11 @@ class InvoiceController extends Controller
         $paid = $invoice->payments()->sum('amount');
         $due = $total - $paid;
 
+        $status = $due <= 0 ? 'paid' : ($paid > 0 ? 'partially_paid' : $invoice->status);
+        if ($invoice->status === 'cancelled') {
+            $status = 'cancelled';
+        }
+
         $invoice->update([
             'subtotal' => $subtotal,
             'tax_amount' => $taxAmount,
@@ -243,6 +278,7 @@ class InvoiceController extends Controller
             'total_amount' => $total,
             'paid_amount' => $paid,
             'due_amount' => max($due, 0),
+            'status' => $status,
         ]);
     }
 }

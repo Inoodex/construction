@@ -7,6 +7,7 @@ use App\Models\BankGuarantee;
 use App\Models\Project;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class BankGuaranteeController extends Controller
 {
@@ -28,10 +29,6 @@ class BankGuaranteeController extends Controller
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
-
-        // Auto-expire past-due active guarantees
-        BankGuarantee::active()->where('expiry_date', '<', now()->toDateString())
-            ->update(['status' => 'expired']);
 
         $guarantees = $query->latest()->paginate(15);
 
@@ -63,7 +60,13 @@ class BankGuaranteeController extends Controller
             $validated['document_path'] = $request->file('document')->store('bank-guarantees', 'public');
         }
 
-        $validated['status'] = now()->between($validated['issue_date'], $validated['expiry_date']) ? 'active' : 'expired';
+        if (now()->lt($validated['issue_date'])) {
+            $validated['status'] = 'active';
+        } elseif (now()->between($validated['issue_date'], $validated['expiry_date'])) {
+            $validated['status'] = 'active';
+        } else {
+            $validated['status'] = 'expired';
+        }
         $validated['created_by'] = auth()->id();
 
         BankGuarantee::create($validated);
@@ -76,6 +79,40 @@ class BankGuaranteeController extends Controller
     {
         $bankGuarantee->load('project');
         return view('admin.finance.bank-guarantees.show', compact('bankGuarantee'));
+    }
+
+    public function edit(BankGuarantee $bankGuarantee)
+    {
+        $projects = Project::pluck('name', 'id');
+        return view('admin.finance.bank-guarantees.edit', compact('bankGuarantee', 'projects'));
+    }
+
+    public function update(Request $request, BankGuarantee $bankGuarantee)
+    {
+        $validated = $request->validate([
+            'reference_number' => 'required|string|max:100|unique:bank_guarantees,reference_number,' . $bankGuarantee->id,
+            'type' => 'required|in:bid,performance,advance,retention',
+            'issuing_bank' => 'required|string|max:255',
+            'project_id' => 'nullable|exists:projects,id',
+            'beneficiary' => 'required|string|max:255',
+            'amount' => 'required|numeric|min:0',
+            'issue_date' => 'required|date',
+            'expiry_date' => 'required|date|after_or_equal:issue_date',
+            'narration' => 'nullable|string',
+            'document' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+        ]);
+
+        if ($request->hasFile('document')) {
+            if ($bankGuarantee->document_path && Storage::disk('public')->exists($bankGuarantee->document_path)) {
+                Storage::disk('public')->delete($bankGuarantee->document_path);
+            }
+            $validated['document_path'] = $request->file('document')->store('bank-guarantees', 'public');
+        }
+
+        $bankGuarantee->update($validated);
+
+        return redirect()->route('admin.finance.bank-guarantees.index')
+            ->with('success', 'Bank guarantee updated successfully.');
     }
 
     public function updateStatus(Request $request, BankGuarantee $bankGuarantee)
@@ -100,6 +137,10 @@ class BankGuaranteeController extends Controller
 
     public function destroy(BankGuarantee $bankGuarantee)
     {
+        if ($bankGuarantee->document_path && Storage::disk('public')->exists($bankGuarantee->document_path)) {
+            Storage::disk('public')->delete($bankGuarantee->document_path);
+        }
+
         $bankGuarantee->delete();
         return redirect()->route('admin.finance.bank-guarantees.index')
             ->with('success', 'Bank guarantee deleted.');

@@ -81,7 +81,7 @@
         @endif
 
 
-@if(auth()->user()?->hasRole('admin') || auth()->user()?->hasRole('super-admin'))
+@if(auth()->user()?->hasRole('admin') || auth()->user()?->hasRole('super-admin') || auth()->user()?->hasRole('accountant'))
 
 
 {{-- Page Header --}}

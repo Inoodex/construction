@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Finance;
 use App\Http\Controllers\Controller;
 use App\Models\ChartOfAccount;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ChartOfAccountController extends Controller
 {
@@ -49,7 +50,7 @@ class ChartOfAccountController extends Controller
             'account_code' => 'required|string|max:20|unique:chart_of_accounts',
             'name' => 'required|string|max:255',
             'type' => 'required|in:asset,liability,equity,income,expense',
-            'normal_balance' => 'required|in:debit,credit',
+            'normal_balance' => 'nullable|in:debit,credit',
             'parent_id' => 'nullable|exists:chart_of_accounts,id',
             'description' => 'nullable|string',
             'is_active' => 'nullable|boolean',
@@ -87,8 +88,12 @@ class ChartOfAccountController extends Controller
             'account_code' => 'required|string|max:20|unique:chart_of_accounts,account_code,' . $chartOfAccount->id,
             'name' => 'required|string|max:255',
             'type' => 'required|in:asset,liability,equity,income,expense',
-            'normal_balance' => 'required|in:debit,credit',
-            'parent_id' => 'nullable|exists:chart_of_accounts,id',
+            'normal_balance' => 'nullable|in:debit,credit',
+            'parent_id' => [
+                'nullable',
+                'exists:chart_of_accounts,id',
+                Rule::notIn([$chartOfAccount->id]),
+            ],
             'description' => 'nullable|string',
             'is_active' => 'nullable|boolean',
         ]);
@@ -106,6 +111,11 @@ class ChartOfAccountController extends Controller
         if ($chartOfAccount->children()->count() > 0) {
             return redirect()->route('admin.finance.chart-of-accounts.index')
                 ->with('error', 'Cannot delete account with sub-accounts.');
+        }
+
+        if ($chartOfAccount->journalEntryItems()->exists()) {
+            return redirect()->route('admin.finance.chart-of-accounts.index')
+                ->with('error', 'Cannot delete account with existing transactions.');
         }
 
         $chartOfAccount->delete();

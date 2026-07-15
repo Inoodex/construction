@@ -18,6 +18,7 @@
                 <div class="form-group">
                     <label for="title">Title <span class="text-danger">*</span></label>
                     <input type="text" name="title" id="title" class="form-input" required value="{{ old('title') }}" />
+                    @error('title') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label for="category_id">Category <span class="text-danger">*</span></label>
@@ -27,18 +28,22 @@
                             <option value="{{ $cat->id }}" {{ old('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->label }}</option>
                         @endforeach
                     </select>
+                    @error('category_id') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label for="expense_date">Expense Date <span class="text-danger">*</span></label>
                     <input type="date" name="expense_date" id="expense_date" class="form-input" required value="{{ old('expense_date', now()->format('Y-m-d')) }}" />
+                    @error('expense_date') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label for="amount">Amount <span class="text-danger">*</span></label>
                     <input type="number" step="0.01" min="0" name="amount" id="amount" class="form-input" required value="{{ old('amount') }}" />
+                    @error('amount') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label for="tax_rate">Tax Rate (%)</label>
                     <input type="number" step="0.01" min="0" max="100" name="tax_rate" id="tax_rate" class="form-input" value="{{ old('tax_rate', 0) }}" />
+                    @error('tax_rate') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label for="payment_method">Payment Method</label>
@@ -58,6 +63,7 @@
                             <option value="{{ $account->id }}" {{ old('payment_account_id') == $account->id ? 'selected' : '' }}>{{ $account->name }} ({{ ucfirst($account->type) }})</option>
                         @endforeach
                     </select>
+                    @error('payment_account_id') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label for="vendor_id">Vendor</label>

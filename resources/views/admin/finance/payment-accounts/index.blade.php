@@ -22,7 +22,7 @@
                 <span class="text-sm text-white-dark">Total Balance:</span>
                 <span class="ml-2 text-lg font-bold text-success">{{ number_format($totalBalance, 2) }}</span>
             </div>
-            <div class="flex gap-2">
+            <div class="flex gap-2 min-w-[200px]">
                 <select onchange="window.location.href='?type='+this.value" class="form-select text-xs">
                     <option value="">All Types</option>
                     <option value="bank" {{ request('type') == 'bank' ? 'selected' : '' }}>Bank</option>

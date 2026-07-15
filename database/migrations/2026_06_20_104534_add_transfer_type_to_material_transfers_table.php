@@ -15,7 +15,9 @@ return new class extends Migration
             $table->foreignId('to_warehouse_id')->nullable()->constrained('warehouses')->nullOnDelete()->after('to_site_id');
         });
 
-        DB::statement('ALTER TABLE material_transfers MODIFY COLUMN status VARCHAR(50) DEFAULT "pending" NOT NULL');
+        if (config('database.default') === 'mysql') {
+            DB::statement('ALTER TABLE material_transfers MODIFY COLUMN status VARCHAR(50) DEFAULT "pending" NOT NULL');
+        }
     }
 
     public function down(): void

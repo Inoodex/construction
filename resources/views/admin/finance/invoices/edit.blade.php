@@ -23,26 +23,32 @@
                             <option value="{{ $project->id }}" {{ old('project_id', $invoice->project_id) == $project->id ? 'selected' : '' }}>{{ $project->name }}</option>
                         @endforeach
                     </select>
+                    @error('project_id') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label for="title">Title <span class="text-danger">*</span></label>
                     <input type="text" name="title" id="title" class="form-input" required value="{{ old('title', $invoice->title) }}" />
+                    @error('title') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label for="issue_date">Issue Date <span class="text-danger">*</span></label>
                     <input type="date" name="issue_date" id="issue_date" class="form-input" required value="{{ old('issue_date', $invoice->issue_date->format('Y-m-d')) }}" />
+                    @error('issue_date') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label for="due_date">Due Date <span class="text-danger">*</span></label>
                     <input type="date" name="due_date" id="due_date" class="form-input" required value="{{ old('due_date', $invoice->due_date->format('Y-m-d')) }}" />
+                    @error('due_date') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label for="tax_rate">Tax Rate (%)</label>
                     <input type="number" step="0.01" min="0" max="100" name="tax_rate" id="tax_rate" class="form-input" value="{{ old('tax_rate', $invoice->tax_rate) }}" />
+                    @error('tax_rate') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label for="retention_rate">Retention Rate (%)</label>
                     <input type="number" step="0.01" min="0" max="100" name="retention_rate" id="retention_rate" class="form-input" value="{{ old('retention_rate', $invoice->retention_rate) }}" />
+                    @error('retention_rate') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label for="status">Status</label>
@@ -54,6 +60,7 @@
                         <option value="overdue" {{ old('status', $invoice->status) == 'overdue' ? 'selected' : '' }}>Overdue</option>
                         <option value="cancelled" {{ old('status', $invoice->status) == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                     </select>
+                    @error('status') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group md:col-span-4">
                     <label for="description">Description</label>

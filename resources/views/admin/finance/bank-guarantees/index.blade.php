@@ -9,10 +9,6 @@
         <a href="{{ route('admin.finance.bank-guarantees.create') }}" class="btn btn-primary">+ New Guarantee</a>
     </div>
 
-    @if(session('success'))
-        <div class="mb-4 rounded-md bg-green-100 p-3 text-green-700">{{ session('success') }}</div>
-    @endif
-
     <form method="GET" class="mb-4 flex items-center gap-2">
         <input type="text" name="search" class="form-input flex-1" placeholder="Search ref, bank, beneficiary..." value="{{ request('search') }}" />
         <select name="type" class="form-select flex-1">
@@ -75,6 +71,10 @@
                         <td class="text-center">
                             <a href="{{ route('admin.finance.bank-guarantees.show', $g) }}" class="btn btn-sm btn-outline-info">View</a>
                             <a href="{{ route('admin.finance.bank-guarantees.pdf', $g->id) }}" target="_blank" class="btn btn-sm btn-outline-success" style="margin-left:4px;">PDF</a>
+                            <form action="{{ route('admin.finance.bank-guarantees.destroy', $g) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this bank guarantee?');">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-outline-danger" style="margin-left:4px;">Delete</button>
+                            </form>
                         </td>
                     </tr>
                 @empty

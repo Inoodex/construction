@@ -58,7 +58,7 @@ Route::prefix('dashboard/roles')->name('tyro-dashboard.roles.')->group(function 
 
 // Core - Project Management
 use App\Http\Controllers\Admin\Core\ProjectController;
-Route::prefix('dashboard/core')->name('admin.core.')->group(function () {
+Route::prefix('dashboard/core')->name('admin.core.')->middleware(['auth', 'privilege:core.view'])->group(function () {
     Route::get('projects', [ProjectController::class, 'index'])->name('projects.index');
     Route::get('projects/create', [ProjectController::class, 'create'])->name('projects.create');
     Route::post('projects', [ProjectController::class, 'store'])->name('projects.store');
@@ -279,7 +279,7 @@ use App\Http\Controllers\Admin\Hr\SafetyAuditController;
 use App\Http\Controllers\Admin\Reports\ReportTemplateController;
 use App\Http\Controllers\Admin\Reports\ScheduledReportController;
 use App\Http\Controllers\Admin\Reports\FinancialReportController;
-Route::prefix('dashboard/procurement')->name('admin.procurement.')->group(function () {
+Route::prefix('dashboard/procurement')->name('admin.procurement.')->middleware(['auth', 'privilege:procurement.view'])->group(function () {
     Route::get('vendors', [VendorController::class, 'index'])->name('vendors.index');
     Route::get('vendors/create', [VendorController::class, 'create'])->name('vendors.create');
     Route::post('vendors', [VendorController::class, 'store'])->name('vendors.store');
@@ -428,7 +428,7 @@ Route::prefix('dashboard/procurement')->name('admin.procurement.')->group(functi
 });
 
 // HR - Employee Management
-Route::prefix('dashboard/hr')->name('admin.hr.')->group(function () {
+Route::prefix('dashboard/hr')->name('admin.hr.')->middleware(['auth', 'privilege:hr.view'])->group(function () {
     Route::get('employees', [EmployeeController::class, 'index'])->name('employees.index');
     Route::get('employees/create', [EmployeeController::class, 'create'])->name('employees.create');
     Route::post('employees', [EmployeeController::class, 'store'])->name('employees.store');
@@ -551,7 +551,7 @@ Route::prefix('dashboard/hr')->name('admin.hr.')->group(function () {
 });
 
 // Reports - Report Templates
-Route::prefix('dashboard/reports')->name('admin.reports.')->group(function () {
+Route::prefix('dashboard/reports')->name('admin.reports.')->middleware(['auth', 'privilege:reports.view'])->group(function () {
     Route::get('report-templates', [ReportTemplateController::class, 'index'])->name('report-templates.index');
     Route::get('report-templates/create', [ReportTemplateController::class, 'create'])->name('report-templates.create');
     Route::post('report-templates', [ReportTemplateController::class, 'store'])->name('report-templates.store');
@@ -607,7 +607,7 @@ use App\Http\Controllers\Admin\Finance\PaymentAccountController;
 use App\Http\Controllers\Admin\Finance\BalanceSheetController;
 use App\Http\Controllers\Admin\Finance\IncomeStatementController;
 use App\Http\Controllers\Admin\Finance\LabourEntryController;
-Route::prefix('dashboard/finance')->name('admin.finance.')->middleware('auth')->group(function () {
+Route::prefix('dashboard/finance')->name('admin.finance.')->middleware(['auth', 'privilege:finance.view'])->group(function () {
     Route::get('budgets', [BudgetController::class, 'index'])->name('budgets.index');
     Route::get('budgets/create', [BudgetController::class, 'create'])->name('budgets.create');
     Route::post('budgets', [BudgetController::class, 'store'])->name('budgets.store');
@@ -730,6 +730,7 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware('auth')->
     Route::post('journal-entries', [JournalEntryController::class, 'store'])->name('journal-entries.store');
     Route::get('journal-entries/{journalEntry}', [JournalEntryController::class, 'show'])->name('journal-entries.show');
     Route::delete('journal-entries/{journalEntry}', [JournalEntryController::class, 'destroy'])->name('journal-entries.destroy');
+    Route::post('journal-entries/{journalEntry}/void', [JournalEntryController::class, 'void'])->name('journal-entries.void');
 
     Route::get('general-ledger', [GeneralLedgerController::class, 'index'])->name('general-ledger.index');
     Route::get('trial-balance', [TrialBalanceController::class, 'index'])->name('trial-balance.index');
@@ -738,6 +739,8 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware('auth')->
     Route::get('receivables/create', [ReceivableController::class, 'create'])->name('receivables.create');
     Route::post('receivables', [ReceivableController::class, 'store'])->name('receivables.store');
     Route::get('receivables/{receivable}', [ReceivableController::class, 'show'])->name('receivables.show');
+    Route::get('receivables/{receivable}/edit', [ReceivableController::class, 'edit'])->name('receivables.edit');
+    Route::put('receivables/{receivable}', [ReceivableController::class, 'update'])->name('receivables.update');
     Route::get('receivables/{receivable}/pdf', [ReceivableController::class, 'printPdf'])->name('receivables.pdf');
     Route::delete('receivables/{receivable}', [ReceivableController::class, 'destroy'])->name('receivables.destroy');
     Route::post('receivables/{receivable}/payments', [ReceivableController::class, 'addPayment'])->name('receivables.payments.store');
@@ -747,6 +750,8 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware('auth')->
     Route::get('bank-guarantees/create', [BankGuaranteeController::class, 'create'])->name('bank-guarantees.create');
     Route::post('bank-guarantees', [BankGuaranteeController::class, 'store'])->name('bank-guarantees.store');
     Route::get('bank-guarantees/{bankGuarantee}', [BankGuaranteeController::class, 'show'])->name('bank-guarantees.show');
+    Route::get('bank-guarantees/{bankGuarantee}/edit', [BankGuaranteeController::class, 'edit'])->name('bank-guarantees.edit');
+    Route::put('bank-guarantees/{bankGuarantee}', [BankGuaranteeController::class, 'update'])->name('bank-guarantees.update');
     Route::get('bank-guarantees/{bankGuarantee}/pdf', [BankGuaranteeController::class, 'printPdf'])->name('bank-guarantees.pdf');
     Route::patch('bank-guarantees/{bankGuarantee}/status', [BankGuaranteeController::class, 'updateStatus'])->name('bank-guarantees.status');
     Route::delete('bank-guarantees/{bankGuarantee}', [BankGuaranteeController::class, 'destroy'])->name('bank-guarantees.destroy');
@@ -780,7 +785,7 @@ use App\Http\Controllers\Admin\Quality\MaterialTestCertificateController;
 use App\Http\Controllers\Admin\Quality\CorrectiveActionController;
 use App\Http\Controllers\Admin\Quality\RiskController;
 
-Route::prefix('dashboard/quality')->name('admin.quality.')->middleware('auth')->group(function () {
+Route::prefix('dashboard/quality')->name('admin.quality.')->middleware(['auth', 'privilege:quality.view'])->group(function () {
     // NCRs
     Route::get('ncrs', [NcrController::class, 'index'])->name('ncrs.index');
     Route::get('ncrs/create', [NcrController::class, 'create'])->name('ncrs.create');
@@ -844,7 +849,7 @@ use App\Http\Controllers\Admin\Crm\LeadController;
 use App\Http\Controllers\Admin\Crm\ProposalController;
 use App\Http\Controllers\Admin\ApprovalController;
 
-Route::prefix('dashboard/crm')->name('admin.crm.')->middleware('auth')->group(function () {
+Route::prefix('dashboard/crm')->name('admin.crm.')->middleware(['auth', 'privilege:crm.view'])->group(function () {
     Route::resource('clients', ClientController::class);
     Route::post('clients/{client}/contacts', [ClientController::class, 'addContact'])->name('clients.contacts.store');
     Route::delete('clients/{client}/contacts/{contact}', [ClientController::class, 'removeContact'])->name('clients.contacts.destroy');

@@ -9,13 +9,6 @@
         <a href="{{ route('admin.finance.chart-of-accounts.create') }}" class="btn btn-primary">+ Add Account</a>
     </div>
 
-    @if(session('success'))
-        <div class="mb-4 rounded-md bg-green-100 p-3 text-green-700">{{ session('success') }}</div>
-    @endif
-    @if(session('error'))
-        <div class="mb-4 rounded-md bg-red-100 p-3 text-red-700">{{ session('error') }}</div>
-    @endif
-
     <form method="GET" class="mb-4 flex items-center gap-3">
         <input type="text" name="search" class="form-input flex-1" placeholder="Search by code or name..." value="{{ request('search') }}" />
         <select name="type" class="form-select flex-1">

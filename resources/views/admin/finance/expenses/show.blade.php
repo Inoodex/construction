@@ -7,7 +7,7 @@
         <h2 class="text-xl font-semibold uppercase">Expense: {{ $expense->title }}</h2>
         <div class="flex gap-2">
             @if($expense->status === 'draft')
-                <form action="{{ route('admin.finance.expenses.mark-paid', $expense->id) }}" method="POST" class="inline">
+                <form action="{{ route('admin.finance.expenses.mark-paid', $expense->id) }}" method="POST" class="inline" onsubmit="return confirm('Mark this expense as paid? This action cannot be undone.');">
                     @csrf
                     <button type="submit" class="btn btn-success">Mark as Paid</button>
                 </form>

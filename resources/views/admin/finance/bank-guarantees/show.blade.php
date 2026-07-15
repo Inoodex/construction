@@ -8,10 +8,6 @@
         <a href="{{ route('admin.finance.bank-guarantees.index') }}" class="btn btn-secondary gap-2">&larr; Back</a>
     </div>
 
-    @if(session('success'))
-        <div class="mb-4 rounded-md bg-green-100 p-3 text-green-700">{{ session('success') }}</div>
-    @endif
-
     <div class="panel mt-6">
         <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
             <div><span class="text-xs text-white-dark">Reference</span><p class="font-mono font-semibold">{{ $bankGuarantee->reference_number }}</p></div>

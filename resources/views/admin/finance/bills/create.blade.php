@@ -23,6 +23,7 @@
                             <option value="{{ $project->id }}" {{ old('project_id') == $project->id ? 'selected' : '' }}>{{ $project->name }}</option>
                         @endforeach
                     </select>
+                    @error('project_id') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label for="vendor_id">Vendor <span class="text-danger">*</span></label>
@@ -32,10 +33,12 @@
                             <option value="{{ $vendor->id }}" {{ old('vendor_id') == $vendor->id ? 'selected' : '' }}>{{ $vendor->name }}</option>
                         @endforeach
                     </select>
+                    @error('vendor_id') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label for="title">Title <span class="text-danger">*</span></label>
                     <input type="text" name="title" id="title" class="form-input" required value="{{ old('title') }}" />
+                    @error('title') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label for="reference">Reference (PO #)</label>
@@ -44,14 +47,17 @@
                 <div class="form-group">
                     <label for="bill_date">Bill Date <span class="text-danger">*</span></label>
                     <input type="date" name="bill_date" id="bill_date" class="form-input" required value="{{ old('bill_date', now()->format('Y-m-d')) }}" />
+                    @error('bill_date') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label for="due_date">Due Date <span class="text-danger">*</span></label>
                     <input type="date" name="due_date" id="due_date" class="form-input" required value="{{ old('due_date') }}" />
+                    @error('due_date') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label for="tax_rate">Tax Rate (%)</label>
                     <input type="number" step="0.01" min="0" max="100" name="tax_rate" id="tax_rate" class="form-input" value="{{ old('tax_rate', 0) }}" />
+                    @error('tax_rate') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group md:col-span-3">
                     <label for="notes">Notes</label>
