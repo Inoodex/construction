@@ -572,20 +572,6 @@ FinancialReportService
          ↓
 Export: PDF (DomPDF) / Excel (Maatwebsite)
 
-Custom Report Builder
-  ├── Select data source (projects, invoices, budgets, expenses, stocks, employees, HSE incidents)
-  ├── Choose columns to display (drag/reorder)
-  ├── Set filters (project, date range)
-  ├── Group by (project, status, date, type)
-  ├── Chart type (bar, line, pie, area, none)
-  ├── Preview report before saving
-  └── Save as template for reuse
-
-Scheduled Reports
-  ├── Link to report template
-  ├── Set frequency (daily, weekly, monthly)
-  ├── Add recipients (email list)
-  └── Auto-generate on schedule
 ```
 
 ---

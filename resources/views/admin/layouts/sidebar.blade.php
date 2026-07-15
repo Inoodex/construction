@@ -61,7 +61,6 @@
             elseif (str_starts_with($routeName, 'admin.finance.boqs.') || str_starts_with($routeName, 'admin.finance.rate-analysis.') || str_starts_with($routeName, 'admin.finance.tenders.')) $activeDropdown = 'estimating';
             elseif (str_starts_with($routeName, 'admin.finance.invoices.') || str_starts_with($routeName, 'admin.finance.ipas.') || str_starts_with($routeName, 'admin.finance.bills.') || str_starts_with($routeName, 'admin.finance.expenses.')) $activeDropdown = 'billing';
             elseif (str_starts_with($routeName, 'admin.finance.payment-accounts.')) $activeDropdown = 'payment-accounts';
-            elseif (str_starts_with($routeName, 'admin.reports.report-templates.') || str_starts_with($routeName, 'admin.reports.scheduled-reports.')) $activeDropdown = 'custom-reports';
             elseif (str_starts_with($routeName, 'admin.reports.')) $activeDropdown = 'reports';
             elseif (str_starts_with($routeName, 'admin.approvals.')) $activeDropdown = 'approvals';
             elseif (str_starts_with($routeName, 'admin.settings.') || str_starts_with($routeName, 'admin.categories.')) $activeDropdown = 'admin';
@@ -732,25 +731,6 @@
             </h2>
             <li class="nav-item">
                 <ul>
-                    <li class="menu nav-item">
-                        <button type="button" class="nav-link group" :class="{'active' : activeDropdown === 'custom-reports'}" @click="activeDropdown === 'custom-reports' ? activeDropdown = null : activeDropdown = 'custom-reports'">
-                            <div class="flex items-center">
-                                <svg class="shrink-0 group-hover:!text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path opacity="0.5" d="M9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4zm2 2H5V5h14v14zM19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2z" fill="currentColor" />
-                                </svg>
-                                <span class="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Custom Reports</span>
-                            </div>
-                            <div class="rtl:rotate-180 transition-transform duration-300" :class="{'rotate-90' : activeDropdown === 'custom-reports'}">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
-                            </div>
-                        </button>
-                        <ul x-cloak x-show="activeDropdown === 'custom-reports'" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
-                            <li><a href="{{ route('admin.reports.report-templates.index') }}" class="block">Report Templates</a></li>
-                            <li><a href="{{ route('admin.reports.scheduled-reports.index') }}" class="block">Scheduled Reports</a></li>
-                        </ul>
-                    </li>
                     <li class="menu nav-item">
                         <button type="button" class="nav-link group" :class="{'active' : activeDropdown === 'cost-budgeting'}" @click="activeDropdown === 'cost-budgeting' ? activeDropdown = null : activeDropdown = 'cost-budgeting'">
                             <div class="flex items-center">

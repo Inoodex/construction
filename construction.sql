@@ -310,7 +310,10 @@ CREATE TABLE `cache` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('inoodex-cache-tyro:user-1:roles',	'a:1:{i:0;s:11:\"super-admin\";}',	1784031187);
+('inoodex-cache-tyro:user-1:privileges',	'a:35:{i:0;s:12:\"finance.view\";i:1;s:14:\"finance.create\";i:2;s:12:\"finance.edit\";i:3;s:14:\"finance.delete\";i:4;s:14:\"finance.export\";i:5;s:7:\"hr.view\";i:6;s:9:\"hr.create\";i:7;s:7:\"hr.edit\";i:8;s:9:\"hr.delete\";i:9;s:9:\"hr.export\";i:10;s:16:\"procurement.view\";i:11;s:18:\"procurement.create\";i:12;s:16:\"procurement.edit\";i:13;s:18:\"procurement.delete\";i:14;s:18:\"procurement.export\";i:15;s:9:\"core.view\";i:16;s:11:\"core.create\";i:17;s:9:\"core.edit\";i:18;s:11:\"core.delete\";i:19;s:11:\"core.export\";i:20;s:12:\"quality.view\";i:21;s:14:\"quality.create\";i:22;s:12:\"quality.edit\";i:23;s:14:\"quality.delete\";i:24;s:14:\"quality.export\";i:25;s:8:\"crm.view\";i:26;s:10:\"crm.create\";i:27;s:8:\"crm.edit\";i:28;s:10:\"crm.delete\";i:29;s:10:\"crm.export\";i:30;s:12:\"reports.view\";i:31;s:14:\"reports.create\";i:32;s:14:\"reports.export\";i:33;s:10:\"admin.view\";i:34;s:12:\"admin.manage\";}',	1784112860),
+('inoodex-cache-tyro:user-1:roles',	'a:1:{i:0;s:11:\"super-admin\";}',	1784112860),
+('inoodex-cache-tyro:user-6:privileges',	'a:5:{i:0;s:12:\"finance.view\";i:1;s:14:\"finance.create\";i:2;s:12:\"finance.edit\";i:3;s:14:\"finance.delete\";i:4;s:14:\"finance.export\";}',	1784095862),
+('inoodex-cache-tyro:user-6:roles',	'a:1:{i:0;s:10:\"accountant\";}',	1784095862);
 
 DROP TABLE IF EXISTS `cache_locks`;
 CREATE TABLE `cache_locks` (
@@ -1782,9 +1785,7 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (35,	'2026_05_21_000017_create_material_issue_slips_table',	1),
 (36,	'2026_05_21_000018_create_material_issue_slip_items_table',	1),
 (37,	'2026_05_21_000019_create_material_wastages_table',	1),
-(38,	'2026_05_21_000020_create_report_templates_table',	1),
-(39,	'2026_05_21_000021_create_scheduled_reports_table',	1),
-(40,	'2026_05_22_000001_create_budgets_table',	2),
+(38,	'2026_05_22_000001_create_budgets_table',	2),
 (41,	'2026_05_22_000002_create_boqs_table',	3),
 (42,	'2026_05_22_000003_create_tenders_table',	4),
 (43,	'2026_05_22_000004_create_invoices_table',	5),
@@ -1880,8 +1881,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (134,	'2026_07_13_000003_create_safety_audits_table',	57),
 (135,	'2026_07_13_101631_create_media_table',	57),
 (136,	'2026_07_14_000001_create_payment_accounts_table',	57),
-(137,	'2026_07_14_000002_create_account_transactions_table',	57),
-(138,	'2026_07_14_000003_add_payment_account_id_to_financial_tables',	57);
+(139,	'2026_07_14_000002_create_account_transactions_table',	58),
+(140,	'2026_07_14_000003_add_payment_account_id_to_financial_tables',	58);
 
 DROP TABLE IF EXISTS `milestones`;
 CREATE TABLE `milestones` (
@@ -1967,6 +1968,8 @@ CREATE TABLE `payment_accounts` (
   CONSTRAINT `payment_accounts_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `payment_accounts` (`id`, `name`, `type`, `account_number`, `bank_name`, `opening_balance`, `current_balance`, `status`, `notes`, `created_by`, `created_at`, `updated_at`) VALUES
+(1,	'Account 1',	'bank',	'1234567890',	'ABC Bank',	7500000.00,	7500000.00,	'active',	NULL,	1,	'2026-07-14 23:24:09',	'2026-07-14 23:24:09');
 
 DROP TABLE IF EXISTS `payments`;
 CREATE TABLE `payments` (
@@ -2103,7 +2106,47 @@ CREATE TABLE `privilege_role` (
 INSERT INTO `privilege_role` (`id`, `role_id`, `privilege_id`, `created_at`, `updated_at`) VALUES
 (1,	2,	1,	'2026-07-05 23:16:48',	'2026-07-05 23:16:48'),
 (2,	2,	3,	'2026-07-05 23:16:48',	'2026-07-05 23:16:48'),
-(3,	2,	2,	'2026-07-05 23:16:48',	'2026-07-05 23:16:48');
+(3,	2,	2,	'2026-07-05 23:16:48',	'2026-07-05 23:16:48'),
+(5,	1,	5,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(6,	1,	6,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(7,	1,	7,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(8,	1,	8,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(9,	1,	9,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(10,	1,	10,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(11,	1,	11,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(12,	1,	12,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(13,	1,	13,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(14,	1,	14,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(15,	1,	15,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(16,	1,	16,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(17,	1,	17,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(18,	1,	18,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(19,	1,	19,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(20,	1,	20,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(21,	1,	21,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(22,	1,	22,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(23,	1,	23,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(24,	1,	24,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(25,	1,	25,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(26,	1,	26,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(27,	1,	27,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(28,	1,	28,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(29,	1,	29,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(30,	1,	30,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(31,	1,	31,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(32,	1,	32,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(33,	1,	33,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(34,	1,	34,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(35,	1,	35,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(36,	1,	36,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(37,	1,	37,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(38,	1,	38,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(39,	1,	39,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(40,	3,	5,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(41,	3,	6,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(42,	3,	7,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(43,	3,	8,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
+(44,	3,	9,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30');
 
 DROP TABLE IF EXISTS `privileges`;
 CREATE TABLE `privileges` (
@@ -2120,7 +2163,43 @@ CREATE TABLE `privileges` (
 INSERT INTO `privileges` (`id`, `name`, `slug`, `description`, `created_at`, `updated_at`) VALUES
 (1,	'View Dashboard',	'dashboard.view',	NULL,	'2026-07-05 23:16:47',	'2026-07-05 23:16:47'),
 (2,	'View Projects',	'projects.view',	NULL,	'2026-07-05 23:16:48',	'2026-07-05 23:16:48'),
-(3,	'View Invoices',	'invoices.view',	NULL,	'2026-07-05 23:16:48',	'2026-07-05 23:16:48');
+(3,	'View Invoices',	'invoices.view',	NULL,	'2026-07-05 23:16:48',	'2026-07-05 23:16:48'),
+(4,	'Accountant',	'accountant',	NULL,	'2026-07-14 23:26:49',	'2026-07-14 23:26:49'),
+(5,	'View Finance',	'finance.view',	'Allow view operations on Finance module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(6,	'Create Finance',	'finance.create',	'Allow create operations on Finance module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(7,	'Edit Finance',	'finance.edit',	'Allow edit operations on Finance module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(8,	'Delete Finance',	'finance.delete',	'Allow delete operations on Finance module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(9,	'Export Finance',	'finance.export',	'Allow export operations on Finance module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(10,	'View HR & Payroll',	'hr.view',	'Allow view operations on HR & Payroll module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(11,	'Create HR & Payroll',	'hr.create',	'Allow create operations on HR & Payroll module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(12,	'Edit HR & Payroll',	'hr.edit',	'Allow edit operations on HR & Payroll module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(13,	'Delete HR & Payroll',	'hr.delete',	'Allow delete operations on HR & Payroll module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(14,	'Export HR & Payroll',	'hr.export',	'Allow export operations on HR & Payroll module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(15,	'View Procurement',	'procurement.view',	'Allow view operations on Procurement module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(16,	'Create Procurement',	'procurement.create',	'Allow create operations on Procurement module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(17,	'Edit Procurement',	'procurement.edit',	'Allow edit operations on Procurement module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(18,	'Delete Procurement',	'procurement.delete',	'Allow delete operations on Procurement module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(19,	'Export Procurement',	'procurement.export',	'Allow export operations on Procurement module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(20,	'View Core',	'core.view',	'Allow view operations on Core module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(21,	'Create Core',	'core.create',	'Allow create operations on Core module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(22,	'Edit Core',	'core.edit',	'Allow edit operations on Core module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(23,	'Delete Core',	'core.delete',	'Allow delete operations on Core module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(24,	'Export Core',	'core.export',	'Allow export operations on Core module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(25,	'View Quality Control',	'quality.view',	'Allow view operations on Quality Control module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(26,	'Create Quality Control',	'quality.create',	'Allow create operations on Quality Control module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(27,	'Edit Quality Control',	'quality.edit',	'Allow edit operations on Quality Control module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(28,	'Delete Quality Control',	'quality.delete',	'Allow delete operations on Quality Control module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(29,	'Export Quality Control',	'quality.export',	'Allow export operations on Quality Control module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(30,	'View CRM',	'crm.view',	'Allow view operations on CRM module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(31,	'Create CRM',	'crm.create',	'Allow create operations on CRM module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(32,	'Edit CRM',	'crm.edit',	'Allow edit operations on CRM module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(33,	'Delete CRM',	'crm.delete',	'Allow delete operations on CRM module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(34,	'Export CRM',	'crm.export',	'Allow export operations on CRM module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(35,	'View Reports',	'reports.view',	'Allow view operations on Reports module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(36,	'Create Reports',	'reports.create',	'Allow create operations on Reports module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(37,	'Export Reports',	'reports.export',	'Allow export operations on Reports module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(38,	'View Administration',	'admin.view',	'Allow view operations on Administration module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(39,	'Manage Administration',	'admin.manage',	'Allow manage operations on Administration module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29');
 
 DROP TABLE IF EXISTS `project_resources`;
 CREATE TABLE `project_resources` (
@@ -2479,20 +2558,7 @@ INSERT INTO `receivables` (`id`, `project_id`, `invoice_id`, `receivable_number`
 (1,	5,	NULL,	'AR-20260622-001',	'Client 1',	NULL,	2500000.00,	1500000.00,	'2026-06-30',	'partial',	'paid',	1,	'2026-06-22 04:45:03',	'2026-06-22 04:47:05'),
 (2,	6,	NULL,	'AR-20260622-002',	'Client 2',	NULL,	50000.00,	15000.00,	'2026-07-01',	'partial',	NULL,	1,	'2026-06-22 06:21:21',	'2026-06-22 06:21:37');
 
-DROP TABLE IF EXISTS `report_templates`;
-CREATE TABLE `report_templates` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `report_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `configuration` json NOT NULL,
-  `created_by` bigint unsigned NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `report_templates_created_by_foreign` (`created_by`),
-  CONSTRAINT `report_templates_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
 
 DROP TABLE IF EXISTS `rfis`;
@@ -2642,7 +2708,8 @@ CREATE TABLE `roles` (
 
 INSERT INTO `roles` (`id`, `name`, `slug`, `is_active`, `created_at`, `updated_at`) VALUES
 (1,	'Super Admin',	'super-admin',	1,	'2026-05-20 23:26:37',	'2026-05-20 23:26:37'),
-(2,	'Client',	'client',	1,	'2026-07-05 23:16:48',	'2026-07-05 23:16:48');
+(2,	'Client',	'client',	1,	'2026-07-05 23:16:48',	'2026-07-05 23:16:48'),
+(3,	'Accountant',	'accountant',	1,	'2026-07-14 23:27:07',	'2026-07-15 00:05:49');
 
 DROP TABLE IF EXISTS `safety_audits`;
 CREATE TABLE `safety_audits` (
@@ -2673,21 +2740,7 @@ CREATE TABLE `safety_audits` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
-DROP TABLE IF EXISTS `scheduled_reports`;
-CREATE TABLE `scheduled_reports` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `report_template_id` bigint unsigned NOT NULL,
-  `recipients` json NOT NULL,
-  `frequency` enum('daily','weekly','monthly') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'weekly',
-  `next_run_at` timestamp NOT NULL,
-  `last_run_at` timestamp NULL DEFAULT NULL,
-  `status` enum('active','inactive') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `scheduled_reports_report_template_id_foreign` (`report_template_id`),
-  CONSTRAINT `scheduled_reports_report_template_id_foreign` FOREIGN KEY (`report_template_id`) REFERENCES `report_templates` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 
 
 DROP TABLE IF EXISTS `sessions`;
@@ -2704,10 +2757,9 @@ CREATE TABLE `sessions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('8IJOAd2HhjyQKhNxhR0xNjJGoX5t8TtuX1tS7vC3',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36',	'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiUFNQY3k0Q0ZyMnJXUXNobzV5bXpYY3lyZ3UyczZiNm1HR2FoQjVYayI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kYXNoYm9hcmQvY29yZS9jb250cmFjdHMiO3M6NToicm91dGUiO3M6MjY6ImFkbWluLmNvcmUuY29udHJhY3RzLmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=',	1784011936),
-('izLpHTVdrjC9120c8IxcWJzMirhvmNDQbu6R0q0q',	NULL,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36',	'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiVUJSNVZMU3FmdTVEdlFnVHhtRXNvb0VJSlpDRWp4UHlvTXRBSmZLNSI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo1MDoiaHR0cDovLzEyNy4wLjAuMTo4MDAwL2Rhc2hib2FyZC9maW5hbmNlL2lwYXMvMi9wZGYiO31zOjk6Il9wcmV2aW91cyI7YToyOntzOjM6InVybCI7czo1MDoiaHR0cDovLzEyNy4wLjAuMTo4MDAwL2Rhc2hib2FyZC9maW5hbmNlL2lwYXMvMi9wZGYiO3M6NToicm91dGUiO3M6MjI6ImFkbWluLmZpbmFuY2UuaXBhcy5wZGYiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19',	1784006605),
-('NQqsI3AeEOa5G6KxOnITv0AcTGWgitPLxTirp36e',	NULL,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36',	'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiUVhDM3ZVMWdRUGYweUVsNmhxUGxaelFrd1BVZkd0TEgxcW56M3NKQSI7czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MTp7czo1OiJsb2dpbiI7aTozO319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9sb2dpbiI7czo1OiJyb3V0ZSI7czoxNjoidHlyby1sb2dpbi5sb2dpbiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=',	1784006605),
-('O6OO9LeiGNTigmt1vZ79F6UZZf6dxkAkWjK1VhEL',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36',	'YTo2OntzOjY6Il90b2tlbiI7czo0MDoidnl5UkVYU0UwcnRpcVVrVExISGdLazhvUFJwZlgyRHhybHhBN0hzRyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NTY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kYXNoYm9hcmQvZmluYW5jZS9wYXltZW50LWFjY291bnRzIjtzOjU6InJvdXRlIjtzOjM2OiJhZG1pbi5maW5hbmNlLnBheW1lbnQtYWNjb3VudHMuaW5kZXgiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YTowOnt9czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=',	1784030887);
+('oT4IZ1aOQ5qigKEVlvga0K4TQUhZvZkPtuecVj1z',	6,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36',	'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiRFdFeDg3N0tyNFo3MDlwcGJUcUx2VGdmZFlKT0RJNm9WUzFCcGhhbCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MDp7fX1zOjk6Il9wcmV2aW91cyI7YToyOntzOjM6InVybCI7czo1NDoiaHR0cDovLzEyNy4wLjAuMTo4MDAwL2Rhc2hib2FyZC9maW5hbmNlL2xhYm91ci1lbnRyaWVzIjtzOjU6InJvdXRlIjtzOjM0OiJhZG1pbi5maW5hbmNlLmxhYm91ci1lbnRyaWVzLmluZGV4Ijt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6Njt9',	1784095685),
+('pX6FZP421xiBqha5FHscYOEEpapaVVYbCOJSEOoE',	NULL,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36',	'YTozOntzOjY6Il90b2tlbiI7czo0MDoiVWhLWEpnQVZPU3BONGROZXg4UVNyZXNIMzlBemw2R2ZYRU5MRVNmaCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7czo1OiJyb3V0ZSI7Tjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==',	1784088729),
+('zaN771zpFN8ZRGjClyz57WYx8zF7LPG67l9zLCHA',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36',	'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiWXpPS05LU1VDR2thZDdzaUZ2NVh2d0NUTUVLeDByYjBiUXQyY2I3NiI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjM3OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvZGFzaGJvYXJkL3VzZXJzIjtzOjU6InJvdXRlIjtzOjI2OiJ0eXJvLWRhc2hib2FyZC51c2Vycy5pbmRleCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MTA6InR5cm8tbG9naW4iO2E6MTp7czo3OiJjYXB0Y2hhIjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9',	1784112560);
 
 DROP TABLE IF EXISTS `settings`;
 CREATE TABLE `settings` (
@@ -3200,7 +3252,61 @@ INSERT INTO `tyro_audit_logs` (`id`, `user_id`, `event`, `auditable_type`, `audi
 (67,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-11 10:04:37'),
 (68,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-13 04:55:40'),
 (69,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-14 04:25:22'),
-(70,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-14 11:37:02');
+(70,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-14 11:37:02'),
+(71,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 04:13:35'),
+(72,	1,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	4,	NULL,	'{\"id\": 4, \"name\": \"Accountant\", \"slug\": \"accountant\", \"description\": null}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 05:26:49'),
+(73,	1,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	4,	NULL,	'{\"id\": 4, \"name\": \"Accountant\", \"slug\": \"accountant\", \"roles\": [], \"description\": null}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 05:26:49'),
+(74,	1,	'role.created',	'HasinHayder\\Tyro\\Models\\Role',	3,	NULL,	'{\"id\": 3, \"name\": \"Accountant\", \"slug\": \"accountant\", \"is_active\": true}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 05:27:07'),
+(75,	1,	'role.assigned',	'App\\Models\\User',	6,	NULL,	'{\"role_id\": 3, \"role_slug\": \"accountant\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 05:27:32'),
+(76,	1,	'user.logout',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 05:34:26'),
+(77,	6,	'user.login',	'App\\Models\\User',	6,	NULL,	'{\"email\": \"accountant@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 05:34:45'),
+(78,	6,	'user.logout',	'App\\Models\\User',	6,	NULL,	'{\"email\": \"accountant@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 05:45:03'),
+(79,	6,	'user.login',	'App\\Models\\User',	6,	NULL,	'{\"email\": \"accountant@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 05:45:13'),
+(80,	6,	'user.logout',	'App\\Models\\User',	6,	NULL,	'{\"email\": \"accountant@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 05:47:57'),
+(81,	6,	'user.login',	'App\\Models\\User',	6,	NULL,	'{\"email\": \"accountant@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 05:48:07'),
+(82,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	5,	NULL,	'{\"id\": 5, \"name\": \"View Finance\", \"slug\": \"finance.view\", \"description\": \"Allow view operations on Finance module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(83,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	6,	NULL,	'{\"id\": 6, \"name\": \"Create Finance\", \"slug\": \"finance.create\", \"description\": \"Allow create operations on Finance module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(84,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	7,	NULL,	'{\"id\": 7, \"name\": \"Edit Finance\", \"slug\": \"finance.edit\", \"description\": \"Allow edit operations on Finance module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(85,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	8,	NULL,	'{\"id\": 8, \"name\": \"Delete Finance\", \"slug\": \"finance.delete\", \"description\": \"Allow delete operations on Finance module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(86,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	9,	NULL,	'{\"id\": 9, \"name\": \"Export Finance\", \"slug\": \"finance.export\", \"description\": \"Allow export operations on Finance module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(87,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	10,	NULL,	'{\"id\": 10, \"name\": \"View HR & Payroll\", \"slug\": \"hr.view\", \"description\": \"Allow view operations on HR & Payroll module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(88,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	11,	NULL,	'{\"id\": 11, \"name\": \"Create HR & Payroll\", \"slug\": \"hr.create\", \"description\": \"Allow create operations on HR & Payroll module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(89,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	12,	NULL,	'{\"id\": 12, \"name\": \"Edit HR & Payroll\", \"slug\": \"hr.edit\", \"description\": \"Allow edit operations on HR & Payroll module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(90,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	13,	NULL,	'{\"id\": 13, \"name\": \"Delete HR & Payroll\", \"slug\": \"hr.delete\", \"description\": \"Allow delete operations on HR & Payroll module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(91,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	14,	NULL,	'{\"id\": 14, \"name\": \"Export HR & Payroll\", \"slug\": \"hr.export\", \"description\": \"Allow export operations on HR & Payroll module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(92,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	15,	NULL,	'{\"id\": 15, \"name\": \"View Procurement\", \"slug\": \"procurement.view\", \"description\": \"Allow view operations on Procurement module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(93,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	16,	NULL,	'{\"id\": 16, \"name\": \"Create Procurement\", \"slug\": \"procurement.create\", \"description\": \"Allow create operations on Procurement module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(94,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	17,	NULL,	'{\"id\": 17, \"name\": \"Edit Procurement\", \"slug\": \"procurement.edit\", \"description\": \"Allow edit operations on Procurement module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(95,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	18,	NULL,	'{\"id\": 18, \"name\": \"Delete Procurement\", \"slug\": \"procurement.delete\", \"description\": \"Allow delete operations on Procurement module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(96,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	19,	NULL,	'{\"id\": 19, \"name\": \"Export Procurement\", \"slug\": \"procurement.export\", \"description\": \"Allow export operations on Procurement module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(97,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	20,	NULL,	'{\"id\": 20, \"name\": \"View Core\", \"slug\": \"core.view\", \"description\": \"Allow view operations on Core module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(98,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	21,	NULL,	'{\"id\": 21, \"name\": \"Create Core\", \"slug\": \"core.create\", \"description\": \"Allow create operations on Core module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(99,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	22,	NULL,	'{\"id\": 22, \"name\": \"Edit Core\", \"slug\": \"core.edit\", \"description\": \"Allow edit operations on Core module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(100,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	23,	NULL,	'{\"id\": 23, \"name\": \"Delete Core\", \"slug\": \"core.delete\", \"description\": \"Allow delete operations on Core module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(101,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	24,	NULL,	'{\"id\": 24, \"name\": \"Export Core\", \"slug\": \"core.export\", \"description\": \"Allow export operations on Core module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(102,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	25,	NULL,	'{\"id\": 25, \"name\": \"View Quality Control\", \"slug\": \"quality.view\", \"description\": \"Allow view operations on Quality Control module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(103,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	26,	NULL,	'{\"id\": 26, \"name\": \"Create Quality Control\", \"slug\": \"quality.create\", \"description\": \"Allow create operations on Quality Control module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(104,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	27,	NULL,	'{\"id\": 27, \"name\": \"Edit Quality Control\", \"slug\": \"quality.edit\", \"description\": \"Allow edit operations on Quality Control module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(105,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	28,	NULL,	'{\"id\": 28, \"name\": \"Delete Quality Control\", \"slug\": \"quality.delete\", \"description\": \"Allow delete operations on Quality Control module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(106,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	29,	NULL,	'{\"id\": 29, \"name\": \"Export Quality Control\", \"slug\": \"quality.export\", \"description\": \"Allow export operations on Quality Control module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(107,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	30,	NULL,	'{\"id\": 30, \"name\": \"View CRM\", \"slug\": \"crm.view\", \"description\": \"Allow view operations on CRM module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(108,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	31,	NULL,	'{\"id\": 31, \"name\": \"Create CRM\", \"slug\": \"crm.create\", \"description\": \"Allow create operations on CRM module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(109,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	32,	NULL,	'{\"id\": 32, \"name\": \"Edit CRM\", \"slug\": \"crm.edit\", \"description\": \"Allow edit operations on CRM module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(110,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	33,	NULL,	'{\"id\": 33, \"name\": \"Delete CRM\", \"slug\": \"crm.delete\", \"description\": \"Allow delete operations on CRM module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(111,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	34,	NULL,	'{\"id\": 34, \"name\": \"Export CRM\", \"slug\": \"crm.export\", \"description\": \"Allow export operations on CRM module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(112,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	35,	NULL,	'{\"id\": 35, \"name\": \"View Reports\", \"slug\": \"reports.view\", \"description\": \"Allow view operations on Reports module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(113,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	36,	NULL,	'{\"id\": 36, \"name\": \"Create Reports\", \"slug\": \"reports.create\", \"description\": \"Allow create operations on Reports module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(114,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	37,	NULL,	'{\"id\": 37, \"name\": \"Export Reports\", \"slug\": \"reports.export\", \"description\": \"Allow export operations on Reports module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(115,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	38,	NULL,	'{\"id\": 38, \"name\": \"View Administration\", \"slug\": \"admin.view\", \"description\": \"Allow view operations on Administration module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(116,	NULL,	'privilege.created',	'HasinHayder\\Tyro\\Models\\Privilege',	39,	NULL,	'{\"id\": 39, \"name\": \"Manage Administration\", \"slug\": \"admin.manage\", \"description\": \"Allow manage operations on Administration module\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": true, \"user_agent\": \"Symfony\"}',	'2026-07-15 05:56:29'),
+(117,	6,	'user.logout',	'App\\Models\\User',	6,	NULL,	'{\"email\": \"accountant@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 06:03:12'),
+(118,	6,	'user.login',	'App\\Models\\User',	6,	NULL,	'{\"email\": \"accountant@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 06:03:19'),
+(119,	6,	'user.logout',	'App\\Models\\User',	6,	NULL,	'{\"email\": \"accountant@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 06:03:37'),
+(120,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 06:03:40'),
+(121,	1,	'role.updated',	'HasinHayder\\Tyro\\Models\\Role',	3,	'{\"id\": 3, \"name\": \"Accountant\", \"slug\": \"accountant\", \"is_active\": 1, \"created_at\": \"2026-07-15T05:27:07.000000Z\", \"updated_at\": \"2026-07-15T05:27:07.000000Z\"}',	'{\"is_active\": true, \"updated_at\": \"2026-07-15 06:05:49\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 06:05:49'),
+(122,	1,	'user.logout',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 06:05:54'),
+(123,	6,	'user.login',	'App\\Models\\User',	6,	NULL,	'{\"email\": \"accountant@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 06:06:02'),
+(124,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 10:01:54');
 
 DROP TABLE IF EXISTS `tyro_media`;
 CREATE TABLE `tyro_media` (
@@ -3264,7 +3370,8 @@ CREATE TABLE `user_roles` (
 
 INSERT INTO `user_roles` (`id`, `user_id`, `role_id`, `created_at`, `updated_at`) VALUES
 (1,	1,	1,	'2026-05-20 23:28:50',	'2026-05-20 23:28:50'),
-(2,	5,	2,	'2026-07-05 23:21:50',	'2026-07-05 23:21:50');
+(2,	5,	2,	'2026-07-05 23:21:50',	'2026-07-05 23:21:50'),
+(3,	6,	3,	'2026-07-14 23:27:32',	'2026-07-14 23:27:32');
 
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
@@ -3295,7 +3402,8 @@ INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `tw
 (2,	'Site Engineer',	'engineer@construction.com',	NULL,	'$2y$12$BoQHxmVYvM6Mzv.Qz3ZYrOrPwnQSHISAcNxFoh2dfwcHctBQEAyQa',	NULL,	NULL,	NULL,	NULL,	'2026-05-20 23:17:33',	'2026-06-11 06:03:53',	NULL,	NULL,	NULL,	0,	NULL),
 (3,	'Procurement Officer',	'procurement@construction.com',	NULL,	'$2y$12$CZJjnsrL1yZ9.aSMWNxWgurhwvliiKFLLGFykCkx5SpFN0vQAH826',	NULL,	NULL,	NULL,	NULL,	'2026-05-20 23:17:34',	'2026-06-11 06:03:45',	NULL,	NULL,	NULL,	0,	NULL),
 (4,	'HSE Inspector',	'inspector@example.com',	NULL,	'$2y$12$DGvGdBVq/9O7BwOxsTReT.Zx7O70.7ecJURkE4AuQxipbCI40SNha',	NULL,	NULL,	NULL,	NULL,	'2026-06-22 22:03:28',	'2026-06-22 22:03:28',	NULL,	NULL,	NULL,	0,	NULL),
-(5,	'Client1',	'client@inoodex.com',	NULL,	'$2y$12$jQPFKbppyNdP5HTpbkwwl.drhLwSsMIXQEg4m.pz80.v7M02bMpze',	NULL,	NULL,	NULL,	NULL,	'2026-07-05 23:21:50',	'2026-07-05 23:21:50',	NULL,	NULL,	NULL,	0,	1);
+(5,	'Client1',	'client@inoodex.com',	NULL,	'$2y$12$jQPFKbppyNdP5HTpbkwwl.drhLwSsMIXQEg4m.pz80.v7M02bMpze',	NULL,	NULL,	NULL,	NULL,	'2026-07-05 23:21:50',	'2026-07-05 23:21:50',	NULL,	NULL,	NULL,	0,	1),
+(6,	'Accountant',	'accountant@inoodex.com',	NULL,	'$2y$12$dRT8qr/PjHLHMcZ.REavSujC60zkXr8lQHlaY.ll3axme/x5tmN3q',	NULL,	NULL,	NULL,	NULL,	'2026-07-14 23:27:32',	'2026-07-14 23:27:32',	NULL,	NULL,	NULL,	0,	NULL);
 
 DROP TABLE IF EXISTS `vendor_documents`;
 CREATE TABLE `vendor_documents` (
@@ -3422,4 +3530,4 @@ INSERT INTO `work_orders` (`id`, `project_id`, `task_id`, `site_id`, `work_order
 (1,	5,	5,	5,	'WO-2026-0001',	'Excavation Work Order',	'work order created',	2,	1,	'2026-06-22',	'2026-06-30',	NULL,	'issued',	NULL,	'2026-06-21 21:50:16',	'2026-06-21 21:50:16'),
 (2,	6,	6,	6,	'WO-2026-0002',	'Pile Casting Work Order',	NULL,	2,	1,	'2026-06-22',	'2026-06-30',	NULL,	'issued',	NULL,	'2026-06-22 05:23:11',	'2026-06-22 05:23:11');
 
--- 2026-07-14 12:15:51 UTC
+-- 2026-07-15 10:50:13 UTC

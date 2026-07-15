@@ -20,7 +20,7 @@ app/
 │   ├── Finance/       → budgets, boqs, tenders, tender-packages, invoices, ipas, bills, rate-analysis, chart-of-accounts, journal-entries, general-ledger, trial-balance, receivables, bank-guarantees, balance-sheet, income-statement, labour-entries, aging, cost-overrun-alerts, material-takeoffs
 │   ├── Procurement/   → vendors, materials, purchase-requisitions, purchase-orders, goods-received-notes, warehouses, stocks, material-transfers, material-issue-slips, material-wastages, subcontractors
 │   ├── Hr/            → employees, attendance, timesheets, wage-slips, equipment, leave-requests, training-records, ppe-issuances, incident-reports, certifications, hse-checklists, fuel-logs, toolbox-talks, permits-to-work, safety-audits
-│   ├── Reports/       → financial, report-templates, scheduled-reports
+│   ├── Reports/       → financial
 │   ├── ApprovalController, CategoryController, DashboardController, RoleController, SettingController
 ├── Imports/BoqItemsImport.php         # Excel BOQ import with validation
 ├── Models/           → 86 Eloquent models (see below)
@@ -44,7 +44,7 @@ app/
 | **Procurement** | Vendor, Material, PurchaseRequisition, PurchaseRequisitionItem, PurchaseOrder, PurchaseOrderItem, GoodsReceivedNote, GoodsReceivedNoteItem, Warehouse, Stock, MaterialTransfer, MaterialTransferItem, MaterialIssueSlip, MaterialIssueSlipItem, MaterialWastage, Subcontractor |
 | **HR** | Employee, Attendance, Timesheet, WageSlip, Equipment, EquipmentMaintenance, LeaveRequest, TrainingRecord, PpeIssuance, IncidentReport, Certification, HseChecklist, HseChecklistItem, FuelLog, ToolboxTalk, PermitToWork, SafetyAudit |
 | **Approvals** | Approval, ApprovalHistory, ApprovalMatrix, ApprovalWorkflow |
-| **Reports** | ReportTemplate, ScheduledReport |
+| **Reports** | FinancialReportService |
 
 ---
 
@@ -99,8 +99,6 @@ work_orders
 approval_workflows → approval_matrices
 approvals (polymorphic: morphs to approvable models)
 approval_history
-
-report_templates, scheduled_reports
 ```
 
 ---
@@ -259,14 +257,7 @@ report_templates, scheduled_reports
 - Evaluation Matrix: side-by-side bid comparison with scoring
 - Award Letter: printable letter for winning vendor
 
-### Custom Report Builder
-- Form-based report template builder with data source selection
-- Dynamic column picker with add/remove/reorder
-- Chart type selection (bar, line, pie, area)
-- Filter by project and date range
-- Group by project, status, date, or type
-- Preview reports before saving
-- 7 data sources: projects, invoices, budgets, expenses, stocks, employees, HSE incidents
+### Financial Reports
 
 ---
 
@@ -289,7 +280,7 @@ finance/   → budgets, boqs, tenders, invoices, ipas, bills, rate-analysis, cha
 procurement/ → vendors, materials, requisitions, purchase-orders, goods-received-notes, warehouses, stocks, material-transfers, material-issue-slips, material-wastages, subcontractors
 hr/        → employees, attendance, timesheets, wage-slips, equipment, leaves, training-records, ppe-issuances, incident-reports, certifications, hse-checklists, fuel-logs, toolbox-talks, permits-to-work, safety-audits
             (sidebar categorized: People, Payroll, Equipment & Assets, Safety & Compliance [with Toolbox Talks, PTW, Safety Audits], Training)
-reports/   → financial, report-templates (with custom builder UI), scheduled-reports
+reports/   → financial
 approvals/ → index, show, workflows
 settings/  → index
 dashboard.blade.php, index.blade.php

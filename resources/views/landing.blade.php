@@ -181,7 +181,7 @@
             <div class="why-card">
                 <div class="why-icon"><i class="fas fa-chart-pie"></i></div>
                 <h3>Powerful Reports</h3>
-                <p>8 financial reports, S-curves, custom report builder, scheduled delivery, PDF/Excel export — all built-in.</p>
+                <p>8 financial reports, S-curves, PDF/Excel export — all built-in.</p>
             </div>
         </div>
     </section>

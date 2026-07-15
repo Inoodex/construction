@@ -18,8 +18,6 @@ use App\Models\GoodsReceivedNote;
 use App\Models\MaterialTransfer;
 use App\Models\MaterialIssueSlip;
 use App\Models\MaterialWastage;
-use App\Models\ReportTemplate;
-use App\Models\ScheduledReport;
 
 class ConstructionDatabaseTest extends TestCase
 {
@@ -109,17 +107,5 @@ class ConstructionDatabaseTest extends TestCase
         $this->assertDatabaseCount('material_wastages', 1);
         $wastage = MaterialWastage::first();
         $this->assertEquals('Cutoff scrap from structural pillar P3 column reinforcement binding.', $wastage->reason);
-
-        // 9. Assert Reports & Analytics
-        $this->assertDatabaseCount('report_templates', 1);
-        $this->assertDatabaseCount('scheduled_reports', 1);
-
-        $template = ReportTemplate::first();
-        $this->assertEquals('Project Steel Consumption & Cost Report', $template->name);
-        $this->assertEquals('bar', $template->configuration['chart_type']);
-
-        $schedule = ScheduledReport::first();
-        $this->assertEquals($template->id, $schedule->report_template_id);
-        $this->assertContains('admin@construction.com', $schedule->recipients);
     }
 }

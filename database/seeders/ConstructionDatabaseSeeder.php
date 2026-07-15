@@ -22,8 +22,6 @@ use App\Models\MaterialTransferItem;
 use App\Models\MaterialIssueSlip;
 use App\Models\MaterialIssueSlipItem;
 use App\Models\MaterialWastage;
-use App\Models\ReportTemplate;
-use App\Models\ScheduledReport;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
@@ -386,28 +384,6 @@ class ConstructionDatabaseSeeder extends Seeder
             'reason' => 'Cutoff scrap from structural pillar P3 column reinforcement binding.',
             'reported_date' => Carbon::now()->toDateString(),
             'reported_by' => $engineer->id,
-        ]);
-
-        // 13. Seed Report Templates
-        $rt1 = ReportTemplate::create([
-            'name' => 'Project Steel Consumption & Cost Report',
-            'description' => 'Real-time overview of steel rebar stocks, issues, and cost breakdown per site.',
-            'report_type' => 'inventory',
-            'configuration' => [
-                'columns' => ['material', 'opening_stock', 'received', 'issued', 'wastage', 'closing_stock'],
-                'filters' => ['project_id' => $project1->id, 'trade_category' => 'Steel'],
-                'chart_type' => 'bar',
-            ],
-            'created_by' => $admin->id,
-        ]);
-
-        // 14. Seed Scheduled Reports
-        ScheduledReport::create([
-            'report_template_id' => $rt1->id,
-            'recipients' => ['admin@construction.com', 'procurement@construction.com'],
-            'frequency' => 'weekly',
-            'next_run_at' => Carbon::now()->addDays(7)->startOfDay()->toDateTimeString(),
-            'status' => 'active',
         ]);
     }
 }

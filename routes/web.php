@@ -276,8 +276,6 @@ use App\Http\Controllers\Admin\Hr\FuelLogController;
 use App\Http\Controllers\Admin\Hr\ToolboxTalkController;
 use App\Http\Controllers\Admin\Hr\PermitToWorkController;
 use App\Http\Controllers\Admin\Hr\SafetyAuditController;
-use App\Http\Controllers\Admin\Reports\ReportTemplateController;
-use App\Http\Controllers\Admin\Reports\ScheduledReportController;
 use App\Http\Controllers\Admin\Reports\FinancialReportController;
 Route::prefix('dashboard/procurement')->name('admin.procurement.')->middleware(['auth', 'privilege:procurement.view'])->group(function () {
     Route::get('vendors', [VendorController::class, 'index'])->name('vendors.index');
@@ -552,23 +550,6 @@ Route::prefix('dashboard/hr')->name('admin.hr.')->middleware(['auth', 'privilege
 
 // Reports - Report Templates
 Route::prefix('dashboard/reports')->name('admin.reports.')->middleware(['auth', 'privilege:reports.view'])->group(function () {
-    Route::get('report-templates', [ReportTemplateController::class, 'index'])->name('report-templates.index');
-    Route::get('report-templates/create', [ReportTemplateController::class, 'create'])->name('report-templates.create');
-    Route::post('report-templates', [ReportTemplateController::class, 'store'])->name('report-templates.store');
-    Route::get('report-templates/{report_template}', [ReportTemplateController::class, 'show'])->name('report-templates.show');
-    Route::get('report-templates/{report_template}/preview', [ReportTemplateController::class, 'preview'])->name('report-templates.preview');
-    Route::get('report-templates/{report_template}/edit', [ReportTemplateController::class, 'edit'])->name('report-templates.edit');
-    Route::put('report-templates/{report_template}', [ReportTemplateController::class, 'update'])->name('report-templates.update');
-    Route::delete('report-templates/{report_template}', [ReportTemplateController::class, 'destroy'])->name('report-templates.destroy');
-
-    Route::get('scheduled-reports', [ScheduledReportController::class, 'index'])->name('scheduled-reports.index');
-    Route::get('scheduled-reports/create', [ScheduledReportController::class, 'create'])->name('scheduled-reports.create');
-    Route::post('scheduled-reports', [ScheduledReportController::class, 'store'])->name('scheduled-reports.store');
-    Route::get('scheduled-reports/{scheduled_report}', [ScheduledReportController::class, 'show'])->name('scheduled-reports.show');
-    Route::get('scheduled-reports/{scheduled_report}/edit', [ScheduledReportController::class, 'edit'])->name('scheduled-reports.edit');
-    Route::put('scheduled-reports/{scheduled_report}', [ScheduledReportController::class, 'update'])->name('scheduled-reports.update');
-    Route::delete('scheduled-reports/{scheduled_report}', [ScheduledReportController::class, 'destroy'])->name('scheduled-reports.destroy');
-
     // Cost & Financial Reports
     Route::prefix('financial')->name('financial.')->group(function () {
         Route::get('budget-vs-actual', [FinancialReportController::class, 'budgetVsActual'])->name('budget-vs-actual');
