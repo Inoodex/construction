@@ -310,10 +310,8 @@ CREATE TABLE `cache` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('inoodex-cache-tyro:user-1:privileges',	'a:35:{i:0;s:12:\"finance.view\";i:1;s:14:\"finance.create\";i:2;s:12:\"finance.edit\";i:3;s:14:\"finance.delete\";i:4;s:14:\"finance.export\";i:5;s:7:\"hr.view\";i:6;s:9:\"hr.create\";i:7;s:7:\"hr.edit\";i:8;s:9:\"hr.delete\";i:9;s:9:\"hr.export\";i:10;s:16:\"procurement.view\";i:11;s:18:\"procurement.create\";i:12;s:16:\"procurement.edit\";i:13;s:18:\"procurement.delete\";i:14;s:18:\"procurement.export\";i:15;s:9:\"core.view\";i:16;s:11:\"core.create\";i:17;s:9:\"core.edit\";i:18;s:11:\"core.delete\";i:19;s:11:\"core.export\";i:20;s:12:\"quality.view\";i:21;s:14:\"quality.create\";i:22;s:12:\"quality.edit\";i:23;s:14:\"quality.delete\";i:24;s:14:\"quality.export\";i:25;s:8:\"crm.view\";i:26;s:10:\"crm.create\";i:27;s:8:\"crm.edit\";i:28;s:10:\"crm.delete\";i:29;s:10:\"crm.export\";i:30;s:12:\"reports.view\";i:31;s:14:\"reports.create\";i:32;s:14:\"reports.export\";i:33;s:10:\"admin.view\";i:34;s:12:\"admin.manage\";}',	1784112860),
-('inoodex-cache-tyro:user-1:roles',	'a:1:{i:0;s:11:\"super-admin\";}',	1784112860),
-('inoodex-cache-tyro:user-6:privileges',	'a:5:{i:0;s:12:\"finance.view\";i:1;s:14:\"finance.create\";i:2;s:12:\"finance.edit\";i:3;s:14:\"finance.delete\";i:4;s:14:\"finance.export\";}',	1784095862),
-('inoodex-cache-tyro:user-6:roles',	'a:1:{i:0;s:10:\"accountant\";}',	1784095862);
+('inoodex-cache-tyro:user-1:privileges',	'a:35:{i:0;s:12:\"finance.view\";i:1;s:14:\"finance.create\";i:2;s:12:\"finance.edit\";i:3;s:14:\"finance.delete\";i:4;s:14:\"finance.export\";i:5;s:7:\"hr.view\";i:6;s:9:\"hr.create\";i:7;s:7:\"hr.edit\";i:8;s:9:\"hr.delete\";i:9;s:9:\"hr.export\";i:10;s:16:\"procurement.view\";i:11;s:18:\"procurement.create\";i:12;s:16:\"procurement.edit\";i:13;s:18:\"procurement.delete\";i:14;s:18:\"procurement.export\";i:15;s:9:\"core.view\";i:16;s:11:\"core.create\";i:17;s:9:\"core.edit\";i:18;s:11:\"core.delete\";i:19;s:11:\"core.export\";i:20;s:12:\"quality.view\";i:21;s:14:\"quality.create\";i:22;s:12:\"quality.edit\";i:23;s:14:\"quality.delete\";i:24;s:14:\"quality.export\";i:25;s:8:\"crm.view\";i:26;s:10:\"crm.create\";i:27;s:8:\"crm.edit\";i:28;s:10:\"crm.delete\";i:29;s:10:\"crm.export\";i:30;s:12:\"reports.view\";i:31;s:14:\"reports.create\";i:32;s:14:\"reports.export\";i:33;s:10:\"admin.view\";i:34;s:12:\"admin.manage\";}',	1784114672),
+('inoodex-cache-tyro:user-1:roles',	'a:1:{i:0;s:11:\"super-admin\";}',	1784114672);
 
 DROP TABLE IF EXISTS `cache_locks`;
 CREATE TABLE `cache_locks` (
@@ -1785,7 +1783,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (35,	'2026_05_21_000017_create_material_issue_slips_table',	1),
 (36,	'2026_05_21_000018_create_material_issue_slip_items_table',	1),
 (37,	'2026_05_21_000019_create_material_wastages_table',	1),
-(38,	'2026_05_22_000001_create_budgets_table',	2),
+(38,	'2026_05_21_000020_create_report_templates_table',	1),
+(39,	'2026_05_21_000021_create_scheduled_reports_table',	1),
+(40,	'2026_05_22_000001_create_budgets_table',	2),
 (41,	'2026_05_22_000002_create_boqs_table',	3),
 (42,	'2026_05_22_000003_create_tenders_table',	4),
 (43,	'2026_05_22_000004_create_invoices_table',	5),
@@ -2558,9 +2558,6 @@ INSERT INTO `receivables` (`id`, `project_id`, `invoice_id`, `receivable_number`
 (1,	5,	NULL,	'AR-20260622-001',	'Client 1',	NULL,	2500000.00,	1500000.00,	'2026-06-30',	'partial',	'paid',	1,	'2026-06-22 04:45:03',	'2026-06-22 04:47:05'),
 (2,	6,	NULL,	'AR-20260622-002',	'Client 2',	NULL,	50000.00,	15000.00,	'2026-07-01',	'partial',	NULL,	1,	'2026-06-22 06:21:21',	'2026-06-22 06:21:37');
 
-
-
-
 DROP TABLE IF EXISTS `rfis`;
 CREATE TABLE `rfis` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -2740,9 +2737,6 @@ CREATE TABLE `safety_audits` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
-
-
-
 DROP TABLE IF EXISTS `sessions`;
 CREATE TABLE `sessions` (
   `id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -2759,7 +2753,7 @@ CREATE TABLE `sessions` (
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
 ('oT4IZ1aOQ5qigKEVlvga0K4TQUhZvZkPtuecVj1z',	6,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36',	'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiRFdFeDg3N0tyNFo3MDlwcGJUcUx2VGdmZFlKT0RJNm9WUzFCcGhhbCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MDp7fX1zOjk6Il9wcmV2aW91cyI7YToyOntzOjM6InVybCI7czo1NDoiaHR0cDovLzEyNy4wLjAuMTo4MDAwL2Rhc2hib2FyZC9maW5hbmNlL2xhYm91ci1lbnRyaWVzIjtzOjU6InJvdXRlIjtzOjM0OiJhZG1pbi5maW5hbmNlLmxhYm91ci1lbnRyaWVzLmluZGV4Ijt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6Njt9',	1784095685),
 ('pX6FZP421xiBqha5FHscYOEEpapaVVYbCOJSEOoE',	NULL,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36',	'YTozOntzOjY6Il90b2tlbiI7czo0MDoiVWhLWEpnQVZPU3BONGROZXg4UVNyZXNIMzlBemw2R2ZYRU5MRVNmaCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7czo1OiJyb3V0ZSI7Tjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==',	1784088729),
-('zaN771zpFN8ZRGjClyz57WYx8zF7LPG67l9zLCHA',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36',	'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiWXpPS05LU1VDR2thZDdzaUZ2NVh2d0NUTUVLeDByYjBiUXQyY2I3NiI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjM3OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvZGFzaGJvYXJkL3VzZXJzIjtzOjU6InJvdXRlIjtzOjI2OiJ0eXJvLWRhc2hib2FyZC51c2Vycy5pbmRleCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MTA6InR5cm8tbG9naW4iO2E6MTp7czo3OiJjYXB0Y2hhIjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9',	1784112560);
+('zaN771zpFN8ZRGjClyz57WYx8zF7LPG67l9zLCHA',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36',	'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiWXpPS05LU1VDR2thZDdzaUZ2NVh2d0NUTUVLeDByYjBiUXQyY2I3NiI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjMxOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvZGFzaGJvYXJkIjtzOjU6InJvdXRlIjtzOjIwOiJ0eXJvLWRhc2hib2FyZC5pbmRleCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MTA6InR5cm8tbG9naW4iO2E6MTp7czo3OiJjYXB0Y2hhIjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9',	1784114412);
 
 DROP TABLE IF EXISTS `settings`;
 CREATE TABLE `settings` (
@@ -3530,4 +3524,4 @@ INSERT INTO `work_orders` (`id`, `project_id`, `task_id`, `site_id`, `work_order
 (1,	5,	5,	5,	'WO-2026-0001',	'Excavation Work Order',	'work order created',	2,	1,	'2026-06-22',	'2026-06-30',	NULL,	'issued',	NULL,	'2026-06-21 21:50:16',	'2026-06-21 21:50:16'),
 (2,	6,	6,	6,	'WO-2026-0002',	'Pile Casting Work Order',	NULL,	2,	1,	'2026-06-22',	'2026-06-30',	NULL,	'issued',	NULL,	'2026-06-22 05:23:11',	'2026-06-22 05:23:11');
 
--- 2026-07-15 10:50:13 UTC
+-- 2026-07-15 11:21:52 UTC

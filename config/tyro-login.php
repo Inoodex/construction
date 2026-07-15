@@ -89,10 +89,14 @@ return [
         // Example: 'https://yourapp.com/logo.svg' or '/images/logo.png'
         'logo' => env('TYRO_LOGIN_LOGO', null),
 
+        // Dark mode logo URL (shown when dark mode is active)
+        // Set to null to hide logo in dark mode, or same as logo to always show
+        'logo_dark' => env('TYRO_LOGIN_LOGO_DARK', null),
+
         // Logo height for proper display scaling
         // Accepts any valid CSS height value (px, rem, etc.)
         // Common values: '32px', '48px', '3rem'
-        'logo_height' => env('TYRO_LOGIN_LOGO_HEIGHT', '48px'),
+        'logo_height' => env('TYRO_LOGIN_LOGO_HEIGHT', 'auto'),
     ],
 
     /*
@@ -130,7 +134,7 @@ return [
     */
     'registration' => [
         // Whether registration is enabled
-        'enabled' => env('TYRO_LOGIN_REGISTRATION_ENABLED', true),
+        'enabled' => env('TYRO_LOGIN_REGISTRATION_ENABLED', false),
 
         // Whether to automatically log in the user after registration
         'auto_login' => env('TYRO_LOGIN_REGISTRATION_AUTO_LOGIN', false),

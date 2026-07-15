@@ -229,7 +229,7 @@
                 })();
             </script>
             @endif
-            <!-- Register Link -->
+            {{-- Register Link (disabled)
             @if($registrationEnabled ?? true)
             <div class="form-footer">
                 <p>
@@ -238,6 +238,7 @@
                 </p>
             </div>
             @endif
+            --}}
 
             <!-- Social Login -->
             @include('tyro-login::partials.social-login', ['action' => 'login'])
