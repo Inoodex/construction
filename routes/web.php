@@ -46,6 +46,7 @@ Route::prefix('dashboard/categories')->name('admin.categories.')->group(function
 
 // Role Management Overrides
 use App\Http\Controllers\Admin\RoleController as LocalRoleController;
+
 Route::prefix('dashboard/roles')->name('tyro-dashboard.roles.')->group(function () {
     Route::get('/', [LocalRoleController::class, 'index'])->name('index');
     Route::get('/create', [LocalRoleController::class, 'create'])->name('create');
@@ -58,6 +59,7 @@ Route::prefix('dashboard/roles')->name('tyro-dashboard.roles.')->group(function 
 
 // Core - Project Management
 use App\Http\Controllers\Admin\Core\ProjectController;
+
 Route::prefix('dashboard/core')->name('admin.core.')->middleware(['auth', 'privilege:core.view'])->group(function () {
     Route::get('projects', [ProjectController::class, 'index'])->name('projects.index');
     Route::get('projects/create', [ProjectController::class, 'create'])->name('projects.create');
@@ -277,6 +279,7 @@ use App\Http\Controllers\Admin\Hr\ToolboxTalkController;
 use App\Http\Controllers\Admin\Hr\PermitToWorkController;
 use App\Http\Controllers\Admin\Hr\SafetyAuditController;
 use App\Http\Controllers\Admin\Reports\FinancialReportController;
+
 Route::prefix('dashboard/procurement')->name('admin.procurement.')->middleware(['auth', 'privilege:procurement.view'])->group(function () {
     Route::get('vendors', [VendorController::class, 'index'])->name('vendors.index');
     Route::get('vendors/create', [VendorController::class, 'create'])->name('vendors.create');
@@ -582,12 +585,14 @@ use App\Http\Controllers\Admin\Finance\ChartOfAccountController;
 use App\Http\Controllers\Admin\Finance\JournalEntryController;
 use App\Http\Controllers\Admin\Finance\GeneralLedgerController;
 use App\Http\Controllers\Admin\Finance\TrialBalanceController;
+use App\Http\Controllers\Admin\Finance\ReconciliationController;
 use App\Http\Controllers\Admin\Finance\ReceivableController;
 use App\Http\Controllers\Admin\Finance\BankGuaranteeController;
 use App\Http\Controllers\Admin\Finance\PaymentAccountController;
 use App\Http\Controllers\Admin\Finance\BalanceSheetController;
 use App\Http\Controllers\Admin\Finance\IncomeStatementController;
 use App\Http\Controllers\Admin\Finance\LabourEntryController;
+
 Route::prefix('dashboard/finance')->name('admin.finance.')->middleware(['auth', 'privilege:finance.view'])->group(function () {
     Route::get('budgets', [BudgetController::class, 'index'])->name('budgets.index');
     Route::get('budgets/create', [BudgetController::class, 'create'])->name('budgets.create');
@@ -715,6 +720,7 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware(['auth', 
 
     Route::get('general-ledger', [GeneralLedgerController::class, 'index'])->name('general-ledger.index');
     Route::get('trial-balance', [TrialBalanceController::class, 'index'])->name('trial-balance.index');
+    Route::get('reconciliation', [ReconciliationController::class, 'index'])->name('reconciliation.index');
 
     Route::get('receivables', [ReceivableController::class, 'index'])->name('receivables.index');
     Route::get('receivables/create', [ReceivableController::class, 'create'])->name('receivables.create');

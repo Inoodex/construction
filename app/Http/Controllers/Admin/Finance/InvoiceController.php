@@ -9,6 +9,7 @@ use App\Models\Payment;
 use App\Models\PaymentAccount;
 use App\Models\AccountTransaction;
 use App\Models\Project;
+use App\Services\LedgerPostingService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,6 +18,8 @@ use Illuminate\Support\Str;
 
 class InvoiceController extends Controller
 {
+    public function __construct(private LedgerPostingService $ledger) {}
+
     public function index(Request $request)
     {
         $query = Invoice::with('project');
@@ -65,7 +68,7 @@ class InvoiceController extends Controller
             'status' => 'required|in:draft,sent,partially_paid,paid,overdue,cancelled',
         ]);
 
-        $validated['invoice_number'] = 'INV-'.now()->format('Ymd').'-'.strtoupper(Str::random(4));
+        $validated['invoice_number'] = 'INV-' . now()->format('Ymd') . '-' . strtoupper(Str::random(4));
         $validated['subtotal'] = 0;
         $validated['tax_amount'] = 0;
         $validated['retention_amount'] = 0;
@@ -98,7 +101,7 @@ class InvoiceController extends Controller
             ->setOption('isRemoteEnabled', true)
             ->setOption('isHtml5ParserEnabled', true);
 
-        return $pdf->stream('INV-'.$inv->invoice_number.'.pdf');
+        return $pdf->stream('INV-' . $inv->invoice_number . '.pdf');
     }
 
     public function edit(Invoice $invoice)
@@ -126,6 +129,7 @@ class InvoiceController extends Controller
 
         $invoice->update($validated);
         $this->recalculateInvoice($invoice);
+        $this->syncInvoicePosting($invoice->fresh());
 
         return redirect()->route('admin.finance.invoices.index')
             ->with('success', 'Invoice updated.');
@@ -144,7 +148,9 @@ class InvoiceController extends Controller
                             ->delete();
                     }
                 }
+                $this->ledger->reverse($payment, 'invoice-payment');
             }
+            $this->ledger->reverse($invoice, 'invoice');
             $invoice->payments()->delete();
             $invoice->items()->delete();
             $invoice->delete();
@@ -168,6 +174,7 @@ class InvoiceController extends Controller
         InvoiceItem::create($validated);
 
         $this->recalculateInvoice($invoice);
+        $this->syncInvoicePosting($invoice->fresh());
 
         return back()->with('success', 'Item added.');
     }
@@ -176,6 +183,7 @@ class InvoiceController extends Controller
     {
         $invoiceItem->delete();
         $this->recalculateInvoice($invoice);
+        $this->syncInvoicePosting($invoice->fresh());
 
         return back()->with('success', 'Item removed.');
     }
@@ -223,6 +231,8 @@ class InvoiceController extends Controller
                 'due_amount' => max($dueAmount, 0),
                 'status' => $status,
             ]);
+
+            $this->ledger->postInvoicePayment($payment, $invoice);
         });
 
         return back()->with('success', 'Payment recorded.');
@@ -241,6 +251,7 @@ class InvoiceController extends Controller
                 }
             }
 
+            $this->ledger->reverse($payment, 'invoice-payment');
             $payment->delete();
 
             $totalPaid = $invoice->payments()->sum('amount');
@@ -280,5 +291,21 @@ class InvoiceController extends Controller
             'due_amount' => max($due, 0),
             'status' => $status,
         ]);
+    }
+
+    /**
+     * Keep the invoice's revenue journal entry in step with its status/totals.
+     * Draft and cancelled invoices carry no posting; any other status posts
+     * (or re-posts) the current figures. Payment entries are handled separately.
+     */
+    private function syncInvoicePosting(Invoice $invoice): void
+    {
+        DB::transaction(function () use ($invoice) {
+            $this->ledger->reverse($invoice, 'invoice');
+
+            if (!in_array($invoice->status, ['draft', 'cancelled'])) {
+                $this->ledger->postInvoice($invoice);
+            }
+        });
     }
 }

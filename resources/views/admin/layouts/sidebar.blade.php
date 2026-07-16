@@ -57,7 +57,7 @@
             elseif (str_starts_with($routeName, 'admin.quality.ncrs.') || str_starts_with($routeName, 'admin.quality.corrective-actions.')) $activeDropdown = 'ncr';
             elseif (str_starts_with($routeName, 'admin.quality.itps.') || str_starts_with($routeName, 'admin.quality.punch-lists.')) $activeDropdown = 'inspections';
             elseif (str_starts_with($routeName, 'admin.finance.budgets.') || str_starts_with($routeName, 'admin.finance.forecasting.') || str_starts_with($routeName, 'admin.finance.cost-overrun-alerts.') || str_starts_with($routeName, 'admin.finance.labour-entries.') || str_starts_with($routeName, 'admin.finance.material-takeoffs.')) $activeDropdown = 'cost-control';
-            elseif (str_starts_with($routeName, 'admin.finance.chart-of-accounts.') || str_starts_with($routeName, 'admin.finance.journal-entries.') || str_starts_with($routeName, 'admin.finance.general-ledger.') || str_starts_with($routeName, 'admin.finance.trial-balance.') || str_starts_with($routeName, 'admin.finance.receivables.') || str_starts_with($routeName, 'admin.finance.bank-guarantees.') || str_starts_with($routeName, 'admin.finance.balance-sheet.') || str_starts_with($routeName, 'admin.finance.income-statement.')) $activeDropdown = 'accounting';
+            elseif (str_starts_with($routeName, 'admin.finance.chart-of-accounts.') || str_starts_with($routeName, 'admin.finance.journal-entries.') || str_starts_with($routeName, 'admin.finance.general-ledger.') || str_starts_with($routeName, 'admin.finance.trial-balance.') || str_starts_with($routeName, 'admin.finance.reconciliation.') || str_starts_with($routeName, 'admin.finance.receivables.') || str_starts_with($routeName, 'admin.finance.bank-guarantees.') || str_starts_with($routeName, 'admin.finance.balance-sheet.') || str_starts_with($routeName, 'admin.finance.income-statement.')) $activeDropdown = 'accounting';
             elseif (str_starts_with($routeName, 'admin.finance.boqs.') || str_starts_with($routeName, 'admin.finance.rate-analysis.') || str_starts_with($routeName, 'admin.finance.tenders.')) $activeDropdown = 'estimating';
             elseif (str_starts_with($routeName, 'admin.finance.invoices.') || str_starts_with($routeName, 'admin.finance.ipas.') || str_starts_with($routeName, 'admin.finance.bills.') || str_starts_with($routeName, 'admin.finance.expenses.')) $activeDropdown = 'billing';
             elseif (str_starts_with($routeName, 'admin.finance.payment-accounts.')) $activeDropdown = 'payment-accounts';
@@ -486,7 +486,7 @@
                     <li><a href="{{ route('admin.hr.toolbox-talks.index') }}">Toolbox Talks</a></li>
                     <li><a href="{{ route('admin.hr.permits-to-work.index') }}">Permits to Work</a></li>
                     <li><a href="{{ route('admin.hr.safety-audits.index') }}">Safety Audits</a></li>
-            </ul>
+                </ul>
             </li>
             <!-- Training -->
             <li x-data="{ open: false }">
@@ -662,65 +662,66 @@
                             <li><a href="{{ route('admin.finance.labour-entries.index') }}">Labour Cost</a></li>
                             <li><a href="{{ route('admin.finance.material-takeoffs.index') }}">Material Takeoffs</a></li>
                         </ul>
-            </li>
-            <li x-data="{ open: false }">
-                <a href="javascript:;" class="group block font-semibold" style="display: flex !important; width: 100%;" @click="open = !open">
-                    <span class="text-left text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300" style="text-align: left !important;">Payment Accounts</span>
-                    <svg class="h-3 w-3 transition-transform shrink-0" :class="{ 'rotate-90': open }" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                </a>
-                <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
-                    <li><a href="{{ route('admin.finance.payment-accounts.index') }}">All Accounts</a></li>
-                </ul>
-            </li>
-            <li x-data="{ open: false }">
-                <a href="javascript:;" class="group block font-semibold" style="display: flex !important; width: 100%;" @click="open = !open">
-                    <span class="text-left text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300" style="text-align: left !important;">Accounting</span>
-                    <svg class="h-3 w-3 transition-transform shrink-0" :class="{ 'rotate-90': open }" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                </a>
-                <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
-                    <li><a href="{{ route('admin.finance.chart-of-accounts.index') }}">Chart of Accounts</a></li>
-                    <li><a href="{{ route('admin.finance.journal-entries.index') }}">Journal Vouchers</a></li>
-                    <li><a href="{{ route('admin.finance.general-ledger.index') }}">General Ledger</a></li>
-                    <li><a href="{{ route('admin.finance.trial-balance.index') }}">Trial Balance</a></li>
-                    <li><a href="{{ route('admin.finance.receivables.index') }}">Accounts Receivable</a></li>
-                    <li><a href="{{ route('admin.finance.bank-guarantees.index') }}">Bank Guarantees</a></li>
-                    <li><a href="{{ route('admin.finance.balance-sheet.index') }}">Balance Sheet</a></li>
-            <li><a href="{{ route('admin.finance.income-statement.index') }}">Income Statement</a></li>
-            </ul>
-            </li>
-            <li x-data="{ open: false }">
-                <a href="javascript:;" class="group block font-semibold" style="display: flex !important; width: 100%;" @click="open = !open">
-                    <span class="text-left text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300" style="text-align: left !important;">Estimating Analysis</span>
-                    <svg class="h-3 w-3 transition-transform shrink-0" :class="{ 'rotate-90': open }" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                </a>
-                <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
-                    <li><a href="{{ route('admin.finance.boqs.index') }}">Bill of Quantities</a></li>
-                    <li><a href="{{ route('admin.finance.rate-analysis.index') }}">Rate Analysis</a></li>
-                    <li><a href="{{ route('admin.finance.tenders.index') }}">Tenders</a></li>
-            </ul>
-            </li>
-            <li x-data="{ open: false }">
-                <a href="javascript:;" class="group block font-semibold" style="display: flex !important; width: 100%;" @click="open = !open">
-                    <span class="text-left text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300" style="text-align: left !important;">Billing & Payables</span>
-                    <svg class="h-3 w-3 transition-transform shrink-0" :class="{ 'rotate-90': open }" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                </a>
-                <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
-                    <li><a href="{{ route('admin.finance.invoices.index') }}">Invoices</a></li>
-                    <li><a href="{{ route('admin.finance.ipas.index') }}">Interim Payment</a></li>
-                    <li><a href="{{ route('admin.finance.bills.index') }}">Bills Payable</a></li>
-                    <li><a href="{{ route('admin.finance.expenses.index') }}">Expenses</a></li>
-                </ul>
-            </li>
+                    </li>
+                    <li x-data="{ open: false }">
+                        <a href="javascript:;" class="group block font-semibold" style="display: flex !important; width: 100%;" @click="open = !open">
+                            <span class="text-left text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300" style="text-align: left !important;">Payment Accounts</span>
+                            <svg class="h-3 w-3 transition-transform shrink-0" :class="{ 'rotate-90': open }" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </a>
+                        <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
+                            <li><a href="{{ route('admin.finance.payment-accounts.index') }}">All Accounts</a></li>
+                        </ul>
+                    </li>
+                    <li x-data="{ open: false }">
+                        <a href="javascript:;" class="group block font-semibold" style="display: flex !important; width: 100%;" @click="open = !open">
+                            <span class="text-left text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300" style="text-align: left !important;">Accounting</span>
+                            <svg class="h-3 w-3 transition-transform shrink-0" :class="{ 'rotate-90': open }" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </a>
+                        <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
+                            <li><a href="{{ route('admin.finance.chart-of-accounts.index') }}">Chart of Accounts</a></li>
+                            <li><a href="{{ route('admin.finance.journal-entries.index') }}">Journal Vouchers</a></li>
+                            <li><a href="{{ route('admin.finance.general-ledger.index') }}">General Ledger</a></li>
+                            <li><a href="{{ route('admin.finance.trial-balance.index') }}">Trial Balance</a></li>
+                            <li><a href="{{ route('admin.finance.reconciliation.index') }}">Reconciliation</a></li>
+                            <li><a href="{{ route('admin.finance.receivables.index') }}">Accounts Receivable</a></li>
+                            <li><a href="{{ route('admin.finance.bank-guarantees.index') }}">Bank Guarantees</a></li>
+                            <li><a href="{{ route('admin.finance.balance-sheet.index') }}">Balance Sheet</a></li>
+                            <li><a href="{{ route('admin.finance.income-statement.index') }}">Income Statement</a></li>
+                        </ul>
+                    </li>
+                    <li x-data="{ open: false }">
+                        <a href="javascript:;" class="group block font-semibold" style="display: flex !important; width: 100%;" @click="open = !open">
+                            <span class="text-left text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300" style="text-align: left !important;">Estimating Analysis</span>
+                            <svg class="h-3 w-3 transition-transform shrink-0" :class="{ 'rotate-90': open }" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </a>
+                        <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
+                            <li><a href="{{ route('admin.finance.boqs.index') }}">Bill of Quantities</a></li>
+                            <li><a href="{{ route('admin.finance.rate-analysis.index') }}">Rate Analysis</a></li>
+                            <li><a href="{{ route('admin.finance.tenders.index') }}">Tenders</a></li>
+                        </ul>
+                    </li>
+                    <li x-data="{ open: false }">
+                        <a href="javascript:;" class="group block font-semibold" style="display: flex !important; width: 100%;" @click="open = !open">
+                            <span class="text-left text-black dark:text-[#506690] dark:group-hover:text-white-dark transition-colors duration-300" style="text-align: left !important;">Billing & Payables</span>
+                            <svg class="h-3 w-3 transition-transform shrink-0" :class="{ 'rotate-90': open }" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </a>
+                        <ul x-cloak x-show="open" x-collapse class="sub-menu text-gray-500 list-none ltr:pl-4 rtl:pr-4">
+                            <li><a href="{{ route('admin.finance.invoices.index') }}">Invoices</a></li>
+                            <li><a href="{{ route('admin.finance.ipas.index') }}">Interim Payment</a></li>
+                            <li><a href="{{ route('admin.finance.bills.index') }}">Bills Payable</a></li>
+                            <li><a href="{{ route('admin.finance.expenses.index') }}">Expenses</a></li>
+                        </ul>
+                    </li>
 
-            </ul>
+                </ul>
             </li>
             @endhasPrivilege
 

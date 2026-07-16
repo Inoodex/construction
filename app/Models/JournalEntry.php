@@ -12,6 +12,9 @@ class JournalEntry extends Model
         'description',
         'type',
         'status',
+        'is_auto',
+        'source_type',
+        'source_id',
         'created_by',
     ];
 
@@ -19,6 +22,7 @@ class JournalEntry extends Model
     {
         return [
             'date' => 'date',
+            'is_auto' => 'boolean',
         ];
     }
 
@@ -30,5 +34,20 @@ class JournalEntry extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function source()
+    {
+        return $this->morphTo();
+    }
+
+    public function scopeManual($query)
+    {
+        return $query->where('is_auto', false);
+    }
+
+    public function scopeAuto($query)
+    {
+        return $query->where('is_auto', true);
     }
 }

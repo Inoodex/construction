@@ -9,6 +9,7 @@ use App\Models\Project;
 use App\Models\Vendor;
 use App\Models\PaymentAccount;
 use App\Models\AccountTransaction;
+use App\Services\LedgerPostingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +17,8 @@ use Illuminate\Support\Facades\Storage;
 
 class ExpenseController extends Controller
 {
+    public function __construct(private LedgerPostingService $ledger) {}
+
     public function index(Request $request)
     {
         $query = Expense::with('category', 'vendor', 'project', 'creator');
@@ -102,6 +105,8 @@ class ExpenseController extends Controller
                     'transaction_date' => $validated['expense_date'],
                 ]);
             }
+
+            $this->ledger->postExpense($expense);
         });
 
         return redirect()->route('admin.finance.expenses.index')
@@ -156,6 +161,9 @@ class ExpenseController extends Controller
 
             $expense->update($validated);
 
+            $this->ledger->reverse($expense, 'expense');
+            $this->ledger->postExpense($expense->fresh());
+
             if ($oldAccountId == $newAccountId && $oldTotalAmount == $newTotalAmount) {
                 return;
             }
@@ -209,6 +217,7 @@ class ExpenseController extends Controller
                 Storage::disk('public')->delete($expense->receipt);
             }
 
+            $this->ledger->reverse($expense, 'expense');
             $expense->delete();
         });
 

@@ -5,11 +5,14 @@ namespace App\Http\Controllers\Admin\Core;
 use App\Http\Controllers\Controller;
 use App\Models\Client;
 use App\Models\Project;
+use App\Services\LedgerPostingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
+    public function __construct(private LedgerPostingService $ledger) {}
+
     private function isClientPortalUser($user = null): bool
     {
         $user = $user ?? auth()->user();
@@ -28,8 +31,8 @@ class ProjectController extends Controller
 
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
-                $q->where('name', 'like', '%'.$request->search.'%')
-                    ->orWhere('description', 'like', '%'.$request->search.'%');
+                $q->where('name', 'like', '%' . $request->search . '%')
+                    ->orWhere('description', 'like', '%' . $request->search . '%');
             });
         }
 
@@ -116,7 +119,13 @@ class ProjectController extends Controller
             'client_id' => 'nullable|exists:clients,id',
         ]);
 
+        $wasCompleted = $project->status === 'completed';
         $project->update($validated);
+
+        // On completion, transfer accumulated project WIP into recognised cost.
+        if (!$wasCompleted && $project->status === 'completed') {
+            $this->ledger->transferProjectWipToCost($project);
+        }
 
         return redirect()->route('admin.core.projects.index')
             ->with('success', 'Project updated successfully.');
@@ -168,7 +177,7 @@ class ProjectController extends Controller
             $current->addWeek();
         }
 
-        $barColor = fn ($type) => match ($type) {
+        $barColor = fn($type) => match ($type) {
             'phase' => 'bg-primary',
             'task' => 'bg-info',
             'milestone' => 'bg-warning',
@@ -176,8 +185,15 @@ class ProjectController extends Controller
         };
 
         return view('admin.core.projects.gantt', compact(
-            'project', 'tasks', 'phases', 'milestones',
-            'chartStart', 'chartEnd', 'totalDays', 'weeks', 'barColor'
+            'project',
+            'tasks',
+            'phases',
+            'milestones',
+            'chartStart',
+            'chartEnd',
+            'totalDays',
+            'weeks',
+            'barColor'
         ));
     }
 
@@ -231,7 +247,12 @@ class ProjectController extends Controller
         }
 
         return view('admin.core.projects.resource-gantt', compact(
-            'project', 'resources', 'chartStart', 'chartEnd', 'totalDays', 'weeks'
+            'project',
+            'resources',
+            'chartStart',
+            'chartEnd',
+            'totalDays',
+            'weeks'
         ));
     }
 }

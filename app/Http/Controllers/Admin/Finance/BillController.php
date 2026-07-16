@@ -10,6 +10,7 @@ use App\Models\PaymentAccount;
 use App\Models\AccountTransaction;
 use App\Models\Project;
 use App\Models\Vendor;
+use App\Services\LedgerPostingService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,6 +19,8 @@ use Illuminate\Support\Str;
 
 class BillController extends Controller
 {
+    public function __construct(private LedgerPostingService $ledger) {}
+
     public function index(Request $request)
     {
         $query = Bill::with('project', 'vendor');
@@ -89,7 +92,7 @@ class BillController extends Controller
             ->setOption('isRemoteEnabled', true)
             ->setOption('isHtml5ParserEnabled', true);
 
-        return $pdf->stream('BILL-'.$bill->bill_number.'.pdf');
+        return $pdf->stream('BILL-' . $bill->bill_number . '.pdf');
     }
 
     public function edit(Bill $bill)
@@ -131,7 +134,9 @@ class BillController extends Controller
                             ->delete();
                     }
                 }
+                $this->ledger->reverse($payment, 'bill-payment');
             }
+            $this->ledger->reverse($bill, 'bill');
             $bill->payments()->delete();
             $bill->items()->delete();
             $bill->delete();
@@ -208,6 +213,9 @@ class BillController extends Controller
                 'due_amount'  => max($dueAmount, 0),
                 'status'      => $status,
             ]);
+
+            $this->syncBillPosting($bill->fresh());
+            $this->ledger->postBillPayment($billPayment, $bill);
         });
 
         return back()->with('success', 'Payment recorded.');
@@ -226,6 +234,7 @@ class BillController extends Controller
                 }
             }
 
+            $this->ledger->reverse($payment, 'bill-payment');
             $payment->delete();
 
             $totalPaid = $bill->payments()->sum('amount');
@@ -237,6 +246,8 @@ class BillController extends Controller
                 'due_amount'  => max($dueAmount, 0),
                 'status'      => $status,
             ]);
+
+            $this->syncBillPosting($bill->fresh());
         });
 
         return back()->with('success', 'Payment removed.');
@@ -257,5 +268,25 @@ class BillController extends Controller
             'paid_amount'  => $paid,
             'due_amount'   => max($due, 0),
         ]);
+
+        if ($bill->status !== 'draft') {
+            $this->syncBillPosting($bill->fresh());
+        }
+    }
+
+    /**
+     * Keep the bill's WIP/payable journal entry in step with its status/totals.
+     * Draft and cancelled bills carry no posting; any other status posts (or
+     * re-posts) the current figures. Payment entries are handled separately.
+     */
+    private function syncBillPosting(Bill $bill): void
+    {
+        DB::transaction(function () use ($bill) {
+            $this->ledger->reverse($bill, 'bill');
+
+            if (!in_array($bill->status, ['draft', 'cancelled'])) {
+                $this->ledger->postBill($bill);
+            }
+        });
     }
 }
