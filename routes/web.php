@@ -576,6 +576,7 @@ use App\Http\Controllers\Admin\Finance\TenderController;
 use App\Http\Controllers\Admin\Finance\TenderPackageController;
 use App\Http\Controllers\Admin\Finance\InvoiceController;
 use App\Http\Controllers\Admin\Finance\RateAnalysisController;
+use App\Http\Controllers\Admin\Finance\RodCalculationController;
 use App\Http\Controllers\Admin\Finance\CostOverrunAlertController;
 use App\Http\Controllers\Admin\Finance\IpaController;
 use App\Http\Controllers\Admin\Finance\BillController;
@@ -637,6 +638,26 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware(['auth', 
     Route::delete('rate-analysis/{rateAnalysis}', [RateAnalysisController::class, 'destroy'])->name('rate-analysis.destroy');
     Route::post('rate-analysis/{rateAnalysis}/items', [RateAnalysisController::class, 'addItem'])->name('rate-analysis.items.store');
     Route::delete('rate-analysis/{rateAnalysis}/items/{rateAnalysisItem}', [RateAnalysisController::class, 'removeItem'])->name('rate-analysis.items.destroy');
+
+    // Rod Calculations (BBS)
+    Route::get('rod-calculations', [RodCalculationController::class, 'index'])->name('rod-calculations.index');
+    Route::get('rod-calculations/create', [RodCalculationController::class, 'create'])->name('rod-calculations.create');
+    Route::post('rod-calculations', [RodCalculationController::class, 'store'])->name('rod-calculations.store');
+    Route::get('rod-calculations/{rodCalculation}', [RodCalculationController::class, 'show'])->name('rod-calculations.show');
+    Route::get('rod-calculations/{rodCalculation}/edit', [RodCalculationController::class, 'edit'])->name('rod-calculations.edit');
+    Route::put('rod-calculations/{rodCalculation}', [RodCalculationController::class, 'update'])->name('rod-calculations.update');
+    Route::delete('rod-calculations/{rodCalculation}', [RodCalculationController::class, 'destroy'])->name('rod-calculations.destroy');
+    Route::get('rod-calculations/{rodCalculation}/pdf', [RodCalculationController::class, 'pdf'])->name('rod-calculations.pdf');
+    Route::post('rod-calculations/{rodCalculation}/approve', [RodCalculationController::class, 'approve'])->name('rod-calculations.approve');
+    Route::post('rod-calculations/{rodCalculation}/complete', [RodCalculationController::class, 'complete'])->name('rod-calculations.complete');
+    Route::post('rod-calculations/{rodCalculation}/reopen', [RodCalculationController::class, 'reopen'])->name('rod-calculations.reopen');
+    Route::post('rod-calculations/{rodCalculation}/recalculate', [RodCalculationController::class, 'recalculate'])->name('rod-calculations.recalculate');
+    Route::post('rod-calculations/{rodCalculation}/members', [RodCalculationController::class, 'storeMember'])->name('rod-calculations.members.store');
+    Route::put('rod-calculations/{rodCalculation}/members/{rodMember}', [RodCalculationController::class, 'updateMember'])->name('rod-calculations.members.update');
+    Route::delete('rod-calculations/{rodCalculation}/members/{rodMember}', [RodCalculationController::class, 'destroyMember'])->name('rod-calculations.members.destroy');
+    Route::post('rod-calculations/{rodCalculation}/members/{rodMember}/bars', [RodCalculationController::class, 'storeBar'])->name('rod-calculations.bars.store');
+    Route::put('rod-calculations/{rodCalculation}/members/{rodMember}/bars/{rodBar}', [RodCalculationController::class, 'updateBar'])->name('rod-calculations.bars.update');
+    Route::delete('rod-calculations/{rodCalculation}/members/{rodMember}/bars/{rodBar}', [RodCalculationController::class, 'destroyBar'])->name('rod-calculations.bars.destroy');
 
     Route::get('tenders', [TenderController::class, 'index'])->name('tenders.index');
     Route::get('tenders/create', [TenderController::class, 'create'])->name('tenders.create');

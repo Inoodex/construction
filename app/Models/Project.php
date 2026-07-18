@@ -78,6 +78,11 @@ class Project extends Model
         return $this->hasMany(Budget::class);
     }
 
+    public function rodCalculations(): HasMany
+    {
+        return $this->hasMany(RodCalculation::class);
+    }
+
     public function purchaseOrders(): HasManyThrough
     {
         return $this->hasManyThrough(PurchaseOrder::class, PurchaseRequisition::class);

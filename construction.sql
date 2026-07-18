@@ -310,8 +310,8 @@ CREATE TABLE `cache` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('inoodex-cache-tyro:user-1:privileges',	'a:35:{i:0;s:12:\"finance.view\";i:1;s:14:\"finance.create\";i:2;s:12:\"finance.edit\";i:3;s:14:\"finance.delete\";i:4;s:14:\"finance.export\";i:5;s:7:\"hr.view\";i:6;s:9:\"hr.create\";i:7;s:7:\"hr.edit\";i:8;s:9:\"hr.delete\";i:9;s:9:\"hr.export\";i:10;s:16:\"procurement.view\";i:11;s:18:\"procurement.create\";i:12;s:16:\"procurement.edit\";i:13;s:18:\"procurement.delete\";i:14;s:18:\"procurement.export\";i:15;s:9:\"core.view\";i:16;s:11:\"core.create\";i:17;s:9:\"core.edit\";i:18;s:11:\"core.delete\";i:19;s:11:\"core.export\";i:20;s:12:\"quality.view\";i:21;s:14:\"quality.create\";i:22;s:12:\"quality.edit\";i:23;s:14:\"quality.delete\";i:24;s:14:\"quality.export\";i:25;s:8:\"crm.view\";i:26;s:10:\"crm.create\";i:27;s:8:\"crm.edit\";i:28;s:10:\"crm.delete\";i:29;s:10:\"crm.export\";i:30;s:12:\"reports.view\";i:31;s:14:\"reports.create\";i:32;s:14:\"reports.export\";i:33;s:10:\"admin.view\";i:34;s:12:\"admin.manage\";}',	1784114672),
-('inoodex-cache-tyro:user-1:roles',	'a:1:{i:0;s:11:\"super-admin\";}',	1784114672);
+('inoodex-cache-tyro:user-1:privileges',	'a:35:{i:0;s:12:\"finance.view\";i:1;s:14:\"finance.create\";i:2;s:12:\"finance.edit\";i:3;s:14:\"finance.delete\";i:4;s:14:\"finance.export\";i:5;s:7:\"hr.view\";i:6;s:9:\"hr.create\";i:7;s:7:\"hr.edit\";i:8;s:9:\"hr.delete\";i:9;s:9:\"hr.export\";i:10;s:16:\"procurement.view\";i:11;s:18:\"procurement.create\";i:12;s:16:\"procurement.edit\";i:13;s:18:\"procurement.delete\";i:14;s:18:\"procurement.export\";i:15;s:9:\"core.view\";i:16;s:11:\"core.create\";i:17;s:9:\"core.edit\";i:18;s:11:\"core.delete\";i:19;s:11:\"core.export\";i:20;s:12:\"quality.view\";i:21;s:14:\"quality.create\";i:22;s:12:\"quality.edit\";i:23;s:14:\"quality.delete\";i:24;s:14:\"quality.export\";i:25;s:8:\"crm.view\";i:26;s:10:\"crm.create\";i:27;s:8:\"crm.edit\";i:28;s:10:\"crm.delete\";i:29;s:10:\"crm.export\";i:30;s:12:\"reports.view\";i:31;s:14:\"reports.create\";i:32;s:14:\"reports.export\";i:33;s:10:\"admin.view\";i:34;s:12:\"admin.manage\";}',	1784374742),
+('inoodex-cache-tyro:user-1:roles',	'a:1:{i:0;s:11:\"super-admin\";}',	1784374741);
 
 DROP TABLE IF EXISTS `cache_locks`;
 CREATE TABLE `cache_locks` (
@@ -457,7 +457,13 @@ INSERT INTO `chart_of_accounts` (`id`, `account_code`, `name`, `type`, `normal_b
 (55,	'5-1010',	'Material Costs',	'expense',	'debit',	44,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
 (56,	'5-1020',	'Labour Costs',	'expense',	'debit',	44,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
 (57,	'5-1030',	'Subcontractor Costs',	'expense',	'debit',	44,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
-(58,	'5-1040',	'Equipment Costs',	'expense',	'debit',	44,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31');
+(58,	'5-1040',	'Equipment Costs',	'expense',	'debit',	44,	NULL,	1,	'2026-06-18 05:04:31',	'2026-06-18 05:04:31'),
+(60,	'5-2000',	'Overhead',	'expense',	'debit',	NULL,	NULL,	1,	'2026-07-15 23:30:42',	'2026-07-15 23:30:42'),
+(61,	'1-1050',	'Retention Receivable',	'asset',	'debit',	39,	NULL,	1,	'2026-07-15 23:30:42',	'2026-07-15 23:30:42'),
+(62,	'2-1020',	'Accrued Expenses',	'liability',	'credit',	41,	NULL,	1,	'2026-07-15 23:30:42',	'2026-07-15 23:30:42'),
+(63,	'2-1030',	'Tax Payable',	'liability',	'credit',	41,	NULL,	1,	'2026-07-15 23:30:42',	'2026-07-15 23:30:42'),
+(64,	'3-1020',	'Retained Earnings',	'equity',	'credit',	42,	NULL,	1,	'2026-07-15 23:30:42',	'2026-07-15 23:30:42'),
+(65,	'4-1010',	'Contract Revenue',	'income',	'credit',	43,	NULL,	1,	'2026-07-15 23:30:42',	'2026-07-15 23:30:42');
 
 DROP TABLE IF EXISTS `client_contacts`;
 CREATE TABLE `client_contacts` (
@@ -1233,7 +1239,8 @@ CREATE TABLE `invoice_items` (
 
 INSERT INTO `invoice_items` (`id`, `invoice_id`, `description`, `quantity`, `unit_price`, `total_price`, `created_at`, `updated_at`) VALUES
 (1,	1,	'Test',	10.0000,	150.00,	1500.00,	'2026-06-22 04:05:49',	'2026-06-22 04:05:49'),
-(2,	2,	'60mm MS Rod (Grade 60)',	10.0000,	93000.00,	930000.00,	'2026-06-22 06:15:37',	'2026-06-22 06:15:37');
+(2,	2,	'60mm MS Rod (Grade 60)',	10.0000,	93000.00,	930000.00,	'2026-06-22 06:15:37',	'2026-06-22 06:15:37'),
+(3,	3,	'test',	10.0000,	1000.00,	10000.00,	'2026-07-16 00:28:44',	'2026-07-16 00:28:44');
 
 DROP TABLE IF EXISTS `invoices`;
 CREATE TABLE `invoices` (
@@ -1266,7 +1273,8 @@ CREATE TABLE `invoices` (
 
 INSERT INTO `invoices` (`id`, `project_id`, `invoice_number`, `title`, `description`, `issue_date`, `due_date`, `subtotal`, `tax_rate`, `tax_amount`, `retention_rate`, `retention_amount`, `total_amount`, `paid_amount`, `due_amount`, `status`, `created_by`, `created_at`, `updated_at`) VALUES
 (1,	5,	'INV-20260622-L8X9',	'Invoice 1',	NULL,	'2026-06-22',	'2026-06-29',	1500.00,	2.50,	37.50,	5.00,	75.00,	1462.50,	0.00,	1462.50,	'draft',	1,	'2026-06-22 04:04:37',	'2026-06-22 04:05:49'),
-(2,	6,	'INV-20260622-RQOO',	'Invoice 2',	NULL,	'2026-06-22',	'2026-06-29',	930000.00,	2.50,	23250.00,	5.00,	46500.00,	906750.00,	500000.00,	406750.00,	'draft',	1,	'2026-06-22 06:15:19',	'2026-06-22 06:16:03');
+(2,	6,	'INV-20260622-RQOO',	'Invoice 2',	NULL,	'2026-06-22',	'2026-06-29',	930000.00,	2.50,	23250.00,	5.00,	46500.00,	906750.00,	500000.00,	406750.00,	'draft',	1,	'2026-06-22 06:15:19',	'2026-06-22 06:16:03'),
+(3,	6,	'INV-20260716-N5JQ',	'Test',	NULL,	'2026-07-16',	'2026-07-30',	10000.00,	2.50,	250.00,	5.00,	500.00,	9750.00,	0.00,	9750.00,	'paid',	1,	'2026-07-16 00:24:19',	'2026-07-16 00:28:44');
 
 DROP TABLE IF EXISTS `ipa_items`;
 CREATE TABLE `ipa_items` (
@@ -1378,19 +1386,24 @@ CREATE TABLE `journal_entries` (
   `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'general',
   `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
+  `is_auto` tinyint(1) NOT NULL DEFAULT '0',
   `created_by` bigint unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
+  `source_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `source_id` bigint unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `journal_entries_journal_number_unique` (`journal_number`),
   KEY `journal_entries_created_by_foreign` (`created_by`),
+  KEY `journal_entries_source_type_source_id_index` (`source_type`,`source_id`),
   CONSTRAINT `journal_entries_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `journal_entries` (`id`, `journal_number`, `date`, `description`, `type`, `status`, `created_by`, `created_at`, `updated_at`) VALUES
-(1,	'JV-20260618-001',	'2026-06-18',	NULL,	'general',	'posted',	1,	'2026-06-18 05:42:44',	'2026-06-18 05:42:44'),
-(2,	'JV-20260622-001',	'2026-06-22',	'test',	'general',	'posted',	1,	'2026-06-22 06:19:54',	'2026-06-22 06:19:54'),
-(3,	'JV-20260623-001',	'2026-06-23',	NULL,	'general',	'posted',	1,	'2026-06-22 23:41:43',	'2026-06-22 23:41:43');
+INSERT INTO `journal_entries` (`id`, `journal_number`, `date`, `description`, `type`, `status`, `is_auto`, `created_by`, `created_at`, `updated_at`, `source_type`, `source_id`) VALUES
+(1,	'JV-20260618-001',	'2026-06-18',	NULL,	'general',	'posted',	0,	1,	'2026-06-18 05:42:44',	'2026-06-18 05:42:44',	NULL,	NULL),
+(2,	'JV-20260622-001',	'2026-06-22',	'test',	'general',	'posted',	0,	1,	'2026-06-22 06:19:54',	'2026-06-22 06:19:54',	NULL,	NULL),
+(3,	'JV-20260623-001',	'2026-06-23',	NULL,	'general',	'posted',	0,	1,	'2026-06-22 23:41:43',	'2026-06-22 23:41:43',	NULL,	NULL),
+(8,	'JV-20260716-FYBGY',	'2026-07-16',	'Invoice #INV-20260716-N5JQ',	'invoice',	'posted',	1,	1,	'2026-07-16 00:28:44',	'2026-07-16 00:28:44',	'App\\Models\\Invoice',	3);
 
 DROP TABLE IF EXISTS `journal_entry_items`;
 CREATE TABLE `journal_entry_items` (
@@ -1416,7 +1429,11 @@ INSERT INTO `journal_entry_items` (`id`, `journal_entry_id`, `account_id`, `debi
 (4,	2,	48,	93000.00,	0.00,	'payment',	'2026-06-22 06:19:54',	'2026-06-22 06:19:54'),
 (5,	2,	55,	0.00,	93000.00,	'payment',	'2026-06-22 06:19:54',	'2026-06-22 06:19:54'),
 (6,	3,	46,	50000.00,	0.00,	'test',	'2026-06-22 23:41:43',	'2026-06-22 23:41:43'),
-(7,	3,	47,	0.00,	50000.00,	NULL,	'2026-06-22 23:41:43',	'2026-06-22 23:41:43');
+(7,	3,	47,	0.00,	50000.00,	NULL,	'2026-06-22 23:41:43',	'2026-06-22 23:41:43'),
+(22,	8,	47,	9750.00,	0.00,	'AR - Invoice #INV-20260716-N5JQ',	'2026-07-16 00:28:44',	'2026-07-16 00:28:44'),
+(23,	8,	61,	500.00,	0.00,	'Retention held - #INV-20260716-N5JQ',	'2026-07-16 00:28:44',	'2026-07-16 00:28:44'),
+(24,	8,	65,	0.00,	10000.00,	'Contract revenue - #INV-20260716-N5JQ',	'2026-07-16 00:28:44',	'2026-07-16 00:28:44'),
+(25,	8,	63,	0.00,	250.00,	'Output tax - #INV-20260716-N5JQ',	'2026-07-16 00:28:44',	'2026-07-16 00:28:44');
 
 DROP TABLE IF EXISTS `labour_entries`;
 CREATE TABLE `labour_entries` (
@@ -1882,7 +1899,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (135,	'2026_07_13_101631_create_media_table',	57),
 (136,	'2026_07_14_000001_create_payment_accounts_table',	57),
 (139,	'2026_07_14_000002_create_account_transactions_table',	58),
-(140,	'2026_07_14_000003_add_payment_account_id_to_financial_tables',	58);
+(140,	'2026_07_14_000003_add_payment_account_id_to_financial_tables',	58),
+(141,	'2026_07_15_000001_add_source_fields_to_journal_entries_table',	59),
+(142,	'2026_07_18_000001_create_rod_calculations_tables',	60);
 
 DROP TABLE IF EXISTS `milestones`;
 CREATE TABLE `milestones` (
@@ -2691,6 +2710,100 @@ CREATE TABLE `risks` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
+DROP TABLE IF EXISTS `rod_calculations`;
+CREATE TABLE `rod_calculations` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint unsigned NOT NULL,
+  `reference_no` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `steel_grade` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `revision` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
+  `formula_version` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1.0',
+  `waste_percent` decimal(5,2) DEFAULT NULL,
+  `created_by` bigint unsigned NOT NULL,
+  `approved_by` bigint unsigned DEFAULT NULL,
+  `approved_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `rod_calculations_reference_no_unique` (`reference_no`),
+  KEY `rod_calculations_approved_by_foreign` (`approved_by`),
+  KEY `rod_calculations_project_id_index` (`project_id`),
+  KEY `rod_calculations_status_index` (`status`),
+  KEY `rod_calculations_created_by_index` (`created_by`),
+  CONSTRAINT `rod_calculations_approved_by_foreign` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT,
+  CONSTRAINT `rod_calculations_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT,
+  CONSTRAINT `rod_calculations_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `rod_calculations` (`id`, `project_id`, `reference_no`, `title`, `description`, `steel_grade`, `revision`, `status`, `formula_version`, `waste_percent`, `created_by`, `approved_by`, `approved_at`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1,	5,	'BBS-GREENT-2026-00001',	'Footing',	NULL,	NULL,	NULL,	'draft',	'1.0',	NULL,	1,	NULL,	NULL,	'2026-07-18 04:05:51',	'2026-07-18 04:05:51',	NULL),
+(2,	5,	'BBS-GREENT-2026-00002',	'Footing',	NULL,	NULL,	NULL,	'draft',	'1.0',	NULL,	1,	NULL,	NULL,	'2026-07-18 04:06:36',	'2026-07-18 04:09:55',	'2026-07-18 04:09:55'),
+(3,	6,	'BBS-RUPAYA-2026-00001',	'Footing',	NULL,	'FY400',	NULL,	'draft',	'1.0',	NULL,	1,	NULL,	NULL,	'2026-07-18 04:08:09',	'2026-07-18 04:09:52',	'2026-07-18 04:09:52');
+
+DROP TABLE IF EXISTS `rod_member_bars`;
+CREATE TABLE `rod_member_bars` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `rod_member_id` bigint unsigned NOT NULL,
+  `bar_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `direction` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `diameter` decimal(5,2) NOT NULL,
+  `spacing` decimal(10,2) DEFAULT NULL,
+  `hook_length` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `bend_length` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `lap_length` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `actual_size` decimal(10,2) NOT NULL,
+  `cutting_length` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `bars_count` int NOT NULL DEFAULT '0',
+  `total_length` decimal(12,2) NOT NULL DEFAULT '0.00',
+  `unit_weight` decimal(10,4) NOT NULL DEFAULT '0.0000',
+  `total_weight` decimal(12,2) NOT NULL DEFAULT '0.00',
+  `shape_code` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_manual_count` tinyint(1) NOT NULL DEFAULT '0',
+  `sort_order` int NOT NULL DEFAULT '0',
+  `remarks` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `rod_member_bars_rod_member_id_index` (`rod_member_id`),
+  KEY `rod_member_bars_diameter_index` (`diameter`),
+  KEY `rod_member_bars_direction_index` (`direction`),
+  CONSTRAINT `rod_member_bars_rod_member_id_foreign` FOREIGN KEY (`rod_member_id`) REFERENCES `rod_members` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `rod_member_bars` (`id`, `rod_member_id`, `bar_name`, `direction`, `diameter`, `spacing`, `hook_length`, `bend_length`, `lap_length`, `actual_size`, `cutting_length`, `bars_count`, `total_length`, `unit_weight`, `total_weight`, `shape_code`, `is_manual_count`, `sort_order`, `remarks`, `created_at`, `updated_at`) VALUES
+(1,	1,	'Main',	'X',	8.00,	3.00,	5.00,	6.00,	1.00,	12.00,	12.00,	1,	120.00,	0.3951,	0.05,	NULL,	0,	0,	NULL,	'2026-07-18 05:23:41',	'2026-07-18 05:23:41');
+
+DROP TABLE IF EXISTS `rod_members`;
+CREATE TABLE `rod_members` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `rod_calculation_id` bigint unsigned NOT NULL,
+  `type` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `member_code` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `quantity` int NOT NULL DEFAULT '1',
+  `length` decimal(10,2) DEFAULT NULL,
+  `width` decimal(10,2) DEFAULT NULL,
+  `height` decimal(10,2) DEFAULT NULL,
+  `depth` decimal(10,2) DEFAULT NULL,
+  `thickness` decimal(10,2) DEFAULT NULL,
+  `cover` decimal(10,2) NOT NULL DEFAULT '25.00',
+  `sort_order` int NOT NULL DEFAULT '0',
+  `remarks` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `rod_members_rod_calculation_id_index` (`rod_calculation_id`),
+  KEY `rod_members_type_index` (`type`),
+  KEY `rod_members_member_code_index` (`member_code`),
+  CONSTRAINT `rod_members_rod_calculation_id_foreign` FOREIGN KEY (`rod_calculation_id`) REFERENCES `rod_calculations` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `rod_members` (`id`, `rod_calculation_id`, `type`, `member_code`, `quantity`, `length`, `width`, `height`, `depth`, `thickness`, `cover`, `sort_order`, `remarks`, `created_at`, `updated_at`) VALUES
+(1,	1,	'footing',	'F1',	10,	20.00,	12.00,	20.00,	6.00,	8.00,	15.00,	0,	NULL,	'2026-07-18 04:21:31',	'2026-07-18 04:21:31');
+
 DROP TABLE IF EXISTS `roles`;
 CREATE TABLE `roles` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -2751,9 +2864,8 @@ CREATE TABLE `sessions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('oT4IZ1aOQ5qigKEVlvga0K4TQUhZvZkPtuecVj1z',	6,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36',	'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiRFdFeDg3N0tyNFo3MDlwcGJUcUx2VGdmZFlKT0RJNm9WUzFCcGhhbCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MDp7fX1zOjk6Il9wcmV2aW91cyI7YToyOntzOjM6InVybCI7czo1NDoiaHR0cDovLzEyNy4wLjAuMTo4MDAwL2Rhc2hib2FyZC9maW5hbmNlL2xhYm91ci1lbnRyaWVzIjtzOjU6InJvdXRlIjtzOjM0OiJhZG1pbi5maW5hbmNlLmxhYm91ci1lbnRyaWVzLmluZGV4Ijt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6Njt9',	1784095685),
-('pX6FZP421xiBqha5FHscYOEEpapaVVYbCOJSEOoE',	NULL,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36',	'YTozOntzOjY6Il90b2tlbiI7czo0MDoiVWhLWEpnQVZPU3BONGROZXg4UVNyZXNIMzlBemw2R2ZYRU5MRVNmaCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7czo1OiJyb3V0ZSI7Tjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==',	1784088729),
-('zaN771zpFN8ZRGjClyz57WYx8zF7LPG67l9zLCHA',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36',	'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiWXpPS05LU1VDR2thZDdzaUZ2NVh2d0NUTUVLeDByYjBiUXQyY2I3NiI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjMxOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvZGFzaGJvYXJkIjtzOjU6InJvdXRlIjtzOjIwOiJ0eXJvLWRhc2hib2FyZC5pbmRleCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MTA6InR5cm8tbG9naW4iO2E6MTp7czo3OiJjYXB0Y2hhIjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9',	1784114412);
+('rncBBLqSXN60DFNzAaUfAv1mGqZWBAkB7VB4SjWq',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36',	'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiNmV5dGN0cXNka2NMQ05GSmpnc2ZVSTF3RVBsN1A0NDRzcFdhRE9oSyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kYXNoYm9hcmQiO3M6NToicm91dGUiO3M6MjA6InR5cm8tZGFzaGJvYXJkLmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=',	1784374442),
+('SB4WYCH90ln4BdR97jhfvyQyy6QYxReSPmtKHszP',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36',	'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiWlFUNDJtUFFlTGRpamNlZDVmSEQ2c0RkRWQ5TW8zNWFxenVSeGxhYiI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjU1OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvZGFzaGJvYXJkL2ZpbmFuY2Uvam91cm5hbC1lbnRyaWVzIjtzOjU6InJvdXRlIjtzOjM1OiJhZG1pbi5maW5hbmNlLmpvdXJuYWwtZW50cmllcy5pbmRleCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MTA6InR5cm8tbG9naW4iO2E6MTp7czo3OiJjYXB0Y2hhIjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9',	1784183430);
 
 DROP TABLE IF EXISTS `settings`;
 CREATE TABLE `settings` (
@@ -3300,7 +3412,15 @@ INSERT INTO `tyro_audit_logs` (`id`, `user_id`, `event`, `auditable_type`, `audi
 (121,	1,	'role.updated',	'HasinHayder\\Tyro\\Models\\Role',	3,	'{\"id\": 3, \"name\": \"Accountant\", \"slug\": \"accountant\", \"is_active\": 1, \"created_at\": \"2026-07-15T05:27:07.000000Z\", \"updated_at\": \"2026-07-15T05:27:07.000000Z\"}',	'{\"is_active\": true, \"updated_at\": \"2026-07-15 06:05:49\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 06:05:49'),
 (122,	1,	'user.logout',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 06:05:54'),
 (123,	6,	'user.login',	'App\\Models\\User',	6,	NULL,	'{\"email\": \"accountant@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 06:06:02'),
-(124,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 10:01:54');
+(124,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 10:01:54'),
+(125,	1,	'user.logout',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 11:31:19'),
+(126,	6,	'user.login',	'App\\Models\\User',	6,	NULL,	'{\"email\": \"accountant@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 11:35:25'),
+(127,	6,	'user.logout',	'App\\Models\\User',	6,	NULL,	'{\"email\": \"accountant@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 11:36:23'),
+(128,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 11:36:27'),
+(129,	1,	'user.logout',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 11:38:51'),
+(130,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-15 12:09:50'),
+(131,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-16 05:08:32'),
+(132,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-18 10:05:06');
 
 DROP TABLE IF EXISTS `tyro_media`;
 CREATE TABLE `tyro_media` (
@@ -3524,4 +3644,4 @@ INSERT INTO `work_orders` (`id`, `project_id`, `task_id`, `site_id`, `work_order
 (1,	5,	5,	5,	'WO-2026-0001',	'Excavation Work Order',	'work order created',	2,	1,	'2026-06-22',	'2026-06-30',	NULL,	'issued',	NULL,	'2026-06-21 21:50:16',	'2026-06-21 21:50:16'),
 (2,	6,	6,	6,	'WO-2026-0002',	'Pile Casting Work Order',	NULL,	2,	1,	'2026-06-22',	'2026-06-30',	NULL,	'issued',	NULL,	'2026-06-22 05:23:11',	'2026-06-22 05:23:11');
 
--- 2026-07-15 11:21:52 UTC
+-- 2026-07-18 11:52:54 UTC

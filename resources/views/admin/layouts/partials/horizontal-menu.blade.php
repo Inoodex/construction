@@ -332,6 +332,7 @@
                     <li><a href="{{ route('admin.finance.boqs.index') }}">Bill of Quantities</a></li>
                     <li><a href="{{ route('admin.finance.rate-analysis.index') }}">Rate Analysis</a></li>
                     {{-- <li><a href="{{ route('admin.finance.tenders.index') }}">Tenders</a></li> --}}
+                    <li><a href="{{ route('admin.finance.rod-calculations.index') }}">Rod Calculations</a></li>
                 </ul>
             </li>
             <li class="relative">
