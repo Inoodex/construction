@@ -18,7 +18,7 @@ Users create a calculation sheet, add structural members, define bars (diameter,
 | Layer | Status |
 |---|---|
 | This plan document | Complete (MVP + Phase 2 backlog) |
-| Implementation (migrations, models, UI) | Not started |
+| Implementation (migrations, models, UI) | Complete (MVP) |
 | MVP | Schema + CRUD + auto-calc + summary + PDF |
 | Phase 2 | Shape codes UI, stirrups helpers, crank, waste %, Excel, full approval workflow, revision history |
 
@@ -509,4 +509,4 @@ approve, reopen, complete, recalculate, pdf
 
 ---
 
-_Last updated: 2026-07-18 — plan completed for MVP + Phase 2 backlog. Implementation not started. Updated with: VARCHAR over ENUM, reference_no, formula_version, steel_grade, constants class, Phase 2 audit tracking._
+_Last updated: 2026-07-18 — MVP implementation complete. Updated with: VARCHAR over ENUM, reference_no, formula_version, steel_grade, constants class, Phase 2 audit tracking._

@@ -52,6 +52,14 @@ class RodCalculation extends Model
         return $this->hasMany(RodMember::class)->orderBy('sort_order');
     }
 
+    public function getTotalWeightKgAttribute(): float
+    {
+        return round(
+            $this->members->sum(fn($member) => $member->bars->sum('total_weight')),
+            2
+        );
+    }
+
     public function isDraft(): bool
     {
         return $this->status === 'draft';

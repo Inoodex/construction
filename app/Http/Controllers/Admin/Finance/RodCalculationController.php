@@ -13,6 +13,7 @@ use App\Models\RodMemberBar;
 use App\Services\RodCalculationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class RodCalculationController extends Controller
@@ -26,7 +27,7 @@ class RodCalculationController extends Controller
 
     public function index(Request $request)
     {
-        $query = RodCalculation::with('project', 'creator');
+        $query = RodCalculation::with('project', 'creator', 'members.bars')->withCount('members');
 
         if ($request->filled('project_id')) {
             $query->where('project_id', $request->project_id);
@@ -88,6 +89,8 @@ class RodCalculationController extends Controller
 
     public function update(Request $request, RodCalculation $rodCalculation)
     {
+        abort_if(!$rodCalculation->isDraft(), 403, 'Only draft calculations can be edited.');
+
         $validated = $request->validate([
             'title'        => 'required|string|max:255',
             'description'  => 'nullable|string',
@@ -103,6 +106,8 @@ class RodCalculationController extends Controller
 
     public function destroy(RodCalculation $rodCalculation)
     {
+        abort_if(!$rodCalculation->isDraft(), 403, 'Only draft calculations can be deleted.');
+
         $rodCalculation->members()->each(function ($member) {
             $member->bars()->delete();
         });
@@ -116,9 +121,11 @@ class RodCalculationController extends Controller
 
     public function storeMember(Request $request, RodCalculation $rodCalculation)
     {
+        abort_if(!$rodCalculation->isDraft(), 403, 'Only draft calculations can be modified.');
+
         $validated = $request->validate([
             'type'         => 'required|in:' . implode(',', RodMemberType::ALL),
-            'member_code'  => 'required|string|max:100',
+            'member_code'  => ['required', 'string', 'max:100', Rule::unique('rod_members', 'member_code')->where('rod_calculation_id', $rodCalculation->id)],
             'quantity'     => 'required|integer|min:1',
             'length'       => 'nullable|numeric|min:0',
             'width'        => 'nullable|numeric|min:0',
@@ -140,9 +147,11 @@ class RodCalculationController extends Controller
 
     public function updateMember(Request $request, RodCalculation $rodCalculation, RodMember $rodMember)
     {
+        abort_if(!$rodCalculation->isDraft(), 403, 'Only draft calculations can be modified.');
+
         $validated = $request->validate([
             'type'         => 'required|in:' . implode(',', RodMemberType::ALL),
-            'member_code'  => 'required|string|max:100',
+            'member_code'  => ['required', 'string', 'max:100', Rule::unique('rod_members', 'member_code')->where('rod_calculation_id', $rodCalculation->id)->ignore($rodMember->id)],
             'quantity'     => 'required|integer|min:1',
             'length'       => 'nullable|numeric|min:0',
             'width'        => 'nullable|numeric|min:0',
@@ -162,6 +171,8 @@ class RodCalculationController extends Controller
 
     public function destroyMember(RodCalculation $rodCalculation, RodMember $rodMember)
     {
+        abort_if(!$rodCalculation->isDraft(), 403, 'Only draft calculations can be modified.');
+
         $rodMember->bars()->delete();
         $rodMember->delete();
 
@@ -172,6 +183,8 @@ class RodCalculationController extends Controller
 
     public function storeBar(Request $request, RodCalculation $rodCalculation, RodMember $rodMember)
     {
+        abort_if(!$rodCalculation->isDraft(), 403, 'Only draft calculations can be modified.');
+
         $validated = $request->validate([
             'bar_name'       => 'required|string|max:100',
             'direction'      => 'required|in:' . implode(',', BarDirection::ALL),
@@ -204,6 +217,8 @@ class RodCalculationController extends Controller
 
     public function updateBar(Request $request, RodCalculation $rodCalculation, RodMember $rodMember, RodMemberBar $rodBar)
     {
+        abort_if(!$rodCalculation->isDraft(), 403, 'Only draft calculations can be modified.');
+
         $validated = $request->validate([
             'bar_name'       => 'required|string|max:100',
             'direction'      => 'required|in:' . implode(',', BarDirection::ALL),
@@ -233,6 +248,8 @@ class RodCalculationController extends Controller
 
     public function destroyBar(RodCalculation $rodCalculation, RodMember $rodMember, RodMemberBar $rodBar)
     {
+        abort_if(!$rodCalculation->isDraft(), 403, 'Only draft calculations can be modified.');
+
         $rodBar->delete();
 
         return back()->with('success', 'Bar deleted.');
