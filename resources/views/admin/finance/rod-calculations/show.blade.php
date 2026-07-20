@@ -58,10 +58,6 @@
             <p class="font-semibold text-xs">{{ $rodCalculation->revision ?? '-' }}</p>
         </div>
         <div class="panel flex-1 min-w-[140px] py-2 px-3">
-            <label class="text-[10px] text-white-dark uppercase">Formula v.</label>
-            <p class="font-mono text-xs">{{ $rodCalculation->formula_version }}</p>
-        </div>
-        <div class="panel flex-1 min-w-[140px] py-2 px-3">
             <label class="text-[10px] text-white-dark uppercase">Created By</label>
             <p class="text-xs">{{ $rodCalculation->creator->name ?? '-' }}</p>
         </div>
@@ -123,14 +119,19 @@
         <div id="addMemberForm" class="mb-5 hidden rounded-lg border p-4 dark:border-gray-700">
             <form action="{{ route('admin.finance.rod-calculations.members.store', $rodCalculation->id) }}" method="POST">
                 @csrf
-                <div class="grid grid-cols-2 gap-3 md:grid-cols-6">
+                <div class="grid grid-cols-2 gap-3 md:grid-cols-6" x-data="{ memberType: '' }">
                     <div>
                         <label class="text-xs">Type *</label>
-                        <select name="type" class="form-select" required onchange="updateDefaultCover(this)">
+                        <select name="type" class="form-select" required x-model="memberType" x-show="memberType !== 'custom'" :disabled="memberType === 'custom'" @change="$el.selectedOptions[0]?.dataset.cover && (document.getElementById('defaultCover').value = $el.selectedOptions[0].dataset.cover)">
+                            <option value="">Select Type</option>
                             @foreach(\App\Constants\RodMemberType::ALL as $type)
-                                <option value="{{ $type }}" data-cover="{{ \App\Constants\RodMemberType::DEFAULT_COVER[$type] }}">{{ \App\Constants\RodMemberType::LABELS[$type] }}</option>
+                                <option value="{{ $type }}" data-cover="{{ \App\Constants\RodMemberType::DEFAULT_COVER[$type] ?? 25 }}">{{ \App\Constants\RodMemberType::LABELS[$type] ?? $type }}</option>
                             @endforeach
                         </select>
+                        <div x-show="memberType === 'custom'" x-cloak class="flex gap-1">
+                            <input type="text" name="type" class="form-input" required placeholder="Enter type" :disabled="memberType !== 'custom'" />
+                            <button type="button" class="btn btn-sm btn-outline-danger" @click="memberType = ''">✕</button>
+                        </div>
                     </div>
                     <div>
                         <label class="text-xs">Code *</label>
@@ -167,15 +168,9 @@
                         <input type="number" name="thickness" class="form-input" step="0.01" />
                     </div>
                 </div>
-                <div class="mt-2 grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="text-xs">Sort Order</label>
-                        <input type="number" name="sort_order" class="form-input" value="0" />
-                    </div>
-                    <div>
-                        <label class="text-xs">Remarks</label>
-                        <input type="text" name="remarks" class="form-input" />
-                    </div>
+                <div class="mt-2">
+                    <label class="text-xs">Remarks</label>
+                    <input type="text" name="remarks" class="form-input" />
                 </div>
                 <button type="submit" class="btn btn-primary mt-3">Add Member</button>
             </form>

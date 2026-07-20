@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="flex flex-wrap items-center justify-between gap-4">
-        <h2 class="text-xl font-semibold uppercase">Create Rod Calculation (BBS)</h2>
+        <h2 class="text-xl font-semibold uppercase">Create Rod Calculation </h2>
         <a href="{{ route('admin.finance.rod-calculations.index') }}" class="btn btn-secondary gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
             Back to List
@@ -26,20 +26,15 @@
                 </div>
                 <div class="form-group">
                     <label for="title">Title <span class="text-danger">*</span></label>
-                    <input type="text" name="title" id="title" class="form-input" required value="{{ old('title') }}" placeholder="e.g. Ground Floor BBS" />
+                    <input type="text" name="title" id="title" class="form-input" required value="{{ old('title') }}" />
                 </div>
                 <div class="form-group">
-                    <label for="steel_grade">Steel Grade</label>
-                    <select name="steel_grade" id="steel_grade" class="form-select">
-                        <option value="">Select Grade</option>
-                        @foreach(\App\Constants\RodCalculationConstants::STEEL_GRADES as $grade)
-                            <option value="{{ $grade }}" {{ old('steel_grade') == $grade ? 'selected' : '' }}>{{ $grade }}</option>
-                        @endforeach
-                    </select>
+                    <label for="steel_grade">Steel Grade (Optional)</label>
+                    <input type="text" name="steel_grade" id="steel_grade" class="form-input" value="{{ old('steel_grade') }}" placeholder="e.g. FY400, FY500" />
                 </div>
                 <div class="form-group">
-                    <label for="revision">Revision</label>
-                    <input type="text" name="revision" id="revision" class="form-input" value="{{ old('revision') }}" placeholder="e.g. R0, R1" />
+                    <label for="revision">Revision (Optional)</label>
+                    <input type="text" name="revision" id="revision" class="form-input" value="{{ old('revision') }}" />
                 </div>
                 <div class="form-group md:col-span-2">
                     <label for="description">Description</label>

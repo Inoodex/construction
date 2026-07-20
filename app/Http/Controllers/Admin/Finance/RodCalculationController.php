@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin\Finance;
 
 use App\Constants\BarDirection;
 use App\Constants\RodCalculationConstants;
-use App\Constants\RodMemberType;
 use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\RodCalculation;
@@ -54,7 +53,7 @@ class RodCalculationController extends Controller
             'project_id'   => 'required|exists:projects,id',
             'title'        => 'required|string|max:255',
             'description'  => 'nullable|string',
-            'steel_grade'  => 'nullable|in:' . implode(',', RodCalculationConstants::STEEL_GRADES),
+            'steel_grade'  => 'nullable|string|max:50',
             'revision'     => 'nullable|max:50',
         ]);
 
@@ -62,7 +61,6 @@ class RodCalculationController extends Controller
 
         $validated['reference_no'] = $this->service->generateReferenceNo($project);
         $validated['status'] = RodCalculationConstants::STATUS_DRAFT;
-        $validated['formula_version'] = RodCalculationConstants::FORMULA_VERSION;
         $validated['created_by'] = Auth::id();
 
         $calc = RodCalculation::create($validated);
@@ -94,7 +92,7 @@ class RodCalculationController extends Controller
         $validated = $request->validate([
             'title'        => 'required|string|max:255',
             'description'  => 'nullable|string',
-            'steel_grade'  => 'nullable|in:' . implode(',', RodCalculationConstants::STEEL_GRADES),
+            'steel_grade'  => 'nullable|string|max:50',
             'revision'     => 'nullable|max:50',
         ]);
 
@@ -124,7 +122,7 @@ class RodCalculationController extends Controller
         abort_if(!$rodCalculation->isDraft(), 403, 'Only draft calculations can be modified.');
 
         $validated = $request->validate([
-            'type'         => 'required|in:' . implode(',', RodMemberType::ALL),
+            'type'         => 'required|string|max:30',
             'member_code'  => ['required', 'string', 'max:100', Rule::unique('rod_members', 'member_code')->where('rod_calculation_id', $rodCalculation->id)],
             'quantity'     => 'required|integer|min:1',
             'length'       => 'nullable|numeric|min:0',
@@ -150,7 +148,7 @@ class RodCalculationController extends Controller
         abort_if(!$rodCalculation->isDraft(), 403, 'Only draft calculations can be modified.');
 
         $validated = $request->validate([
-            'type'         => 'required|in:' . implode(',', RodMemberType::ALL),
+            'type'         => 'required|string|max:30',
             'member_code'  => ['required', 'string', 'max:100', Rule::unique('rod_members', 'member_code')->where('rod_calculation_id', $rodCalculation->id)->ignore($rodMember->id)],
             'quantity'     => 'required|integer|min:1',
             'length'       => 'nullable|numeric|min:0',

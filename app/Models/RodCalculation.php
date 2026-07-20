@@ -20,7 +20,6 @@ class RodCalculation extends Model
         'steel_grade',
         'revision',
         'status',
-        'formula_version',
         'waste_percent',
         'created_by',
         'approved_by',

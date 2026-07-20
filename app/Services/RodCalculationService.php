@@ -14,10 +14,15 @@ class RodCalculationService
     {
         $code = $project->code ?? strtoupper(substr(preg_replace('/[^A-Za-z0-9]/', '', $project->name), 0, 6));
         $year = now()->format('Y');
-        $seq = RodCalculation::where('reference_no', 'like', "BBS-{$code}-{$year}-%")
-            ->count() + 1;
 
-        return sprintf('BBS-%s-%s-%05d', $code, $year, $seq);
+        do {
+            $seq = RodCalculation::withTrashed()
+                ->where('reference_no', 'like', "BBS-{$code}-{$year}-%")
+                ->count() + 1;
+            $ref = sprintf('BBS-%s-%s-%05d', $code, $year, $seq);
+        } while (RodCalculation::withTrashed()->where('reference_no', $ref)->exists());
+
+        return $ref;
     }
 
     public function recalculateBar(RodMemberBar $bar): RodMemberBar

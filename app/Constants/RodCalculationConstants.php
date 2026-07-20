@@ -16,7 +16,5 @@ class RodCalculationConstants
 
     const STEEL_GRADES = ['FY400', 'FY500', 'FY550'];
 
-    const FORMULA_VERSION = '1.0';
-
     const DIAMETERS = [8, 10, 12, 16, 20, 25, 32];
 }

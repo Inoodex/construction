@@ -25,24 +25,15 @@
                     <p class="font-semibold">{{ $rodCalculation->project->name }}</p>
                 </div>
                 <div class="form-group">
-                    <label class="text-xs text-white-dark">Formula Version</label>
-                    <p class="font-mono">{{ $rodCalculation->formula_version }}</p>
-                </div>
-                <div class="form-group">
                     <label for="title">Title <span class="text-danger">*</span></label>
                     <input type="text" name="title" id="title" class="form-input" required value="{{ old('title', $rodCalculation->title) }}" />
                 </div>
                 <div class="form-group">
-                    <label for="steel_grade">Steel Grade</label>
-                    <select name="steel_grade" id="steel_grade" class="form-select">
-                        <option value="">Select Grade</option>
-                        @foreach(\App\Constants\RodCalculationConstants::STEEL_GRADES as $grade)
-                            <option value="{{ $grade }}" {{ old('steel_grade', $rodCalculation->steel_grade) == $grade ? 'selected' : '' }}>{{ $grade }}</option>
-                        @endforeach
-                    </select>
+                    <label for="steel_grade">Steel Grade (Optional)</label>
+                    <input type="text" name="steel_grade" id="steel_grade" class="form-input" value="{{ old('steel_grade', $rodCalculation->steel_grade) }}" placeholder="e.g. FY400, FY500" />
                 </div>
                 <div class="form-group">
-                    <label for="revision">Revision</label>
+                    <label for="revision">Revision (Optional)</label>
                     <input type="text" name="revision" id="revision" class="form-input" value="{{ old('revision', $rodCalculation->revision) }}" placeholder="e.g. R0, R1" />
                 </div>
                 <div class="form-group md:col-span-3">
