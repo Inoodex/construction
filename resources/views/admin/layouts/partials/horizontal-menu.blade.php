@@ -332,8 +332,10 @@
                     <li><a href="{{ route('admin.finance.boqs.index') }}">Bill of Quantities</a></li>
                     <li><a href="{{ route('admin.finance.rate-analysis.index') }}">Rate Analysis</a></li>
                     {{-- <li><a href="{{ route('admin.finance.tenders.index') }}">Tenders</a></li> --}}
-                    <li><a href="{{ route('admin.finance.rod-calculations.index') }}">Rod Calculations</a></li>
                 </ul>
+            </li>
+            <li class="relative">
+                <a href="{{ route('admin.finance.rod-calculations.index') }}">BBS</a>
             </li>
             <li class="relative">
                 <a href="javascript:;">Billing & Payables <svg class="h-3 w-3 rtl:rotate-180" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>

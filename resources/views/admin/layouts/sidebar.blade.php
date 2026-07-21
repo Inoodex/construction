@@ -704,7 +704,6 @@
                             <li><a href="{{ route('admin.finance.boqs.index') }}">Bill of Quantities</a></li>
                             <li><a href="{{ route('admin.finance.rate-analysis.index') }}">Rate Analysis</a></li>
                             <li><a href="{{ route('admin.finance.tenders.index') }}">Tenders</a></li>
-                            <li><a href="{{ route('admin.finance.rod-calculations.index') }}">Rod Calculations</a></li>
                         </ul>
                     </li>
                     <li x-data="{ open: false }">
@@ -725,6 +724,22 @@
                 </ul>
             </li>
             @endhasPrivilege
+
+            <!-- Rod Calculations -->
+            <h2 class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
+                <span>Rod Calculation</span>
+            </h2>
+            <li class="menu nav-item">
+                <a href="{{ route('admin.finance.rod-calculations.index') }}" class="nav-link group">
+                    <div class="flex items-center">
+                        <svg class="shrink-0 group-hover:!text-primary" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path opacity="0.5" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" fill="currentColor" />
+                            <path d="M9 7h6m-6 4h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                        </svg>
+                        <span class="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">Rod Calculations</span>
+                    </div>
+                </a>
+            </li>
 
             @hasPrivilege('reports.view')
             <!-- Reports -->
