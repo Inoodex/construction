@@ -21,72 +21,117 @@
         [x-cloak] {
             display: none !important;
         }
+
         :root {
             --sidebar-width: 240px;
         }
+
         .sidebar {
             width: var(--sidebar-width) !important;
         }
+
         .main-container .main-content {
             margin-left: var(--sidebar-width);
         }
+
         .toggle-sidebar .main-container .main-content {
             margin-left: 0;
         }
+
         .vertical .sidebar {
             left: calc(-1 * var(--sidebar-width)) !important;
         }
+
+        /* Mobile / tablet (< 1024px): sidebar is an off-canvas overlay */
+        @media (max-width: 1023px) {
+            .main-container .main-content {
+                margin-left: 0 !important;
+            }
+
+            /* Neutralize Tyro's conflicting transform on the VRISTO sidebar
+               (Tyro styles load after this via the styles stack, so use higher specificity) */
+            body.vertical .sidebar {
+                transform: none !important;
+                left: calc(-1 * var(--sidebar-width)) !important;
+            }
+
+            body.vertical.toggle-sidebar .sidebar {
+                left: 0 !important;
+            }
+
+            .sidebar-overlay {
+                position: fixed;
+                inset: 0;
+                z-index: 40;
+                background: rgba(0, 0, 0, 0.5);
+            }
+        }
+
         @media (min-width: 1024px) {
             .vertical .sidebar {
                 left: 0 !important;
             }
+
             .main-container .main-content:where([dir=ltr], [dir=ltr] *) {
                 margin-left: var(--sidebar-width) !important;
             }
+
             .main-container .main-content:where([dir=rtl], [dir=rtl] *) {
                 margin-right: var(--sidebar-width) !important;
             }
+
             .vertical.toggle-sidebar .sidebar {
                 left: calc(-1 * var(--sidebar-width)) !important;
             }
+
             .collapsible-vertical .sidebar {
                 width: 70px !important;
             }
+
             .collapsible-vertical .sidebar:hover {
                 width: var(--sidebar-width) !important;
             }
+
             .collapsible-vertical.toggle-sidebar .sidebar {
                 width: var(--sidebar-width) !important;
             }
+
             .collapsible-vertical .main-content {
                 width: calc(100% - 70px) !important;
                 margin-left: 70px !important;
             }
+
             .collapsible-vertical.toggle-sidebar .main-content {
                 width: calc(100% - var(--sidebar-width)) !important;
                 margin-left: var(--sidebar-width) !important;
             }
         }
+
         .horizontal .sidebar {
             left: calc(-1 * var(--sidebar-width)) !important;
             right: auto !important;
         }
+
         @media (min-width: 1024px) {
             .horizontal.toggle-sidebar .sidebar {
                 left: calc(-1 * var(--sidebar-width)) !important;
             }
         }
+
         .sidebar {
             overflow-x: hidden !important;
         }
+
         .sidebar .perfect-scrollbar {
             overflow-y: auto !important;
             overflow-x: hidden !important;
         }
+
         .main-content {
             min-width: 0 !important;
             overflow-x: auto !important;
         }
+
         .horizontal-menu .sub-sub-menu {
             display: none;
             position: absolute;
@@ -97,12 +142,14 @@
             border-radius: 6px;
             padding: 8px 0;
             min-width: 200px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             z-index: 50;
         }
-        .horizontal-menu li.relative:hover > .sub-sub-menu {
+
+        .horizontal-menu li.relative:hover>.sub-sub-menu {
             display: block;
         }
+
         .horizontal-menu .sub-sub-menu li a {
             padding: 6px 16px;
             font-size: 0.8rem;
@@ -110,16 +157,20 @@
             display: block;
             white-space: nowrap;
         }
+
         .horizontal-menu .sub-sub-menu li a:hover {
             color: #4361ee;
         }
+
         :is(.dark) .horizontal-menu .sub-sub-menu {
             border-color: #191e3a;
             background: #0e1726;
         }
+
         :is(.dark) .horizontal-menu .sub-sub-menu li a {
             color: #888ea8;
         }
+
         :is(.dark) .horizontal-menu .sub-sub-menu li a:hover {
             color: #4361ee;
         }
@@ -135,6 +186,10 @@
     <div class="main-container min-h-screen text-black dark:text-white-dark" :class="[$store.app.navbar]">
         @include('admin.layouts.partials.customizer')
         @include('admin.layouts.sidebar')
+
+        {{-- Mobile overlay: closes the off-canvas sidebar when tapped --}}
+        <div x-cloak x-show="$store.app.sidebar" class="sidebar-overlay lg:hidden"
+            @click="$store.app.toggleSidebar()"></div>
 
         <div class="main-content flex min-h-screen flex-col">
             @include('admin.layouts.header')
