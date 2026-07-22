@@ -1,19 +1,19 @@
 @extends('admin.layouts.master')
 
-@section('title', 'Rod Calculations')
+@section('title', 'Concrete Ratios')
 
 @section('content')
     <div class="flex flex-wrap items-center justify-between gap-4">
-        <h2 class="text-xl font-semibold uppercase">Rod Calculations</h2>
-        <a href="{{ route('admin.finance.rod-calculations.create') }}" class="btn btn-primary gap-2">
+        <h2 class="text-xl font-semibold uppercase">Concrete Ratios</h2>
+        <a href="{{ route('admin.finance.concrete-ratios.create') }}" class="btn btn-primary gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            New Rod Calculation
+            New Concrete Ratio
         </a>
     </div>
 
     <div class="panel mt-6">
         <div class="mb-5">
-            <form action="{{ route('admin.finance.rod-calculations.index') }}" method="GET" class="flex items-center gap-3 w-full">
+            <form action="{{ route('admin.finance.concrete-ratios.index') }}" method="GET" class="flex items-center gap-3 w-full">
                 <select name="project_id" class="form-select flex-1">
                     <option value="">All Projects</option>
                     @foreach($projects as $project)
@@ -28,7 +28,7 @@
                 </select>
                 <button type="submit" class="btn btn-primary">Filter</button>
                 @if(request()->anyFilled(['project_id', 'status']))
-                    <a href="{{ route('admin.finance.rod-calculations.index') }}" class="btn btn-outline-danger">Reset</a>
+                    <a href="{{ route('admin.finance.concrete-ratios.index') }}" class="btn btn-outline-danger">Reset</a>
                 @endif
             </form>
         </div>
@@ -41,34 +41,34 @@
                             <th>Ref #</th>
                             <th>Title</th>
                             <th>Project</th>
-                            <th>Steel Grade</th>
-                            <th>Revision</th>
+                            <th>Grade</th>
                             <th>Status</th>
                             <th>Members</th>
-                            <th>Total (kg)</th>
+                            <th>Volume (m³)</th>
+                            <th>Cement (bags)</th>
                             <th class="text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($rodCalculations as $calc)
+                        @forelse($concreteRatios as $cr)
                             <tr>
-                                <td><span class="font-mono text-xs font-semibold text-primary">{{ $calc->reference_no }}</span></td>
-                                <td class="font-semibold text-xs">{{ $calc->title }}</td>
-                                <td class="text-xs">{{ $calc->project->name ?? 'N/A' }}</td>
-                                <td class="text-xs">{{ $calc->steel_grade ?? '-' }}</td>
-                                <td class="text-xs">{{ $calc->revision ?? '-' }}</td>
+                                <td><span class="font-mono text-xs font-semibold text-primary">{{ $cr->reference_no }}</span></td>
+                                <td class="font-semibold text-xs">{{ $cr->title }}</td>
+                                <td class="text-xs">{{ $cr->project->name ?? 'N/A' }}</td>
+                                <td class="text-xs font-semibold">{{ $cr->grade ?? '-' }}</td>
                                 <td>
                                     @php $sc = ['draft' => 'badge-outline-secondary', 'approved' => 'badge-outline-success', 'completed' => 'badge-outline-info']; @endphp
-                                    <span class="badge {{ $sc[$calc->status] ?? 'badge-outline-secondary' }} capitalize">{{ $calc->status }}</span>
+                                    <span class="badge {{ $sc[$cr->status] ?? 'badge-outline-secondary' }} capitalize">{{ $cr->status }}</span>
                                 </td>
-                                <td class="text-xs text-center">{{ $calc->members_count ?? $calc->members->count() }}</td>
-                                <td class="font-semibold text-xs">{{ number_format($calc->total_weight_kg ?? 0, 2) }} kg</td>
+                                <td class="text-xs text-center">{{ $cr->members_count ?? $cr->members->count() }}</td>
+                                <td class="text-xs">{{ number_format($cr->total_volume_m3 ?? 0, 4) }}</td>
+                                <td class="text-xs">{{ number_format($cr->total_cement_bags ?? 0, 2) }}</td>
                                 <td class="text-center">
                                     <div class="flex items-center justify-center gap-2">
-                                        <a href="{{ route('admin.finance.rod-calculations.show', $calc->id) }}" class="btn btn-sm btn-outline-info">View</a>
-                                        @if($calc->isDraft())
-                                            <a href="{{ route('admin.finance.rod-calculations.edit', $calc->id) }}" class="btn btn-sm btn-outline-warning">Edit</a>
-                                            <form action="{{ route('admin.finance.rod-calculations.destroy', $calc->id) }}" method="POST" onsubmit="return confirm('Delete this Rod Calculation?');">
+                                        <a href="{{ route('admin.finance.concrete-ratios.show', $cr->id) }}" class="btn btn-sm btn-outline-info">View</a>
+                                        @if($cr->isDraft())
+                                            <a href="{{ route('admin.finance.concrete-ratios.edit', $cr->id) }}" class="btn btn-sm btn-outline-warning">Edit</a>
+                                            <form action="{{ route('admin.finance.concrete-ratios.destroy', $cr->id) }}" method="POST" onsubmit="return confirm('Delete this Concrete Ratio?');">
                                                 @csrf @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
                                             </form>
@@ -77,12 +77,12 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="9" class="text-center">No rod calculations found.</td></tr>
+                            <tr><td colspan="9" class="text-center">No concrete ratios found.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-            <div class="mt-4">{{ $rodCalculations->links() }}</div>
+            <div class="mt-4">{{ $concreteRatios->links() }}</div>
         </div>
     </div>
 @endsection

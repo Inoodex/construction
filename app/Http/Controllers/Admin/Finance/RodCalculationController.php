@@ -238,7 +238,8 @@ class RodCalculationController extends Controller
         $validated['lap_length'] = $validated['lap_length'] ?? 0;
 
         $rodBar->update($validated);
-        $this->service->recalculateBar($rodBar->fresh('member'));
+        $rodBar->load('member');
+        $this->service->recalculateBar($rodBar);
         $rodBar->save();
 
         return back()->with('success', "Bar '{$rodBar->bar_name}' updated.");
@@ -257,6 +258,8 @@ class RodCalculationController extends Controller
 
     public function approve(RodCalculation $rodCalculation)
     {
+        abort_if(!$rodCalculation->isDraft(), 403, 'Only draft calculations can be approved.');
+
         if ($rodCalculation->members()->count() === 0) {
             return back()->with('error', 'Cannot approve: add at least one member with bars.');
         }
@@ -272,6 +275,8 @@ class RodCalculationController extends Controller
 
     public function complete(RodCalculation $rodCalculation)
     {
+        abort_if(!$rodCalculation->isApproved(), 403, 'Only approved calculations can be completed.');
+
         $rodCalculation->update(['status' => RodCalculationConstants::STATUS_COMPLETED]);
 
         return back()->with('success', 'Rod Calculation marked as completed.');
@@ -279,6 +284,8 @@ class RodCalculationController extends Controller
 
     public function reopen(RodCalculation $rodCalculation)
     {
+        abort_if(!$rodCalculation->isApproved() && !$rodCalculation->isCompleted(), 403, 'Nothing to reopen.');
+
         $rodCalculation->update([
             'status'      => RodCalculationConstants::STATUS_DRAFT,
             'approved_by' => null,

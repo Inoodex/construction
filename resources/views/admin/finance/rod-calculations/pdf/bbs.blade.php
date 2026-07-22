@@ -64,8 +64,8 @@
                 <tr>
                     <th>Created By</th>
                     <td>{{ $rodCalculation->creator->name ?? 'N/A' }}</td>
-                    <th>Status</th>
-                    <td style="text-transform:capitalize;">{{ $rodCalculation->status }}</td>
+                    <th>Reference No</th>
+                    <td>{{ $rodCalculation->reference_no }}</td>
                 </tr>
                 @if($rodCalculation->approved_by)
                 <tr>

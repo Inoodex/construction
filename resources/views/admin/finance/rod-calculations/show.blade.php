@@ -1,6 +1,6 @@
 @extends('admin.layouts.master')
 
-@section('title', 'BBS: ' . $rodCalculation->reference_no)
+@section('title', 'Rod Calculations: ' . $rodCalculation->reference_no)
 
 @section('content')
     <div class="flex flex-wrap items-center justify-between gap-4">
@@ -237,37 +237,119 @@
                                     @endif
                                 </tr>
                             </thead>
-                            <tbody>
                                 @forelse($member->bars as $bar)
+                                    <tbody x-data="{ editing: false }">
                                     <tr class="border-b dark:border-gray-700">
-                                        <td class="py-1 font-semibold">{{ $bar->bar_name }}</td>
-                                        <td>{{ $bar->direction }}</td>
-                                        <td class="text-right">{{ $bar->diameter }}</td>
-                                        <td class="text-right">{{ $bar->actual_size }}</td>
-                                        <td class="text-right">{{ $bar->spacing ?? 'manual' }}</td>
-                                        <td class="text-right">{{ $bar->hook_length }}</td>
-                                        <td class="text-right">{{ $bar->bend_length }}</td>
-                                        <td class="text-right">{{ $bar->lap_length }}</td>
-                                        <td class="text-right font-semibold">{{ number_format($bar->cutting_length, 0) }}</td>
-                                        <td class="text-right">{{ $bar->bars_count }}</td>
-                                        <td class="text-right">{{ number_format($bar->total_length, 0) }}</td>
-                                        <td class="text-right">{{ number_format($bar->unit_weight, 4) }}</td>
-                                        <td class="text-right font-semibold text-primary">{{ number_format($bar->total_weight, 2) }}</td>
+                                        <td class="py-1 font-semibold"><span x-show="!editing">{{ $bar->bar_name }}</span></td>
+                                        <td><span x-show="!editing">{{ $bar->direction }}</span></td>
+                                        <td class="text-right"><span x-show="!editing">{{ $bar->diameter }}</span></td>
+                                        <td class="text-right"><span x-show="!editing">{{ $bar->actual_size }}</span></td>
+                                        <td class="text-right"><span x-show="!editing">{{ $bar->spacing ?? 'manual' }}</span></td>
+                                        <td class="text-right"><span x-show="!editing">{{ $bar->hook_length }}</span></td>
+                                        <td class="text-right"><span x-show="!editing">{{ $bar->bend_length }}</span></td>
+                                        <td class="text-right"><span x-show="!editing">{{ $bar->lap_length }}</span></td>
+                                        <td class="text-right font-semibold"><span x-show="!editing">{{ number_format($bar->cutting_length, 0) }}</span></td>
+                                        <td class="text-right"><span x-show="!editing">{{ $bar->bars_count }}</span></td>
+                                        <td class="text-right"><span x-show="!editing">{{ number_format($bar->total_length, 0) }}</span></td>
+                                        <td class="text-right"><span x-show="!editing">{{ number_format($bar->unit_weight, 4) }}</span></td>
+                                        <td class="text-right font-semibold text-primary"><span x-show="!editing">{{ number_format($bar->total_weight, 2) }}</span></td>
                                         @if($rodCalculation->isDraft())
                                             <td class="text-center">
-                                                <form action="{{ route('admin.finance.rod-calculations.bars.destroy', [$rodCalculation->id, $member->id, $bar->id]) }}" method="POST" onsubmit="return confirm('Delete this bar?');">
-                                                    @csrf @method('DELETE')
-                                                    <button type="submit" class="inline-flex items-center justify-center w-5 h-5 rounded border border-red-300 text-danger hover:bg-red-50 hover:text-red-700 dark:border-red-700 dark:hover:bg-red-900" title="Delete bar">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                                <div class="flex items-center justify-center gap-1" x-show="!editing">
+                                                    <button type="button" @click="editing = true" class="inline-flex items-center justify-center w-5 h-5 rounded border border-blue-300 text-primary hover:bg-blue-50 hover:text-blue-700 dark:border-blue-700 dark:hover:bg-blue-900" title="Edit bar">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                                                     </button>
-                                                </form>
+                                                    <form action="{{ route('admin.finance.rod-calculations.bars.destroy', [$rodCalculation->id, $member->id, $bar->id]) }}" method="POST" onsubmit="return confirm('Delete this bar?');">
+                                                        @csrf @method('DELETE')
+                                                        <button type="submit" class="inline-flex items-center justify-center w-5 h-5 rounded border border-red-300 text-danger hover:bg-red-50 hover:text-red-700 dark:border-red-700 dark:hover:bg-red-900" title="Delete bar">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                                        </button>
+                                                    </form>
+                                                </div>
                                             </td>
                                         @endif
                                     </tr>
+                                    @if($rodCalculation->isDraft())
+                                    <tr x-show="editing" x-cloak class="bg-gray-50 dark:bg-gray-800">
+                                        <td colspan="14" class="p-3">
+                                            <form action="{{ route('admin.finance.rod-calculations.bars.update', [$rodCalculation->id, $member->id, $bar->id]) }}" method="POST" class="space-y-3">
+                                                @csrf @method('PUT')
+                                                <div class="grid grid-cols-4 gap-2 md:grid-cols-7">
+                                                    <div>
+                                                        <label class="text-xs">Bar Name *</label>
+                                                        <input type="text" name="bar_name" class="form-input" required value="{{ $bar->bar_name }}" />
+                                                    </div>
+                                                    <div>
+                                                        <label class="text-xs">Direction *</label>
+                                                        <select name="direction" class="form-select" required>
+                                                            @foreach(\App\Constants\BarDirection::ALL as $dir)
+                                                                <option value="{{ $dir }}" {{ $bar->direction === $dir ? 'selected' : '' }}>{{ $dir }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div>
+                                                        <label class="text-xs">Dia (mm) *</label>
+                                                        <select name="diameter" class="form-select" required>
+                                                            @foreach(\App\Constants\RodCalculationConstants::DIAMETERS as $d)
+                                                                <option value="{{ $d }}" {{ $bar->diameter == $d ? 'selected' : '' }}>{{ $d }}mm</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                    <div>
+                                                        <label class="text-xs">Actual Size *</label>
+                                                        <input type="number" name="actual_size" class="form-input" required step="0.01" value="{{ $bar->actual_size }}" />
+                                                    </div>
+                                                    <div>
+                                                        <label class="text-xs">Spacing (mm)</label>
+                                                        <input type="number" name="spacing" class="form-input" step="0.01" value="{{ $bar->spacing }}" />
+                                                    </div>
+                                                    <div>
+                                                        <label class="text-xs">Hook</label>
+                                                        <input type="number" name="hook_length" class="form-input" step="0.01" value="{{ $bar->hook_length }}" />
+                                                    </div>
+                                                    <div>
+                                                        <label class="text-xs">Bend</label>
+                                                        <input type="number" name="bend_length" class="form-input" step="0.01" value="{{ $bar->bend_length }}" />
+                                                    </div>
+                                                </div>
+                                                <div class="grid grid-cols-4 gap-2 mt-2">
+                                                    <div>
+                                                        <label class="text-xs">Lap (mm)</label>
+                                                        <input type="number" name="lap_length" class="form-input" step="0.01" value="{{ $bar->lap_length }}" />
+                                                    </div>
+                                                    <div>
+                                                        <label class="text-xs">Bar Count</label>
+                                                        <input type="number" name="bars_count" class="form-input" min="1" value="{{ $bar->bars_count }}" />
+                                                    </div>
+                                                    <div class="flex items-end">
+                                                        <label class="flex items-center gap-1 text-xs">
+                                                            <input type="checkbox" name="is_manual_count" value="1" class="rounded" {{ $bar->is_manual_count ? 'checked' : '' }} />
+                                                            Manual count
+                                                        </label>
+                                                    </div>
+                                                    <div>
+                                                        <label class="text-xs">Sort</label>
+                                                        <input type="number" name="sort_order" class="form-input" value="{{ $bar->sort_order }}" />
+                                                    </div>
+                                                </div>
+                                                <div class="grid grid-cols-2 gap-2 mt-2">
+                                                    <div>
+                                                        <label class="text-xs">Remarks</label>
+                                                        <input type="text" name="remarks" class="form-input" value="{{ $bar->remarks }}" />
+                                                    </div>
+                                                </div>
+                                                <div class="flex gap-2">
+                                                    <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                                                    <button type="button" @click="editing = false" class="btn btn-sm btn-outline-secondary">Cancel</button>
+                                                </div>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    @endif
+                                    </tbody>
                                 @empty
-                                    <tr><td colspan="{{ $rodCalculation->isDraft() ? 14 : 13 }}" class="text-center py-2">No bars added yet.</td></tr>
+                                    <tbody><tr><td colspan="{{ $rodCalculation->isDraft() ? 14 : 13 }}" class="text-center py-2">No bars added yet.</td></tr></tbody>
                                 @endforelse
-                            </tbody>
                         </table>
                     </div>
 

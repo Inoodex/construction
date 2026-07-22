@@ -83,6 +83,11 @@ class Project extends Model
         return $this->hasMany(RodCalculation::class);
     }
 
+    public function concreteRatios(): HasMany
+    {
+        return $this->hasMany(ConcreteRatio::class);
+    }
+
     public function purchaseOrders(): HasManyThrough
     {
         return $this->hasManyThrough(PurchaseOrder::class, PurchaseRequisition::class);

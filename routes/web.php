@@ -577,6 +577,7 @@ use App\Http\Controllers\Admin\Finance\TenderPackageController;
 use App\Http\Controllers\Admin\Finance\InvoiceController;
 use App\Http\Controllers\Admin\Finance\RateAnalysisController;
 use App\Http\Controllers\Admin\Finance\RodCalculationController;
+use App\Http\Controllers\Admin\Finance\ConcreteRatioController;
 use App\Http\Controllers\Admin\Finance\CostOverrunAlertController;
 use App\Http\Controllers\Admin\Finance\IpaController;
 use App\Http\Controllers\Admin\Finance\BillController;
@@ -658,6 +659,26 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware(['auth', 
     Route::post('rod-calculations/{rodCalculation}/members/{rodMember}/bars', [RodCalculationController::class, 'storeBar'])->name('rod-calculations.bars.store');
     Route::put('rod-calculations/{rodCalculation}/members/{rodMember}/bars/{rodBar}', [RodCalculationController::class, 'updateBar'])->name('rod-calculations.bars.update');
     Route::delete('rod-calculations/{rodCalculation}/members/{rodMember}/bars/{rodBar}', [RodCalculationController::class, 'destroyBar'])->name('rod-calculations.bars.destroy');
+
+    // Concrete Ratios
+    Route::get('concrete-ratios', [ConcreteRatioController::class, 'index'])->name('concrete-ratios.index');
+    Route::get('concrete-ratios/create', [ConcreteRatioController::class, 'create'])->name('concrete-ratios.create');
+    Route::post('concrete-ratios', [ConcreteRatioController::class, 'store'])->name('concrete-ratios.store');
+    Route::get('concrete-ratios/{concreteRatio}', [ConcreteRatioController::class, 'show'])->name('concrete-ratios.show');
+    Route::get('concrete-ratios/{concreteRatio}/edit', [ConcreteRatioController::class, 'edit'])->name('concrete-ratios.edit');
+    Route::put('concrete-ratios/{concreteRatio}', [ConcreteRatioController::class, 'update'])->name('concrete-ratios.update');
+    Route::delete('concrete-ratios/{concreteRatio}', [ConcreteRatioController::class, 'destroy'])->name('concrete-ratios.destroy');
+    Route::get('concrete-ratios/{concreteRatio}/pdf', [ConcreteRatioController::class, 'pdf'])->name('concrete-ratios.pdf');
+    Route::post('concrete-ratios/{concreteRatio}/approve', [ConcreteRatioController::class, 'approve'])->name('concrete-ratios.approve');
+    Route::post('concrete-ratios/{concreteRatio}/complete', [ConcreteRatioController::class, 'complete'])->name('concrete-ratios.complete');
+    Route::post('concrete-ratios/{concreteRatio}/reopen', [ConcreteRatioController::class, 'reopen'])->name('concrete-ratios.reopen');
+    Route::post('concrete-ratios/{concreteRatio}/recalculate', [ConcreteRatioController::class, 'recalculate'])->name('concrete-ratios.recalculate');
+    Route::post('concrete-ratios/{concreteRatio}/members', [ConcreteRatioController::class, 'storeMember'])->name('concrete-ratios.members.store');
+    Route::put('concrete-ratios/{concreteRatio}/members/{concreteMember}', [ConcreteRatioController::class, 'updateMember'])->name('concrete-ratios.members.update');
+    Route::delete('concrete-ratios/{concreteRatio}/members/{concreteMember}', [ConcreteRatioController::class, 'destroyMember'])->name('concrete-ratios.members.destroy');
+    Route::post('concrete-ratios/{concreteRatio}/copy-members', [ConcreteRatioController::class, 'copyMembers'])->name('concrete-ratios.copy-members');
+    Route::post('concrete-ratios/copy-from-bbs', [ConcreteRatioController::class, 'copyFromBbs'])->name('concrete-ratios.copy-from-bbs');
+    Route::get('concrete-ratios/bbs-by-project/{project}', [ConcreteRatioController::class, 'bbsByProject'])->name('concrete-ratios.bbs-by-project');
 
     Route::get('tenders', [TenderController::class, 'index'])->name('tenders.index');
     Route::get('tenders/create', [TenderController::class, 'create'])->name('tenders.create');
