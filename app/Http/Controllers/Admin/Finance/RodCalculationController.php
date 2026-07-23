@@ -185,7 +185,7 @@ class RodCalculationController extends Controller
 
         $validated = $request->validate([
             'bar_name'       => 'required|string|max:100',
-            'direction'      => 'required|in:' . implode(',', BarDirection::ALL),
+            'direction'      => 'required|string|max:50',
             'diameter'       => 'required|numeric|in:8,10,12,16,20,25,32',
             'actual_size'    => 'required|numeric|min:1',
             'spacing'        => 'nullable|numeric|min:1',
@@ -219,7 +219,7 @@ class RodCalculationController extends Controller
 
         $validated = $request->validate([
             'bar_name'       => 'required|string|max:100',
-            'direction'      => 'required|in:' . implode(',', BarDirection::ALL),
+            'direction'      => 'required|string|max:50',
             'diameter'       => 'required|numeric|in:8,10,12,16,20,25,32',
             'actual_size'    => 'required|numeric|min:1',
             'spacing'        => 'nullable|numeric|min:1',

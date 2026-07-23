@@ -238,7 +238,7 @@
                                 </tr>
                             </thead>
                                 @forelse($member->bars as $bar)
-                                    <tbody x-data="{ editing: false }">
+                                    <tbody x-data="{ editing: false, barDirection: '{{ in_array($bar->direction, \App\Constants\BarDirection::ALL) ? '' : $bar->direction }}' }">
                                     <tr class="border-b dark:border-gray-700">
                                         <td class="py-1 font-semibold"><span x-show="!editing">{{ $bar->bar_name }}</span></td>
                                         <td><span x-show="!editing">{{ $bar->direction }}</span></td>
@@ -281,11 +281,16 @@
                                                     </div>
                                                     <div>
                                                         <label class="text-xs">Direction *</label>
-                                                        <select name="direction" class="form-select" required>
+                                                        <select name="direction" class="form-select" required x-model="barDirection" x-show="barDirection !== 'OTHER'" :disabled="barDirection === 'OTHER'">
+                                                            <option value="">Select</option>
                                                             @foreach(\App\Constants\BarDirection::ALL as $dir)
                                                                 <option value="{{ $dir }}" {{ $bar->direction === $dir ? 'selected' : '' }}>{{ $dir }}</option>
                                                             @endforeach
                                                         </select>
+                                                        <div x-show="barDirection === 'OTHER'" x-cloak class="flex gap-1">
+                                                            <input type="text" name="direction" class="form-input" required placeholder="Enter direction" value="{{ in_array($bar->direction, \App\Constants\BarDirection::ALL) ? '' : $bar->direction }}" />
+                                                            <button type="button" class="btn btn-sm btn-outline-danger" @click="barDirection = ''">✕</button>
+                                                        </div>
                                                     </div>
                                                     <div>
                                                         <label class="text-xs">Dia (mm) *</label>
@@ -355,7 +360,7 @@
 
                     {{-- Add Bar Form --}}
                     @if($rodCalculation->isDraft())
-                        <div class="mt-3 rounded border p-3 dark:border-gray-700" x-data="{ showBarForm: false }">
+                        <div class="mt-3 rounded border p-3 dark:border-gray-700" x-data="{ showBarForm: false, barDirection: '' }">
                             <button type="button" @click="showBarForm = !showBarForm" class="btn btn-outline-primary">+ Add Bar</button>
                             <div x-show="showBarForm" x-collapse class="mt-2">
                                 <form action="{{ route('admin.finance.rod-calculations.bars.store', [$rodCalculation->id, $member->id]) }}" method="POST">
@@ -367,11 +372,16 @@
                                         </div>
                                         <div>
                                             <label class="text-xs">Direction *</label>
-                                            <select name="direction" class="form-select" required>
+                                            <select name="direction" class="form-select" required x-model="barDirection" x-show="barDirection !== 'OTHER'" :disabled="barDirection === 'OTHER'">
+                                                <option value="">Select</option>
                                                 @foreach(\App\Constants\BarDirection::ALL as $dir)
                                                     <option value="{{ $dir }}">{{ $dir }}</option>
                                                 @endforeach
                                             </select>
+                                            <div x-show="barDirection === 'OTHER'" x-cloak class="flex gap-1">
+                                                <input type="text" name="direction" class="form-input" required placeholder="Enter direction" />
+                                                <button type="button" class="btn btn-sm btn-outline-danger" @click="barDirection = ''">✕</button>
+                                            </div>
                                         </div>
                                         <div>
                                             <label class="text-xs">Dia (mm) *</label>

@@ -310,8 +310,8 @@ CREATE TABLE `cache` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('inoodex-cache-tyro:user-1:privileges',	'a:35:{i:0;s:12:\"finance.view\";i:1;s:14:\"finance.create\";i:2;s:12:\"finance.edit\";i:3;s:14:\"finance.delete\";i:4;s:14:\"finance.export\";i:5;s:7:\"hr.view\";i:6;s:9:\"hr.create\";i:7;s:7:\"hr.edit\";i:8;s:9:\"hr.delete\";i:9;s:9:\"hr.export\";i:10;s:16:\"procurement.view\";i:11;s:18:\"procurement.create\";i:12;s:16:\"procurement.edit\";i:13;s:18:\"procurement.delete\";i:14;s:18:\"procurement.export\";i:15;s:9:\"core.view\";i:16;s:11:\"core.create\";i:17;s:9:\"core.edit\";i:18;s:11:\"core.delete\";i:19;s:11:\"core.export\";i:20;s:12:\"quality.view\";i:21;s:14:\"quality.create\";i:22;s:12:\"quality.edit\";i:23;s:14:\"quality.delete\";i:24;s:14:\"quality.export\";i:25;s:8:\"crm.view\";i:26;s:10:\"crm.create\";i:27;s:8:\"crm.edit\";i:28;s:10:\"crm.delete\";i:29;s:10:\"crm.export\";i:30;s:12:\"reports.view\";i:31;s:14:\"reports.create\";i:32;s:14:\"reports.export\";i:33;s:10:\"admin.view\";i:34;s:12:\"admin.manage\";}',	1784631476),
-('inoodex-cache-tyro:user-1:roles',	'a:1:{i:0;s:11:\"super-admin\";}',	1784631475);
+('inoodex-cache-tyro:user-1:privileges',	'a:35:{i:0;s:12:\"finance.view\";i:1;s:14:\"finance.create\";i:2;s:12:\"finance.edit\";i:3;s:14:\"finance.delete\";i:4;s:14:\"finance.export\";i:5;s:7:\"hr.view\";i:6;s:9:\"hr.create\";i:7;s:7:\"hr.edit\";i:8;s:9:\"hr.delete\";i:9;s:9:\"hr.export\";i:10;s:16:\"procurement.view\";i:11;s:18:\"procurement.create\";i:12;s:16:\"procurement.edit\";i:13;s:18:\"procurement.delete\";i:14;s:18:\"procurement.export\";i:15;s:9:\"core.view\";i:16;s:11:\"core.create\";i:17;s:9:\"core.edit\";i:18;s:11:\"core.delete\";i:19;s:11:\"core.export\";i:20;s:12:\"quality.view\";i:21;s:14:\"quality.create\";i:22;s:12:\"quality.edit\";i:23;s:14:\"quality.delete\";i:24;s:14:\"quality.export\";i:25;s:8:\"crm.view\";i:26;s:10:\"crm.create\";i:27;s:8:\"crm.edit\";i:28;s:10:\"crm.delete\";i:29;s:10:\"crm.export\";i:30;s:12:\"reports.view\";i:31;s:14:\"reports.create\";i:32;s:14:\"reports.export\";i:33;s:10:\"admin.view\";i:34;s:12:\"admin.manage\";}',	1784722478),
+('inoodex-cache-tyro:user-1:roles',	'a:1:{i:0;s:11:\"super-admin\";}',	1784722365);
 
 DROP TABLE IF EXISTS `cache_locks`;
 CREATE TABLE `cache_locks` (
@@ -538,6 +538,77 @@ CREATE TABLE `communication_logs` (
   CONSTRAINT `communication_logs_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
+DROP TABLE IF EXISTS `concrete_ratio_members`;
+CREATE TABLE `concrete_ratio_members` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `concrete_ratio_id` bigint unsigned NOT NULL,
+  `rod_member_id` bigint unsigned DEFAULT NULL,
+  `type` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `member_code` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `quantity` int NOT NULL DEFAULT '1',
+  `length` decimal(10,2) DEFAULT NULL,
+  `width` decimal(10,2) DEFAULT NULL,
+  `height` decimal(10,2) DEFAULT NULL,
+  `depth` decimal(10,2) DEFAULT NULL,
+  `thickness` decimal(10,2) DEFAULT NULL,
+  `volume_m3` decimal(10,4) NOT NULL DEFAULT '0.0000',
+  `cement_bags` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `sand_m3` decimal(10,4) NOT NULL DEFAULT '0.0000',
+  `aggregate_m3` decimal(10,4) NOT NULL DEFAULT '0.0000',
+  `water_liters` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `sort_order` int NOT NULL DEFAULT '0',
+  `remarks` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `concrete_ratio_members_rod_member_id_foreign` (`rod_member_id`),
+  KEY `concrete_ratio_members_concrete_ratio_id_index` (`concrete_ratio_id`),
+  KEY `concrete_ratio_members_type_index` (`type`),
+  CONSTRAINT `concrete_ratio_members_concrete_ratio_id_foreign` FOREIGN KEY (`concrete_ratio_id`) REFERENCES `concrete_ratios` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `concrete_ratio_members_rod_member_id_foreign` FOREIGN KEY (`rod_member_id`) REFERENCES `rod_members` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `concrete_ratio_members` (`id`, `concrete_ratio_id`, `rod_member_id`, `type`, `member_code`, `quantity`, `length`, `width`, `height`, `depth`, `thickness`, `volume_m3`, `cement_bags`, `sand_m3`, `aggregate_m3`, `water_liters`, `sort_order`, `remarks`, `created_at`, `updated_at`) VALUES
+(2,	6,	1,	'footing',	'F1',	1000,	2000.00,	1200.00,	300.00,	200.00,	25.00,	720.0000,	4752.00,	324.0000,	648.0000,	147600.00,	0,	NULL,	'2026-07-22 00:35:18',	'2026-07-22 00:44:26');
+
+DROP TABLE IF EXISTS `concrete_ratios`;
+CREATE TABLE `concrete_ratios` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint unsigned NOT NULL,
+  `reference_no` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `grade` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `rod_calculation_id` bigint unsigned DEFAULT NULL,
+  `status` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
+  `waste_percent` decimal(5,2) DEFAULT NULL,
+  `created_by` bigint unsigned NOT NULL,
+  `approved_by` bigint unsigned DEFAULT NULL,
+  `approved_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `concrete_ratios_reference_no_unique` (`reference_no`),
+  KEY `concrete_ratios_rod_calculation_id_foreign` (`rod_calculation_id`),
+  KEY `concrete_ratios_created_by_foreign` (`created_by`),
+  KEY `concrete_ratios_approved_by_foreign` (`approved_by`),
+  KEY `concrete_ratios_project_id_index` (`project_id`),
+  KEY `concrete_ratios_status_index` (`status`),
+  CONSTRAINT `concrete_ratios_approved_by_foreign` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT,
+  CONSTRAINT `concrete_ratios_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT,
+  CONSTRAINT `concrete_ratios_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE RESTRICT,
+  CONSTRAINT `concrete_ratios_rod_calculation_id_foreign` FOREIGN KEY (`rod_calculation_id`) REFERENCES `rod_calculations` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `concrete_ratios` (`id`, `project_id`, `reference_no`, `title`, `description`, `grade`, `rod_calculation_id`, `status`, `waste_percent`, `created_by`, `approved_by`, `approved_at`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1,	5,	'CR-GREENT-2026-00001',	'Ratio 1',	NULL,	'M20',	NULL,	'draft',	2.00,	1,	NULL,	NULL,	'2026-07-21 22:35:40',	'2026-07-21 22:48:35',	'2026-07-21 22:48:35'),
+(2,	5,	'CR-GREENT-2026-00002',	'asdfsdf',	NULL,	'M15',	1,	'draft',	3.00,	1,	NULL,	NULL,	'2026-07-21 22:49:07',	'2026-07-21 22:59:37',	'2026-07-21 22:59:37'),
+(3,	6,	'CR-RUPAYA-2026-00001',	'dregsdg',	NULL,	'M15',	NULL,	'draft',	NULL,	1,	NULL,	NULL,	'2026-07-21 23:07:21',	'2026-07-21 23:16:32',	'2026-07-21 23:16:32'),
+(4,	6,	'CR-RUPAYA-2026-00002',	'sdfhsdh',	NULL,	'M15',	NULL,	'draft',	2.00,	1,	NULL,	NULL,	'2026-07-21 23:16:42',	'2026-07-21 23:21:30',	'2026-07-21 23:21:30'),
+(5,	6,	'CR-RUPAYA-2026-00003',	'sadfv',	NULL,	'M15',	NULL,	'draft',	2.00,	1,	NULL,	NULL,	'2026-07-21 23:21:43',	'2026-07-21 23:21:43',	NULL),
+(6,	5,	'CR-GREENT-2026-00003',	'asdgasdg',	NULL,	'M15',	1,	'draft',	2.00,	1,	NULL,	NULL,	'2026-07-21 23:28:18',	'2026-07-22 00:35:18',	NULL);
 
 DROP TABLE IF EXISTS `contract_amendments`;
 CREATE TABLE `contract_amendments` (
@@ -1902,7 +1973,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (140,	'2026_07_14_000003_add_payment_account_id_to_financial_tables',	58),
 (141,	'2026_07_15_000001_add_source_fields_to_journal_entries_table',	59),
 (142,	'2026_07_18_000001_create_rod_calculations_tables',	60),
-(143,	'2026_07_20_093721_drop_formula_version_from_rod_calculations_table',	61);
+(143,	'2026_07_20_093721_drop_formula_version_from_rod_calculations_table',	61),
+(144,	'2026_07_22_041946_create_concrete_ratios_tables',	62);
 
 DROP TABLE IF EXISTS `milestones`;
 CREATE TABLE `milestones` (
@@ -2740,7 +2812,8 @@ CREATE TABLE `rod_calculations` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `rod_calculations` (`id`, `project_id`, `reference_no`, `title`, `description`, `steel_grade`, `revision`, `status`, `waste_percent`, `created_by`, `approved_by`, `approved_at`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1,	5,	'BBS-GREENT-2026-00001',	'Footing',	NULL,	NULL,	NULL,	'draft',	NULL,	1,	NULL,	NULL,	'2026-07-18 04:05:51',	'2026-07-20 03:50:54',	NULL);
+(1,	5,	'BBS-GREENT-2026-00001',	'Footing',	NULL,	NULL,	NULL,	'draft',	NULL,	1,	NULL,	NULL,	'2026-07-18 04:05:51',	'2026-07-20 03:50:54',	NULL),
+(13,	6,	'BBS-RUPAYA-2026-00001',	'Test',	NULL,	NULL,	NULL,	'draft',	NULL,	1,	NULL,	NULL,	'2026-07-22 00:55:29',	'2026-07-22 02:30:10',	'2026-07-22 02:30:10');
 
 DROP TABLE IF EXISTS `rod_member_bars`;
 CREATE TABLE `rod_member_bars` (
@@ -2773,7 +2846,7 @@ CREATE TABLE `rod_member_bars` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `rod_member_bars` (`id`, `rod_member_id`, `bar_name`, `direction`, `diameter`, `spacing`, `hook_length`, `bend_length`, `lap_length`, `actual_size`, `cutting_length`, `bars_count`, `total_length`, `unit_weight`, `total_weight`, `shape_code`, `is_manual_count`, `sort_order`, `remarks`, `created_at`, `updated_at`) VALUES
-(1,	1,	'Main',	'X',	8.00,	3.00,	5.00,	6.00,	1.00,	12.00,	12.00,	1,	120.00,	0.3951,	0.05,	NULL,	0,	0,	NULL,	'2026-07-18 05:23:41',	'2026-07-18 05:23:41');
+(1,	1,	'Main',	'X',	16.00,	3.00,	5.00,	6.00,	1.00,	12.00,	12.00,	1,	120.00,	0.3951,	0.05,	NULL,	0,	0,	NULL,	'2026-07-18 05:23:41',	'2026-07-22 05:18:19');
 
 DROP TABLE IF EXISTS `rod_members`;
 CREATE TABLE `rod_members` (
@@ -2862,9 +2935,8 @@ CREATE TABLE `sessions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('DkMAOCHISRkAJtFauYYOhmg2G735iFupqtRWRfci',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36',	'YTo2OntzOjY6Il90b2tlbiI7czo0MDoidW5UeTJDWnZzcE9kNHlTQWpUdVp2T3pnYXRLQWJlOFJLM2NPMGtYSiI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjMxOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvZGFzaGJvYXJkIjtzOjU6InJvdXRlIjtzOjIwOiJ0eXJvLWRhc2hib2FyZC5pbmRleCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MTA6InR5cm8tbG9naW4iO2E6MTp7czo3OiJjYXB0Y2hhIjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9',	1784628073),
-('HD3PBf64ZePfH0QBmbyT9wiNyMMbvNsqt2KvadpA',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36',	'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiMWN3OXY0YkxXaG02dXFTUHhUaGFQbjByQ2tLMU1VVEhjeEU1YVZwWiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kYXNoYm9hcmQvY29yZS9yZXNvdXJjZXMiO3M6NToicm91dGUiO3M6MjY6ImFkbWluLmNvcmUucmVzb3VyY2VzLmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=',	1784605323),
-('OR8tVlIISnisrZFpwQtOMHkCRQJFjZfRYpWMrZcb',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36',	'YTo1OntzOjY6Il90b2tlbiI7czo0MDoicFloS0t2MFVnNjFWNFlNOWNJNGEwcWdDcGVtaXUzb0JDOVB6OGlBMSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NTY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kYXNoYm9hcmQvZmluYW5jZS9yb2QtY2FsY3VsYXRpb25zIjtzOjU6InJvdXRlIjtzOjM2OiJhZG1pbi5maW5hbmNlLnJvZC1jYWxjdWxhdGlvbnMuaW5kZXgiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjEwOiJ0eXJvLWxvZ2luIjthOjE6e3M6NzoiY2FwdGNoYSI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7fQ==',	1784631457);
+('EnxPbGnev5MU1ryMQbNtVVJh0QRzftn0MTHxbSKh',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36',	'YTo1OntzOjY6Il90b2tlbiI7czo0MDoidFBseGpJQW1lZzVUZzJGQ3Y2R1I0NFl1NnM5cHp4b1JZQXZNNHpJSiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NTY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kYXNoYm9hcmQvZmluYW5jZS9yb2QtY2FsY3VsYXRpb25zIjtzOjU6InJvdXRlIjtzOjM2OiJhZG1pbi5maW5hbmNlLnJvZC1jYWxjdWxhdGlvbnMuaW5kZXgiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjEwOiJ0eXJvLWxvZ2luIjthOjE6e3M6NzoiY2FwdGNoYSI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7fQ==',	1784709058),
+('vICdyCWmW1l1AZuaLcdBQ8lVzfhOLliPtTkcivj8',	1,	'127.0.0.1',	'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1',	'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiNFFqRGFqaGRjQ2QzU2NrODhnMkJ0c1RlbFpXVWRiNkZwTmJwSFIybyI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjM3OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvZGFzaGJvYXJkL3VzZXJzIjtzOjU6InJvdXRlIjtzOjI2OiJ0eXJvLWRhc2hib2FyZC51c2Vycy5pbmRleCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MTA6InR5cm8tbG9naW4iO2E6MTp7czo3OiJjYXB0Y2hhIjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9',	1784722198);
 
 DROP TABLE IF EXISTS `settings`;
 CREATE TABLE `settings` (
@@ -3427,7 +3499,9 @@ INSERT INTO `tyro_audit_logs` (`id`, `user_id`, `event`, `auditable_type`, `audi
 (137,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-20 11:54:08'),
 (138,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-21 03:39:39'),
 (139,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-21 10:01:13'),
-(140,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-21 10:52:55');
+(140,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-21 10:52:55'),
+(141,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-22 03:54:34'),
+(142,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-22 11:14:35');
 
 DROP TABLE IF EXISTS `tyro_media`;
 CREATE TABLE `tyro_media` (
@@ -3651,4 +3725,4 @@ INSERT INTO `work_orders` (`id`, `project_id`, `task_id`, `site_id`, `work_order
 (1,	5,	5,	5,	'WO-2026-0001',	'Excavation Work Order',	'work order created',	2,	1,	'2026-06-22',	'2026-06-30',	NULL,	'issued',	NULL,	'2026-06-21 21:50:16',	'2026-06-21 21:50:16'),
 (2,	6,	6,	6,	'WO-2026-0002',	'Pile Casting Work Order',	NULL,	2,	1,	'2026-06-22',	'2026-06-30',	NULL,	'issued',	NULL,	'2026-06-22 05:23:11',	'2026-06-22 05:23:11');
 
--- 2026-07-21 12:16:41 UTC
+-- 2026-07-22 12:12:42 UTC
