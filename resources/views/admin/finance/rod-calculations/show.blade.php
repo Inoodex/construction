@@ -69,24 +69,24 @@
     </div>
 
     {{-- Summary --}}
-    <div class="mt-6 grid gap-6 lg:grid-cols-4">
-        <div class="panel text-center flex flex-col items-center justify-center">
+    <div class="mt-6 flex flex-col lg:flex-row gap-6">
+        <div class="panel text-center flex flex-col items-center justify-center lg:w-1/4">
             <label class="text-xs text-white-dark">Total Steel Weight</label>
             <p class="text-3xl font-bold text-primary mt-2">{{ number_format($summary['total_kg'], 2) }} <span class="text-xs font-normal">kg</span></p>
             @if(($summary['waste_percent'] ?? 0) > 0)
                 <p class="text-[11px] text-white-dark mt-1">Includes {{ $summary['waste_percent'] }}% waste (+{{ number_format($summary['waste_kg'], 1) }}kg)</p>
             @endif
-            <div class="mt-3 text-xs text-white-dark border-t pt-2 dark:border-gray-700 w-full">
+            <!-- <div class="mt-3 text-xs text-white-dark border-t pt-2 dark:border-gray-700 w-full">
                 <span class="font-semibold text-xs block mb-1">Commercial Orders (12m Bars)</span>
                 <span class="badge badge-outline-primary text-xs">{{ $summary['total_12m_sticks'] ?? 0 }} Sticks (12m)</span>
-            </div>
-            <div class="mt-3 text-[11px] text-white-dark">
+            </div> -->
+            <!-- <div class="mt-3 text-[11px] text-white-dark">
                 @foreach($summary['by_diameter'] as $d)
                     <span class="inline-block mr-2">Ø{{ $d['diameter'] }}: {{ number_format($d['total_kg'], 1) }}kg ({{ $d['commercial_12m_sticks'] }} pcs)</span>
                 @endforeach
-            </div>
+            </div> -->
         </div>
-        <div class="panel lg:col-span-3">
+        <div class="panel lg:w-3/4">
             <label class="text-xs text-white-dark mb-2 block font-semibold">By Diameter Summary & Stock Ordering</label>
             @if(count($summary['by_diameter']))
                 <div class="overflow-x-auto">
