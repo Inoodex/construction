@@ -10,6 +10,52 @@ use App\Models\RodMemberBar;
 
 class RodCalculationService
 {
+    public function determineActualSize(RodMember $member, string $direction): float
+    {
+        $l = (float) ($member->length ?? 0);
+        $w = (float) ($member->width ?? 0);
+        $h = (float) ($member->height ?? $member->depth ?? 0);
+        $t = (float) ($member->thickness ?? 0);
+
+        switch (strtoupper($direction)) {
+            case 'X':
+                return $l > 0 ? $l : ($w > 0 ? $w : $h);
+            case 'Y':
+                return $w > 0 ? $w : ($l > 0 ? $l : $h);
+            case 'MAIN':
+            case 'TOP':
+            case 'BOTTOM':
+                if (strtolower($member->type) === 'column' && $h > 0) {
+                    return $h;
+                }
+                return $l > 0 ? $l : ($w > 0 ? $w : ($h > 0 ? $h : $t));
+            case 'DISTRIBUTION':
+                return $w > 0 ? $w : ($l > 0 ? $l : $t);
+            case 'STIRRUP':
+                if ($w > 0 && $h > 0) {
+                    return 2 * ($w + $h);
+                }
+                return $w > 0 ? $w : $h;
+            default:
+                return $l > 0 ? $l : ($w > 0 ? $w : ($h > 0 ? $h : $t));
+        }
+    }
+
+    public function determineHookLength(float $diameter, string $direction): float
+    {
+        $dir = strtoupper($direction);
+
+        if ($dir === 'STIRRUP') {
+            return round(20 * $diameter, 2);
+        }
+
+        if (in_array($dir, ['MAIN', 'TOP', 'BOTTOM', 'X', 'Y'])) {
+            return round(18 * $diameter, 2);
+        }
+
+        return 0;
+    }
+
     public function generateReferenceNo(Project $project): string
     {
         $code = $project->code ?? strtoupper(substr(preg_replace('/[^A-Za-z0-9]/', '', $project->name), 0, 6));
@@ -109,12 +155,24 @@ class RodCalculationService
             ];
         }
 
+        foreach ($byDiameter as $key => $d) {
+            $byDiameter[$key]['commercial_12m_sticks'] = ceil($d['total_mm'] / 12000);
+        }
+
         usort($byDiameter, fn($a, $b) => $a['diameter'] <=> $b['diameter']);
 
+        $wastePercent = (float) ($calc->waste_percent ?? 0);
+        $wasteKg = round($totalKg * ($wastePercent / 100), 2);
+        $grossTotalKg = round($totalKg + $wasteKg, 2);
+
         return [
-            'total_kg'     => round($totalKg, 2),
-            'by_diameter'  => array_values($byDiameter),
-            'by_member'    => $byMember,
+            'total_kg'             => round($totalKg, 2),
+            'waste_percent'        => $wastePercent,
+            'waste_kg'             => $wasteKg,
+            'gross_total_kg'       => $grossTotalKg,
+            'total_12m_sticks'     => array_sum(array_column($byDiameter, 'commercial_12m_sticks')),
+            'by_diameter'          => array_values($byDiameter),
+            'by_member'            => $byMember,
         ];
     }
 }

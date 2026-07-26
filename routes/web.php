@@ -649,10 +649,12 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware(['auth', 
     Route::put('rod-calculations/{rodCalculation}', [RodCalculationController::class, 'update'])->name('rod-calculations.update');
     Route::delete('rod-calculations/{rodCalculation}', [RodCalculationController::class, 'destroy'])->name('rod-calculations.destroy');
     Route::get('rod-calculations/{rodCalculation}/pdf', [RodCalculationController::class, 'pdf'])->name('rod-calculations.pdf');
+    Route::get('rod-calculations/{rodCalculation}/excel', [RodCalculationController::class, 'excel'])->name('rod-calculations.excel');
     Route::post('rod-calculations/{rodCalculation}/approve', [RodCalculationController::class, 'approve'])->name('rod-calculations.approve');
     Route::post('rod-calculations/{rodCalculation}/complete', [RodCalculationController::class, 'complete'])->name('rod-calculations.complete');
     Route::post('rod-calculations/{rodCalculation}/reopen', [RodCalculationController::class, 'reopen'])->name('rod-calculations.reopen');
     Route::post('rod-calculations/{rodCalculation}/recalculate', [RodCalculationController::class, 'recalculate'])->name('rod-calculations.recalculate');
+    Route::post('rod-calculations/{rodCalculation}/duplicate', [RodCalculationController::class, 'duplicate'])->name('rod-calculations.duplicate');
     Route::post('rod-calculations/{rodCalculation}/members', [RodCalculationController::class, 'storeMember'])->name('rod-calculations.members.store');
     Route::put('rod-calculations/{rodCalculation}/members/{rodMember}', [RodCalculationController::class, 'updateMember'])->name('rod-calculations.members.update');
     Route::delete('rod-calculations/{rodCalculation}/members/{rodMember}', [RodCalculationController::class, 'destroyMember'])->name('rod-calculations.members.destroy');
@@ -669,6 +671,8 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware(['auth', 
     Route::put('concrete-ratios/{concreteRatio}', [ConcreteRatioController::class, 'update'])->name('concrete-ratios.update');
     Route::delete('concrete-ratios/{concreteRatio}', [ConcreteRatioController::class, 'destroy'])->name('concrete-ratios.destroy');
     Route::get('concrete-ratios/{concreteRatio}/pdf', [ConcreteRatioController::class, 'pdf'])->name('concrete-ratios.pdf');
+    Route::get('concrete-ratios/{concreteRatio}/excel', [ConcreteRatioController::class, 'excel'])->name('concrete-ratios.excel');
+    Route::post('concrete-ratios/{concreteRatio}/duplicate', [ConcreteRatioController::class, 'duplicate'])->name('concrete-ratios.duplicate');
     Route::post('concrete-ratios/{concreteRatio}/approve', [ConcreteRatioController::class, 'approve'])->name('concrete-ratios.approve');
     Route::post('concrete-ratios/{concreteRatio}/complete', [ConcreteRatioController::class, 'complete'])->name('concrete-ratios.complete');
     Route::post('concrete-ratios/{concreteRatio}/reopen', [ConcreteRatioController::class, 'reopen'])->name('concrete-ratios.reopen');

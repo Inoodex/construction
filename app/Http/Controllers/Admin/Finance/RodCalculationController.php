@@ -9,11 +9,13 @@ use App\Models\Project;
 use App\Models\RodCalculation;
 use App\Models\RodMember;
 use App\Models\RodMemberBar;
+use App\Exports\RodCalculationExport;
 use App\Services\RodCalculationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
 
 class RodCalculationController extends Controller
 {
@@ -187,7 +189,7 @@ class RodCalculationController extends Controller
             'bar_name'       => 'required|string|max:100',
             'direction'      => 'required|string|max:50',
             'diameter'       => 'required|numeric|in:8,10,12,16,20,25,32',
-            'actual_size'    => 'required|numeric|min:1',
+            'actual_size'    => 'nullable|numeric|min:0',
             'spacing'        => 'nullable|numeric|min:1',
             'hook_length'    => 'nullable|numeric|min:0',
             'bend_length'    => 'nullable|numeric|min:0',
@@ -197,6 +199,14 @@ class RodCalculationController extends Controller
             'sort_order'     => 'nullable|integer',
             'remarks'        => 'nullable|string',
         ]);
+
+        if (empty($validated['actual_size']) || $validated['actual_size'] <= 0) {
+            $validated['actual_size'] = $this->service->determineActualSize($rodMember, $validated['direction']);
+        }
+
+        if (empty($validated['hook_length']) || $validated['hook_length'] <= 0) {
+            $validated['hook_length'] = $this->service->determineHookLength((float) $validated['diameter'], $validated['direction']);
+        }
 
         $validated['rod_member_id'] = $rodMember->id;
         $validated['is_manual_count'] = $validated['is_manual_count'] ?? false;
@@ -221,7 +231,7 @@ class RodCalculationController extends Controller
             'bar_name'       => 'required|string|max:100',
             'direction'      => 'required|string|max:50',
             'diameter'       => 'required|numeric|in:8,10,12,16,20,25,32',
-            'actual_size'    => 'required|numeric|min:1',
+            'actual_size'    => 'nullable|numeric|min:0',
             'spacing'        => 'nullable|numeric|min:1',
             'hook_length'    => 'nullable|numeric|min:0',
             'bend_length'    => 'nullable|numeric|min:0',
@@ -231,6 +241,14 @@ class RodCalculationController extends Controller
             'sort_order'     => 'nullable|integer',
             'remarks'        => 'nullable|string',
         ]);
+
+        if (empty($validated['actual_size']) || $validated['actual_size'] <= 0) {
+            $validated['actual_size'] = $this->service->determineActualSize($rodMember, $validated['direction']);
+        }
+
+        if (empty($validated['hook_length']) || $validated['hook_length'] <= 0) {
+            $validated['hook_length'] = $this->service->determineHookLength((float) $validated['diameter'], $validated['direction']);
+        }
 
         $validated['is_manual_count'] = $validated['is_manual_count'] ?? false;
         $validated['hook_length'] = $validated['hook_length'] ?? 0;
@@ -302,6 +320,39 @@ class RodCalculationController extends Controller
         return back()->with('success', 'All calculations refreshed.');
     }
 
+    public function duplicate(RodCalculation $rodCalculation)
+    {
+        $rodCalculation->load('members.bars');
+
+        $newCalc = $rodCalculation->replicate([
+            'reference_no',
+            'status',
+            'approved_by',
+            'approved_at',
+        ]);
+
+        $newCalc->reference_no = $this->service->generateReferenceNo($rodCalculation->project);
+        $newCalc->title = $rodCalculation->title . ' (Copy)';
+        $newCalc->status = RodCalculationConstants::STATUS_DRAFT;
+        $newCalc->created_by = Auth::id();
+        $newCalc->save();
+
+        foreach ($rodCalculation->members as $member) {
+            $newMember = $member->replicate();
+            $newMember->rod_calculation_id = $newCalc->id;
+            $newMember->save();
+
+            foreach ($member->bars as $bar) {
+                $newBar = $bar->replicate();
+                $newBar->rod_member_id = $newMember->id;
+                $newBar->save();
+            }
+        }
+
+        return redirect()->route('admin.finance.rod-calculations.show', $newCalc->id)
+            ->with('success', "Rod Calculation '{$newCalc->reference_no}' duplicated successfully.");
+    }
+
     // ─── PDF Export ─────────────────────────────────────────────
 
     public function pdf(RodCalculation $rodCalculation)
@@ -312,5 +363,13 @@ class RodCalculationController extends Controller
         $pdf = Pdf::loadView('admin.finance.rod-calculations.pdf.bbs', compact('rodCalculation', 'summary'));
 
         return $pdf->stream("BBS-{$rodCalculation->reference_no}.pdf");
+    }
+
+    public function excel(RodCalculation $rodCalculation)
+    {
+        return Excel::download(
+            new RodCalculationExport($rodCalculation),
+            "BBS-{$rodCalculation->reference_no}.xlsx"
+        );
     }
 }

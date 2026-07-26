@@ -24,14 +24,35 @@ class ConcreteRatioService
         return $ref;
     }
 
+    /**
+     * Resolve the effective third dimension (depth/thickness/height) based on member type.
+     * Slabs & Walls use thickness. Footings & Pile Caps use depth. Columns, Beams, Piles, Stairs use height.
+     */
+    public function resolveThirdDimension(ConcreteRatioMember $member): float
+    {
+        $type      = strtolower($member->type ?? '');
+        $height    = (float) ($member->height ?? 0);
+        $depth     = (float) ($member->depth ?? 0);
+        $thickness = (float) ($member->thickness ?? 0);
+
+        return match (true) {
+            in_array($type, ['slab', 'wall'])              => $thickness ?: $height ?: $depth,
+            in_array($type, ['footing', 'pile_cap'])       => $depth ?: $height ?: $thickness,
+            in_array($type, ['pile'])                      => $height ?: $depth,
+            in_array($type, ['column', 'beam', 'grade_beam', 'lintel', 'stair']) => $height ?: $depth ?: $thickness,
+            default                                        => $height ?: $depth ?: $thickness,
+        };
+    }
+
     public function calculateMember(ConcreteRatioMember $member, ?string $grade): void
     {
-        $length    = (float) ($member->length ?? 0);
-        $width     = (float) ($member->width ?? 0);
-        $height    = (float) ($member->height ?? 0);
-        $quantity  = max(1, (int) $member->quantity);
+        $length   = (float) ($member->length ?? 0);
+        $width    = (float) ($member->width ?? 0);
+        $third    = $this->resolveThirdDimension($member);
+        $quantity = max(1, (int) $member->quantity);
 
-        $member->volume_m3 = round(($length * $width * $height) / 1_000_000_000 * $quantity, 4);
+        // Volume in m³: dimensions are in mm → divide by 1,000,000,000
+        $member->volume_m3 = round(($length * $width * $third) / 1_000_000_000 * $quantity, 4);
 
         if ($grade && isset(ConcreteRatioConstants::MATERIAL_FACTORS[$grade])) {
             $factors = ConcreteRatioConstants::MATERIAL_FACTORS[$grade];
@@ -84,23 +105,38 @@ class ConcreteRatioService
             $totalWater     += $member->water_liters;
 
             $byMember[] = [
-                'member_code' => $member->member_code,
-                'type'        => $member->type,
-                'volume_m3'   => round($member->volume_m3, 4),
-                'cement_bags' => round($member->cement_bags, 2),
-                'sand_m3'     => round($member->sand_m3, 4),
-                'aggregate_m3'=> round($member->aggregate_m3, 4),
-                'water_liters'=> round($member->water_liters, 2),
+                'member_code'  => $member->member_code,
+                'type'         => $member->type,
+                'volume_m3'    => round($member->volume_m3, 4),
+                'cement_bags'  => round($member->cement_bags, 2),
+                'sand_m3'      => round($member->sand_m3, 4),
+                'aggregate_m3' => round($member->aggregate_m3, 4),
+                'water_liters' => round($member->water_liters, 2),
             ];
         }
 
+        // Apply waste percentage
+        $wastePercent    = (float) ($ratio->waste_percent ?? 0);
+        $wasteFactor     = $wastePercent / 100;
+        $grossVolume     = round($totalVolume * (1 + $wasteFactor), 4);
+        $grossCement     = round($totalCement * (1 + $wasteFactor), 2);
+        $grossSand       = round($totalSand * (1 + $wasteFactor), 4);
+        $grossAggregate  = round($totalAggregate * (1 + $wasteFactor), 4);
+        $grossWater      = round($totalWater * (1 + $wasteFactor), 2);
+
         return [
-            'total_volume_m3'    => round($totalVolume, 4),
-            'total_cement_bags'  => round($totalCement, 2),
-            'total_sand_m3'      => round($totalSand, 4),
-            'total_aggregate_m3' => round($totalAggregate, 4),
-            'total_water_liters' => round($totalWater, 2),
-            'by_member'          => $byMember,
+            'total_volume_m3'         => round($totalVolume, 4),
+            'total_cement_bags'       => round($totalCement, 2),
+            'total_sand_m3'           => round($totalSand, 4),
+            'total_aggregate_m3'      => round($totalAggregate, 4),
+            'total_water_liters'      => round($totalWater, 2),
+            'waste_percent'           => $wastePercent,
+            'gross_volume_m3'         => $grossVolume,
+            'gross_cement_bags'       => $grossCement,
+            'gross_sand_m3'           => $grossSand,
+            'gross_aggregate_m3'      => $grossAggregate,
+            'gross_water_liters'      => $grossWater,
+            'by_member'               => $byMember,
         ];
     }
 }

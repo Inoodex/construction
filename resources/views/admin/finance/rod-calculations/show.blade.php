@@ -30,7 +30,12 @@
                 @csrf
                 <button type="submit" class="btn btn-sm btn-outline-primary">Recalculate</button>
             </form>
+            <form action="{{ route('admin.finance.rod-calculations.duplicate', $rodCalculation->id) }}" method="POST" class="inline" onsubmit="return confirm('Duplicate this BBS calculation sheet?');">
+                @csrf
+                <button type="submit" class="btn btn-sm btn-outline-info">Duplicate</button>
+            </form>
             <a href="{{ route('admin.finance.rod-calculations.pdf', $rodCalculation->id) }}" target="_blank" class="btn btn-sm btn-outline-dark">PDF</a>
+            <a href="{{ route('admin.finance.rod-calculations.excel', $rodCalculation->id) }}" class="btn btn-sm btn-outline-success">Excel</a>
             <a href="{{ route('admin.finance.rod-calculations.index') }}" class="btn btn-sm btn-secondary">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                 Back
@@ -67,26 +72,41 @@
     <div class="mt-6 grid gap-6 lg:grid-cols-4">
         <div class="panel text-center flex flex-col items-center justify-center">
             <label class="text-xs text-white-dark">Total Steel Weight</label>
-            <p class="text-3xl font-bold text-primary mt-2">{{ number_format($summary['total_kg'], 2) }}</p>
-            <p class="text-xs text-white-dark">kg</p>
-            <div class="mt-3 text-xs text-white-dark">
+            <p class="text-3xl font-bold text-primary mt-2">{{ number_format($summary['total_kg'], 2) }} <span class="text-xs font-normal">kg</span></p>
+            @if(($summary['waste_percent'] ?? 0) > 0)
+                <p class="text-[11px] text-white-dark mt-1">Includes {{ $summary['waste_percent'] }}% waste (+{{ number_format($summary['waste_kg'], 1) }}kg)</p>
+            @endif
+            <div class="mt-3 text-xs text-white-dark border-t pt-2 dark:border-gray-700 w-full">
+                <span class="font-semibold text-xs block mb-1">Commercial Orders (12m Bars)</span>
+                <span class="badge badge-outline-primary text-xs">{{ $summary['total_12m_sticks'] ?? 0 }} Sticks (12m)</span>
+            </div>
+            <div class="mt-3 text-[11px] text-white-dark">
                 @foreach($summary['by_diameter'] as $d)
-                    <span class="inline-block mr-2">Ø{{ $d['diameter'] }}: {{ number_format($d['total_kg'], 1) }}kg</span>
+                    <span class="inline-block mr-2">Ø{{ $d['diameter'] }}: {{ number_format($d['total_kg'], 1) }}kg ({{ $d['commercial_12m_sticks'] }} pcs)</span>
                 @endforeach
             </div>
         </div>
         <div class="panel lg:col-span-3">
-            <label class="text-xs text-white-dark mb-2 block font-semibold">By Diameter</label>
+            <label class="text-xs text-white-dark mb-2 block font-semibold">By Diameter Summary & Stock Ordering</label>
             @if(count($summary['by_diameter']))
                 <div class="overflow-x-auto">
                     <table class="w-full text-xs">
-                        <thead><tr class="border-b dark:border-gray-700"><th class="text-left py-2">Dia (mm)</th><th class="text-right py-2">Bars</th><th class="text-right py-2">Length (mm)</th><th class="text-right py-2">Weight (kg)</th></tr></thead>
+                        <thead>
+                            <tr class="border-b dark:border-gray-700">
+                                <th class="text-left py-2">Dia (mm)</th>
+                                <th class="text-right py-2">Bars</th>
+                                <th class="text-right py-2">Total Length (mm)</th>
+                                <th class="text-right py-2">12m Stock Sticks</th>
+                                <th class="text-right py-2">Net Weight (kg)</th>
+                            </tr>
+                        </thead>
                         <tbody>
                             @foreach($summary['by_diameter'] as $d)
                                 <tr class="border-t dark:border-gray-700">
-                                    <td class="py-2 font-semibold">{{ $d['diameter'] }}</td>
+                                    <td class="py-2 font-semibold">Ø{{ $d['diameter'] }} mm</td>
                                     <td class="py-2 text-right">{{ $d['bars_count'] }}</td>
                                     <td class="py-2 text-right">{{ number_format($d['total_mm'], 0) }}</td>
+                                    <td class="py-2 text-right font-semibold text-info">{{ $d['commercial_12m_sticks'] }} pcs</td>
                                     <td class="py-2 text-right font-semibold">{{ number_format($d['total_kg'], 2) }}</td>
                                 </tr>
                             @endforeach
@@ -94,7 +114,8 @@
                                 <td class="py-2">Total</td>
                                 <td class="py-2 text-right">{{ collect($summary['by_diameter'])->sum('bars_count') }}</td>
                                 <td class="py-2 text-right">{{ number_format(collect($summary['by_diameter'])->sum('total_mm'), 0) }}</td>
-                                <td class="py-2 text-right text-primary">{{ number_format($summary['total_kg'], 2) }}</td>
+                                <td class="py-2 text-right text-info">{{ $summary['total_12m_sticks'] ?? 0 }} pcs</td>
+                                <td class="py-2 text-right text-primary">{{ number_format($summary['total_kg'], 2) }} kg</td>
                             </tr>
                         </tbody>
                     </table>
@@ -288,7 +309,7 @@
                                                             @endforeach
                                                         </select>
                                                         <div x-show="barDirection === 'OTHER'" x-cloak class="flex gap-1">
-                                                            <input type="text" name="direction" class="form-input" required placeholder="Enter direction" value="{{ in_array($bar->direction, \App\Constants\BarDirection::ALL) ? '' : $bar->direction }}" />
+                                                            <input type="text" name="direction" class="form-input" required placeholder="Enter direction" value="{{ in_array($bar->direction, \App\Constants\BarDirection::ALL) ? '' : $bar->direction }}" :disabled="barDirection !== 'OTHER'" />
                                                             <button type="button" class="btn btn-sm btn-outline-danger" @click="barDirection = ''">✕</button>
                                                         </div>
                                                     </div>
@@ -360,7 +381,70 @@
 
                     {{-- Add Bar Form --}}
                     @if($rodCalculation->isDraft())
-                        <div class="mt-3 rounded border p-3 dark:border-gray-700" x-data="{ showBarForm: false, barDirection: '' }">
+                        <div class="mt-3 rounded border p-3 dark:border-gray-700" x-data="{
+                            showBarForm: false,
+                            barDirection: '',
+                            diameter: '12',
+                            actualSize: '',
+                            spacing: '',
+                            hookLength: 0,
+                            barsCount: 1,
+                            isManualCount: false,
+                            memberDims: {
+                                length: {{ $member->length ?? 0 }},
+                                width: {{ $member->width ?? 0 }},
+                                height: {{ $member->height ?? 0 }},
+                                depth: {{ $member->depth ?? 0 }},
+                                thickness: {{ $member->thickness ?? 0 }},
+                                cover: {{ $member->cover ?? 25 }},
+                                type: '{{ $member->type }}'
+                            },
+                            updateActualSize() {
+                                const d = this.memberDims;
+                                const l = parseFloat(d.length) || 0;
+                                const w = parseFloat(d.width) || 0;
+                                const h = parseFloat(d.height) || parseFloat(d.depth) || 0;
+                                const t = parseFloat(d.thickness) || 0;
+                                const dir = (this.barDirection || '').toUpperCase();
+
+                                let val = 0;
+                                if (dir === 'X') val = l || w || h;
+                                else if (dir === 'Y') val = w || l || h;
+                                else if (dir === 'MAIN' || dir === 'TOP' || dir === 'BOTTOM') {
+                                    if (d.type === 'column' && h > 0) val = h;
+                                    else val = l || w || h || t;
+                                }
+                                else if (dir === 'DISTRIBUTION') val = w || l || t;
+                                else if (dir === 'STIRRUP') val = (w > 0 && h > 0) ? (2 * (w + h)) : (w || h);
+                                else val = l || w || h || t;
+
+                                if (val > 0) this.actualSize = val;
+                                this.updateHookLength();
+                                this.updateBarsCount();
+                            },
+                            updateHookLength() {
+                                const dia = parseFloat(this.diameter) || 0;
+                                const dir = (this.barDirection || '').toUpperCase();
+                                if (dir === 'STIRRUP') {
+                                    this.hookLength = Math.round(20 * dia);
+                                } else if (['MAIN', 'TOP', 'BOTTOM', 'X', 'Y'].includes(dir)) {
+                                    this.hookLength = Math.round(18 * dia);
+                                } else if (dir === 'DISTRIBUTION') {
+                                    this.hookLength = 0;
+                                }
+                            },
+                            updateBarsCount() {
+                                if (this.isManualCount) return;
+                                const size = parseFloat(this.actualSize) || 0;
+                                const sp = parseFloat(this.spacing) || 0;
+                                const cover = parseFloat(this.memberDims.cover) || 0;
+
+                                if (sp > 0 && size > 0) {
+                                    const eff = Math.max(0, size - (cover * 2));
+                                    this.barsCount = Math.floor(eff / sp) + 1;
+                                }
+                            }
+                        }">
                             <button type="button" @click="showBarForm = !showBarForm" class="btn btn-outline-primary">+ Add Bar</button>
                             <div x-show="showBarForm" x-collapse class="mt-2">
                                 <form action="{{ route('admin.finance.rod-calculations.bars.store', [$rodCalculation->id, $member->id]) }}" method="POST">
@@ -372,20 +456,20 @@
                                         </div>
                                         <div>
                                             <label class="text-xs">Direction *</label>
-                                            <select name="direction" class="form-select" required x-model="barDirection" x-show="barDirection !== 'OTHER'" :disabled="barDirection === 'OTHER'">
+                                            <select name="direction" class="form-select" required x-model="barDirection" @change="updateActualSize()" x-show="barDirection !== 'OTHER'" :disabled="barDirection === 'OTHER'">
                                                 <option value="">Select</option>
                                                 @foreach(\App\Constants\BarDirection::ALL as $dir)
                                                     <option value="{{ $dir }}">{{ $dir }}</option>
                                                 @endforeach
                                             </select>
                                             <div x-show="barDirection === 'OTHER'" x-cloak class="flex gap-1">
-                                                <input type="text" name="direction" class="form-input" required placeholder="Enter direction" />
+                                                <input type="text" name="direction" class="form-input" required placeholder="Enter direction" :disabled="barDirection !== 'OTHER'" />
                                                 <button type="button" class="btn btn-sm btn-outline-danger" @click="barDirection = ''">✕</button>
                                             </div>
                                         </div>
                                         <div>
                                             <label class="text-xs">Dia (mm) *</label>
-                                            <select name="diameter" class="form-select" required>
+                                            <select name="diameter" class="form-select" required x-model="diameter" @change="updateHookLength()">
                                                 @foreach(\App\Constants\RodCalculationConstants::DIAMETERS as $d)
                                                     <option value="{{ $d }}">{{ $d }}mm</option>
                                                 @endforeach
@@ -393,18 +477,18 @@
                                         </div>
                                         <div>
                                             <label class="text-xs">Actual Size *</label>
-                                            <input type="number" name="actual_size" class="form-input" required step="0.01" placeholder="mm" />
+                                            <input type="number" name="actual_size" class="form-input" required step="0.01" placeholder="mm" x-model="actualSize" @input="updateBarsCount()" />
                                         </div>
                                         <div>
                                             <label class="text-xs">Spacing (mm)</label>
-                                            <input type="number" name="spacing" class="form-input" step="0.01" />
+                                            <input type="number" name="spacing" class="form-input" step="0.01" x-model="spacing" @input="updateBarsCount()" />
                                         </div>
                                         <div>
-                                            <label class="text-xs">Hook</label>
-                                            <input type="number" name="hook_length" class="form-input" step="0.01" value="0" />
+                                            <label class="text-xs">Hook (mm)</label>
+                                            <input type="number" name="hook_length" class="form-input" step="0.01" x-model="hookLength" />
                                         </div>
                                         <div>
-                                            <label class="text-xs">Bend</label>
+                                            <label class="text-xs">Bend (mm)</label>
                                             <input type="number" name="bend_length" class="form-input" step="0.01" value="0" />
                                         </div>
                                     </div>
@@ -414,12 +498,12 @@
                                             <input type="number" name="lap_length" class="form-input" step="0.01" value="0" />
                                         </div>
                                         <div>
-                                            <label class="text-xs">Bar Count (if manual)</label>
-                                            <input type="number" name="bars_count" class="form-input" min="1" />
+                                            <label class="text-xs">Bar Count</label>
+                                            <input type="number" name="bars_count" class="form-input" min="1" x-model="barsCount" @input="isManualCount = true" />
                                         </div>
                                         <div class="flex items-end">
                                             <label class="flex items-center gap-1 text-xs">
-                                                <input type="checkbox" name="is_manual_count" value="1" class="rounded" />
+                                                <input type="checkbox" name="is_manual_count" value="1" class="rounded" x-model="isManualCount" @change="if (!isManualCount) updateBarsCount()" />
                                                 Manual count
                                             </label>
                                         </div>

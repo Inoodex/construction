@@ -30,7 +30,12 @@
                 @csrf
                 <button type="submit" class="btn btn-sm btn-outline-primary">Recalculate</button>
             </form>
+            <form action="{{ route('admin.finance.concrete-ratios.duplicate', $concreteRatio->id) }}" method="POST" class="inline" onsubmit="return confirm('Duplicate this Concrete Ratio sheet?');">
+                @csrf
+                <button type="submit" class="btn btn-sm btn-outline-info">Duplicate</button>
+            </form>
             <a href="{{ route('admin.finance.concrete-ratios.pdf', $concreteRatio->id) }}" target="_blank" class="btn btn-sm btn-outline-dark">PDF</a>
+            <a href="{{ route('admin.finance.concrete-ratios.excel', $concreteRatio->id) }}" class="btn btn-sm btn-outline-success">Excel</a>
             <a href="{{ route('admin.finance.concrete-ratios.index') }}" class="btn btn-sm btn-secondary">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                 Back
@@ -70,30 +75,46 @@
     {{-- Summary --}}
     <div class="mt-6 flex flex-wrap gap-6">
         <div class="panel text-center flex flex-col items-center justify-center flex-1 min-w-[180px]">
-            <label class="text-xs text-white-dark">Total Volume</label>
+            <label class="text-xs text-white-dark">Net Volume</label>
             <p class="text-3xl font-bold text-primary mt-2">{{ number_format($summary['total_volume_m3'], 4) }}</p>
             <p class="text-xs text-white-dark">m³</p>
+            @if($summary['waste_percent'] > 0)
+                <p class="text-[11px] text-warning mt-1">+{{ $summary['waste_percent'] }}% waste</p>
+                <p class="text-sm font-bold text-warning">{{ number_format($summary['gross_volume_m3'], 4) }} m³ gross</p>
+            @endif
         </div>
         <div class="flex-1 min-w-[180px] grid grid-cols-2 gap-4">
             <div class="panel text-center flex flex-col items-center justify-center">
-                <label class="text-xs text-white-dark">Cement</label>
+                <label class="text-xs text-white-dark">Cement (Net)</label>
                 <p class="text-2xl font-bold mt-2">{{ number_format($summary['total_cement_bags'], 2) }}</p>
                 <p class="text-xs text-white-dark">bags</p>
+                @if($summary['waste_percent'] > 0)
+                    <p class="text-xs text-warning font-semibold mt-1">{{ number_format($summary['gross_cement_bags'], 2) }} bags gross</p>
+                @endif
             </div>
             <div class="panel text-center flex flex-col items-center justify-center">
-                <label class="text-xs text-white-dark">Sand</label>
+                <label class="text-xs text-white-dark">Sand (Net)</label>
                 <p class="text-2xl font-bold mt-2">{{ number_format($summary['total_sand_m3'], 4) }}</p>
                 <p class="text-xs text-white-dark">m³</p>
+                @if($summary['waste_percent'] > 0)
+                    <p class="text-xs text-warning font-semibold mt-1">{{ number_format($summary['gross_sand_m3'], 4) }} m³ gross</p>
+                @endif
             </div>
             <div class="panel text-center flex flex-col items-center justify-center">
-                <label class="text-xs text-white-dark">Aggregate</label>
+                <label class="text-xs text-white-dark">Aggregate (Net)</label>
                 <p class="text-2xl font-bold mt-2">{{ number_format($summary['total_aggregate_m3'], 4) }}</p>
                 <p class="text-xs text-white-dark">m³</p>
+                @if($summary['waste_percent'] > 0)
+                    <p class="text-xs text-warning font-semibold mt-1">{{ number_format($summary['gross_aggregate_m3'], 4) }} m³ gross</p>
+                @endif
             </div>
             <div class="panel text-center flex flex-col items-center justify-center">
-                <label class="text-xs text-white-dark">Water</label>
+                <label class="text-xs text-white-dark">Water (Net)</label>
                 <p class="text-2xl font-bold mt-2">{{ number_format($summary['total_water_liters'], 2) }}</p>
                 <p class="text-xs text-white-dark">liters</p>
+                @if($summary['waste_percent'] > 0)
+                    <p class="text-xs text-warning font-semibold mt-1">{{ number_format($summary['gross_water_liters'], 2) }} L gross</p>
+                @endif
             </div>
         </div>
     </div>

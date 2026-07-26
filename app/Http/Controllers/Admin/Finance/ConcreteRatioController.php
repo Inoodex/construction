@@ -9,11 +9,13 @@ use App\Models\ConcreteRatio;
 use App\Models\ConcreteRatioMember;
 use App\Models\Project;
 use App\Models\RodCalculation;
+use App\Exports\ConcreteRatioExport;
 use App\Services\ConcreteRatioService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ConcreteRatioController extends Controller
 {
@@ -319,5 +321,41 @@ class ConcreteRatioController extends Controller
         $pdf = Pdf::loadView('admin.finance.concrete-ratios.pdf.concrete', compact('concreteRatio', 'summary'));
 
         return $pdf->stream("CR-{$concreteRatio->reference_no}.pdf");
+    }
+
+    public function excel(ConcreteRatio $concreteRatio)
+    {
+        return Excel::download(
+            new ConcreteRatioExport($concreteRatio),
+            "CR-{$concreteRatio->reference_no}.xlsx"
+        );
+    }
+
+    public function duplicate(ConcreteRatio $concreteRatio)
+    {
+        $concreteRatio->load('members');
+
+        $newRatio = $concreteRatio->replicate([
+            'reference_no',
+            'status',
+            'approved_by',
+            'approved_at',
+            'rod_calculation_id',
+        ]);
+
+        $newRatio->reference_no = $this->service->generateReferenceNo($concreteRatio->project);
+        $newRatio->title        = $concreteRatio->title . ' (Copy)';
+        $newRatio->status       = ConcreteRatioConstants::STATUS_DRAFT;
+        $newRatio->created_by   = Auth::id();
+        $newRatio->save();
+
+        foreach ($concreteRatio->members as $member) {
+            $newMember = $member->replicate();
+            $newMember->concrete_ratio_id = $newRatio->id;
+            $newMember->save();
+        }
+
+        return redirect()->route('admin.finance.concrete-ratios.show', $newRatio->id)
+            ->with('success', "Concrete Ratio '{$newRatio->reference_no}' duplicated successfully.");
     }
 }

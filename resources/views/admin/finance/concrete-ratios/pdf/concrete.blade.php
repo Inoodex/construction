@@ -110,22 +110,33 @@
                         </tr>
                     @endforeach
                     <tr class="summary-total">
-                        <td colspan="6">GRAND TOTAL</td>
+                        <td colspan="6">NET TOTAL</td>
                         <td class="text-right">{{ number_format($summary['total_volume_m3'], 4) }} m³</td>
                         <td class="text-right">{{ number_format($summary['total_cement_bags'], 2) }} bags</td>
                         <td class="text-right">{{ number_format($summary['total_sand_m3'], 4) }} m³</td>
                         <td class="text-right">{{ number_format($summary['total_aggregate_m3'], 4) }} m³</td>
                         <td class="text-right">{{ number_format($summary['total_water_liters'], 2) }} L</td>
                     </tr>
+                    @if($summary['waste_percent'] > 0)
+                    <tr style="background-color:#e8f5e9; font-weight:bold; color:#1b5e20;">
+                        <td colspan="6">GROSS TOTAL (incl. {{ $summary['waste_percent'] }}% waste)</td>
+                        <td class="text-right">{{ number_format($summary['gross_volume_m3'], 4) }} m³</td>
+                        <td class="text-right">{{ number_format($summary['gross_cement_bags'], 2) }} bags</td>
+                        <td class="text-right">{{ number_format($summary['gross_sand_m3'], 4) }} m³</td>
+                        <td class="text-right">{{ number_format($summary['gross_aggregate_m3'], 4) }} m³</td>
+                        <td class="text-right">{{ number_format($summary['gross_water_liters'], 2) }} L</td>
+                    </tr>
+                    @endif
                 </tbody>
             </table>
 
             <div class="notes-box" style="margin-top:20px;">
                 <strong>Notes:</strong><br/>
                 1. All dimensions are in millimetres (mm) unless otherwise noted.<br/>
-                2. Volume calculated as L × W × H × Qty (converted to m³).<br/>
-                3. Material quantities based on IS 456 standard mix proportions for {{ $concreteRatio->grade ?? 'N/A' }} grade.<br/>
-                4.1 bag cement = 50 kg.
+                2. Volume calculated as L &times; W &times; (Height/Depth/Thickness as applicable) &times; Qty &divide; 10&sup9; m&sup3;.<br/>
+                3. Member third dimension: Slab/Wall uses Thickness; Footing/Pile Cap uses Depth; Column/Beam/Stair uses Height.<br/>
+                4. Material quantities based on IS 456 standard mix proportions for {{ $concreteRatio->grade ?? 'N/A' }} grade concrete.<br/>
+                5. 1 bag cement = 50 kg. Gross total includes {{ $concreteRatio->waste_percent ?? 0 }}% site wastage allowance.
             </div>
         </div>
     </div>
