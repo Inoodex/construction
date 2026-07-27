@@ -4,9 +4,12 @@
 
 @section('content')
 <div class="panel">
-    <div class="mb-5 flex items-center justify-between">
+        <div class="mb-5 flex items-center justify-between">
         <h5 class="text-lg font-semibold dark:text-white-light">Labour Cost Allocation</h5>
-        <a href="{{ route('admin.finance.labour-entries.create') }}" class="btn btn-primary">+ New Entry</a>
+        <div class="flex gap-2">
+            <a href="{{ route('admin.finance.labour-entries.pdf', request()->query()) }}" target="_blank" class="btn btn-outline-success">PDF</a>
+            <a href="{{ route('admin.finance.labour-entries.create') }}" class="btn btn-primary">+ New Entry</a>
+        </div>
     </div>
 
     {{-- <form method="GET" class="mb-4 flex flex-wrap items-center gap-3"> --}}

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Budget;
 use App\Models\Project;
 use App\Services\CostOverrunService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -122,5 +123,13 @@ class BudgetController extends Controller
         $budget->delete();
         return redirect()->route('admin.finance.budgets.index')
             ->with('success', 'Budget deleted successfully.');
+    }
+
+    public function printPdf(Budget $budget)
+    {
+        $budget->load('project', 'creator');
+
+        $pdf = Pdf::loadView('admin.finance.budgets.pdf.budget', compact('budget'));
+        return $pdf->stream();
     }
 }

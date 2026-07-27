@@ -78,6 +78,7 @@
                                     <div class="flex items-center justify-center gap-2">
                                         <a href="{{ route('admin.finance.expenses.show', $expense->id) }}" class="btn btn-sm btn-outline-info">View</a>
                                         <a href="{{ route('admin.finance.expenses.edit', $expense->id) }}" class="btn btn-sm btn-outline-warning">Edit</a>
+                                        <a href="{{ route('admin.finance.expenses.pdf', $expense->id) }}" target="_blank" class="btn btn-sm btn-outline-success">PDF</a>
                                         <form action="{{ route('admin.finance.expenses.destroy', $expense->id) }}" method="POST" onsubmit="return confirm('Delete this expense?');">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>

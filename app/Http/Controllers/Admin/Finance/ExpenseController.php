@@ -10,6 +10,7 @@ use App\Models\Vendor;
 use App\Models\PaymentAccount;
 use App\Models\AccountTransaction;
 use App\Services\LedgerPostingService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -231,5 +232,12 @@ class ExpenseController extends Controller
 
         $expense->update(['status' => 'paid']);
         return back()->with('success', 'Expense marked as paid.');
+    }
+
+    public function pdf(Expense $expense)
+    {
+        $expense->load('category', 'vendor', 'project', 'creator');
+        $pdf = Pdf::loadView('admin.finance.expenses.pdf.expense', compact('expense'));
+        return $pdf->stream("Expense-{$expense->title}.pdf");
     }
 }

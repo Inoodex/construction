@@ -600,6 +600,7 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware(['auth', 
     Route::get('budgets/create', [BudgetController::class, 'create'])->name('budgets.create');
     Route::post('budgets', [BudgetController::class, 'store'])->name('budgets.store');
     Route::get('budgets/forecasting', [BudgetController::class, 'forecasting'])->name('budgets.forecasting');
+    Route::get('budgets/{budget}/pdf', [BudgetController::class, 'printPdf'])->name('budgets.pdf');
     Route::get('budgets/{budget}', [BudgetController::class, 'show'])->name('budgets.show');
     Route::get('budgets/{budget}/edit', [BudgetController::class, 'edit'])->name('budgets.edit');
     Route::put('budgets/{budget}', [BudgetController::class, 'update'])->name('budgets.update');
@@ -608,6 +609,7 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware(['auth', 
     Route::get('material-takeoffs', [MaterialTakeoffController::class, 'index'])->name('material-takeoffs.index');
     Route::get('material-takeoffs/create', [MaterialTakeoffController::class, 'create'])->name('material-takeoffs.create');
     Route::post('material-takeoffs', [MaterialTakeoffController::class, 'store'])->name('material-takeoffs.store');
+    Route::get('material-takeoffs/{materialTakeoff}/pdf', [MaterialTakeoffController::class, 'printPdf'])->name('material-takeoffs.print-pdf');
     Route::get('material-takeoffs/{materialTakeoff}', [MaterialTakeoffController::class, 'show'])->name('material-takeoffs.show');
     Route::get('material-takeoffs/{materialTakeoff}/edit', [MaterialTakeoffController::class, 'edit'])->name('material-takeoffs.edit');
     Route::put('material-takeoffs/{materialTakeoff}', [MaterialTakeoffController::class, 'update'])->name('material-takeoffs.update');
@@ -633,6 +635,7 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware(['auth', 
     Route::get('rate-analysis', [RateAnalysisController::class, 'index'])->name('rate-analysis.index');
     Route::get('rate-analysis/create', [RateAnalysisController::class, 'create'])->name('rate-analysis.create');
     Route::post('rate-analysis', [RateAnalysisController::class, 'store'])->name('rate-analysis.store');
+    Route::get('rate-analysis/{rateAnalysis}/pdf', [RateAnalysisController::class, 'pdf'])->name('rate-analysis.pdf');
     Route::get('rate-analysis/{rateAnalysis}', [RateAnalysisController::class, 'show'])->name('rate-analysis.show');
     Route::get('rate-analysis/{rateAnalysis}/edit', [RateAnalysisController::class, 'edit'])->name('rate-analysis.edit');
     Route::put('rate-analysis/{rateAnalysis}', [RateAnalysisController::class, 'update'])->name('rate-analysis.update');
@@ -749,6 +752,7 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware(['auth', 
     Route::put('expenses/{expense}', [ExpenseController::class, 'update'])->name('expenses.update');
     Route::delete('expenses/{expense}', [ExpenseController::class, 'destroy'])->name('expenses.destroy');
     Route::post('expenses/{expense}/mark-paid', [ExpenseController::class, 'markPaid'])->name('expenses.mark-paid');
+    Route::get('expenses/{expense}/pdf', [ExpenseController::class, 'pdf'])->name('expenses.pdf');
 
     Route::get('chart-of-accounts', [ChartOfAccountController::class, 'index'])->name('chart-of-accounts.index');
     Route::get('chart-of-accounts/create', [ChartOfAccountController::class, 'create'])->name('chart-of-accounts.create');
@@ -795,6 +799,7 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware(['auth', 
     Route::get('labour-entries', [LabourEntryController::class, 'index'])->name('labour-entries.index');
     Route::get('labour-entries/create', [LabourEntryController::class, 'create'])->name('labour-entries.create');
     Route::post('labour-entries', [LabourEntryController::class, 'store'])->name('labour-entries.store');
+    Route::get('labour-entries/pdf', [LabourEntryController::class, 'pdf'])->name('labour-entries.pdf');
     Route::delete('labour-entries/{labourEntry}', [LabourEntryController::class, 'destroy'])->name('labour-entries.destroy');
 
     Route::get('aging/ar', [AgingReportController::class, 'arAging'])->name('aging.ar');

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use App\Models\LabourEntry;
 use App\Models\Project;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class LabourEntryController extends Controller
@@ -73,5 +74,37 @@ class LabourEntryController extends Controller
         $labourEntry->delete();
         return redirect()->route('admin.finance.labour-entries.index')
             ->with('success', 'Labour entry deleted.');
+    }
+
+    public function pdf(Request $request)
+    {
+        $query = LabourEntry::with('project', 'employee');
+
+        if ($request->filled('project_id')) {
+            $query->where('project_id', $request->project_id);
+        }
+        if ($request->filled('employee_id')) {
+            $query->where('employee_id', $request->employee_id);
+        }
+        if ($request->filled('date_from')) {
+            $query->where('date', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->where('date', '<=', $request->date_to);
+        }
+
+        $entries = $query->latest('date')->get();
+
+        $summary = LabourEntry::selectRaw('project_id, SUM(hours) as total_hours, SUM(hours * hourly_rate) as total_cost')
+            ->when($request->filled('project_id'), fn($q) => $q->where('project_id', $request->project_id))
+            ->groupBy('project_id')
+            ->with('project')
+            ->get();
+
+        $totalHours = $entries->sum('hours');
+        $totalCost = $entries->sum(fn($e) => $e->hours * $e->hourly_rate);
+
+        $pdf = Pdf::loadView('admin.finance.labour-entries.pdf.labour', compact('entries', 'summary', 'totalHours', 'totalCost'));
+        return $pdf->stream('Labour-Entries.pdf');
     }
 }

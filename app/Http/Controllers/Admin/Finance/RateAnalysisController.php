@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\RateAnalysis;
 use App\Models\RateAnalysisItem;
 use App\Models\Project;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -121,5 +122,12 @@ class RateAnalysisController extends Controller
         $rateAnalysis->update(['total_rate' => $rateAnalysis->items()->sum('total_cost')]);
 
         return back()->with('success', 'Item removed from Rate Analysis.');
+    }
+
+    public function pdf(RateAnalysis $rateAnalysis)
+    {
+        $rateAnalysis->load('project', 'creator', 'items');
+        $pdf = Pdf::loadView('admin.finance.rate-analysis.pdf.rate-analysis', compact('rateAnalysis'));
+        return $pdf->stream("RA-{$rateAnalysis->ra_number}.pdf");
     }
 }

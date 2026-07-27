@@ -6,6 +6,7 @@
     <div class="flex flex-wrap items-center justify-between gap-4">
         <h2 class="text-xl font-semibold uppercase">{{ $materialTakeoff->description }}</h2>
         <div class="flex gap-2">
+            <a href="{{ route('admin.finance.material-takeoffs.print-pdf', $materialTakeoff) }}" target="_blank" class="btn btn-outline-success">PDF</a>
             <a href="{{ route('admin.finance.material-takeoffs.edit', $materialTakeoff) }}" class="btn btn-outline-secondary">Edit</a>
             <a href="{{ route('admin.finance.material-takeoffs.index') }}" class="btn btn-secondary gap-2">&larr; Back</a>
         </div>

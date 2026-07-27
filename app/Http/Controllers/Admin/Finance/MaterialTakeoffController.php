@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\BoqItem;
 use App\Models\MaterialTakeoff;
 use App\Models\Project;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class MaterialTakeoffController extends Controller
@@ -91,5 +92,12 @@ class MaterialTakeoffController extends Controller
         $materialTakeoff->delete();
         return redirect()->route('admin.finance.material-takeoffs.index')
             ->with('success', 'Material takeoff deleted.');
+    }
+
+    public function printPdf(MaterialTakeoff $materialTakeoff)
+    {
+        $materialTakeoff->load('project', 'boqItem.boq');
+        $pdf = Pdf::loadView('admin.finance.material-takeoffs.pdf.takeoff', compact('materialTakeoff'));
+        return $pdf->stream("Takeoff-{$materialTakeoff->description}.pdf");
     }
 }
