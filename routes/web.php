@@ -771,6 +771,7 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware(['auth', 
 
     Route::get('general-ledger', [GeneralLedgerController::class, 'index'])->name('general-ledger.index');
     Route::get('trial-balance', [TrialBalanceController::class, 'index'])->name('trial-balance.index');
+    Route::get('trial-balance/pdf', [TrialBalanceController::class, 'pdf'])->name('trial-balance.pdf');
     Route::get('reconciliation', [ReconciliationController::class, 'index'])->name('reconciliation.index');
 
     Route::get('receivables', [ReceivableController::class, 'index'])->name('receivables.index');
