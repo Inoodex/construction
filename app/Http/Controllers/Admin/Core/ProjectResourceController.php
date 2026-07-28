@@ -7,7 +7,6 @@ use App\Models\Category;
 use App\Models\Project;
 use App\Models\ProjectResource;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class ProjectResourceController extends Controller
 {
@@ -33,7 +32,7 @@ class ProjectResourceController extends Controller
     {
         $resources = $project->resources()->with('taskAllocations.task')->latest()->get();
         $totals = [
-            'labor' => $resources->where('resource_type', 'labor')->sum('total_cost'),
+            'labor' => $resources->whereIn('resource_type', ['labor', 'labour'])->sum('total_cost'),
             'equipment' => $resources->where('resource_type', 'equipment')->sum('total_cost'),
             'material' => $resources->where('resource_type', 'material')->sum('total_cost'),
         ];
@@ -48,9 +47,8 @@ class ProjectResourceController extends Controller
 
     public function store(Request $request, Project $project)
     {
-        $resourceTypes = Category::resourceTypes()->pluck('value')->toArray();
         $validated = $request->validate([
-            'resource_type' => ['required', Rule::in($resourceTypes)],
+            'resource_type' => 'required|string|max:50',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'quantity' => 'required|numeric|min:0',
@@ -74,9 +72,8 @@ class ProjectResourceController extends Controller
 
     public function update(Request $request, Project $project, ProjectResource $resource)
     {
-        $resourceTypes = Category::resourceTypes()->pluck('value')->toArray();
         $validated = $request->validate([
-            'resource_type' => ['required', Rule::in($resourceTypes)],
+            'resource_type' => 'required|string|max:50',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'quantity' => 'required|numeric|min:0',

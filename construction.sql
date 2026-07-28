@@ -1,4 +1,4 @@
--- Adminer 5.4.2 MySQL 8.4.3 dump
+-- Adminer 5.5.1 MariaDB 11.8.2-MariaDB dump
 
 SET NAMES utf8;
 SET time_zone = '+00:00';
@@ -9,15 +9,15 @@ SET NAMES utf8mb4;
 
 DROP TABLE IF EXISTS `account_transactions`;
 CREATE TABLE `account_transactions` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `payment_account_id` bigint unsigned NOT NULL,
-  `type` enum('credit','debit') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `payment_account_id` bigint(20) unsigned NOT NULL,
+  `type` enum('credit','debit') NOT NULL,
   `amount` decimal(15,2) NOT NULL,
   `balance_after` decimal(15,2) NOT NULL,
-  `description` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `transactable_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `transactable_id` bigint unsigned DEFAULT NULL,
-  `reference` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` varchar(255) NOT NULL,
+  `transactable_type` varchar(255) DEFAULT NULL,
+  `transactable_id` bigint(20) unsigned DEFAULT NULL,
+  `reference` varchar(255) DEFAULT NULL,
   `transaction_date` timestamp NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -28,14 +28,37 @@ CREATE TABLE `account_transactions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
+DROP TABLE IF EXISTS `approvals`;
+CREATE TABLE `approvals` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `approval_workflow_id` bigint(20) unsigned NOT NULL,
+  `approvable_type` varchar(255) NOT NULL,
+  `approvable_id` bigint(20) unsigned NOT NULL,
+  `current_level` int(11) NOT NULL DEFAULT 1,
+  `status` enum('pending','approved','rejected','withdrawn') NOT NULL DEFAULT 'pending',
+  `submitted_by` bigint(20) unsigned NOT NULL,
+  `submitted_at` timestamp NULL DEFAULT NULL,
+  `total_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `approvals_approval_workflow_id_foreign` (`approval_workflow_id`),
+  KEY `approvals_approvable_type_approvable_id_index` (`approvable_type`,`approvable_id`),
+  KEY `approvals_submitted_by_foreign` (`submitted_by`),
+  KEY `approvals_status_current_level_index` (`status`,`current_level`),
+  CONSTRAINT `approvals_approval_workflow_id_foreign` FOREIGN KEY (`approval_workflow_id`) REFERENCES `approval_workflows` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `approvals_submitted_by_foreign` FOREIGN KEY (`submitted_by`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 DROP TABLE IF EXISTS `approval_history`;
 CREATE TABLE `approval_history` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `approval_id` bigint unsigned NOT NULL,
-  `approval_level` int NOT NULL,
-  `approved_by` bigint unsigned NOT NULL,
-  `status` enum('approved','rejected') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'approved',
-  `comment` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `approval_id` bigint(20) unsigned NOT NULL,
+  `approval_level` int(11) NOT NULL,
+  `approved_by` bigint(20) unsigned NOT NULL,
+  `status` enum('approved','rejected') NOT NULL DEFAULT 'approved',
+  `comment` text DEFAULT NULL,
   `approved_at` timestamp NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -49,13 +72,13 @@ CREATE TABLE `approval_history` (
 
 DROP TABLE IF EXISTS `approval_matrices`;
 CREATE TABLE `approval_matrices` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `approval_workflow_id` bigint unsigned NOT NULL,
-  `role_id` bigint unsigned NOT NULL,
-  `min_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `max_amount` decimal(15,2) NOT NULL DEFAULT '999999999.99',
-  `approval_level` int NOT NULL DEFAULT '1',
-  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `approval_workflow_id` bigint(20) unsigned NOT NULL,
+  `role_id` bigint(20) unsigned NOT NULL,
+  `min_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `max_amount` decimal(15,2) NOT NULL DEFAULT 999999999.99,
+  `approval_level` int(11) NOT NULL DEFAULT 1,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -68,12 +91,12 @@ CREATE TABLE `approval_matrices` (
 
 DROP TABLE IF EXISTS `approval_workflows`;
 CREATE TABLE `approval_workflows` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `document_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `is_active` tinyint(1) NOT NULL DEFAULT '1',
-  `created_by` bigint unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `document_type` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_by` bigint(20) unsigned NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -83,38 +106,15 @@ CREATE TABLE `approval_workflows` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
-DROP TABLE IF EXISTS `approvals`;
-CREATE TABLE `approvals` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `approval_workflow_id` bigint unsigned NOT NULL,
-  `approvable_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `approvable_id` bigint unsigned NOT NULL,
-  `current_level` int NOT NULL DEFAULT '1',
-  `status` enum('pending','approved','rejected','withdrawn') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
-  `submitted_by` bigint unsigned NOT NULL,
-  `submitted_at` timestamp NULL DEFAULT NULL,
-  `total_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `approvals_approval_workflow_id_foreign` (`approval_workflow_id`),
-  KEY `approvals_approvable_type_approvable_id_index` (`approvable_type`,`approvable_id`),
-  KEY `approvals_submitted_by_foreign` (`submitted_by`),
-  KEY `approvals_status_current_level_index` (`status`,`current_level`),
-  CONSTRAINT `approvals_approval_workflow_id_foreign` FOREIGN KEY (`approval_workflow_id`) REFERENCES `approval_workflows` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `approvals_submitted_by_foreign` FOREIGN KEY (`submitted_by`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-
 DROP TABLE IF EXISTS `attendance`;
 CREATE TABLE `attendance` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `employee_id` bigint unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `employee_id` bigint(20) unsigned NOT NULL,
   `date` date NOT NULL,
   `clock_in` timestamp NULL DEFAULT NULL,
   `clock_out` timestamp NULL DEFAULT NULL,
-  `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'present',
-  `note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `status` varchar(255) NOT NULL DEFAULT 'present',
+  `note` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -127,21 +127,21 @@ INSERT INTO `attendance` (`id`, `employee_id`, `date`, `clock_in`, `clock_out`, 
 
 DROP TABLE IF EXISTS `bank_guarantees`;
 CREATE TABLE `bank_guarantees` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `reference_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `issuing_bank` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `project_id` bigint unsigned DEFAULT NULL,
-  `contract_id` bigint unsigned DEFAULT NULL,
-  `beneficiary` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `reference_number` varchar(255) NOT NULL,
+  `type` varchar(255) NOT NULL,
+  `issuing_bank` varchar(255) NOT NULL,
+  `project_id` bigint(20) unsigned DEFAULT NULL,
+  `contract_id` bigint(20) unsigned DEFAULT NULL,
+  `beneficiary` varchar(255) NOT NULL,
   `amount` decimal(15,2) NOT NULL,
   `issue_date` date NOT NULL,
   `expiry_date` date NOT NULL,
   `return_date` date DEFAULT NULL,
-  `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
-  `narration` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `document_path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_by` bigint unsigned DEFAULT NULL,
+  `status` varchar(255) NOT NULL DEFAULT 'active',
+  `narration` text DEFAULT NULL,
+  `document_path` varchar(255) DEFAULT NULL,
+  `created_by` bigint(20) unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -155,11 +155,45 @@ CREATE TABLE `bank_guarantees` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
+DROP TABLE IF EXISTS `bills`;
+CREATE TABLE `bills` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `vendor_id` bigint(20) unsigned NOT NULL,
+  `bill_number` varchar(255) NOT NULL,
+  `reference` varchar(255) DEFAULT NULL,
+  `title` varchar(255) NOT NULL,
+  `bill_date` date NOT NULL,
+  `due_date` date NOT NULL,
+  `subtotal` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `tax_rate` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `tax_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `total_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `paid_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `due_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `status` enum('draft','approved','paid','overdue','cancelled') NOT NULL DEFAULT 'draft',
+  `notes` text DEFAULT NULL,
+  `created_by` bigint(20) unsigned NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `bills_bill_number_unique` (`bill_number`),
+  KEY `bills_project_id_foreign` (`project_id`),
+  KEY `bills_vendor_id_foreign` (`vendor_id`),
+  KEY `bills_created_by_foreign` (`created_by`),
+  CONSTRAINT `bills_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`),
+  CONSTRAINT `bills_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`),
+  CONSTRAINT `bills_vendor_id_foreign` FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `bills` (`id`, `project_id`, `vendor_id`, `bill_number`, `reference`, `title`, `bill_date`, `due_date`, `subtotal`, `tax_rate`, `tax_amount`, `total_amount`, `paid_amount`, `due_amount`, `status`, `notes`, `created_by`, `created_at`, `updated_at`) VALUES
+(1,	5,	7,	'BILL-20260622-XECZ',	'PO#1234',	'Bill-1',	'2026-06-22',	'2026-06-25',	15000.00,	2.50,	375.00,	15375.00,	0.00,	15375.00,	'draft',	NULL,	1,	'2026-06-22 04:27:09',	'2026-06-22 04:32:02');
+
 DROP TABLE IF EXISTS `bill_items`;
 CREATE TABLE `bill_items` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `bill_id` bigint unsigned NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `bill_id` bigint(20) unsigned NOT NULL,
+  `description` text NOT NULL,
   `quantity` decimal(12,4) NOT NULL,
   `unit_price` decimal(15,2) NOT NULL,
   `total_price` decimal(15,2) NOT NULL,
@@ -175,14 +209,14 @@ INSERT INTO `bill_items` (`id`, `bill_id`, `description`, `quantity`, `unit_pric
 
 DROP TABLE IF EXISTS `bill_payments`;
 CREATE TABLE `bill_payments` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `bill_id` bigint unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `bill_id` bigint(20) unsigned NOT NULL,
   `amount` decimal(15,2) NOT NULL,
   `payment_date` date NOT NULL,
-  `payment_method` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `reference` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `payment_account_id` bigint unsigned DEFAULT NULL,
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `payment_method` varchar(50) DEFAULT NULL,
+  `reference` varchar(100) DEFAULT NULL,
+  `payment_account_id` bigint(20) unsigned DEFAULT NULL,
+  `notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -193,51 +227,41 @@ CREATE TABLE `bill_payments` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
-DROP TABLE IF EXISTS `bills`;
-CREATE TABLE `bills` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `vendor_id` bigint unsigned NOT NULL,
-  `bill_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `reference` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `bill_date` date NOT NULL,
-  `due_date` date NOT NULL,
-  `subtotal` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `tax_rate` decimal(5,2) NOT NULL DEFAULT '0.00',
-  `tax_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `total_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `paid_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `due_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `status` enum('draft','approved','paid','overdue','cancelled') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `created_by` bigint unsigned NOT NULL,
+DROP TABLE IF EXISTS `boqs`;
+CREATE TABLE `boqs` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `boq_number` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `total_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `status` enum('draft','approved','revised') NOT NULL DEFAULT 'draft',
+  `created_by` bigint(20) unsigned NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `bills_bill_number_unique` (`bill_number`),
-  KEY `bills_project_id_foreign` (`project_id`),
-  KEY `bills_vendor_id_foreign` (`vendor_id`),
-  KEY `bills_created_by_foreign` (`created_by`),
-  CONSTRAINT `bills_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `bills_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `bills_vendor_id_foreign` FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`) ON DELETE RESTRICT
+  UNIQUE KEY `boqs_boq_number_unique` (`boq_number`),
+  KEY `boqs_project_id_foreign` (`project_id`),
+  KEY `boqs_created_by_foreign` (`created_by`),
+  CONSTRAINT `boqs_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`),
+  CONSTRAINT `boqs_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `bills` (`id`, `project_id`, `vendor_id`, `bill_number`, `reference`, `title`, `bill_date`, `due_date`, `subtotal`, `tax_rate`, `tax_amount`, `total_amount`, `paid_amount`, `due_amount`, `status`, `notes`, `created_by`, `created_at`, `updated_at`) VALUES
-(1,	5,	7,	'BILL-20260622-XECZ',	'PO#1234',	'Bill-1',	'2026-06-22',	'2026-06-25',	15000.00,	2.50,	375.00,	15375.00,	0.00,	15375.00,	'draft',	NULL,	1,	'2026-06-22 04:27:09',	'2026-06-22 04:32:02');
+INSERT INTO `boqs` (`id`, `project_id`, `boq_number`, `title`, `description`, `total_amount`, `status`, `created_by`, `created_at`, `updated_at`) VALUES
+(1,	5,	'BOQ-20260617-OR0D',	'BOQ 1',	NULL,	15000.00,	'approved',	1,	'2026-06-16 23:37:54',	'2026-06-22 06:10:58'),
+(2,	6,	'BOQ-20260622-NREW',	'BOQ2',	NULL,	920000.00,	'approved',	1,	'2026-06-22 06:11:17',	'2026-06-22 06:14:32');
 
 DROP TABLE IF EXISTS `boq_items`;
 CREATE TABLE `boq_items` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `boq_id` bigint unsigned NOT NULL,
-  `item_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `unit` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `boq_id` bigint(20) unsigned NOT NULL,
+  `item_number` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  `unit` varchar(255) NOT NULL,
   `quantity` decimal(12,4) NOT NULL,
   `unit_price` decimal(15,2) NOT NULL,
   `total_price` decimal(15,2) NOT NULL,
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -249,51 +273,27 @@ INSERT INTO `boq_items` (`id`, `boq_id`, `item_number`, `description`, `unit`, `
 (1,	1,	'1',	'test',	'pcs',	10.0000,	1500.00,	15000.00,	NULL,	'2026-06-22 03:57:17',	'2026-06-22 03:57:17'),
 (2,	2,	'60mm MS Rod (Grade 60)',	'test',	'ton',	10.0000,	92000.00,	920000.00,	NULL,	'2026-06-22 06:13:30',	'2026-06-22 06:13:30');
 
-DROP TABLE IF EXISTS `boqs`;
-CREATE TABLE `boqs` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `boq_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `total_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `status` enum('draft','approved','revised') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
-  `created_by` bigint unsigned NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `boqs_boq_number_unique` (`boq_number`),
-  KEY `boqs_project_id_foreign` (`project_id`),
-  KEY `boqs_created_by_foreign` (`created_by`),
-  CONSTRAINT `boqs_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `boqs_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-INSERT INTO `boqs` (`id`, `project_id`, `boq_number`, `title`, `description`, `total_amount`, `status`, `created_by`, `created_at`, `updated_at`) VALUES
-(1,	5,	'BOQ-20260617-OR0D',	'BOQ 1',	NULL,	15000.00,	'approved',	1,	'2026-06-16 23:37:54',	'2026-06-22 06:10:58'),
-(2,	6,	'BOQ-20260622-NREW',	'BOQ2',	NULL,	920000.00,	'approved',	1,	'2026-06-22 06:11:17',	'2026-06-22 06:14:32');
-
 DROP TABLE IF EXISTS `budgets`;
 CREATE TABLE `budgets` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `cost_code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `budgeted_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `actual_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `planned_value` decimal(12,2) NOT NULL DEFAULT '0.00',
-  `earned_value` decimal(12,2) NOT NULL DEFAULT '0.00',
-  `actual_cost` decimal(12,2) NOT NULL DEFAULT '0.00',
-  `financial_year` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `created_by` bigint unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `cost_code` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `budgeted_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `actual_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `planned_value` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `earned_value` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `actual_cost` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `financial_year` varchar(255) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_by` bigint(20) unsigned NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `budgets_project_id_foreign` (`project_id`),
   KEY `budgets_created_by_foreign` (`created_by`),
-  CONSTRAINT `budgets_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `budgets_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE RESTRICT
+  CONSTRAINT `budgets_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`),
+  CONSTRAINT `budgets_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `budgets` (`id`, `project_id`, `cost_code`, `description`, `budgeted_amount`, `actual_amount`, `planned_value`, `earned_value`, `actual_cost`, `financial_year`, `notes`, `created_by`, `created_at`, `updated_at`) VALUES
@@ -302,22 +302,22 @@ INSERT INTO `budgets` (`id`, `project_id`, `cost_code`, `description`, `budgeted
 
 DROP TABLE IF EXISTS `cache`;
 CREATE TABLE `cache` (
-  `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `value` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `expiration` int NOT NULL,
+  `key` varchar(255) NOT NULL,
+  `value` mediumtext NOT NULL,
+  `expiration` int(11) NOT NULL,
   PRIMARY KEY (`key`),
   KEY `cache_expiration_index` (`expiration`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('inoodex-cache-tyro:user-1:privileges',	'a:35:{i:0;s:12:\"finance.view\";i:1;s:14:\"finance.create\";i:2;s:12:\"finance.edit\";i:3;s:14:\"finance.delete\";i:4;s:14:\"finance.export\";i:5;s:7:\"hr.view\";i:6;s:9:\"hr.create\";i:7;s:7:\"hr.edit\";i:8;s:9:\"hr.delete\";i:9;s:9:\"hr.export\";i:10;s:16:\"procurement.view\";i:11;s:18:\"procurement.create\";i:12;s:16:\"procurement.edit\";i:13;s:18:\"procurement.delete\";i:14;s:18:\"procurement.export\";i:15;s:9:\"core.view\";i:16;s:11:\"core.create\";i:17;s:9:\"core.edit\";i:18;s:11:\"core.delete\";i:19;s:11:\"core.export\";i:20;s:12:\"quality.view\";i:21;s:14:\"quality.create\";i:22;s:12:\"quality.edit\";i:23;s:14:\"quality.delete\";i:24;s:14:\"quality.export\";i:25;s:8:\"crm.view\";i:26;s:10:\"crm.create\";i:27;s:8:\"crm.edit\";i:28;s:10:\"crm.delete\";i:29;s:10:\"crm.export\";i:30;s:12:\"reports.view\";i:31;s:14:\"reports.create\";i:32;s:14:\"reports.export\";i:33;s:10:\"admin.view\";i:34;s:12:\"admin.manage\";}',	1784722478),
-('inoodex-cache-tyro:user-1:roles',	'a:1:{i:0;s:11:\"super-admin\";}',	1784722365);
+('inoodex-cache-tyro:user-1:privileges',	'a:35:{i:0;s:12:\"finance.view\";i:1;s:14:\"finance.create\";i:2;s:12:\"finance.edit\";i:3;s:14:\"finance.delete\";i:4;s:14:\"finance.export\";i:5;s:7:\"hr.view\";i:6;s:9:\"hr.create\";i:7;s:7:\"hr.edit\";i:8;s:9:\"hr.delete\";i:9;s:9:\"hr.export\";i:10;s:16:\"procurement.view\";i:11;s:18:\"procurement.create\";i:12;s:16:\"procurement.edit\";i:13;s:18:\"procurement.delete\";i:14;s:18:\"procurement.export\";i:15;s:9:\"core.view\";i:16;s:11:\"core.create\";i:17;s:9:\"core.edit\";i:18;s:11:\"core.delete\";i:19;s:11:\"core.export\";i:20;s:12:\"quality.view\";i:21;s:14:\"quality.create\";i:22;s:12:\"quality.edit\";i:23;s:14:\"quality.delete\";i:24;s:14:\"quality.export\";i:25;s:8:\"crm.view\";i:26;s:10:\"crm.create\";i:27;s:8:\"crm.edit\";i:28;s:10:\"crm.delete\";i:29;s:10:\"crm.export\";i:30;s:12:\"reports.view\";i:31;s:14:\"reports.create\";i:32;s:14:\"reports.export\";i:33;s:10:\"admin.view\";i:34;s:12:\"admin.manage\";}',	1785129911),
+('inoodex-cache-tyro:user-1:roles',	'a:1:{i:0;s:11:\"super-admin\";}',	1785129911);
 
 DROP TABLE IF EXISTS `cache_locks`;
 CREATE TABLE `cache_locks` (
-  `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `owner` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `expiration` int NOT NULL,
+  `key` varchar(255) NOT NULL,
+  `owner` varchar(255) NOT NULL,
+  `expiration` int(11) NOT NULL,
   PRIMARY KEY (`key`),
   KEY `cache_locks_expiration_index` (`expiration`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -325,12 +325,12 @@ CREATE TABLE `cache_locks` (
 
 DROP TABLE IF EXISTS `categories`;
 CREATE TABLE `categories` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `value` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `label` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `is_active` tinyint(1) NOT NULL DEFAULT '1',
-  `sort_order` int NOT NULL DEFAULT '0',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `type` varchar(255) NOT NULL,
+  `value` varchar(255) NOT NULL,
+  `label` varchar(255) NOT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `sort_order` int(11) NOT NULL DEFAULT 0,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -367,17 +367,17 @@ INSERT INTO `categories` (`id`, `type`, `value`, `label`, `is_active`, `sort_ord
 
 DROP TABLE IF EXISTS `certifications`;
 CREATE TABLE `certifications` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `employee_id` bigint unsigned NOT NULL,
-  `certification_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `issuing_authority` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `certificate_no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `category` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'certification',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `employee_id` bigint(20) unsigned NOT NULL,
+  `certification_name` varchar(255) NOT NULL,
+  `issuing_authority` varchar(255) DEFAULT NULL,
+  `certificate_no` varchar(255) DEFAULT NULL,
+  `category` varchar(50) NOT NULL DEFAULT 'certification',
   `issue_date` date NOT NULL,
   `expiry_date` date DEFAULT NULL,
-  `status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
+  `status` varchar(50) NOT NULL DEFAULT 'active',
   `renewal_reminder_date` date DEFAULT NULL,
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -388,22 +388,22 @@ CREATE TABLE `certifications` (
 
 DROP TABLE IF EXISTS `change_orders`;
 CREATE TABLE `change_orders` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `contract_id` bigint unsigned DEFAULT NULL,
-  `change_order_number` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `type` enum('variation','change_order','extension') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'variation',
-  `status` enum('draft','submitted','under_review','approved','rejected','implemented') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `contract_id` bigint(20) unsigned DEFAULT NULL,
+  `change_order_number` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  `type` enum('variation','change_order','extension') NOT NULL DEFAULT 'variation',
+  `status` enum('draft','submitted','under_review','approved','rejected','implemented') NOT NULL DEFAULT 'draft',
   `cost_impact` decimal(15,2) DEFAULT NULL,
-  `time_impact_days` int DEFAULT NULL,
-  `rfi_id` bigint unsigned DEFAULT NULL,
-  `requested_by` bigint unsigned DEFAULT NULL,
-  `approved_by` bigint unsigned DEFAULT NULL,
+  `time_impact_days` int(11) DEFAULT NULL,
+  `rfi_id` bigint(20) unsigned DEFAULT NULL,
+  `requested_by` bigint(20) unsigned DEFAULT NULL,
+  `approved_by` bigint(20) unsigned DEFAULT NULL,
   `approved_date` date DEFAULT NULL,
-  `attachment_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `notes` text COLLATE utf8mb4_unicode_ci,
+  `attachment_path` varchar(255) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -425,14 +425,14 @@ INSERT INTO `change_orders` (`id`, `project_id`, `contract_id`, `change_order_nu
 
 DROP TABLE IF EXISTS `chart_of_accounts`;
 CREATE TABLE `chart_of_accounts` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `account_code` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `normal_balance` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `parent_id` bigint unsigned DEFAULT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `account_code` varchar(20) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `type` varchar(255) NOT NULL,
+  `normal_balance` varchar(255) NOT NULL,
+  `parent_id` bigint(20) unsigned DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -465,15 +465,36 @@ INSERT INTO `chart_of_accounts` (`id`, `account_code`, `name`, `type`, `normal_b
 (64,	'3-1020',	'Retained Earnings',	'equity',	'credit',	42,	NULL,	1,	'2026-07-15 23:30:42',	'2026-07-15 23:30:42'),
 (65,	'4-1010',	'Contract Revenue',	'income',	'credit',	43,	NULL,	1,	'2026-07-15 23:30:42',	'2026-07-15 23:30:42');
 
+DROP TABLE IF EXISTS `clients`;
+CREATE TABLE `clients` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `company_name` varchar(255) NOT NULL,
+  `contact_person` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `mobile` varchar(255) DEFAULT NULL,
+  `address` text DEFAULT NULL,
+  `tax_id` varchar(255) DEFAULT NULL,
+  `trade_license` varchar(255) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `status` enum('active','inactive') NOT NULL DEFAULT 'active',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `clients` (`id`, `company_name`, `contact_person`, `email`, `phone`, `mobile`, `address`, `tax_id`, `trade_license`, `notes`, `status`, `created_at`, `updated_at`) VALUES
+(1,	'ABC Company',	'Client 1',	'client@inoodex.com',	'01234567890',	'01234567890',	'Dhaka',	'01234567890',	'01234567890',	'Test',	'active',	'2026-07-05 23:24:50',	'2026-07-05 23:24:50');
+
 DROP TABLE IF EXISTS `client_contacts`;
 CREATE TABLE `client_contacts` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `client_id` bigint unsigned NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `designation` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `phone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `is_primary` tinyint(1) NOT NULL DEFAULT '0',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `client_id` bigint(20) unsigned NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `designation` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `is_primary` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -486,11 +507,11 @@ INSERT INTO `client_contacts` (`id`, `client_id`, `name`, `designation`, `email`
 
 DROP TABLE IF EXISTS `client_documents`;
 CREATE TABLE `client_documents` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `client_id` bigint unsigned NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `file_path` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `client_id` bigint(20) unsigned NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `file_path` varchar(255) NOT NULL,
+  `type` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -499,37 +520,16 @@ CREATE TABLE `client_documents` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
-DROP TABLE IF EXISTS `clients`;
-CREATE TABLE `clients` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `company_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `contact_person` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `phone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `mobile` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `address` text COLLATE utf8mb4_unicode_ci,
-  `tax_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `trade_license` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `notes` text COLLATE utf8mb4_unicode_ci,
-  `status` enum('active','inactive') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-INSERT INTO `clients` (`id`, `company_name`, `contact_person`, `email`, `phone`, `mobile`, `address`, `tax_id`, `trade_license`, `notes`, `status`, `created_at`, `updated_at`) VALUES
-(1,	'ABC Company',	'Client 1',	'client@inoodex.com',	'01234567890',	'01234567890',	'Dhaka',	'01234567890',	'01234567890',	'Test',	'active',	'2026-07-05 23:24:50',	'2026-07-05 23:24:50');
-
 DROP TABLE IF EXISTS `communication_logs`;
 CREATE TABLE `communication_logs` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `communicable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `communicable_id` bigint unsigned NOT NULL,
-  `type` enum('call','email','meeting','note') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'note',
-  `subject` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `notes` text COLLATE utf8mb4_unicode_ci,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `communicable_type` varchar(255) NOT NULL,
+  `communicable_id` bigint(20) unsigned NOT NULL,
+  `type` enum('call','email','meeting','note') NOT NULL DEFAULT 'note',
+  `subject` varchar(255) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
   `date` date NOT NULL,
-  `created_by` bigint unsigned DEFAULT NULL,
+  `created_by` bigint(20) unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -539,26 +539,64 @@ CREATE TABLE `communication_logs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
+DROP TABLE IF EXISTS `concrete_ratios`;
+CREATE TABLE `concrete_ratios` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `reference_no` varchar(50) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `grade` varchar(10) DEFAULT NULL,
+  `rod_calculation_id` bigint(20) unsigned DEFAULT NULL,
+  `status` varchar(20) NOT NULL DEFAULT 'draft',
+  `waste_percent` decimal(5,2) DEFAULT NULL,
+  `created_by` bigint(20) unsigned NOT NULL,
+  `approved_by` bigint(20) unsigned DEFAULT NULL,
+  `approved_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `concrete_ratios_reference_no_unique` (`reference_no`),
+  KEY `concrete_ratios_rod_calculation_id_foreign` (`rod_calculation_id`),
+  KEY `concrete_ratios_created_by_foreign` (`created_by`),
+  KEY `concrete_ratios_approved_by_foreign` (`approved_by`),
+  KEY `concrete_ratios_project_id_index` (`project_id`),
+  KEY `concrete_ratios_status_index` (`status`),
+  CONSTRAINT `concrete_ratios_approved_by_foreign` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`),
+  CONSTRAINT `concrete_ratios_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`),
+  CONSTRAINT `concrete_ratios_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`),
+  CONSTRAINT `concrete_ratios_rod_calculation_id_foreign` FOREIGN KEY (`rod_calculation_id`) REFERENCES `rod_calculations` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `concrete_ratios` (`id`, `project_id`, `reference_no`, `title`, `description`, `grade`, `rod_calculation_id`, `status`, `waste_percent`, `created_by`, `approved_by`, `approved_at`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1,	5,	'CR-GREENT-2026-00001',	'Ratio 1',	NULL,	'M20',	NULL,	'draft',	2.00,	1,	NULL,	NULL,	'2026-07-21 22:35:40',	'2026-07-21 22:48:35',	'2026-07-21 22:48:35'),
+(2,	5,	'CR-GREENT-2026-00002',	'asdfsdf',	NULL,	'M15',	1,	'draft',	3.00,	1,	NULL,	NULL,	'2026-07-21 22:49:07',	'2026-07-21 22:59:37',	'2026-07-21 22:59:37'),
+(3,	6,	'CR-RUPAYA-2026-00001',	'dregsdg',	NULL,	'M15',	NULL,	'draft',	NULL,	1,	NULL,	NULL,	'2026-07-21 23:07:21',	'2026-07-21 23:16:32',	'2026-07-21 23:16:32'),
+(4,	6,	'CR-RUPAYA-2026-00002',	'sdfhsdh',	NULL,	'M15',	NULL,	'draft',	2.00,	1,	NULL,	NULL,	'2026-07-21 23:16:42',	'2026-07-21 23:21:30',	'2026-07-21 23:21:30'),
+(5,	6,	'CR-RUPAYA-2026-00003',	'sadfv',	NULL,	'M15',	NULL,	'draft',	2.00,	1,	NULL,	NULL,	'2026-07-21 23:21:43',	'2026-07-21 23:21:43',	NULL),
+(6,	5,	'CR-GREENT-2026-00003',	'asdgasdg',	NULL,	'M15',	1,	'draft',	2.00,	1,	NULL,	NULL,	'2026-07-21 23:28:18',	'2026-07-22 00:35:18',	NULL);
+
 DROP TABLE IF EXISTS `concrete_ratio_members`;
 CREATE TABLE `concrete_ratio_members` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `concrete_ratio_id` bigint unsigned NOT NULL,
-  `rod_member_id` bigint unsigned DEFAULT NULL,
-  `type` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `member_code` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `quantity` int NOT NULL DEFAULT '1',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `concrete_ratio_id` bigint(20) unsigned NOT NULL,
+  `rod_member_id` bigint(20) unsigned DEFAULT NULL,
+  `type` varchar(30) NOT NULL,
+  `member_code` varchar(100) NOT NULL,
+  `quantity` int(11) NOT NULL DEFAULT 1,
   `length` decimal(10,2) DEFAULT NULL,
   `width` decimal(10,2) DEFAULT NULL,
   `height` decimal(10,2) DEFAULT NULL,
   `depth` decimal(10,2) DEFAULT NULL,
   `thickness` decimal(10,2) DEFAULT NULL,
-  `volume_m3` decimal(10,4) NOT NULL DEFAULT '0.0000',
-  `cement_bags` decimal(10,2) NOT NULL DEFAULT '0.00',
-  `sand_m3` decimal(10,4) NOT NULL DEFAULT '0.0000',
-  `aggregate_m3` decimal(10,4) NOT NULL DEFAULT '0.0000',
-  `water_liters` decimal(10,2) NOT NULL DEFAULT '0.00',
-  `sort_order` int NOT NULL DEFAULT '0',
-  `remarks` text COLLATE utf8mb4_unicode_ci,
+  `volume_m3` decimal(10,4) NOT NULL DEFAULT 0.0000,
+  `cement_bags` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `sand_m3` decimal(10,4) NOT NULL DEFAULT 0.0000,
+  `aggregate_m3` decimal(10,4) NOT NULL DEFAULT 0.0000,
+  `water_liters` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `sort_order` int(11) NOT NULL DEFAULT 0,
+  `remarks` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -572,60 +610,55 @@ CREATE TABLE `concrete_ratio_members` (
 INSERT INTO `concrete_ratio_members` (`id`, `concrete_ratio_id`, `rod_member_id`, `type`, `member_code`, `quantity`, `length`, `width`, `height`, `depth`, `thickness`, `volume_m3`, `cement_bags`, `sand_m3`, `aggregate_m3`, `water_liters`, `sort_order`, `remarks`, `created_at`, `updated_at`) VALUES
 (2,	6,	1,	'footing',	'F1',	1000,	2000.00,	1200.00,	300.00,	200.00,	25.00,	720.0000,	4752.00,	324.0000,	648.0000,	147600.00,	0,	NULL,	'2026-07-22 00:35:18',	'2026-07-22 00:44:26');
 
-DROP TABLE IF EXISTS `concrete_ratios`;
-CREATE TABLE `concrete_ratios` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `reference_no` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `grade` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `rod_calculation_id` bigint unsigned DEFAULT NULL,
-  `status` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
-  `waste_percent` decimal(5,2) DEFAULT NULL,
-  `created_by` bigint unsigned NOT NULL,
-  `approved_by` bigint unsigned DEFAULT NULL,
-  `approved_at` timestamp NULL DEFAULT NULL,
+DROP TABLE IF EXISTS `contracts`;
+CREATE TABLE `contracts` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `contract_number` varchar(50) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `client_name` varchar(255) NOT NULL,
+  `contract_type` enum('main','subcontract','supply','consultancy') NOT NULL DEFAULT 'main',
+  `contract_value` decimal(15,2) NOT NULL,
+  `currency` varchar(10) NOT NULL DEFAULT 'BDT',
+  `signing_date` date NOT NULL,
+  `commencement_date` date NOT NULL,
+  `completion_date` date DEFAULT NULL,
+  `extended_completion_date` date DEFAULT NULL,
+  `retention_percentage` decimal(5,2) NOT NULL DEFAULT 5.00,
+  `liquidated_damages_rate` decimal(10,2) DEFAULT NULL,
+  `advance_payment_percentage` decimal(5,2) DEFAULT NULL,
+  `status` enum('draft','active','suspended','completed','terminated') NOT NULL DEFAULT 'draft',
+  `notes` text DEFAULT NULL,
+  `created_by` bigint(20) unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `concrete_ratios_reference_no_unique` (`reference_no`),
-  KEY `concrete_ratios_rod_calculation_id_foreign` (`rod_calculation_id`),
-  KEY `concrete_ratios_created_by_foreign` (`created_by`),
-  KEY `concrete_ratios_approved_by_foreign` (`approved_by`),
-  KEY `concrete_ratios_project_id_index` (`project_id`),
-  KEY `concrete_ratios_status_index` (`status`),
-  CONSTRAINT `concrete_ratios_approved_by_foreign` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `concrete_ratios_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `concrete_ratios_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `concrete_ratios_rod_calculation_id_foreign` FOREIGN KEY (`rod_calculation_id`) REFERENCES `rod_calculations` (`id`) ON DELETE SET NULL
+  UNIQUE KEY `contracts_contract_number_unique` (`contract_number`),
+  KEY `contracts_project_id_foreign` (`project_id`),
+  KEY `contracts_created_by_foreign` (`created_by`),
+  CONSTRAINT `contracts_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `contracts_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `concrete_ratios` (`id`, `project_id`, `reference_no`, `title`, `description`, `grade`, `rod_calculation_id`, `status`, `waste_percent`, `created_by`, `approved_by`, `approved_at`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1,	5,	'CR-GREENT-2026-00001',	'Ratio 1',	NULL,	'M20',	NULL,	'draft',	2.00,	1,	NULL,	NULL,	'2026-07-21 22:35:40',	'2026-07-21 22:48:35',	'2026-07-21 22:48:35'),
-(2,	5,	'CR-GREENT-2026-00002',	'asdfsdf',	NULL,	'M15',	1,	'draft',	3.00,	1,	NULL,	NULL,	'2026-07-21 22:49:07',	'2026-07-21 22:59:37',	'2026-07-21 22:59:37'),
-(3,	6,	'CR-RUPAYA-2026-00001',	'dregsdg',	NULL,	'M15',	NULL,	'draft',	NULL,	1,	NULL,	NULL,	'2026-07-21 23:07:21',	'2026-07-21 23:16:32',	'2026-07-21 23:16:32'),
-(4,	6,	'CR-RUPAYA-2026-00002',	'sdfhsdh',	NULL,	'M15',	NULL,	'draft',	2.00,	1,	NULL,	NULL,	'2026-07-21 23:16:42',	'2026-07-21 23:21:30',	'2026-07-21 23:21:30'),
-(5,	6,	'CR-RUPAYA-2026-00003',	'sadfv',	NULL,	'M15',	NULL,	'draft',	2.00,	1,	NULL,	NULL,	'2026-07-21 23:21:43',	'2026-07-21 23:21:43',	NULL),
-(6,	5,	'CR-GREENT-2026-00003',	'asdgasdg',	NULL,	'M15',	1,	'draft',	2.00,	1,	NULL,	NULL,	'2026-07-21 23:28:18',	'2026-07-22 00:35:18',	NULL);
+INSERT INTO `contracts` (`id`, `project_id`, `contract_number`, `title`, `client_name`, `contract_type`, `contract_value`, `currency`, `signing_date`, `commencement_date`, `completion_date`, `extended_completion_date`, `retention_percentage`, `liquidated_damages_rate`, `advance_payment_percentage`, `status`, `notes`, `created_by`, `created_at`, `updated_at`) VALUES
+(1,	6,	'CTR-20260714-0001',	'Internal Directives Specialist',	'Apto fugit',	'supply',	362000.00,	'BDT',	'2026-10-20',	'2027-05-08',	'2027-06-21',	'2028-04-03',	5.00,	10.00,	25.00,	'active',	NULL,	1,	'2026-07-14 00:51:25',	'2026-07-14 00:51:25');
 
 DROP TABLE IF EXISTS `contract_amendments`;
 CREATE TABLE `contract_amendments` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `contract_id` bigint unsigned NOT NULL,
-  `amendment_number` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `type` enum('scope_change','time_extension','value_change','other') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `contract_id` bigint(20) unsigned NOT NULL,
+  `amendment_number` varchar(50) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  `type` enum('scope_change','time_extension','value_change','other') NOT NULL,
   `cost_impact` decimal(15,2) DEFAULT NULL,
-  `time_impact_days` int DEFAULT NULL,
-  `status` enum('draft','submitted','approved','rejected') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
-  `requested_by` bigint unsigned DEFAULT NULL,
-  `approved_by` bigint unsigned DEFAULT NULL,
+  `time_impact_days` int(11) DEFAULT NULL,
+  `status` enum('draft','submitted','approved','rejected') NOT NULL DEFAULT 'draft',
+  `requested_by` bigint(20) unsigned DEFAULT NULL,
+  `approved_by` bigint(20) unsigned DEFAULT NULL,
   `approved_date` date DEFAULT NULL,
-  `notes` text COLLATE utf8mb4_unicode_ci,
-  `created_by` bigint unsigned DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_by` bigint(20) unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -643,23 +676,23 @@ CREATE TABLE `contract_amendments` (
 
 DROP TABLE IF EXISTS `contract_claims`;
 CREATE TABLE `contract_claims` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `contract_id` bigint unsigned NOT NULL,
-  `claim_number` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `type` enum('time_extension','cost_compensation','both') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `contract_id` bigint(20) unsigned NOT NULL,
+  `claim_number` varchar(50) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  `type` enum('time_extension','cost_compensation','both') NOT NULL,
   `claimed_amount` decimal(15,2) DEFAULT NULL,
-  `claimed_days` int DEFAULT NULL,
+  `claimed_days` int(11) DEFAULT NULL,
   `granted_amount` decimal(15,2) DEFAULT NULL,
-  `granted_days` int DEFAULT NULL,
-  `status` enum('draft','submitted','under_review','granted','partially_granted','rejected') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
+  `granted_days` int(11) DEFAULT NULL,
+  `status` enum('draft','submitted','under_review','granted','partially_granted','rejected') NOT NULL DEFAULT 'draft',
   `submitted_date` date DEFAULT NULL,
   `response_date` date DEFAULT NULL,
-  `submitted_by` bigint unsigned DEFAULT NULL,
-  `reviewed_by` bigint unsigned DEFAULT NULL,
-  `notes` text COLLATE utf8mb4_unicode_ci,
-  `created_by` bigint unsigned DEFAULT NULL,
+  `submitted_by` bigint(20) unsigned DEFAULT NULL,
+  `reviewed_by` bigint(20) unsigned DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_by` bigint(20) unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -677,14 +710,14 @@ CREATE TABLE `contract_claims` (
 
 DROP TABLE IF EXISTS `contract_closeout_items`;
 CREATE TABLE `contract_closeout_items` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `contract_id` bigint unsigned NOT NULL,
-  `item` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `is_completed` tinyint(1) NOT NULL DEFAULT '0',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `contract_id` bigint(20) unsigned NOT NULL,
+  `item` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `is_completed` tinyint(1) NOT NULL DEFAULT 0,
   `completed_date` date DEFAULT NULL,
-  `completed_by` bigint unsigned DEFAULT NULL,
-  `order_index` int NOT NULL DEFAULT '0',
+  `completed_by` bigint(20) unsigned DEFAULT NULL,
+  `order_index` int(11) NOT NULL DEFAULT 0,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -695,60 +728,27 @@ CREATE TABLE `contract_closeout_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
-DROP TABLE IF EXISTS `contracts`;
-CREATE TABLE `contracts` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `contract_number` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `client_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `contract_type` enum('main','subcontract','supply','consultancy') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'main',
-  `contract_value` decimal(15,2) NOT NULL,
-  `currency` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'BDT',
-  `signing_date` date NOT NULL,
-  `commencement_date` date NOT NULL,
-  `completion_date` date DEFAULT NULL,
-  `extended_completion_date` date DEFAULT NULL,
-  `retention_percentage` decimal(5,2) NOT NULL DEFAULT '5.00',
-  `liquidated_damages_rate` decimal(10,2) DEFAULT NULL,
-  `advance_payment_percentage` decimal(5,2) DEFAULT NULL,
-  `status` enum('draft','active','suspended','completed','terminated') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
-  `notes` text COLLATE utf8mb4_unicode_ci,
-  `created_by` bigint unsigned DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `contracts_contract_number_unique` (`contract_number`),
-  KEY `contracts_project_id_foreign` (`project_id`),
-  KEY `contracts_created_by_foreign` (`created_by`),
-  CONSTRAINT `contracts_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
-  CONSTRAINT `contracts_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-INSERT INTO `contracts` (`id`, `project_id`, `contract_number`, `title`, `client_name`, `contract_type`, `contract_value`, `currency`, `signing_date`, `commencement_date`, `completion_date`, `extended_completion_date`, `retention_percentage`, `liquidated_damages_rate`, `advance_payment_percentage`, `status`, `notes`, `created_by`, `created_at`, `updated_at`) VALUES
-(1,	6,	'CTR-20260714-0001',	'Internal Directives Specialist',	'Apto fugit',	'supply',	362000.00,	'BDT',	'2026-10-20',	'2027-05-08',	'2027-06-21',	'2028-04-03',	5.00,	10.00,	25.00,	'active',	NULL,	1,	'2026-07-14 00:51:25',	'2026-07-14 00:51:25');
-
 DROP TABLE IF EXISTS `corrective_actions`;
 CREATE TABLE `corrective_actions` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `ncr_id` bigint unsigned DEFAULT NULL,
-  `punch_list_item_id` bigint unsigned DEFAULT NULL,
-  `project_id` bigint unsigned NOT NULL,
-  `car_number` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `root_cause` text COLLATE utf8mb4_unicode_ci,
-  `corrective_action` text COLLATE utf8mb4_unicode_ci,
-  `preventive_action` text COLLATE utf8mb4_unicode_ci,
-  `responsible_person` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `ncr_id` bigint(20) unsigned DEFAULT NULL,
+  `punch_list_item_id` bigint(20) unsigned DEFAULT NULL,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `car_number` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  `root_cause` text DEFAULT NULL,
+  `corrective_action` text DEFAULT NULL,
+  `preventive_action` text DEFAULT NULL,
+  `responsible_person` varchar(255) DEFAULT NULL,
   `target_date` date DEFAULT NULL,
   `completed_date` date DEFAULT NULL,
-  `status` enum('open','in_progress','completed','verified','closed') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'open',
-  `verified_by` bigint unsigned DEFAULT NULL,
+  `status` enum('open','in_progress','completed','verified','closed') NOT NULL DEFAULT 'open',
+  `verified_by` bigint(20) unsigned DEFAULT NULL,
   `verified_date` date DEFAULT NULL,
-  `effectiveness_check` text COLLATE utf8mb4_unicode_ci,
-  `notes` text COLLATE utf8mb4_unicode_ci,
-  `created_by` bigint unsigned DEFAULT NULL,
+  `effectiveness_check` text DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_by` bigint(20) unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -768,21 +768,21 @@ CREATE TABLE `corrective_actions` (
 
 DROP TABLE IF EXISTS `cost_overrun_alerts`;
 CREATE TABLE `cost_overrun_alerts` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `budget_id` bigint unsigned DEFAULT NULL,
-  `cost_code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `budget_id` bigint(20) unsigned DEFAULT NULL,
+  `cost_code` varchar(255) DEFAULT NULL,
   `budgeted_amount` decimal(15,2) NOT NULL,
   `actual_amount` decimal(15,2) NOT NULL,
   `variance` decimal(15,2) NOT NULL,
   `variance_percentage` decimal(8,2) NOT NULL,
-  `severity` enum('warning','danger','critical') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'warning',
-  `message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `status` enum('open','acknowledged','resolved') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'open',
-  `created_by` bigint unsigned DEFAULT NULL,
+  `severity` enum('warning','danger','critical') NOT NULL DEFAULT 'warning',
+  `message` text NOT NULL,
+  `status` enum('open','acknowledged','resolved') NOT NULL DEFAULT 'open',
+  `created_by` bigint(20) unsigned DEFAULT NULL,
   `acknowledged_at` timestamp NULL DEFAULT NULL,
-  `acknowledged_by` bigint unsigned DEFAULT NULL,
-  `resolution_notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `acknowledged_by` bigint(20) unsigned DEFAULT NULL,
+  `resolution_notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -799,16 +799,38 @@ CREATE TABLE `cost_overrun_alerts` (
 INSERT INTO `cost_overrun_alerts` (`id`, `project_id`, `budget_id`, `cost_code`, `budgeted_amount`, `actual_amount`, `variance`, `variance_percentage`, `severity`, `message`, `status`, `created_by`, `acknowledged_at`, `acknowledged_by`, `resolution_notes`, `created_at`, `updated_at`) VALUES
 (1,	5,	1,	'101',	2500000.00,	2250000.00,	250000.00,	90.00,	'warning',	'Budget warning: 101 is at 90% of budget (৳2,250,000 vs ৳2,500,000)',	'open',	1,	NULL,	NULL,	NULL,	'2026-06-22 03:59:24',	'2026-06-22 03:59:24');
 
+DROP TABLE IF EXISTS `drawings`;
+CREATE TABLE `drawings` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `drawing_number` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `drawing_type` enum('architectural','structural','mep','shop','as_built','other') NOT NULL DEFAULT 'other',
+  `discipline` varchar(255) DEFAULT NULL,
+  `current_revision` varchar(255) DEFAULT NULL,
+  `status` enum('draft','issued','superseded','obsolete') NOT NULL DEFAULT 'draft',
+  `description` text DEFAULT NULL,
+  `created_by` bigint(20) unsigned DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `drawings_project_id_foreign` (`project_id`),
+  CONSTRAINT `drawings_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `drawings` (`id`, `project_id`, `drawing_number`, `title`, `drawing_type`, `discipline`, `current_revision`, `status`, `description`, `created_by`, `created_at`, `updated_at`) VALUES
+(1,	5,	'DRW-20260711-0001',	'Design 1',	'architectural',	NULL,	NULL,	'draft',	NULL,	1,	'2026-07-10 22:55:39',	'2026-07-10 22:55:39');
+
 DROP TABLE IF EXISTS `drawing_revisions`;
 CREATE TABLE `drawing_revisions` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `drawing_id` bigint unsigned NOT NULL,
-  `revision` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `drawing_id` bigint(20) unsigned NOT NULL,
+  `revision` varchar(255) NOT NULL,
   `revision_date` date NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `file_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `uploaded_by` bigint unsigned DEFAULT NULL,
-  `is_current` tinyint(1) NOT NULL DEFAULT '0',
+  `description` text DEFAULT NULL,
+  `file_path` varchar(255) DEFAULT NULL,
+  `uploaded_by` bigint(20) unsigned DEFAULT NULL,
+  `is_current` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -819,13 +841,35 @@ CREATE TABLE `drawing_revisions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
+DROP TABLE IF EXISTS `drawing_transmittals`;
+CREATE TABLE `drawing_transmittals` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `transmittal_number` varchar(255) NOT NULL,
+  `to_party` varchar(255) NOT NULL,
+  `from_user_id` bigint(20) unsigned DEFAULT NULL,
+  `sent_date` date NOT NULL,
+  `purpose` enum('for_approval','for_information','for_construction','as_built') NOT NULL DEFAULT 'for_information',
+  `status` enum('draft','sent','acknowledged') NOT NULL DEFAULT 'draft',
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `drawing_transmittals_transmittal_number_unique` (`transmittal_number`),
+  KEY `drawing_transmittals_project_id_foreign` (`project_id`),
+  KEY `drawing_transmittals_from_user_id_foreign` (`from_user_id`),
+  CONSTRAINT `drawing_transmittals_from_user_id_foreign` FOREIGN KEY (`from_user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `drawing_transmittals_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 DROP TABLE IF EXISTS `drawing_transmittal_items`;
 CREATE TABLE `drawing_transmittal_items` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `drawing_transmittal_id` bigint unsigned NOT NULL,
-  `drawing_id` bigint unsigned NOT NULL,
-  `drawing_revision_id` bigint unsigned DEFAULT NULL,
-  `copies` int unsigned NOT NULL DEFAULT '1',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `drawing_transmittal_id` bigint(20) unsigned NOT NULL,
+  `drawing_id` bigint(20) unsigned NOT NULL,
+  `drawing_revision_id` bigint(20) unsigned DEFAULT NULL,
+  `copies` int(10) unsigned NOT NULL DEFAULT 1,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -838,74 +882,30 @@ CREATE TABLE `drawing_transmittal_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
-DROP TABLE IF EXISTS `drawing_transmittals`;
-CREATE TABLE `drawing_transmittals` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `transmittal_number` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `to_party` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `from_user_id` bigint unsigned DEFAULT NULL,
-  `sent_date` date NOT NULL,
-  `purpose` enum('for_approval','for_information','for_construction','as_built') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'for_information',
-  `status` enum('draft','sent','acknowledged') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
-  `notes` text COLLATE utf8mb4_unicode_ci,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `drawing_transmittals_transmittal_number_unique` (`transmittal_number`),
-  KEY `drawing_transmittals_project_id_foreign` (`project_id`),
-  KEY `drawing_transmittals_from_user_id_foreign` (`from_user_id`),
-  CONSTRAINT `drawing_transmittals_from_user_id_foreign` FOREIGN KEY (`from_user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
-  CONSTRAINT `drawing_transmittals_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-
-DROP TABLE IF EXISTS `drawings`;
-CREATE TABLE `drawings` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `drawing_number` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `drawing_type` enum('architectural','structural','mep','shop','as_built','other') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'other',
-  `discipline` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `current_revision` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` enum('draft','issued','superseded','obsolete') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `created_by` bigint unsigned DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `drawings_project_id_foreign` (`project_id`),
-  CONSTRAINT `drawings_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-INSERT INTO `drawings` (`id`, `project_id`, `drawing_number`, `title`, `drawing_type`, `discipline`, `current_revision`, `status`, `description`, `created_by`, `created_at`, `updated_at`) VALUES
-(1,	5,	'DRW-20260711-0001',	'Design 1',	'architectural',	NULL,	NULL,	'draft',	NULL,	1,	'2026-07-10 22:55:39',	'2026-07-10 22:55:39');
-
 DROP TABLE IF EXISTS `employees`;
 CREATE TABLE `employees` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `employee_code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `full_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `father_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `mother_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `employee_code` varchar(255) NOT NULL,
+  `full_name` varchar(255) NOT NULL,
+  `father_name` varchar(255) DEFAULT NULL,
+  `mother_name` varchar(255) DEFAULT NULL,
   `date_of_birth` date DEFAULT NULL,
-  `gender` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `blood_group` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `phone` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `nid_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `present_address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `permanent_address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `designation` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `department` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `employment_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'permanent',
+  `gender` varchar(255) DEFAULT NULL,
+  `blood_group` varchar(255) DEFAULT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `nid_number` varchar(255) DEFAULT NULL,
+  `present_address` text DEFAULT NULL,
+  `permanent_address` text DEFAULT NULL,
+  `designation` varchar(255) DEFAULT NULL,
+  `department` varchar(255) DEFAULT NULL,
+  `employment_type` varchar(255) NOT NULL DEFAULT 'permanent',
   `joining_date` date DEFAULT NULL,
-  `basic_salary` decimal(12,2) NOT NULL DEFAULT '0.00',
-  `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
-  `emergency_contact_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `emergency_contact_phone` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `photo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `basic_salary` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `status` varchar(255) NOT NULL DEFAULT 'active',
+  `emergency_contact_name` varchar(255) DEFAULT NULL,
+  `emergency_contact_phone` varchar(255) DEFAULT NULL,
+  `photo` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -917,36 +917,36 @@ INSERT INTO `employees` (`id`, `employee_code`, `full_name`, `father_name`, `mot
 
 DROP TABLE IF EXISTS `equipment`;
 CREATE TABLE `equipment` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `category` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `make` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `model` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `year` year DEFAULT NULL,
-  `serial_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `acquisition_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'owned',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `category` varchar(255) DEFAULT NULL,
+  `make` varchar(255) DEFAULT NULL,
+  `model` varchar(255) DEFAULT NULL,
+  `year` year(4) DEFAULT NULL,
+  `serial_number` varchar(255) DEFAULT NULL,
+  `acquisition_type` varchar(50) NOT NULL DEFAULT 'owned',
   `hire_rate` decimal(10,2) DEFAULT NULL,
-  `hire_rate_period` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hire_rate_period` varchar(20) DEFAULT NULL,
   `hire_start_date` date DEFAULT NULL,
   `hire_end_date` date DEFAULT NULL,
-  `hire_vendor` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `purchase_cost` decimal(12,2) NOT NULL DEFAULT '0.00',
+  `hire_vendor` varchar(255) DEFAULT NULL,
+  `purchase_cost` decimal(12,2) NOT NULL DEFAULT 0.00,
   `purchase_date` date DEFAULT NULL,
-  `useful_life_years` int NOT NULL DEFAULT '5',
-  `salvage_value` decimal(12,2) NOT NULL DEFAULT '0.00',
-  `current_value` decimal(12,2) NOT NULL DEFAULT '0.00',
-  `status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
-  `location` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `operator` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `meter_hours` int NOT NULL DEFAULT '0',
-  `maintenance_interval_hours` int DEFAULT NULL,
-  `next_maintenance_hours` int DEFAULT NULL,
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `useful_life_years` int(11) NOT NULL DEFAULT 5,
+  `salvage_value` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `current_value` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `status` varchar(50) NOT NULL DEFAULT 'active',
+  `location` varchar(255) DEFAULT NULL,
+  `operator` varchar(255) DEFAULT NULL,
+  `meter_hours` int(11) NOT NULL DEFAULT 0,
+  `maintenance_interval_hours` int(11) DEFAULT NULL,
+  `next_maintenance_hours` int(11) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `project_id` bigint unsigned DEFAULT NULL,
-  `site_id` bigint unsigned DEFAULT NULL,
+  `project_id` bigint(20) unsigned DEFAULT NULL,
+  `site_id` bigint(20) unsigned DEFAULT NULL,
   `allocated_date` date DEFAULT NULL,
   `deallocated_date` date DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -962,17 +962,17 @@ INSERT INTO `equipment` (`id`, `code`, `name`, `category`, `make`, `model`, `yea
 
 DROP TABLE IF EXISTS `equipment_maintenance`;
 CREATE TABLE `equipment_maintenance` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `equipment_id` bigint unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `equipment_id` bigint(20) unsigned NOT NULL,
   `maintenance_date` date NOT NULL,
-  `type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'preventive',
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `meter_hours` int DEFAULT NULL,
-  `cost` decimal(10,2) NOT NULL DEFAULT '0.00',
-  `vendor` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `type` varchar(50) NOT NULL DEFAULT 'preventive',
+  `description` text NOT NULL,
+  `meter_hours` int(11) DEFAULT NULL,
+  `cost` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `vendor` varchar(255) DEFAULT NULL,
   `next_due_date` date DEFAULT NULL,
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'completed',
+  `notes` text DEFAULT NULL,
+  `status` varchar(50) NOT NULL DEFAULT 'completed',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -983,24 +983,24 @@ CREATE TABLE `equipment_maintenance` (
 
 DROP TABLE IF EXISTS `expenses`;
 CREATE TABLE `expenses` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `category_id` bigint unsigned NOT NULL,
-  `vendor_id` bigint unsigned DEFAULT NULL,
-  `project_id` bigint unsigned DEFAULT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `category_id` bigint(20) unsigned NOT NULL,
+  `vendor_id` bigint(20) unsigned DEFAULT NULL,
+  `project_id` bigint(20) unsigned DEFAULT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
   `amount` decimal(15,2) NOT NULL,
-  `tax_rate` decimal(5,2) NOT NULL DEFAULT '0.00',
-  `tax_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `tax_rate` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `tax_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
   `total_amount` decimal(15,2) NOT NULL,
   `expense_date` date NOT NULL,
-  `payment_method` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `reference_number` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `payment_account_id` bigint unsigned DEFAULT NULL,
-  `status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
-  `receipt` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `notes` text COLLATE utf8mb4_unicode_ci,
-  `created_by` bigint unsigned NOT NULL,
+  `payment_method` varchar(255) DEFAULT NULL,
+  `reference_number` varchar(255) DEFAULT NULL,
+  `payment_account_id` bigint(20) unsigned DEFAULT NULL,
+  `status` varchar(255) NOT NULL DEFAULT 'draft',
+  `receipt` varchar(255) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_by` bigint(20) unsigned NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1019,13 +1019,13 @@ CREATE TABLE `expenses` (
 
 DROP TABLE IF EXISTS `failed_jobs`;
 CREATE TABLE `failed_jobs` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `uuid` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `connection` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `queue` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `payload` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `exception` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(255) NOT NULL,
+  `connection` text NOT NULL,
+  `queue` text NOT NULL,
+  `payload` longtext NOT NULL,
+  `exception` longtext NOT NULL,
+  `failed_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1033,18 +1033,18 @@ CREATE TABLE `failed_jobs` (
 
 DROP TABLE IF EXISTS `fuel_logs`;
 CREATE TABLE `fuel_logs` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `equipment_id` bigint unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `equipment_id` bigint(20) unsigned NOT NULL,
   `date` date NOT NULL,
-  `fuel_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'diesel',
+  `fuel_type` varchar(50) NOT NULL DEFAULT 'diesel',
   `quantity` decimal(10,2) NOT NULL,
-  `unit` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'liters',
-  `unit_cost` decimal(10,2) NOT NULL DEFAULT '0.00',
-  `total_cost` decimal(12,2) NOT NULL DEFAULT '0.00',
-  `meter_hours` int DEFAULT NULL,
-  `vendor` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `receipt_no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `unit` varchar(20) NOT NULL DEFAULT 'liters',
+  `unit_cost` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `total_cost` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `meter_hours` int(11) DEFAULT NULL,
+  `vendor` varchar(255) DEFAULT NULL,
+  `receipt_no` varchar(255) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1055,11 +1055,38 @@ CREATE TABLE `fuel_logs` (
 INSERT INTO `fuel_logs` (`id`, `equipment_id`, `date`, `fuel_type`, `quantity`, `unit`, `unit_cost`, `total_cost`, `meter_hours`, `vendor`, `receipt_no`, `notes`, `created_at`, `updated_at`) VALUES
 (1,	1,	'2026-06-22',	'diesel',	1.00,	'liters',	100.00,	100.00,	12,	'Hansen Group',	'1234',	NULL,	'2026-06-22 01:00:15',	'2026-06-22 01:00:15');
 
+DROP TABLE IF EXISTS `goods_received_notes`;
+CREATE TABLE `goods_received_notes` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `purchase_order_id` bigint(20) unsigned NOT NULL,
+  `grn_number` varchar(255) NOT NULL,
+  `received_date` date NOT NULL,
+  `delivery_note` varchar(255) DEFAULT NULL,
+  `vehicle_number` varchar(255) DEFAULT NULL,
+  `received_by` bigint(20) unsigned NOT NULL,
+  `status` enum('pending','verified') NOT NULL DEFAULT 'pending',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `site_id` bigint(20) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `goods_received_notes_grn_number_unique` (`grn_number`),
+  KEY `goods_received_notes_purchase_order_id_foreign` (`purchase_order_id`),
+  KEY `goods_received_notes_received_by_foreign` (`received_by`),
+  KEY `goods_received_notes_site_id_foreign` (`site_id`),
+  CONSTRAINT `goods_received_notes_purchase_order_id_foreign` FOREIGN KEY (`purchase_order_id`) REFERENCES `purchase_orders` (`id`),
+  CONSTRAINT `goods_received_notes_received_by_foreign` FOREIGN KEY (`received_by`) REFERENCES `users` (`id`),
+  CONSTRAINT `goods_received_notes_site_id_foreign` FOREIGN KEY (`site_id`) REFERENCES `sites` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `goods_received_notes` (`id`, `purchase_order_id`, `grn_number`, `received_date`, `delivery_note`, `vehicle_number`, `received_by`, `status`, `created_at`, `updated_at`, `site_id`) VALUES
+(2,	2,	'GRN-20260622-C707',	'2026-06-22',	'123',	'12-3456',	1,	'pending',	'2026-06-21 23:22:51',	'2026-06-21 23:22:51',	5),
+(3,	3,	'GRN-20260622-6A43',	'2026-06-22',	'1234',	'05-6789',	1,	'verified',	'2026-06-22 05:46:24',	'2026-06-22 05:54:03',	6);
+
 DROP TABLE IF EXISTS `goods_received_note_items`;
 CREATE TABLE `goods_received_note_items` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `goods_received_note_id` bigint unsigned NOT NULL,
-  `material_id` bigint unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `goods_received_note_id` bigint(20) unsigned NOT NULL,
+  `material_id` bigint(20) unsigned NOT NULL,
   `quantity_received` decimal(12,4) NOT NULL,
   `quantity_accepted` decimal(12,4) NOT NULL,
   `quantity_rejected` decimal(12,4) NOT NULL,
@@ -1069,72 +1096,29 @@ CREATE TABLE `goods_received_note_items` (
   KEY `goods_received_note_items_goods_received_note_id_foreign` (`goods_received_note_id`),
   KEY `goods_received_note_items_material_id_foreign` (`material_id`),
   CONSTRAINT `goods_received_note_items_goods_received_note_id_foreign` FOREIGN KEY (`goods_received_note_id`) REFERENCES `goods_received_notes` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `goods_received_note_items_material_id_foreign` FOREIGN KEY (`material_id`) REFERENCES `materials` (`id`) ON DELETE RESTRICT
+  CONSTRAINT `goods_received_note_items_material_id_foreign` FOREIGN KEY (`material_id`) REFERENCES `materials` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `goods_received_note_items` (`id`, `goods_received_note_id`, `material_id`, `quantity_received`, `quantity_accepted`, `quantity_rejected`, `created_at`, `updated_at`) VALUES
 (2,	2,	4,	10.0000,	10.0000,	0.0000,	'2026-06-21 23:22:51',	'2026-06-21 23:22:51'),
 (3,	3,	5,	10.0000,	10.0000,	0.0000,	'2026-06-22 05:46:24',	'2026-06-22 05:46:24');
 
-DROP TABLE IF EXISTS `goods_received_notes`;
-CREATE TABLE `goods_received_notes` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `purchase_order_id` bigint unsigned NOT NULL,
-  `grn_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `received_date` date NOT NULL,
-  `delivery_note` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `vehicle_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `received_by` bigint unsigned NOT NULL,
-  `status` enum('pending','verified') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  `site_id` bigint unsigned DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `goods_received_notes_grn_number_unique` (`grn_number`),
-  KEY `goods_received_notes_purchase_order_id_foreign` (`purchase_order_id`),
-  KEY `goods_received_notes_received_by_foreign` (`received_by`),
-  KEY `goods_received_notes_site_id_foreign` (`site_id`),
-  CONSTRAINT `goods_received_notes_purchase_order_id_foreign` FOREIGN KEY (`purchase_order_id`) REFERENCES `purchase_orders` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `goods_received_notes_received_by_foreign` FOREIGN KEY (`received_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `goods_received_notes_site_id_foreign` FOREIGN KEY (`site_id`) REFERENCES `sites` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-INSERT INTO `goods_received_notes` (`id`, `purchase_order_id`, `grn_number`, `received_date`, `delivery_note`, `vehicle_number`, `received_by`, `status`, `created_at`, `updated_at`, `site_id`) VALUES
-(2,	2,	'GRN-20260622-C707',	'2026-06-22',	'123',	'12-3456',	1,	'pending',	'2026-06-21 23:22:51',	'2026-06-21 23:22:51',	5),
-(3,	3,	'GRN-20260622-6A43',	'2026-06-22',	'1234',	'05-6789',	1,	'verified',	'2026-06-22 05:46:24',	'2026-06-22 05:54:03',	6);
-
-DROP TABLE IF EXISTS `hse_checklist_items`;
-CREATE TABLE `hse_checklist_items` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `hse_checklist_id` bigint unsigned NOT NULL,
-  `item_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `is_compliant` tinyint(1) NOT NULL DEFAULT '0',
-  `remarks` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `order_index` int NOT NULL DEFAULT '0',
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `hse_checklist_items_hse_checklist_id_foreign` (`hse_checklist_id`),
-  CONSTRAINT `hse_checklist_items_hse_checklist_id_foreign` FOREIGN KEY (`hse_checklist_id`) REFERENCES `hse_checklists` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-
 DROP TABLE IF EXISTS `hse_checklists`;
 CREATE TABLE `hse_checklists` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `checklist_type` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'general',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `checklist_type` varchar(100) NOT NULL DEFAULT 'general',
   `inspection_date` date NOT NULL,
-  `status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'open',
-  `findings` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `corrective_actions` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `status` varchar(50) NOT NULL DEFAULT 'open',
+  `findings` text DEFAULT NULL,
+  `corrective_actions` text DEFAULT NULL,
   `closure_date` date DEFAULT NULL,
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `user_id` bigint unsigned DEFAULT NULL,
-  `project_id` bigint unsigned DEFAULT NULL,
-  `site_id` bigint unsigned DEFAULT NULL,
+  `user_id` bigint(20) unsigned DEFAULT NULL,
+  `project_id` bigint(20) unsigned DEFAULT NULL,
+  `site_id` bigint(20) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `hse_checklists_user_id_foreign` (`user_id`),
   KEY `hse_checklists_project_id_foreign` (`project_id`),
@@ -1147,24 +1131,40 @@ CREATE TABLE `hse_checklists` (
 INSERT INTO `hse_checklists` (`id`, `title`, `checklist_type`, `inspection_date`, `status`, `findings`, `corrective_actions`, `closure_date`, `notes`, `created_at`, `updated_at`, `user_id`, `project_id`, `site_id`) VALUES
 (1,	'Weekly Site Safety',	'general',	'2026-06-23',	'open',	'no problem found',	'n/a',	'2026-06-25',	'everything okay',	'2026-06-22 22:27:49',	'2026-06-22 22:28:53',	4,	6,	NULL);
 
+DROP TABLE IF EXISTS `hse_checklist_items`;
+CREATE TABLE `hse_checklist_items` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `hse_checklist_id` bigint(20) unsigned NOT NULL,
+  `item_name` varchar(255) NOT NULL,
+  `is_compliant` tinyint(1) NOT NULL DEFAULT 0,
+  `remarks` text DEFAULT NULL,
+  `order_index` int(11) NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `hse_checklist_items_hse_checklist_id_foreign` (`hse_checklist_id`),
+  CONSTRAINT `hse_checklist_items_hse_checklist_id_foreign` FOREIGN KEY (`hse_checklist_id`) REFERENCES `hse_checklists` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 DROP TABLE IF EXISTS `incident_reports`;
 CREATE TABLE `incident_reports` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `employee_id` bigint unsigned DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `employee_id` bigint(20) unsigned DEFAULT NULL,
   `incident_date` date NOT NULL,
   `incident_time` time DEFAULT NULL,
-  `location` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `incident_type` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `severity` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `immediate_action` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `root_cause` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `corrective_action` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `affected_persons` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `property_damage` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `reported_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'open',
-  `investigation_notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `location` varchar(255) DEFAULT NULL,
+  `incident_type` varchar(100) NOT NULL,
+  `severity` varchar(50) NOT NULL,
+  `description` text NOT NULL,
+  `immediate_action` text DEFAULT NULL,
+  `root_cause` text DEFAULT NULL,
+  `corrective_action` text DEFAULT NULL,
+  `affected_persons` varchar(255) DEFAULT NULL,
+  `property_damage` text DEFAULT NULL,
+  `reported_by` varchar(255) DEFAULT NULL,
+  `status` varchar(50) NOT NULL DEFAULT 'open',
+  `investigation_notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1175,36 +1175,16 @@ CREATE TABLE `incident_reports` (
 INSERT INTO `incident_reports` (`id`, `employee_id`, `incident_date`, `incident_time`, `location`, `incident_type`, `severity`, `description`, `immediate_action`, `root_cause`, `corrective_action`, `affected_persons`, `property_damage`, `reported_by`, `status`, `investigation_notes`, `created_at`, `updated_at`) VALUES
 (1,	2,	'2027-02-21',	'07:25:00',	'Main Site',	'injury',	'critical',	'Test',	NULL,	NULL,	NULL,	'Md Karim and 2 others',	NULL,	'Site Manager',	'closed',	NULL,	'2026-06-22 01:25:10',	'2026-07-04 01:49:59');
 
-DROP TABLE IF EXISTS `inspection_checklist_items`;
-CREATE TABLE `inspection_checklist_items` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `inspection_checklist_id` bigint unsigned NOT NULL,
-  `item_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `is_checked` tinyint(1) NOT NULL DEFAULT '0',
-  `remarks` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `order_index` int NOT NULL DEFAULT '0',
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `inspection_checklist_items_inspection_checklist_id_foreign` (`inspection_checklist_id`),
-  CONSTRAINT `inspection_checklist_items_inspection_checklist_id_foreign` FOREIGN KEY (`inspection_checklist_id`) REFERENCES `inspection_checklists` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-INSERT INTO `inspection_checklist_items` (`id`, `inspection_checklist_id`, `item_name`, `is_checked`, `remarks`, `order_index`, `created_at`, `updated_at`) VALUES
-(1,	1,	'Barricades in place',	1,	'passed',	0,	'2026-06-21 22:09:12',	'2026-06-21 22:09:12'),
-(2,	1,	'Barricades in place 2',	1,	'passed',	2,	'2026-06-21 22:09:12',	'2026-06-21 22:09:12'),
-(3,	2,	'Barricades in place',	1,	NULL,	0,	'2026-06-22 05:31:09',	'2026-06-22 05:31:09');
-
 DROP TABLE IF EXISTS `inspection_checklists`;
 CREATE TABLE `inspection_checklists` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `site_id` bigint unsigned NOT NULL,
-  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `inspector_id` bigint unsigned DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `site_id` bigint(20) unsigned NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `inspector_id` bigint(20) unsigned DEFAULT NULL,
   `inspection_date` date NOT NULL,
-  `status` enum('pending','passed','failed','conditional') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `status` enum('pending','passed','failed','conditional') NOT NULL DEFAULT 'pending',
+  `notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1218,32 +1198,52 @@ INSERT INTO `inspection_checklists` (`id`, `site_id`, `title`, `description`, `i
 (1,	5,	'Excavation Safety Check',	'Test',	1,	'2026-06-22',	'pending',	NULL,	'2026-06-21 22:09:12',	'2026-06-21 22:09:12'),
 (2,	6,	'Pile depth as per design',	NULL,	1,	'2026-06-22',	'passed',	NULL,	'2026-06-22 05:31:09',	'2026-06-22 05:31:09');
 
+DROP TABLE IF EXISTS `inspection_checklist_items`;
+CREATE TABLE `inspection_checklist_items` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `inspection_checklist_id` bigint(20) unsigned NOT NULL,
+  `item_name` varchar(255) NOT NULL,
+  `is_checked` tinyint(1) NOT NULL DEFAULT 0,
+  `remarks` text DEFAULT NULL,
+  `order_index` int(11) NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `inspection_checklist_items_inspection_checklist_id_foreign` (`inspection_checklist_id`),
+  CONSTRAINT `inspection_checklist_items_inspection_checklist_id_foreign` FOREIGN KEY (`inspection_checklist_id`) REFERENCES `inspection_checklists` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `inspection_checklist_items` (`id`, `inspection_checklist_id`, `item_name`, `is_checked`, `remarks`, `order_index`, `created_at`, `updated_at`) VALUES
+(1,	1,	'Barricades in place',	1,	'passed',	0,	'2026-06-21 22:09:12',	'2026-06-21 22:09:12'),
+(2,	1,	'Barricades in place 2',	1,	'passed',	2,	'2026-06-21 22:09:12',	'2026-06-21 22:09:12'),
+(3,	2,	'Barricades in place',	1,	NULL,	0,	'2026-06-22 05:31:09',	'2026-06-22 05:31:09');
+
 DROP TABLE IF EXISTS `interim_payment_applications`;
 CREATE TABLE `interim_payment_applications` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `ipa_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `ipa_number` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
   `application_date` date NOT NULL,
   `period_start` date NOT NULL,
   `period_end` date NOT NULL,
-  `previous_cumulative_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `applied_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `certified_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `retention_rate` decimal(5,2) NOT NULL DEFAULT '5.00',
-  `retention_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `net_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `paid_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `status` enum('draft','submitted','certified','approved','rejected','paid') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
-  `submitted_by` bigint unsigned DEFAULT NULL,
-  `certified_by` bigint unsigned DEFAULT NULL,
-  `approved_by` bigint unsigned DEFAULT NULL,
-  `invoice_id` bigint unsigned DEFAULT NULL,
+  `previous_cumulative_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `applied_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `certified_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `retention_rate` decimal(5,2) NOT NULL DEFAULT 5.00,
+  `retention_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `net_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `paid_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `status` enum('draft','submitted','certified','approved','rejected','paid') NOT NULL DEFAULT 'draft',
+  `submitted_by` bigint(20) unsigned DEFAULT NULL,
+  `certified_by` bigint(20) unsigned DEFAULT NULL,
+  `approved_by` bigint(20) unsigned DEFAULT NULL,
+  `invoice_id` bigint(20) unsigned DEFAULT NULL,
   `submitted_at` timestamp NULL DEFAULT NULL,
   `certified_at` timestamp NULL DEFAULT NULL,
   `approved_at` timestamp NULL DEFAULT NULL,
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `created_by` bigint unsigned NOT NULL,
+  `notes` text DEFAULT NULL,
+  `created_by` bigint(20) unsigned NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1256,9 +1256,9 @@ CREATE TABLE `interim_payment_applications` (
   KEY `interim_payment_applications_created_by_foreign` (`created_by`),
   CONSTRAINT `interim_payment_applications_approved_by_foreign` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
   CONSTRAINT `interim_payment_applications_certified_by_foreign` FOREIGN KEY (`certified_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
-  CONSTRAINT `interim_payment_applications_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT,
+  CONSTRAINT `interim_payment_applications_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`),
   CONSTRAINT `interim_payment_applications_invoice_id_foreign` FOREIGN KEY (`invoice_id`) REFERENCES `invoices` (`id`) ON DELETE SET NULL,
-  CONSTRAINT `interim_payment_applications_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE RESTRICT,
+  CONSTRAINT `interim_payment_applications_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`),
   CONSTRAINT `interim_payment_applications_submitted_by_foreign` FOREIGN KEY (`submitted_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -1268,9 +1268,9 @@ INSERT INTO `interim_payment_applications` (`id`, `project_id`, `ipa_number`, `t
 
 DROP TABLE IF EXISTS `invitation_links`;
 CREATE TABLE `invitation_links` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint unsigned NOT NULL,
-  `hash` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) unsigned NOT NULL,
+  `hash` varchar(32) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1281,9 +1281,9 @@ CREATE TABLE `invitation_links` (
 
 DROP TABLE IF EXISTS `invitation_referrals`;
 CREATE TABLE `invitation_referrals` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `invitation_link_id` bigint unsigned NOT NULL,
-  `referred_user_id` bigint unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `invitation_link_id` bigint(20) unsigned NOT NULL,
+  `referred_user_id` bigint(20) unsigned NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1293,11 +1293,45 @@ CREATE TABLE `invitation_referrals` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
+DROP TABLE IF EXISTS `invoices`;
+CREATE TABLE `invoices` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `invoice_number` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `issue_date` date NOT NULL,
+  `due_date` date NOT NULL,
+  `subtotal` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `tax_rate` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `tax_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `retention_rate` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `retention_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `total_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `paid_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `due_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `status` enum('draft','sent','partially_paid','paid','overdue','cancelled') NOT NULL DEFAULT 'draft',
+  `created_by` bigint(20) unsigned NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `invoices_invoice_number_unique` (`invoice_number`),
+  KEY `invoices_project_id_foreign` (`project_id`),
+  KEY `invoices_created_by_foreign` (`created_by`),
+  CONSTRAINT `invoices_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`),
+  CONSTRAINT `invoices_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `invoices` (`id`, `project_id`, `invoice_number`, `title`, `description`, `issue_date`, `due_date`, `subtotal`, `tax_rate`, `tax_amount`, `retention_rate`, `retention_amount`, `total_amount`, `paid_amount`, `due_amount`, `status`, `created_by`, `created_at`, `updated_at`) VALUES
+(1,	5,	'INV-20260622-L8X9',	'Invoice 1',	NULL,	'2026-06-22',	'2026-06-29',	1500.00,	2.50,	37.50,	5.00,	75.00,	1462.50,	0.00,	1462.50,	'draft',	1,	'2026-06-22 04:04:37',	'2026-06-22 04:05:49'),
+(2,	6,	'INV-20260622-RQOO',	'Invoice 2',	NULL,	'2026-06-22',	'2026-06-29',	930000.00,	2.50,	23250.00,	5.00,	46500.00,	906750.00,	500000.00,	406750.00,	'draft',	1,	'2026-06-22 06:15:19',	'2026-06-22 06:16:03'),
+(3,	6,	'INV-20260716-N5JQ',	'Test',	NULL,	'2026-07-16',	'2026-07-30',	10000.00,	2.50,	250.00,	5.00,	500.00,	9750.00,	0.00,	9750.00,	'paid',	1,	'2026-07-16 00:24:19',	'2026-07-16 00:28:44');
+
 DROP TABLE IF EXISTS `invoice_items`;
 CREATE TABLE `invoice_items` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `invoice_id` bigint unsigned NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `invoice_id` bigint(20) unsigned NOT NULL,
+  `description` text NOT NULL,
   `quantity` decimal(12,4) NOT NULL,
   `unit_price` decimal(15,2) NOT NULL,
   `total_price` decimal(15,2) NOT NULL,
@@ -1313,56 +1347,22 @@ INSERT INTO `invoice_items` (`id`, `invoice_id`, `description`, `quantity`, `uni
 (2,	2,	'60mm MS Rod (Grade 60)',	10.0000,	93000.00,	930000.00,	'2026-06-22 06:15:37',	'2026-06-22 06:15:37'),
 (3,	3,	'test',	10.0000,	1000.00,	10000.00,	'2026-07-16 00:28:44',	'2026-07-16 00:28:44');
 
-DROP TABLE IF EXISTS `invoices`;
-CREATE TABLE `invoices` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `invoice_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `issue_date` date NOT NULL,
-  `due_date` date NOT NULL,
-  `subtotal` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `tax_rate` decimal(5,2) NOT NULL DEFAULT '0.00',
-  `tax_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `retention_rate` decimal(5,2) NOT NULL DEFAULT '0.00',
-  `retention_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `total_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `paid_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `due_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `status` enum('draft','sent','partially_paid','paid','overdue','cancelled') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
-  `created_by` bigint unsigned NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `invoices_invoice_number_unique` (`invoice_number`),
-  KEY `invoices_project_id_foreign` (`project_id`),
-  KEY `invoices_created_by_foreign` (`created_by`),
-  CONSTRAINT `invoices_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `invoices_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-INSERT INTO `invoices` (`id`, `project_id`, `invoice_number`, `title`, `description`, `issue_date`, `due_date`, `subtotal`, `tax_rate`, `tax_amount`, `retention_rate`, `retention_amount`, `total_amount`, `paid_amount`, `due_amount`, `status`, `created_by`, `created_at`, `updated_at`) VALUES
-(1,	5,	'INV-20260622-L8X9',	'Invoice 1',	NULL,	'2026-06-22',	'2026-06-29',	1500.00,	2.50,	37.50,	5.00,	75.00,	1462.50,	0.00,	1462.50,	'draft',	1,	'2026-06-22 04:04:37',	'2026-06-22 04:05:49'),
-(2,	6,	'INV-20260622-RQOO',	'Invoice 2',	NULL,	'2026-06-22',	'2026-06-29',	930000.00,	2.50,	23250.00,	5.00,	46500.00,	906750.00,	500000.00,	406750.00,	'draft',	1,	'2026-06-22 06:15:19',	'2026-06-22 06:16:03'),
-(3,	6,	'INV-20260716-N5JQ',	'Test',	NULL,	'2026-07-16',	'2026-07-30',	10000.00,	2.50,	250.00,	5.00,	500.00,	9750.00,	0.00,	9750.00,	'paid',	1,	'2026-07-16 00:24:19',	'2026-07-16 00:28:44');
-
 DROP TABLE IF EXISTS `ipa_items`;
 CREATE TABLE `ipa_items` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `ipa_id` bigint unsigned NOT NULL,
-  `boq_item_id` bigint unsigned DEFAULT NULL,
-  `item_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `unit` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `previous_quantity` decimal(12,4) NOT NULL DEFAULT '0.0000',
-  `current_quantity` decimal(12,4) NOT NULL DEFAULT '0.0000',
-  `cumulative_quantity` decimal(12,4) NOT NULL DEFAULT '0.0000',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `ipa_id` bigint(20) unsigned NOT NULL,
+  `boq_item_id` bigint(20) unsigned DEFAULT NULL,
+  `item_number` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  `unit` varchar(255) NOT NULL,
+  `previous_quantity` decimal(12,4) NOT NULL DEFAULT 0.0000,
+  `current_quantity` decimal(12,4) NOT NULL DEFAULT 0.0000,
+  `cumulative_quantity` decimal(12,4) NOT NULL DEFAULT 0.0000,
   `unit_price` decimal(15,2) NOT NULL,
-  `previous_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `current_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `cumulative_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `previous_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `current_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `cumulative_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1375,39 +1375,16 @@ CREATE TABLE `ipa_items` (
 INSERT INTO `ipa_items` (`id`, `ipa_id`, `boq_item_id`, `item_number`, `description`, `unit`, `previous_quantity`, `current_quantity`, `cumulative_quantity`, `unit_price`, `previous_amount`, `current_amount`, `cumulative_amount`, `notes`, `created_at`, `updated_at`) VALUES
 (2,	2,	NULL,	'60mm MS Rod (Grade 60)',	'test',	'ton',	10.0000,	5.0000,	15.0000,	93000.00,	930000.00,	465000.00,	1395000.00,	NULL,	'2026-06-22 06:17:17',	'2026-06-22 06:17:17');
 
-DROP TABLE IF EXISTS `itp_items`;
-CREATE TABLE `itp_items` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `itp_id` bigint unsigned NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `specification_reference` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `inspection_type` enum('visual','dimensional','testing','documentation') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'visual',
-  `acceptance_criteria` text COLLATE utf8mb4_unicode_ci,
-  `method` enum('observation','measurement','testing','review') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'observation',
-  `frequency` enum('each_occurrence','daily','weekly','monthly') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'each_occurrence',
-  `status` enum('pending','in_progress','passed','failed','n_a') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
-  `result` text COLLATE utf8mb4_unicode_ci,
-  `inspected_date` date DEFAULT NULL,
-  `inspector` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `order_index` int NOT NULL DEFAULT '0',
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `itp_items_itp_id_foreign` (`itp_id`),
-  CONSTRAINT `itp_items_itp_id_foreign` FOREIGN KEY (`itp_id`) REFERENCES `itps` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-
 DROP TABLE IF EXISTS `itps`;
 CREATE TABLE `itps` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `itp_number` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `phase` enum('foundation','superstructure','finishing','mep','other') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'other',
-  `status` enum('draft','active','completed','archived') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
-  `created_by` bigint unsigned DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `itp_number` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `phase` enum('foundation','superstructure','finishing','mep','other') NOT NULL DEFAULT 'other',
+  `status` enum('draft','active','completed','archived') NOT NULL DEFAULT 'draft',
+  `created_by` bigint(20) unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1419,50 +1396,73 @@ CREATE TABLE `itps` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
-DROP TABLE IF EXISTS `job_batches`;
-CREATE TABLE `job_batches` (
-  `id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `total_jobs` int NOT NULL,
-  `pending_jobs` int NOT NULL,
-  `failed_jobs` int NOT NULL,
-  `failed_job_ids` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `options` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `cancelled_at` int DEFAULT NULL,
-  `created_at` int NOT NULL,
-  `finished_at` int DEFAULT NULL,
-  PRIMARY KEY (`id`)
+DROP TABLE IF EXISTS `itp_items`;
+CREATE TABLE `itp_items` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `itp_id` bigint(20) unsigned NOT NULL,
+  `description` text NOT NULL,
+  `specification_reference` varchar(255) DEFAULT NULL,
+  `inspection_type` enum('visual','dimensional','testing','documentation') NOT NULL DEFAULT 'visual',
+  `acceptance_criteria` text DEFAULT NULL,
+  `method` enum('observation','measurement','testing','review') NOT NULL DEFAULT 'observation',
+  `frequency` enum('each_occurrence','daily','weekly','monthly') NOT NULL DEFAULT 'each_occurrence',
+  `status` enum('pending','in_progress','passed','failed','n_a') NOT NULL DEFAULT 'pending',
+  `result` text DEFAULT NULL,
+  `inspected_date` date DEFAULT NULL,
+  `inspector` varchar(255) DEFAULT NULL,
+  `order_index` int(11) NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `itp_items_itp_id_foreign` (`itp_id`),
+  CONSTRAINT `itp_items_itp_id_foreign` FOREIGN KEY (`itp_id`) REFERENCES `itps` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `jobs`;
 CREATE TABLE `jobs` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `queue` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `payload` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `attempts` tinyint unsigned NOT NULL,
-  `reserved_at` int unsigned DEFAULT NULL,
-  `available_at` int unsigned NOT NULL,
-  `created_at` int unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `queue` varchar(255) NOT NULL,
+  `payload` longtext NOT NULL,
+  `attempts` tinyint(3) unsigned NOT NULL,
+  `reserved_at` int(10) unsigned DEFAULT NULL,
+  `available_at` int(10) unsigned NOT NULL,
+  `created_at` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `jobs_queue_index` (`queue`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
+DROP TABLE IF EXISTS `job_batches`;
+CREATE TABLE `job_batches` (
+  `id` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `total_jobs` int(11) NOT NULL,
+  `pending_jobs` int(11) NOT NULL,
+  `failed_jobs` int(11) NOT NULL,
+  `failed_job_ids` longtext NOT NULL,
+  `options` mediumtext DEFAULT NULL,
+  `cancelled_at` int(11) DEFAULT NULL,
+  `created_at` int(11) NOT NULL,
+  `finished_at` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 DROP TABLE IF EXISTS `journal_entries`;
 CREATE TABLE `journal_entries` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `journal_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `journal_number` varchar(255) NOT NULL,
   `date` date NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'general',
-  `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
-  `is_auto` tinyint(1) NOT NULL DEFAULT '0',
-  `created_by` bigint unsigned DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `type` varchar(255) NOT NULL DEFAULT 'general',
+  `status` varchar(255) NOT NULL DEFAULT 'draft',
+  `is_auto` tinyint(1) NOT NULL DEFAULT 0,
+  `created_by` bigint(20) unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `source_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `source_id` bigint unsigned DEFAULT NULL,
+  `source_type` varchar(255) DEFAULT NULL,
+  `source_id` bigint(20) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `journal_entries_journal_number_unique` (`journal_number`),
   KEY `journal_entries_created_by_foreign` (`created_by`),
@@ -1478,12 +1478,12 @@ INSERT INTO `journal_entries` (`id`, `journal_number`, `date`, `description`, `t
 
 DROP TABLE IF EXISTS `journal_entry_items`;
 CREATE TABLE `journal_entry_items` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `journal_entry_id` bigint unsigned NOT NULL,
-  `account_id` bigint unsigned NOT NULL,
-  `debit_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `credit_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `journal_entry_id` bigint(20) unsigned NOT NULL,
+  `account_id` bigint(20) unsigned NOT NULL,
+  `debit_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `credit_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `description` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1508,14 +1508,14 @@ INSERT INTO `journal_entry_items` (`id`, `journal_entry_id`, `account_id`, `debi
 
 DROP TABLE IF EXISTS `labour_entries`;
 CREATE TABLE `labour_entries` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `employee_id` bigint unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `employee_id` bigint(20) unsigned NOT NULL,
   `date` date NOT NULL,
   `hours` decimal(6,2) NOT NULL,
-  `hourly_rate` decimal(10,2) NOT NULL DEFAULT '0.00',
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `created_by` bigint unsigned DEFAULT NULL,
+  `hourly_rate` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `description` text DEFAULT NULL,
+  `created_by` bigint(20) unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1532,20 +1532,20 @@ INSERT INTO `labour_entries` (`id`, `project_id`, `employee_id`, `date`, `hours`
 
 DROP TABLE IF EXISTS `leads`;
 CREATE TABLE `leads` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `company_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `contact_person` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `phone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `source` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `company_name` varchar(255) NOT NULL,
+  `contact_person` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `source` varchar(255) DEFAULT NULL,
   `estimated_value` decimal(15,2) DEFAULT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `status` enum('new','contacted','proposal_sent','negotiation','won','lost') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'new',
-  `assigned_to` bigint unsigned DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `status` enum('new','contacted','proposal_sent','negotiation','won','lost') NOT NULL DEFAULT 'new',
+  `assigned_to` bigint(20) unsigned DEFAULT NULL,
   `last_contacted_at` timestamp NULL DEFAULT NULL,
   `next_follow_up_at` timestamp NULL DEFAULT NULL,
-  `notes` text COLLATE utf8mb4_unicode_ci,
-  `created_by` bigint unsigned DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_by` bigint(20) unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1558,15 +1558,15 @@ CREATE TABLE `leads` (
 
 DROP TABLE IF EXISTS `leave_requests`;
 CREATE TABLE `leave_requests` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `employee_id` bigint unsigned NOT NULL,
-  `leave_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `employee_id` bigint(20) unsigned NOT NULL,
+  `leave_type` varchar(255) NOT NULL,
   `start_date` date NOT NULL,
   `end_date` date NOT NULL,
-  `reason` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
-  `approved_by` bigint unsigned DEFAULT NULL,
-  `remarks` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `reason` text DEFAULT NULL,
+  `status` varchar(255) NOT NULL DEFAULT 'pending',
+  `approved_by` bigint(20) unsigned DEFAULT NULL,
+  `remarks` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1579,32 +1579,31 @@ CREATE TABLE `leave_requests` (
 INSERT INTO `leave_requests` (`id`, `employee_id`, `leave_type`, `start_date`, `end_date`, `reason`, `status`, `approved_by`, `remarks`, `created_at`, `updated_at`) VALUES
 (1,	2,	'sick',	'2026-06-23',	'2026-06-23',	NULL,	'approved',	1,	NULL,	'2026-06-22 00:15:43',	'2026-06-22 00:16:33');
 
-DROP TABLE IF EXISTS `material_issue_slip_items`;
-CREATE TABLE `material_issue_slip_items` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `material_issue_slip_id` bigint unsigned NOT NULL,
-  `material_id` bigint unsigned NOT NULL,
-  `quantity` decimal(12,4) NOT NULL,
+DROP TABLE IF EXISTS `materials`;
+CREATE TABLE `materials` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `sku` varchar(255) DEFAULT NULL,
+  `unit` varchar(255) NOT NULL,
+  `reorder_level` decimal(15,4) DEFAULT NULL,
+  `description` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `material_issue_slip_items_material_issue_slip_id_foreign` (`material_issue_slip_id`),
-  KEY `material_issue_slip_items_material_id_foreign` (`material_id`),
-  CONSTRAINT `material_issue_slip_items_material_id_foreign` FOREIGN KEY (`material_id`) REFERENCES `materials` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `material_issue_slip_items_material_issue_slip_id_foreign` FOREIGN KEY (`material_issue_slip_id`) REFERENCES `material_issue_slips` (`id`) ON DELETE CASCADE
+  UNIQUE KEY `materials_sku_unique` (`sku`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `material_issue_slip_items` (`id`, `material_issue_slip_id`, `material_id`, `quantity`, `created_at`, `updated_at`) VALUES
-(2,	2,	4,	10.0000,	'2026-06-21 23:30:23',	'2026-06-21 23:30:23'),
-(3,	3,	5,	10.0000,	'2026-06-22 05:55:13',	'2026-06-22 05:55:13');
+INSERT INTO `materials` (`id`, `name`, `sku`, `unit`, `reorder_level`, `description`, `created_at`, `updated_at`) VALUES
+(4,	'Fresh Cement',	'CMT-001',	'ton',	NULL,	NULL,	'2026-06-21 22:27:02',	'2026-06-22 05:38:49'),
+(5,	'60mm MS Rod (Grade 60)',	'R-001',	'ton',	NULL,	NULL,	'2026-06-22 05:38:36',	'2026-06-22 05:42:45');
 
 DROP TABLE IF EXISTS `material_issue_slips`;
 CREATE TABLE `material_issue_slips` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `site_id` bigint unsigned NOT NULL,
-  `issued_to` bigint unsigned NOT NULL,
-  `issue_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `site_id` bigint(20) unsigned NOT NULL,
+  `issued_to` bigint(20) unsigned NOT NULL,
+  `issue_number` varchar(255) NOT NULL,
   `issue_date` date NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -1613,34 +1612,53 @@ CREATE TABLE `material_issue_slips` (
   KEY `material_issue_slips_project_id_foreign` (`project_id`),
   KEY `material_issue_slips_site_id_foreign` (`site_id`),
   KEY `material_issue_slips_issued_to_foreign` (`issued_to`),
-  CONSTRAINT `material_issue_slips_issued_to_foreign` FOREIGN KEY (`issued_to`) REFERENCES `users` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `material_issue_slips_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `material_issue_slips_site_id_foreign` FOREIGN KEY (`site_id`) REFERENCES `sites` (`id`) ON DELETE RESTRICT
+  CONSTRAINT `material_issue_slips_issued_to_foreign` FOREIGN KEY (`issued_to`) REFERENCES `users` (`id`),
+  CONSTRAINT `material_issue_slips_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`),
+  CONSTRAINT `material_issue_slips_site_id_foreign` FOREIGN KEY (`site_id`) REFERENCES `sites` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `material_issue_slips` (`id`, `project_id`, `site_id`, `issued_to`, `issue_number`, `issue_date`, `created_at`, `updated_at`) VALUES
 (2,	5,	5,	2,	'ISS-20260622-CD60',	'2026-06-22',	'2026-06-21 23:30:23',	'2026-06-21 23:30:23'),
 (3,	6,	6,	2,	'ISS-20260622-2D1F',	'2026-06-22',	'2026-06-22 05:55:13',	'2026-06-22 05:55:13');
 
+DROP TABLE IF EXISTS `material_issue_slip_items`;
+CREATE TABLE `material_issue_slip_items` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `material_issue_slip_id` bigint(20) unsigned NOT NULL,
+  `material_id` bigint(20) unsigned NOT NULL,
+  `quantity` decimal(12,4) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `material_issue_slip_items_material_issue_slip_id_foreign` (`material_issue_slip_id`),
+  KEY `material_issue_slip_items_material_id_foreign` (`material_id`),
+  CONSTRAINT `material_issue_slip_items_material_id_foreign` FOREIGN KEY (`material_id`) REFERENCES `materials` (`id`),
+  CONSTRAINT `material_issue_slip_items_material_issue_slip_id_foreign` FOREIGN KEY (`material_issue_slip_id`) REFERENCES `material_issue_slips` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `material_issue_slip_items` (`id`, `material_issue_slip_id`, `material_id`, `quantity`, `created_at`, `updated_at`) VALUES
+(2,	2,	4,	10.0000,	'2026-06-21 23:30:23',	'2026-06-21 23:30:23'),
+(3,	3,	5,	10.0000,	'2026-06-22 05:55:13',	'2026-06-22 05:55:13');
+
 DROP TABLE IF EXISTS `material_submittals`;
 CREATE TABLE `material_submittals` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned DEFAULT NULL,
-  `submittal_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `material_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `manufacturer` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `brand` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `model_reference` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `specification_details` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `quantity_unit` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` enum('draft','submitted','under_review','approved','approved_with_conditions','rejected','resubmitted') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
-  `submitted_by` bigint unsigned DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned DEFAULT NULL,
+  `submittal_number` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `material_name` varchar(255) NOT NULL,
+  `manufacturer` varchar(255) DEFAULT NULL,
+  `brand` varchar(255) DEFAULT NULL,
+  `model_reference` varchar(255) DEFAULT NULL,
+  `specification_details` text DEFAULT NULL,
+  `quantity_unit` varchar(255) DEFAULT NULL,
+  `status` enum('draft','submitted','under_review','approved','approved_with_conditions','rejected','resubmitted') NOT NULL DEFAULT 'draft',
+  `submitted_by` bigint(20) unsigned DEFAULT NULL,
   `submitted_date` date DEFAULT NULL,
-  `reviewed_by` bigint unsigned DEFAULT NULL,
+  `reviewed_by` bigint(20) unsigned DEFAULT NULL,
   `review_date` date DEFAULT NULL,
-  `review_comments` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `review_comments` text DEFAULT NULL,
   `resubmission_deadline` date DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -1660,16 +1678,16 @@ INSERT INTO `material_submittals` (`id`, `project_id`, `submittal_number`, `titl
 
 DROP TABLE IF EXISTS `material_takeoffs`;
 CREATE TABLE `material_takeoffs` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `boq_item_id` bigint unsigned DEFAULT NULL,
-  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `unit` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `quantity` decimal(12,2) NOT NULL DEFAULT '0.00',
-  `unit_price` decimal(12,2) NOT NULL DEFAULT '0.00',
-  `total_price` decimal(12,2) NOT NULL DEFAULT '0.00',
-  `source_drawing` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `boq_item_id` bigint(20) unsigned DEFAULT NULL,
+  `description` varchar(255) NOT NULL,
+  `unit` varchar(50) DEFAULT NULL,
+  `quantity` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `unit_price` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `total_price` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `source_drawing` varchar(255) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1682,21 +1700,21 @@ CREATE TABLE `material_takeoffs` (
 
 DROP TABLE IF EXISTS `material_test_certificates`;
 CREATE TABLE `material_test_certificates` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `material_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `material_type` enum('concrete','steel','soil','aggregate','cement','other') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'other',
-  `supplier` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `batch_number` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `certificate_number` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `material_name` varchar(255) NOT NULL,
+  `material_type` enum('concrete','steel','soil','aggregate','cement','other') NOT NULL DEFAULT 'other',
+  `supplier` varchar(255) DEFAULT NULL,
+  `batch_number` varchar(255) DEFAULT NULL,
+  `certificate_number` varchar(255) NOT NULL,
   `test_date` date NOT NULL,
-  `test_result` enum('pass','fail','conditional') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pass',
-  `test_parameters` text COLLATE utf8mb4_unicode_ci,
-  `compliance_status` enum('compliant','non_compliant','pending') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
-  `certificate_file` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `test_result` enum('pass','fail','conditional') NOT NULL DEFAULT 'pass',
+  `test_parameters` text DEFAULT NULL,
+  `compliance_status` enum('compliant','non_compliant','pending') NOT NULL DEFAULT 'pending',
+  `certificate_file` varchar(255) DEFAULT NULL,
   `valid_until` date DEFAULT NULL,
-  `notes` text COLLATE utf8mb4_unicode_ci,
-  `created_by` bigint unsigned DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_by` bigint(20) unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1707,37 +1725,19 @@ CREATE TABLE `material_test_certificates` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
-DROP TABLE IF EXISTS `material_transfer_items`;
-CREATE TABLE `material_transfer_items` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `material_transfer_id` bigint unsigned NOT NULL,
-  `material_id` bigint unsigned NOT NULL,
-  `quantity` decimal(12,4) NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `material_transfer_items_material_transfer_id_foreign` (`material_transfer_id`),
-  KEY `material_transfer_items_material_id_foreign` (`material_id`),
-  CONSTRAINT `material_transfer_items_material_id_foreign` FOREIGN KEY (`material_id`) REFERENCES `materials` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `material_transfer_items_material_transfer_id_foreign` FOREIGN KEY (`material_transfer_id`) REFERENCES `material_transfers` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-INSERT INTO `material_transfer_items` (`id`, `material_transfer_id`, `material_id`, `quantity`, `created_at`, `updated_at`) VALUES
-(3,	3,	5,	10.0000,	'2026-06-22 05:54:40',	'2026-06-22 05:54:40');
-
 DROP TABLE IF EXISTS `material_transfers`;
 CREATE TABLE `material_transfers` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `from_warehouse_id` bigint unsigned DEFAULT NULL,
-  `to_site_id` bigint unsigned DEFAULT NULL,
-  `transfer_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `transfer_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'warehouse_to_site',
-  `status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `from_warehouse_id` bigint(20) unsigned DEFAULT NULL,
+  `to_site_id` bigint(20) unsigned DEFAULT NULL,
+  `transfer_number` varchar(255) NOT NULL,
+  `transfer_type` varchar(50) NOT NULL DEFAULT 'warehouse_to_site',
+  `status` varchar(50) NOT NULL DEFAULT 'pending',
   `transfer_date` date NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `from_site_id` bigint unsigned DEFAULT NULL,
-  `to_warehouse_id` bigint unsigned DEFAULT NULL,
+  `from_site_id` bigint(20) unsigned DEFAULT NULL,
+  `to_warehouse_id` bigint(20) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `material_transfers_transfer_number_unique` (`transfer_number`),
   KEY `material_transfers_from_warehouse_id_foreign` (`from_warehouse_id`),
@@ -1745,24 +1745,42 @@ CREATE TABLE `material_transfers` (
   KEY `material_transfers_from_site_id_foreign` (`from_site_id`),
   KEY `material_transfers_to_warehouse_id_foreign` (`to_warehouse_id`),
   CONSTRAINT `material_transfers_from_site_id_foreign` FOREIGN KEY (`from_site_id`) REFERENCES `sites` (`id`) ON DELETE SET NULL,
-  CONSTRAINT `material_transfers_from_warehouse_id_foreign` FOREIGN KEY (`from_warehouse_id`) REFERENCES `warehouses` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `material_transfers_to_site_id_foreign` FOREIGN KEY (`to_site_id`) REFERENCES `sites` (`id`) ON DELETE RESTRICT,
+  CONSTRAINT `material_transfers_from_warehouse_id_foreign` FOREIGN KEY (`from_warehouse_id`) REFERENCES `warehouses` (`id`),
+  CONSTRAINT `material_transfers_to_site_id_foreign` FOREIGN KEY (`to_site_id`) REFERENCES `sites` (`id`),
   CONSTRAINT `material_transfers_to_warehouse_id_foreign` FOREIGN KEY (`to_warehouse_id`) REFERENCES `warehouses` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `material_transfers` (`id`, `from_warehouse_id`, `to_site_id`, `transfer_number`, `transfer_type`, `status`, `transfer_date`, `created_at`, `updated_at`, `from_site_id`, `to_warehouse_id`) VALUES
 (3,	3,	5,	'TRF-20260622-F9EC',	'warehouse_to_site',	'completed',	'2026-06-22',	'2026-06-22 05:54:40',	'2026-07-03 23:21:54',	NULL,	NULL);
 
+DROP TABLE IF EXISTS `material_transfer_items`;
+CREATE TABLE `material_transfer_items` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `material_transfer_id` bigint(20) unsigned NOT NULL,
+  `material_id` bigint(20) unsigned NOT NULL,
+  `quantity` decimal(12,4) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `material_transfer_items_material_transfer_id_foreign` (`material_transfer_id`),
+  KEY `material_transfer_items_material_id_foreign` (`material_id`),
+  CONSTRAINT `material_transfer_items_material_id_foreign` FOREIGN KEY (`material_id`) REFERENCES `materials` (`id`),
+  CONSTRAINT `material_transfer_items_material_transfer_id_foreign` FOREIGN KEY (`material_transfer_id`) REFERENCES `material_transfers` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `material_transfer_items` (`id`, `material_transfer_id`, `material_id`, `quantity`, `created_at`, `updated_at`) VALUES
+(3,	3,	5,	10.0000,	'2026-06-22 05:54:40',	'2026-06-22 05:54:40');
+
 DROP TABLE IF EXISTS `material_wastages`;
 CREATE TABLE `material_wastages` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `site_id` bigint unsigned NOT NULL,
-  `material_id` bigint unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `site_id` bigint(20) unsigned NOT NULL,
+  `material_id` bigint(20) unsigned NOT NULL,
   `quantity` decimal(12,4) NOT NULL,
-  `reason` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `reason` varchar(255) NOT NULL,
   `reported_date` date NOT NULL,
-  `reported_by` bigint unsigned NOT NULL,
+  `reported_by` bigint(20) unsigned NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1770,52 +1788,34 @@ CREATE TABLE `material_wastages` (
   KEY `material_wastages_site_id_foreign` (`site_id`),
   KEY `material_wastages_material_id_foreign` (`material_id`),
   KEY `material_wastages_reported_by_foreign` (`reported_by`),
-  CONSTRAINT `material_wastages_material_id_foreign` FOREIGN KEY (`material_id`) REFERENCES `materials` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `material_wastages_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `material_wastages_reported_by_foreign` FOREIGN KEY (`reported_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `material_wastages_site_id_foreign` FOREIGN KEY (`site_id`) REFERENCES `sites` (`id`) ON DELETE RESTRICT
+  CONSTRAINT `material_wastages_material_id_foreign` FOREIGN KEY (`material_id`) REFERENCES `materials` (`id`),
+  CONSTRAINT `material_wastages_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`),
+  CONSTRAINT `material_wastages_reported_by_foreign` FOREIGN KEY (`reported_by`) REFERENCES `users` (`id`),
+  CONSTRAINT `material_wastages_site_id_foreign` FOREIGN KEY (`site_id`) REFERENCES `sites` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `material_wastages` (`id`, `project_id`, `site_id`, `material_id`, `quantity`, `reason`, `reported_date`, `reported_by`, `created_at`, `updated_at`) VALUES
 (2,	5,	5,	4,	1.0000,	'wasted',	'2026-06-22',	1,	'2026-06-21 23:30:53',	'2026-06-21 23:30:53'),
 (3,	6,	6,	5,	0.5000,	'wasted',	'2026-06-22',	1,	'2026-06-22 05:56:06',	'2026-06-22 05:56:06');
 
-DROP TABLE IF EXISTS `materials`;
-CREATE TABLE `materials` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `sku` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `unit` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `reorder_level` decimal(15,4) DEFAULT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `materials_sku_unique` (`sku`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-INSERT INTO `materials` (`id`, `name`, `sku`, `unit`, `reorder_level`, `description`, `created_at`, `updated_at`) VALUES
-(4,	'Fresh Cement',	'CMT-001',	'ton',	NULL,	NULL,	'2026-06-21 22:27:02',	'2026-06-22 05:38:49'),
-(5,	'60mm MS Rod (Grade 60)',	'R-001',	'ton',	NULL,	NULL,	'2026-06-22 05:38:36',	'2026-06-22 05:42:45');
-
 DROP TABLE IF EXISTS `media`;
 CREATE TABLE `media` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `model_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `model_id` bigint unsigned NOT NULL,
-  `uuid` char(36) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `collection_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `file_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `mime_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `disk` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `conversions_disk` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `size` bigint unsigned NOT NULL,
-  `manipulations` json NOT NULL,
-  `custom_properties` json NOT NULL,
-  `generated_conversions` json NOT NULL,
-  `responsive_images` json NOT NULL,
-  `order_column` int unsigned DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `model_type` varchar(255) NOT NULL,
+  `model_id` bigint(20) unsigned NOT NULL,
+  `uuid` char(36) DEFAULT NULL,
+  `collection_name` varchar(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `file_name` varchar(255) NOT NULL,
+  `mime_type` varchar(255) DEFAULT NULL,
+  `disk` varchar(255) NOT NULL,
+  `conversions_disk` varchar(255) DEFAULT NULL,
+  `size` bigint(20) unsigned NOT NULL,
+  `manipulations` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`manipulations`)),
+  `custom_properties` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`custom_properties`)),
+  `generated_conversions` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`generated_conversions`)),
+  `responsive_images` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`responsive_images`)),
+  `order_column` int(10) unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -1827,9 +1827,9 @@ CREATE TABLE `media` (
 
 DROP TABLE IF EXISTS `migrations`;
 CREATE TABLE `migrations` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `migration` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `batch` int NOT NULL,
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `migration` varchar(255) NOT NULL,
+  `batch` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -1978,14 +1978,14 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 
 DROP TABLE IF EXISTS `milestones`;
 CREATE TABLE `milestones` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `phase_id` bigint unsigned DEFAULT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `phase_id` bigint(20) unsigned DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
   `target_date` date DEFAULT NULL,
   `achieved_date` date DEFAULT NULL,
-  `status` enum('pending','achieved','missed') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `status` enum('pending','achieved','missed') NOT NULL DEFAULT 'pending',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -2001,24 +2001,24 @@ INSERT INTO `milestones` (`id`, `project_id`, `phase_id`, `name`, `description`,
 
 DROP TABLE IF EXISTS `ncrs`;
 CREATE TABLE `ncrs` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `ncr_number` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `category` enum('structural','material','workmanship','safety','other') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'other',
-  `severity` enum('minor','major','critical') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'minor',
-  `status` enum('open','under_investigation','corrective_action','closed') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'open',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `ncr_number` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  `category` enum('structural','material','workmanship','safety','other') NOT NULL DEFAULT 'other',
+  `severity` enum('minor','major','critical') NOT NULL DEFAULT 'minor',
+  `status` enum('open','under_investigation','corrective_action','closed') NOT NULL DEFAULT 'open',
   `identified_date` date NOT NULL,
   `due_date` date DEFAULT NULL,
-  `location` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `identified_by` bigint unsigned DEFAULT NULL,
-  `root_cause` text COLLATE utf8mb4_unicode_ci,
-  `corrective_action` text COLLATE utf8mb4_unicode_ci,
-  `preventive_action` text COLLATE utf8mb4_unicode_ci,
+  `location` varchar(255) DEFAULT NULL,
+  `identified_by` bigint(20) unsigned DEFAULT NULL,
+  `root_cause` text DEFAULT NULL,
+  `corrective_action` text DEFAULT NULL,
+  `preventive_action` text DEFAULT NULL,
   `closed_date` date DEFAULT NULL,
-  `notes` text COLLATE utf8mb4_unicode_ci,
-  `created_by` bigint unsigned DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_by` bigint(20) unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -2034,45 +2034,23 @@ CREATE TABLE `ncrs` (
 
 DROP TABLE IF EXISTS `password_reset_tokens`;
 CREATE TABLE `password_reset_tokens` (
-  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `token` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
-DROP TABLE IF EXISTS `payment_accounts`;
-CREATE TABLE `payment_accounts` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `type` enum('bank','mfs','cash') COLLATE utf8mb4_unicode_ci NOT NULL,
-  `account_number` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `bank_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `opening_balance` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `current_balance` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `status` enum('active','inactive') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
-  `notes` text COLLATE utf8mb4_unicode_ci,
-  `created_by` bigint unsigned DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `payment_accounts_created_by_foreign` (`created_by`),
-  CONSTRAINT `payment_accounts_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-INSERT INTO `payment_accounts` (`id`, `name`, `type`, `account_number`, `bank_name`, `opening_balance`, `current_balance`, `status`, `notes`, `created_by`, `created_at`, `updated_at`) VALUES
-(1,	'Account 1',	'bank',	'1234567890',	'ABC Bank',	7500000.00,	7500000.00,	'active',	NULL,	1,	'2026-07-14 23:24:09',	'2026-07-14 23:24:09');
-
 DROP TABLE IF EXISTS `payments`;
 CREATE TABLE `payments` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `invoice_id` bigint unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `invoice_id` bigint(20) unsigned NOT NULL,
   `amount` decimal(15,2) NOT NULL,
   `payment_date` date NOT NULL,
-  `payment_method` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `reference` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `payment_account_id` bigint unsigned DEFAULT NULL,
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `payment_method` varchar(255) DEFAULT NULL,
+  `reference` varchar(255) DEFAULT NULL,
+  `payment_account_id` bigint(20) unsigned DEFAULT NULL,
+  `notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -2085,24 +2063,46 @@ CREATE TABLE `payments` (
 INSERT INTO `payments` (`id`, `invoice_id`, `amount`, `payment_date`, `payment_method`, `reference`, `payment_account_id`, `notes`, `created_at`, `updated_at`) VALUES
 (1,	2,	500000.00,	'2026-06-22',	'Bank',	'PO#1234',	NULL,	NULL,	'2026-06-22 06:16:03',	'2026-06-22 06:16:03');
 
+DROP TABLE IF EXISTS `payment_accounts`;
+CREATE TABLE `payment_accounts` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `type` enum('bank','mfs','cash') NOT NULL,
+  `account_number` varchar(255) DEFAULT NULL,
+  `bank_name` varchar(255) DEFAULT NULL,
+  `opening_balance` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `current_balance` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `status` enum('active','inactive') NOT NULL DEFAULT 'active',
+  `notes` text DEFAULT NULL,
+  `created_by` bigint(20) unsigned DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `payment_accounts_created_by_foreign` (`created_by`),
+  CONSTRAINT `payment_accounts_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `payment_accounts` (`id`, `name`, `type`, `account_number`, `bank_name`, `opening_balance`, `current_balance`, `status`, `notes`, `created_by`, `created_at`, `updated_at`) VALUES
+(1,	'Account 1',	'bank',	'1234567890',	'ABC Bank',	7500000.00,	7500000.00,	'active',	NULL,	1,	'2026-07-14 23:24:09',	'2026-07-14 23:24:09');
+
 DROP TABLE IF EXISTS `permits_to_work`;
 CREATE TABLE `permits_to_work` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `permit_number` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `project_id` bigint unsigned DEFAULT NULL,
-  `site_id` bigint unsigned DEFAULT NULL,
-  `requested_by` bigint unsigned NOT NULL,
-  `approved_by` bigint unsigned DEFAULT NULL,
-  `permit_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `work_location` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description_of_work` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `hazards_identified` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `safety_measures` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `permit_number` varchar(255) NOT NULL,
+  `project_id` bigint(20) unsigned DEFAULT NULL,
+  `site_id` bigint(20) unsigned DEFAULT NULL,
+  `requested_by` bigint(20) unsigned NOT NULL,
+  `approved_by` bigint(20) unsigned DEFAULT NULL,
+  `permit_type` varchar(255) NOT NULL,
+  `work_location` varchar(255) NOT NULL,
+  `description_of_work` text NOT NULL,
+  `hazards_identified` text NOT NULL,
+  `safety_measures` text NOT NULL,
   `valid_from` date NOT NULL,
   `valid_until` date NOT NULL,
-  `status` enum('draft','pending_approval','approved','active','completed','cancelled') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
-  `conditions` text COLLATE utf8mb4_unicode_ci,
-  `cancellation_reason` text COLLATE utf8mb4_unicode_ci,
+  `status` enum('draft','pending_approval','approved','active','completed','cancelled') NOT NULL DEFAULT 'draft',
+  `conditions` text DEFAULT NULL,
+  `cancellation_reason` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -2113,19 +2113,19 @@ CREATE TABLE `permits_to_work` (
   KEY `permits_to_work_approved_by_foreign` (`approved_by`),
   CONSTRAINT `permits_to_work_approved_by_foreign` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
   CONSTRAINT `permits_to_work_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL,
-  CONSTRAINT `permits_to_work_requested_by_foreign` FOREIGN KEY (`requested_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT,
+  CONSTRAINT `permits_to_work_requested_by_foreign` FOREIGN KEY (`requested_by`) REFERENCES `users` (`id`),
   CONSTRAINT `permits_to_work_site_id_foreign` FOREIGN KEY (`site_id`) REFERENCES `sites` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `personal_access_tokens`;
 CREATE TABLE `personal_access_tokens` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `tokenable_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `tokenable_id` bigint unsigned NOT NULL,
-  `name` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `token` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `abilities` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `tokenable_type` varchar(255) NOT NULL,
+  `tokenable_id` bigint(20) unsigned NOT NULL,
+  `name` text NOT NULL,
+  `token` varchar(64) NOT NULL,
+  `abilities` text DEFAULT NULL,
   `last_used_at` timestamp NULL DEFAULT NULL,
   `expires_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -2139,14 +2139,14 @@ CREATE TABLE `personal_access_tokens` (
 
 DROP TABLE IF EXISTS `phases`;
 CREATE TABLE `phases` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
   `start_date` date DEFAULT NULL,
   `end_date` date DEFAULT NULL,
-  `status` enum('planned','active','completed','delayed') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'planned',
-  `order_index` int NOT NULL DEFAULT '0',
+  `status` enum('planned','active','completed','delayed') NOT NULL DEFAULT 'planned',
+  `order_index` int(11) NOT NULL DEFAULT 0,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -2160,17 +2160,17 @@ INSERT INTO `phases` (`id`, `project_id`, `name`, `description`, `start_date`, `
 
 DROP TABLE IF EXISTS `ppe_issuances`;
 CREATE TABLE `ppe_issuances` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `employee_id` bigint unsigned NOT NULL,
-  `item_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `category` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `employee_id` bigint(20) unsigned NOT NULL,
+  `item_name` varchar(255) NOT NULL,
+  `category` varchar(100) DEFAULT NULL,
   `issue_date` date NOT NULL,
-  `quantity` int NOT NULL DEFAULT '1',
-  `size` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `condition_on_issue` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `quantity` int(11) NOT NULL DEFAULT 1,
+  `size` varchar(50) DEFAULT NULL,
+  `condition_on_issue` varchar(100) DEFAULT NULL,
   `return_date` date DEFAULT NULL,
-  `condition_on_return` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `condition_on_return` varchar(100) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -2181,11 +2181,64 @@ CREATE TABLE `ppe_issuances` (
 INSERT INTO `ppe_issuances` (`id`, `employee_id`, `item_name`, `category`, `issue_date`, `quantity`, `size`, `condition_on_issue`, `return_date`, `condition_on_return`, `notes`, `created_at`, `updated_at`) VALUES
 (1,	2,	'helmet',	'Helmet',	'2026-06-22',	1,	'10',	'new',	'2026-12-31',	NULL,	NULL,	'2026-06-22 01:17:57',	'2026-06-22 01:17:57');
 
+DROP TABLE IF EXISTS `privileges`;
+CREATE TABLE `privileges` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `slug` varchar(255) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `privileges_slug_unique` (`slug`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `privileges` (`id`, `name`, `slug`, `description`, `created_at`, `updated_at`) VALUES
+(1,	'View Dashboard',	'dashboard.view',	NULL,	'2026-07-05 23:16:47',	'2026-07-05 23:16:47'),
+(2,	'View Projects',	'projects.view',	NULL,	'2026-07-05 23:16:48',	'2026-07-05 23:16:48'),
+(3,	'View Invoices',	'invoices.view',	NULL,	'2026-07-05 23:16:48',	'2026-07-05 23:16:48'),
+(4,	'Accountant',	'accountant',	NULL,	'2026-07-14 23:26:49',	'2026-07-14 23:26:49'),
+(5,	'View Finance',	'finance.view',	'Allow view operations on Finance module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(6,	'Create Finance',	'finance.create',	'Allow create operations on Finance module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(7,	'Edit Finance',	'finance.edit',	'Allow edit operations on Finance module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(8,	'Delete Finance',	'finance.delete',	'Allow delete operations on Finance module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(9,	'Export Finance',	'finance.export',	'Allow export operations on Finance module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(10,	'View HR & Payroll',	'hr.view',	'Allow view operations on HR & Payroll module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(11,	'Create HR & Payroll',	'hr.create',	'Allow create operations on HR & Payroll module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(12,	'Edit HR & Payroll',	'hr.edit',	'Allow edit operations on HR & Payroll module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(13,	'Delete HR & Payroll',	'hr.delete',	'Allow delete operations on HR & Payroll module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(14,	'Export HR & Payroll',	'hr.export',	'Allow export operations on HR & Payroll module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(15,	'View Procurement',	'procurement.view',	'Allow view operations on Procurement module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(16,	'Create Procurement',	'procurement.create',	'Allow create operations on Procurement module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(17,	'Edit Procurement',	'procurement.edit',	'Allow edit operations on Procurement module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(18,	'Delete Procurement',	'procurement.delete',	'Allow delete operations on Procurement module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(19,	'Export Procurement',	'procurement.export',	'Allow export operations on Procurement module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(20,	'View Core',	'core.view',	'Allow view operations on Core module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(21,	'Create Core',	'core.create',	'Allow create operations on Core module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(22,	'Edit Core',	'core.edit',	'Allow edit operations on Core module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(23,	'Delete Core',	'core.delete',	'Allow delete operations on Core module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(24,	'Export Core',	'core.export',	'Allow export operations on Core module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(25,	'View Quality Control',	'quality.view',	'Allow view operations on Quality Control module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(26,	'Create Quality Control',	'quality.create',	'Allow create operations on Quality Control module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(27,	'Edit Quality Control',	'quality.edit',	'Allow edit operations on Quality Control module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(28,	'Delete Quality Control',	'quality.delete',	'Allow delete operations on Quality Control module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(29,	'Export Quality Control',	'quality.export',	'Allow export operations on Quality Control module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(30,	'View CRM',	'crm.view',	'Allow view operations on CRM module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(31,	'Create CRM',	'crm.create',	'Allow create operations on CRM module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(32,	'Edit CRM',	'crm.edit',	'Allow edit operations on CRM module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(33,	'Delete CRM',	'crm.delete',	'Allow delete operations on CRM module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(34,	'Export CRM',	'crm.export',	'Allow export operations on CRM module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(35,	'View Reports',	'reports.view',	'Allow view operations on Reports module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(36,	'Create Reports',	'reports.create',	'Allow create operations on Reports module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(37,	'Export Reports',	'reports.export',	'Allow export operations on Reports module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(38,	'View Administration',	'admin.view',	'Allow view operations on Administration module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
+(39,	'Manage Administration',	'admin.manage',	'Allow manage operations on Administration module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29');
+
 DROP TABLE IF EXISTS `privilege_role`;
 CREATE TABLE `privilege_role` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `role_id` bigint unsigned NOT NULL,
-  `privilege_id` bigint unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `role_id` bigint(20) unsigned NOT NULL,
+  `privilege_id` bigint(20) unsigned NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -2240,71 +2293,42 @@ INSERT INTO `privilege_role` (`id`, `role_id`, `privilege_id`, `created_at`, `up
 (43,	3,	8,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30'),
 (44,	3,	9,	'2026-07-14 23:56:30',	'2026-07-14 23:56:30');
 
-DROP TABLE IF EXISTS `privileges`;
-CREATE TABLE `privileges` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+DROP TABLE IF EXISTS `projects`;
+CREATE TABLE `projects` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `budget` decimal(15,2) NOT NULL,
+  `start_date` date NOT NULL,
+  `end_date` date NOT NULL,
+  `status` enum('planning','active','on_hold','completed') NOT NULL DEFAULT 'planning',
+  `created_by` bigint(20) unsigned NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
+  `client_id` bigint(20) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `privileges_slug_unique` (`slug`)
+  KEY `projects_created_by_foreign` (`created_by`),
+  KEY `projects_client_id_foreign` (`client_id`),
+  CONSTRAINT `projects_client_id_foreign` FOREIGN KEY (`client_id`) REFERENCES `clients` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `projects_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `privileges` (`id`, `name`, `slug`, `description`, `created_at`, `updated_at`) VALUES
-(1,	'View Dashboard',	'dashboard.view',	NULL,	'2026-07-05 23:16:47',	'2026-07-05 23:16:47'),
-(2,	'View Projects',	'projects.view',	NULL,	'2026-07-05 23:16:48',	'2026-07-05 23:16:48'),
-(3,	'View Invoices',	'invoices.view',	NULL,	'2026-07-05 23:16:48',	'2026-07-05 23:16:48'),
-(4,	'Accountant',	'accountant',	NULL,	'2026-07-14 23:26:49',	'2026-07-14 23:26:49'),
-(5,	'View Finance',	'finance.view',	'Allow view operations on Finance module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(6,	'Create Finance',	'finance.create',	'Allow create operations on Finance module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(7,	'Edit Finance',	'finance.edit',	'Allow edit operations on Finance module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(8,	'Delete Finance',	'finance.delete',	'Allow delete operations on Finance module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(9,	'Export Finance',	'finance.export',	'Allow export operations on Finance module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(10,	'View HR & Payroll',	'hr.view',	'Allow view operations on HR & Payroll module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(11,	'Create HR & Payroll',	'hr.create',	'Allow create operations on HR & Payroll module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(12,	'Edit HR & Payroll',	'hr.edit',	'Allow edit operations on HR & Payroll module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(13,	'Delete HR & Payroll',	'hr.delete',	'Allow delete operations on HR & Payroll module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(14,	'Export HR & Payroll',	'hr.export',	'Allow export operations on HR & Payroll module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(15,	'View Procurement',	'procurement.view',	'Allow view operations on Procurement module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(16,	'Create Procurement',	'procurement.create',	'Allow create operations on Procurement module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(17,	'Edit Procurement',	'procurement.edit',	'Allow edit operations on Procurement module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(18,	'Delete Procurement',	'procurement.delete',	'Allow delete operations on Procurement module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(19,	'Export Procurement',	'procurement.export',	'Allow export operations on Procurement module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(20,	'View Core',	'core.view',	'Allow view operations on Core module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(21,	'Create Core',	'core.create',	'Allow create operations on Core module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(22,	'Edit Core',	'core.edit',	'Allow edit operations on Core module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(23,	'Delete Core',	'core.delete',	'Allow delete operations on Core module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(24,	'Export Core',	'core.export',	'Allow export operations on Core module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(25,	'View Quality Control',	'quality.view',	'Allow view operations on Quality Control module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(26,	'Create Quality Control',	'quality.create',	'Allow create operations on Quality Control module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(27,	'Edit Quality Control',	'quality.edit',	'Allow edit operations on Quality Control module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(28,	'Delete Quality Control',	'quality.delete',	'Allow delete operations on Quality Control module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(29,	'Export Quality Control',	'quality.export',	'Allow export operations on Quality Control module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(30,	'View CRM',	'crm.view',	'Allow view operations on CRM module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(31,	'Create CRM',	'crm.create',	'Allow create operations on CRM module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(32,	'Edit CRM',	'crm.edit',	'Allow edit operations on CRM module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(33,	'Delete CRM',	'crm.delete',	'Allow delete operations on CRM module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(34,	'Export CRM',	'crm.export',	'Allow export operations on CRM module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(35,	'View Reports',	'reports.view',	'Allow view operations on Reports module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(36,	'Create Reports',	'reports.create',	'Allow create operations on Reports module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(37,	'Export Reports',	'reports.export',	'Allow export operations on Reports module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(38,	'View Administration',	'admin.view',	'Allow view operations on Administration module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29'),
-(39,	'Manage Administration',	'admin.manage',	'Allow manage operations on Administration module',	'2026-07-14 23:56:29',	'2026-07-14 23:56:29');
+INSERT INTO `projects` (`id`, `name`, `description`, `budget`, `start_date`, `end_date`, `status`, `created_by`, `created_at`, `updated_at`, `client_id`) VALUES
+(5,	'Green Tower',	'Test',	450000000.00,	'2026-01-01',	'2027-12-31',	'active',	1,	'2026-06-16 21:57:55',	'2026-06-16 23:06:41',	NULL),
+(6,	'Rupayan City Uttara',	NULL,	45000000.00,	'2026-07-01',	'2030-06-30',	'active',	1,	'2026-06-22 05:09:39',	'2026-07-07 02:44:18',	1);
 
 DROP TABLE IF EXISTS `project_resources`;
 CREATE TABLE `project_resources` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `resource_type` enum('labor','equipment','material') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `quantity` decimal(12,2) NOT NULL DEFAULT '0.00',
-  `unit` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `unit_cost` decimal(14,2) NOT NULL DEFAULT '0.00',
-  `total_cost` decimal(14,2) NOT NULL DEFAULT '0.00',
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `resource_type` enum('labor','equipment','material') NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `quantity` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `unit` varchar(255) DEFAULT NULL,
+  `unit_cost` decimal(14,2) NOT NULL DEFAULT 0.00,
+  `total_cost` decimal(14,2) NOT NULL DEFAULT 0.00,
+  `notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -2316,63 +2340,21 @@ INSERT INTO `project_resources` (`id`, `project_id`, `resource_type`, `name`, `d
 (1,	5,	'equipment',	'Test 1',	'1. Test 2\r\n2. Test 2',	5.00,	'pcs',	1500.00,	7500.00,	NULL,	'2026-06-21 21:46:28',	'2026-06-21 21:46:28'),
 (2,	6,	'equipment',	'Pile Driving Rig',	NULL,	2.00,	'pcs',	15000.00,	30000.00,	NULL,	'2026-06-22 05:21:39',	'2026-06-22 05:21:39');
 
-DROP TABLE IF EXISTS `projects`;
-CREATE TABLE `projects` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `budget` decimal(15,2) NOT NULL,
-  `start_date` date NOT NULL,
-  `end_date` date NOT NULL,
-  `status` enum('planning','active','on_hold','completed') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'planning',
-  `created_by` bigint unsigned NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  `client_id` bigint unsigned DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `projects_created_by_foreign` (`created_by`),
-  KEY `projects_client_id_foreign` (`client_id`),
-  CONSTRAINT `projects_client_id_foreign` FOREIGN KEY (`client_id`) REFERENCES `clients` (`id`) ON DELETE SET NULL,
-  CONSTRAINT `projects_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-INSERT INTO `projects` (`id`, `name`, `description`, `budget`, `start_date`, `end_date`, `status`, `created_by`, `created_at`, `updated_at`, `client_id`) VALUES
-(5,	'Green Tower',	'Test',	450000000.00,	'2026-01-01',	'2027-12-31',	'active',	1,	'2026-06-16 21:57:55',	'2026-06-16 23:06:41',	NULL),
-(6,	'Rupayan City Uttara',	NULL,	45000000.00,	'2026-07-01',	'2030-06-30',	'active',	1,	'2026-06-22 05:09:39',	'2026-07-07 02:44:18',	1);
-
-DROP TABLE IF EXISTS `proposal_items`;
-CREATE TABLE `proposal_items` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `proposal_id` bigint unsigned NOT NULL,
-  `description` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `quantity` decimal(12,2) NOT NULL DEFAULT '1.00',
-  `unit` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `unit_price` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `total_price` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `sort_order` int NOT NULL DEFAULT '0',
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `proposal_items_proposal_id_foreign` (`proposal_id`),
-  CONSTRAINT `proposal_items_proposal_id_foreign` FOREIGN KEY (`proposal_id`) REFERENCES `proposals` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-
 DROP TABLE IF EXISTS `proposals`;
 CREATE TABLE `proposals` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `lead_id` bigint unsigned DEFAULT NULL,
-  `client_id` bigint unsigned DEFAULT NULL,
-  `proposal_number` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `status` enum('draft','sent','accepted','rejected','expired') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
-  `subtotal` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `tax_rate` decimal(5,2) NOT NULL DEFAULT '0.00',
-  `tax_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `total_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `lead_id` bigint(20) unsigned DEFAULT NULL,
+  `client_id` bigint(20) unsigned DEFAULT NULL,
+  `proposal_number` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `status` enum('draft','sent','accepted','rejected','expired') NOT NULL DEFAULT 'draft',
+  `subtotal` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `tax_rate` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `tax_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `total_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
   `valid_until` date DEFAULT NULL,
-  `notes` text COLLATE utf8mb4_unicode_ci,
-  `created_by` bigint unsigned DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_by` bigint(20) unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -2386,39 +2368,35 @@ CREATE TABLE `proposals` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
-DROP TABLE IF EXISTS `punch_list_items`;
-CREATE TABLE `punch_list_items` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `punch_list_id` bigint unsigned NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `location` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `trade` enum('civil','electrical','mechanical','plumbing','painting','other') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'other',
-  `priority` enum('low','medium','high','critical') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'medium',
-  `status` enum('open','in_progress','completed','verified') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'open',
-  `assigned_to` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `completed_date` date DEFAULT NULL,
-  `verified_date` date DEFAULT NULL,
-  `notes` text COLLATE utf8mb4_unicode_ci,
-  `order_index` int NOT NULL DEFAULT '0',
+DROP TABLE IF EXISTS `proposal_items`;
+CREATE TABLE `proposal_items` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `proposal_id` bigint(20) unsigned NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `quantity` decimal(12,2) NOT NULL DEFAULT 1.00,
+  `unit` varchar(255) DEFAULT NULL,
+  `unit_price` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `total_price` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `sort_order` int(11) NOT NULL DEFAULT 0,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `punch_list_items_punch_list_id_foreign` (`punch_list_id`),
-  CONSTRAINT `punch_list_items_punch_list_id_foreign` FOREIGN KEY (`punch_list_id`) REFERENCES `punch_lists` (`id`) ON DELETE CASCADE
+  KEY `proposal_items_proposal_id_foreign` (`proposal_id`),
+  CONSTRAINT `proposal_items_proposal_id_foreign` FOREIGN KEY (`proposal_id`) REFERENCES `proposals` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `punch_lists`;
 CREATE TABLE `punch_lists` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `punch_list_number` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `status` enum('open','in_progress','completed','closed') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'open',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `punch_list_number` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `status` enum('open','in_progress','completed','closed') NOT NULL DEFAULT 'open',
   `inspection_date` date NOT NULL,
   `due_date` date DEFAULT NULL,
-  `created_by` bigint unsigned DEFAULT NULL,
+  `created_by` bigint(20) unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -2430,34 +2408,36 @@ CREATE TABLE `punch_lists` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
-DROP TABLE IF EXISTS `purchase_order_items`;
-CREATE TABLE `purchase_order_items` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `purchase_order_id` bigint unsigned NOT NULL,
-  `material_id` bigint unsigned NOT NULL,
-  `quantity` decimal(12,4) NOT NULL,
-  `unit_price` decimal(15,2) NOT NULL,
+DROP TABLE IF EXISTS `punch_list_items`;
+CREATE TABLE `punch_list_items` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `punch_list_id` bigint(20) unsigned NOT NULL,
+  `description` text NOT NULL,
+  `location` varchar(255) DEFAULT NULL,
+  `trade` enum('civil','electrical','mechanical','plumbing','painting','other') NOT NULL DEFAULT 'other',
+  `priority` enum('low','medium','high','critical') NOT NULL DEFAULT 'medium',
+  `status` enum('open','in_progress','completed','verified') NOT NULL DEFAULT 'open',
+  `assigned_to` varchar(255) DEFAULT NULL,
+  `completed_date` date DEFAULT NULL,
+  `verified_date` date DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `order_index` int(11) NOT NULL DEFAULT 0,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `purchase_order_items_purchase_order_id_foreign` (`purchase_order_id`),
-  KEY `purchase_order_items_material_id_foreign` (`material_id`),
-  CONSTRAINT `purchase_order_items_material_id_foreign` FOREIGN KEY (`material_id`) REFERENCES `materials` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `purchase_order_items_purchase_order_id_foreign` FOREIGN KEY (`purchase_order_id`) REFERENCES `purchase_orders` (`id`) ON DELETE CASCADE
+  KEY `punch_list_items_punch_list_id_foreign` (`punch_list_id`),
+  CONSTRAINT `punch_list_items_punch_list_id_foreign` FOREIGN KEY (`punch_list_id`) REFERENCES `punch_lists` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `purchase_order_items` (`id`, `purchase_order_id`, `material_id`, `quantity`, `unit_price`, `created_at`, `updated_at`) VALUES
-(3,	2,	4,	10.0000,	13500.00,	'2026-06-21 23:14:28',	'2026-06-21 23:14:28'),
-(4,	3,	5,	10.0000,	95000.00,	'2026-06-22 05:45:36',	'2026-06-22 05:45:36');
 
 DROP TABLE IF EXISTS `purchase_orders`;
 CREATE TABLE `purchase_orders` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `purchase_requisition_id` bigint unsigned DEFAULT NULL,
-  `vendor_id` bigint unsigned NOT NULL,
-  `project_id` bigint unsigned DEFAULT NULL,
-  `po_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `status` enum('draft','ordered','partially_received','received','cancelled') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `purchase_requisition_id` bigint(20) unsigned DEFAULT NULL,
+  `vendor_id` bigint(20) unsigned NOT NULL,
+  `project_id` bigint(20) unsigned DEFAULT NULL,
+  `po_number` varchar(255) NOT NULL,
+  `status` enum('draft','ordered','partially_received','received','cancelled') NOT NULL DEFAULT 'draft',
   `total_amount` decimal(15,2) NOT NULL,
   `order_date` date NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -2469,40 +2449,40 @@ CREATE TABLE `purchase_orders` (
   KEY `purchase_orders_project_id_foreign` (`project_id`),
   CONSTRAINT `purchase_orders_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL,
   CONSTRAINT `purchase_orders_purchase_requisition_id_foreign` FOREIGN KEY (`purchase_requisition_id`) REFERENCES `purchase_requisitions` (`id`) ON DELETE SET NULL,
-  CONSTRAINT `purchase_orders_vendor_id_foreign` FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`) ON DELETE RESTRICT
+  CONSTRAINT `purchase_orders_vendor_id_foreign` FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `purchase_orders` (`id`, `purchase_requisition_id`, `vendor_id`, `project_id`, `po_number`, `status`, `total_amount`, `order_date`, `created_at`, `updated_at`) VALUES
 (2,	2,	7,	5,	'PO-20260622-949F',	'received',	135000.00,	'2026-06-22',	'2026-06-21 23:14:28',	'2026-06-21 23:22:51'),
 (3,	3,	8,	6,	'PO-20260622-1377',	'received',	950000.00,	'2026-06-22',	'2026-06-22 05:45:36',	'2026-06-22 05:46:24');
 
-DROP TABLE IF EXISTS `purchase_requisition_items`;
-CREATE TABLE `purchase_requisition_items` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `purchase_requisition_id` bigint unsigned NOT NULL,
-  `material_id` bigint unsigned NOT NULL,
+DROP TABLE IF EXISTS `purchase_order_items`;
+CREATE TABLE `purchase_order_items` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `purchase_order_id` bigint(20) unsigned NOT NULL,
+  `material_id` bigint(20) unsigned NOT NULL,
   `quantity` decimal(12,4) NOT NULL,
-  `estimated_unit_price` decimal(15,2) DEFAULT NULL,
+  `unit_price` decimal(15,2) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `purchase_requisition_items_purchase_requisition_id_foreign` (`purchase_requisition_id`),
-  KEY `purchase_requisition_items_material_id_foreign` (`material_id`),
-  CONSTRAINT `purchase_requisition_items_material_id_foreign` FOREIGN KEY (`material_id`) REFERENCES `materials` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `purchase_requisition_items_purchase_requisition_id_foreign` FOREIGN KEY (`purchase_requisition_id`) REFERENCES `purchase_requisitions` (`id`) ON DELETE CASCADE
+  KEY `purchase_order_items_purchase_order_id_foreign` (`purchase_order_id`),
+  KEY `purchase_order_items_material_id_foreign` (`material_id`),
+  CONSTRAINT `purchase_order_items_material_id_foreign` FOREIGN KEY (`material_id`) REFERENCES `materials` (`id`),
+  CONSTRAINT `purchase_order_items_purchase_order_id_foreign` FOREIGN KEY (`purchase_order_id`) REFERENCES `purchase_orders` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `purchase_requisition_items` (`id`, `purchase_requisition_id`, `material_id`, `quantity`, `estimated_unit_price`, `created_at`, `updated_at`) VALUES
-(5,	2,	4,	10.0000,	13500.00,	'2026-06-21 23:08:16',	'2026-06-21 23:08:16'),
-(6,	3,	5,	10.0000,	95000.00,	'2026-06-22 05:44:36',	'2026-06-22 05:44:36');
+INSERT INTO `purchase_order_items` (`id`, `purchase_order_id`, `material_id`, `quantity`, `unit_price`, `created_at`, `updated_at`) VALUES
+(3,	2,	4,	10.0000,	13500.00,	'2026-06-21 23:14:28',	'2026-06-21 23:14:28'),
+(4,	3,	5,	10.0000,	95000.00,	'2026-06-22 05:45:36',	'2026-06-22 05:45:36');
 
 DROP TABLE IF EXISTS `purchase_requisitions`;
 CREATE TABLE `purchase_requisitions` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `requested_by` bigint unsigned NOT NULL,
-  `requisition_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `status` enum('draft','submitted','approved','rejected') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `requested_by` bigint(20) unsigned NOT NULL,
+  `requisition_number` varchar(255) NOT NULL,
+  `status` enum('draft','submitted','approved','rejected') NOT NULL DEFAULT 'draft',
   `required_date` date DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -2511,18 +2491,57 @@ CREATE TABLE `purchase_requisitions` (
   KEY `purchase_requisitions_project_id_foreign` (`project_id`),
   KEY `purchase_requisitions_requested_by_foreign` (`requested_by`),
   CONSTRAINT `purchase_requisitions_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `purchase_requisitions_requested_by_foreign` FOREIGN KEY (`requested_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT
+  CONSTRAINT `purchase_requisitions_requested_by_foreign` FOREIGN KEY (`requested_by`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `purchase_requisitions` (`id`, `project_id`, `requested_by`, `requisition_number`, `status`, `required_date`, `created_at`, `updated_at`) VALUES
 (2,	5,	1,	'PR-20260622-6BBF',	'approved',	'2026-06-25',	'2026-06-21 23:08:16',	'2026-06-21 23:08:49'),
 (3,	6,	1,	'PR-20260622-D417',	'approved',	'2026-07-20',	'2026-06-22 05:44:36',	'2026-06-22 05:44:49');
 
+DROP TABLE IF EXISTS `purchase_requisition_items`;
+CREATE TABLE `purchase_requisition_items` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `purchase_requisition_id` bigint(20) unsigned NOT NULL,
+  `material_id` bigint(20) unsigned NOT NULL,
+  `quantity` decimal(12,4) NOT NULL,
+  `estimated_unit_price` decimal(15,2) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `purchase_requisition_items_purchase_requisition_id_foreign` (`purchase_requisition_id`),
+  KEY `purchase_requisition_items_material_id_foreign` (`material_id`),
+  CONSTRAINT `purchase_requisition_items_material_id_foreign` FOREIGN KEY (`material_id`) REFERENCES `materials` (`id`),
+  CONSTRAINT `purchase_requisition_items_purchase_requisition_id_foreign` FOREIGN KEY (`purchase_requisition_id`) REFERENCES `purchase_requisitions` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `purchase_requisition_items` (`id`, `purchase_requisition_id`, `material_id`, `quantity`, `estimated_unit_price`, `created_at`, `updated_at`) VALUES
+(5,	2,	4,	10.0000,	13500.00,	'2026-06-21 23:08:16',	'2026-06-21 23:08:16'),
+(6,	3,	5,	10.0000,	95000.00,	'2026-06-22 05:44:36',	'2026-06-22 05:44:36');
+
+DROP TABLE IF EXISTS `quotations`;
+CREATE TABLE `quotations` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `rfq_id` bigint(20) unsigned NOT NULL,
+  `vendor_id` bigint(20) unsigned NOT NULL,
+  `quotation_number` varchar(255) DEFAULT NULL,
+  `submitted_date` date NOT NULL,
+  `notes` text DEFAULT NULL,
+  `is_winner` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `quotations_rfq_id_vendor_id_unique` (`rfq_id`,`vendor_id`),
+  KEY `quotations_vendor_id_foreign` (`vendor_id`),
+  CONSTRAINT `quotations_rfq_id_foreign` FOREIGN KEY (`rfq_id`) REFERENCES `rfqs` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `quotations_vendor_id_foreign` FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 DROP TABLE IF EXISTS `quotation_items`;
 CREATE TABLE `quotation_items` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `quotation_id` bigint unsigned NOT NULL,
-  `rfq_item_id` bigint unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `quotation_id` bigint(20) unsigned NOT NULL,
+  `rfq_item_id` bigint(20) unsigned NOT NULL,
   `unit_price` decimal(15,2) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -2534,43 +2553,24 @@ CREATE TABLE `quotation_items` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
-DROP TABLE IF EXISTS `quotations`;
-CREATE TABLE `quotations` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `rfq_id` bigint unsigned NOT NULL,
-  `vendor_id` bigint unsigned NOT NULL,
-  `quotation_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `submitted_date` date NOT NULL,
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `is_winner` tinyint(1) NOT NULL DEFAULT '0',
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `quotations_rfq_id_vendor_id_unique` (`rfq_id`,`vendor_id`),
-  KEY `quotations_vendor_id_foreign` (`vendor_id`),
-  CONSTRAINT `quotations_rfq_id_foreign` FOREIGN KEY (`rfq_id`) REFERENCES `rfqs` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `quotations_vendor_id_foreign` FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-
 DROP TABLE IF EXISTS `rate_analyses`;
 CREATE TABLE `rate_analyses` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `ra_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `total_rate` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `status` enum('draft','approved','revised') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
-  `created_by` bigint unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `ra_number` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `total_rate` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `status` enum('draft','approved','revised') NOT NULL DEFAULT 'draft',
+  `created_by` bigint(20) unsigned NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `rate_analyses_ra_number_unique` (`ra_number`),
   KEY `rate_analyses_project_id_foreign` (`project_id`),
   KEY `rate_analyses_created_by_foreign` (`created_by`),
-  CONSTRAINT `rate_analyses_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `rate_analyses_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE RESTRICT
+  CONSTRAINT `rate_analyses_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`),
+  CONSTRAINT `rate_analyses_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `rate_analyses` (`id`, `project_id`, `ra_number`, `title`, `description`, `total_rate`, `status`, `created_by`, `created_at`, `updated_at`) VALUES
@@ -2578,15 +2578,15 @@ INSERT INTO `rate_analyses` (`id`, `project_id`, `ra_number`, `title`, `descript
 
 DROP TABLE IF EXISTS `rate_analysis_items`;
 CREATE TABLE `rate_analysis_items` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `rate_analysis_id` bigint unsigned NOT NULL,
-  `resource_type` enum('labour','material','equipment','subcontract','overhead') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `resource_description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `unit` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `rate_analysis_id` bigint(20) unsigned NOT NULL,
+  `resource_type` enum('labour','material','equipment','subcontract','overhead') NOT NULL,
+  `resource_description` varchar(255) NOT NULL,
+  `unit` varchar(255) NOT NULL,
   `quantity` decimal(12,4) NOT NULL,
   `unit_rate` decimal(15,2) NOT NULL,
   `total_cost` decimal(15,2) NOT NULL,
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -2597,43 +2597,20 @@ CREATE TABLE `rate_analysis_items` (
 INSERT INTO `rate_analysis_items` (`id`, `rate_analysis_id`, `resource_type`, `resource_description`, `unit`, `quantity`, `unit_rate`, `total_cost`, `notes`, `created_at`, `updated_at`) VALUES
 (1,	1,	'equipment',	'test',	'pcs',	10.0000,	1500.00,	15000.00,	NULL,	'2026-06-22 04:02:37',	'2026-06-22 04:02:37');
 
-DROP TABLE IF EXISTS `receivable_payments`;
-CREATE TABLE `receivable_payments` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `receivable_id` bigint unsigned NOT NULL,
-  `amount` decimal(15,2) NOT NULL,
-  `payment_date` date NOT NULL,
-  `payment_method` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `reference` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `payment_account_id` bigint unsigned DEFAULT NULL,
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `receivable_payments_receivable_id_foreign` (`receivable_id`),
-  KEY `receivable_payments_payment_account_id_foreign` (`payment_account_id`),
-  CONSTRAINT `receivable_payments_payment_account_id_foreign` FOREIGN KEY (`payment_account_id`) REFERENCES `payment_accounts` (`id`) ON DELETE SET NULL,
-  CONSTRAINT `receivable_payments_receivable_id_foreign` FOREIGN KEY (`receivable_id`) REFERENCES `receivables` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-INSERT INTO `receivable_payments` (`id`, `receivable_id`, `amount`, `payment_date`, `payment_method`, `reference`, `payment_account_id`, `notes`, `created_at`, `updated_at`) VALUES
-(1,	1,	1500000.00,	'2026-06-22',	'cash',	'1234',	NULL,	NULL,	'2026-06-22 04:47:05',	'2026-06-22 04:47:05'),
-(2,	2,	15000.00,	'2026-06-22',	NULL,	NULL,	NULL,	NULL,	'2026-06-22 06:21:37',	'2026-06-22 06:21:37');
-
 DROP TABLE IF EXISTS `receivables`;
 CREATE TABLE `receivables` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned DEFAULT NULL,
-  `invoice_id` bigint unsigned DEFAULT NULL,
-  `receivable_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `payer_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned DEFAULT NULL,
+  `invoice_id` bigint(20) unsigned DEFAULT NULL,
+  `receivable_number` varchar(255) NOT NULL,
+  `payer_name` varchar(255) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
   `amount` decimal(15,2) NOT NULL,
-  `paid_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `paid_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
   `due_date` date NOT NULL,
-  `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `created_by` bigint unsigned DEFAULT NULL,
+  `status` varchar(255) NOT NULL DEFAULT 'pending',
+  `notes` text DEFAULT NULL,
+  `created_by` bigint(20) unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -2650,23 +2627,46 @@ INSERT INTO `receivables` (`id`, `project_id`, `invoice_id`, `receivable_number`
 (1,	5,	NULL,	'AR-20260622-001',	'Client 1',	NULL,	2500000.00,	1500000.00,	'2026-06-30',	'partial',	'paid',	1,	'2026-06-22 04:45:03',	'2026-06-22 04:47:05'),
 (2,	6,	NULL,	'AR-20260622-002',	'Client 2',	NULL,	50000.00,	15000.00,	'2026-07-01',	'partial',	NULL,	1,	'2026-06-22 06:21:21',	'2026-06-22 06:21:37');
 
+DROP TABLE IF EXISTS `receivable_payments`;
+CREATE TABLE `receivable_payments` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `receivable_id` bigint(20) unsigned NOT NULL,
+  `amount` decimal(15,2) NOT NULL,
+  `payment_date` date NOT NULL,
+  `payment_method` varchar(255) DEFAULT NULL,
+  `reference` varchar(255) DEFAULT NULL,
+  `payment_account_id` bigint(20) unsigned DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `receivable_payments_receivable_id_foreign` (`receivable_id`),
+  KEY `receivable_payments_payment_account_id_foreign` (`payment_account_id`),
+  CONSTRAINT `receivable_payments_payment_account_id_foreign` FOREIGN KEY (`payment_account_id`) REFERENCES `payment_accounts` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `receivable_payments_receivable_id_foreign` FOREIGN KEY (`receivable_id`) REFERENCES `receivables` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `receivable_payments` (`id`, `receivable_id`, `amount`, `payment_date`, `payment_method`, `reference`, `payment_account_id`, `notes`, `created_at`, `updated_at`) VALUES
+(1,	1,	1500000.00,	'2026-06-22',	'cash',	'1234',	NULL,	NULL,	'2026-06-22 04:47:05',	'2026-06-22 04:47:05'),
+(2,	2,	15000.00,	'2026-06-22',	NULL,	NULL,	NULL,	NULL,	'2026-06-22 06:21:37',	'2026-06-22 06:21:37');
+
 DROP TABLE IF EXISTS `rfis`;
 CREATE TABLE `rfis` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `rfi_number` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `subject` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `question` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `drawing_id` bigint unsigned DEFAULT NULL,
-  `priority` enum('low','medium','high') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'medium',
-  `status` enum('open','answered','closed') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'open',
-  `raised_by` bigint unsigned DEFAULT NULL,
-  `assigned_to` bigint unsigned DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `rfi_number` varchar(255) NOT NULL,
+  `subject` varchar(255) NOT NULL,
+  `question` text NOT NULL,
+  `drawing_id` bigint(20) unsigned DEFAULT NULL,
+  `priority` enum('low','medium','high') NOT NULL DEFAULT 'medium',
+  `status` enum('open','answered','closed') NOT NULL DEFAULT 'open',
+  `raised_by` bigint(20) unsigned DEFAULT NULL,
+  `assigned_to` bigint(20) unsigned DEFAULT NULL,
   `due_date` date DEFAULT NULL,
-  `answer` text COLLATE utf8mb4_unicode_ci,
-  `answered_by` bigint unsigned DEFAULT NULL,
+  `answer` text DEFAULT NULL,
+  `answered_by` bigint(20) unsigned DEFAULT NULL,
   `answered_date` date DEFAULT NULL,
-  `attachment_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `attachment_path` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -2684,13 +2684,38 @@ CREATE TABLE `rfis` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
+DROP TABLE IF EXISTS `rfqs`;
+CREATE TABLE `rfqs` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned DEFAULT NULL,
+  `rfq_number` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `issue_date` date NOT NULL,
+  `closing_date` date NOT NULL,
+  `status` enum('draft','sent','closed','awarded') NOT NULL DEFAULT 'draft',
+  `created_by` bigint(20) unsigned DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `rfqs_rfq_number_unique` (`rfq_number`),
+  KEY `rfqs_project_id_foreign` (`project_id`),
+  KEY `rfqs_created_by_foreign` (`created_by`),
+  CONSTRAINT `rfqs_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `rfqs_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `rfqs` (`id`, `project_id`, `rfq_number`, `title`, `description`, `issue_date`, `closing_date`, `status`, `created_by`, `created_at`, `updated_at`) VALUES
+(1,	5,	'RFQ-20260622-36AC',	'Quotation 1',	'Test',	'2026-06-22',	'2026-06-29',	'closed',	1,	'2026-06-21 23:03:30',	'2026-06-21 23:04:47'),
+(2,	6,	'RFQ-20260622-AF9D',	'Quotation 2',	NULL,	'2026-06-22',	'2026-06-29',	'draft',	1,	'2026-06-22 05:43:52',	'2026-06-22 05:43:52');
+
 DROP TABLE IF EXISTS `rfq_items`;
 CREATE TABLE `rfq_items` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `rfq_id` bigint unsigned NOT NULL,
-  `material_id` bigint unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `rfq_id` bigint(20) unsigned NOT NULL,
+  `material_id` bigint(20) unsigned NOT NULL,
   `quantity` decimal(15,2) NOT NULL,
-  `unit` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `unit` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -2706,10 +2731,10 @@ INSERT INTO `rfq_items` (`id`, `rfq_id`, `material_id`, `quantity`, `unit`, `cre
 
 DROP TABLE IF EXISTS `rfq_vendors`;
 CREATE TABLE `rfq_vendors` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `rfq_id` bigint unsigned NOT NULL,
-  `vendor_id` bigint unsigned NOT NULL,
-  `status` enum('invited','submitted','declined') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'invited',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `rfq_id` bigint(20) unsigned NOT NULL,
+  `vendor_id` bigint(20) unsigned NOT NULL,
+  `status` enum('invited','submitted','declined') NOT NULL DEFAULT 'invited',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -2724,52 +2749,27 @@ INSERT INTO `rfq_vendors` (`id`, `rfq_id`, `vendor_id`, `status`, `created_at`, 
 (2,	2,	7,	'invited',	'2026-06-22 05:43:52',	'2026-06-22 05:43:52'),
 (3,	2,	8,	'invited',	'2026-06-22 05:43:52',	'2026-06-22 05:43:52');
 
-DROP TABLE IF EXISTS `rfqs`;
-CREATE TABLE `rfqs` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned DEFAULT NULL,
-  `rfq_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `issue_date` date NOT NULL,
-  `closing_date` date NOT NULL,
-  `status` enum('draft','sent','closed','awarded') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
-  `created_by` bigint unsigned DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `rfqs_rfq_number_unique` (`rfq_number`),
-  KEY `rfqs_project_id_foreign` (`project_id`),
-  KEY `rfqs_created_by_foreign` (`created_by`),
-  CONSTRAINT `rfqs_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
-  CONSTRAINT `rfqs_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-INSERT INTO `rfqs` (`id`, `project_id`, `rfq_number`, `title`, `description`, `issue_date`, `closing_date`, `status`, `created_by`, `created_at`, `updated_at`) VALUES
-(1,	5,	'RFQ-20260622-36AC',	'Quotation 1',	'Test',	'2026-06-22',	'2026-06-29',	'closed',	1,	'2026-06-21 23:03:30',	'2026-06-21 23:04:47'),
-(2,	6,	'RFQ-20260622-AF9D',	'Quotation 2',	NULL,	'2026-06-22',	'2026-06-29',	'draft',	1,	'2026-06-22 05:43:52',	'2026-06-22 05:43:52');
-
 DROP TABLE IF EXISTS `risks`;
 CREATE TABLE `risks` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `risk_number` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `category` enum('technical','safety','financial','environmental','schedule','other') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'other',
-  `probability` enum('very_low','low','medium','high','very_high') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'medium',
-  `impact` enum('very_low','low','medium','high','very_high') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'medium',
-  `risk_score` tinyint unsigned NOT NULL DEFAULT '9',
-  `status` enum('open','in_progress','mitigated','closed') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'open',
-  `risk_owner_id` bigint unsigned DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `risk_number` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  `category` enum('technical','safety','financial','environmental','schedule','other') NOT NULL DEFAULT 'other',
+  `probability` enum('very_low','low','medium','high','very_high') NOT NULL DEFAULT 'medium',
+  `impact` enum('very_low','low','medium','high','very_high') NOT NULL DEFAULT 'medium',
+  `risk_score` tinyint(3) unsigned NOT NULL DEFAULT 9,
+  `status` enum('open','in_progress','mitigated','closed') NOT NULL DEFAULT 'open',
+  `risk_owner_id` bigint(20) unsigned DEFAULT NULL,
   `identified_date` date NOT NULL,
   `review_date` date DEFAULT NULL,
   `due_date` date DEFAULT NULL,
   `closed_date` date DEFAULT NULL,
-  `mitigation_plan` text COLLATE utf8mb4_unicode_ci,
-  `contingency_plan` text COLLATE utf8mb4_unicode_ci,
-  `notes` text COLLATE utf8mb4_unicode_ci,
-  `created_by` bigint unsigned DEFAULT NULL,
+  `mitigation_plan` text DEFAULT NULL,
+  `contingency_plan` text DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_by` bigint(20) unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -2785,17 +2785,17 @@ CREATE TABLE `risks` (
 
 DROP TABLE IF EXISTS `rod_calculations`;
 CREATE TABLE `rod_calculations` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `reference_no` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `steel_grade` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `revision` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `reference_no` varchar(50) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `steel_grade` varchar(20) DEFAULT NULL,
+  `revision` varchar(50) DEFAULT NULL,
+  `status` varchar(20) NOT NULL DEFAULT 'draft',
   `waste_percent` decimal(5,2) DEFAULT NULL,
-  `created_by` bigint unsigned NOT NULL,
-  `approved_by` bigint unsigned DEFAULT NULL,
+  `created_by` bigint(20) unsigned NOT NULL,
+  `approved_by` bigint(20) unsigned DEFAULT NULL,
   `approved_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -2806,63 +2806,30 @@ CREATE TABLE `rod_calculations` (
   KEY `rod_calculations_project_id_index` (`project_id`),
   KEY `rod_calculations_status_index` (`status`),
   KEY `rod_calculations_created_by_index` (`created_by`),
-  CONSTRAINT `rod_calculations_approved_by_foreign` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `rod_calculations_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `rod_calculations_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE RESTRICT
+  CONSTRAINT `rod_calculations_approved_by_foreign` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`),
+  CONSTRAINT `rod_calculations_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`),
+  CONSTRAINT `rod_calculations_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `rod_calculations` (`id`, `project_id`, `reference_no`, `title`, `description`, `steel_grade`, `revision`, `status`, `waste_percent`, `created_by`, `approved_by`, `approved_at`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (1,	5,	'BBS-GREENT-2026-00001',	'Footing',	NULL,	NULL,	NULL,	'draft',	NULL,	1,	NULL,	NULL,	'2026-07-18 04:05:51',	'2026-07-20 03:50:54',	NULL),
 (13,	6,	'BBS-RUPAYA-2026-00001',	'Test',	NULL,	NULL,	NULL,	'draft',	NULL,	1,	NULL,	NULL,	'2026-07-22 00:55:29',	'2026-07-22 02:30:10',	'2026-07-22 02:30:10');
 
-DROP TABLE IF EXISTS `rod_member_bars`;
-CREATE TABLE `rod_member_bars` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `rod_member_id` bigint unsigned NOT NULL,
-  `bar_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `direction` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `diameter` decimal(5,2) NOT NULL,
-  `spacing` decimal(10,2) DEFAULT NULL,
-  `hook_length` decimal(10,2) NOT NULL DEFAULT '0.00',
-  `bend_length` decimal(10,2) NOT NULL DEFAULT '0.00',
-  `lap_length` decimal(10,2) NOT NULL DEFAULT '0.00',
-  `actual_size` decimal(10,2) NOT NULL,
-  `cutting_length` decimal(10,2) NOT NULL DEFAULT '0.00',
-  `bars_count` int NOT NULL DEFAULT '0',
-  `total_length` decimal(12,2) NOT NULL DEFAULT '0.00',
-  `unit_weight` decimal(10,4) NOT NULL DEFAULT '0.0000',
-  `total_weight` decimal(12,2) NOT NULL DEFAULT '0.00',
-  `shape_code` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `is_manual_count` tinyint(1) NOT NULL DEFAULT '0',
-  `sort_order` int NOT NULL DEFAULT '0',
-  `remarks` text COLLATE utf8mb4_unicode_ci,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `rod_member_bars_rod_member_id_index` (`rod_member_id`),
-  KEY `rod_member_bars_diameter_index` (`diameter`),
-  KEY `rod_member_bars_direction_index` (`direction`),
-  CONSTRAINT `rod_member_bars_rod_member_id_foreign` FOREIGN KEY (`rod_member_id`) REFERENCES `rod_members` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-INSERT INTO `rod_member_bars` (`id`, `rod_member_id`, `bar_name`, `direction`, `diameter`, `spacing`, `hook_length`, `bend_length`, `lap_length`, `actual_size`, `cutting_length`, `bars_count`, `total_length`, `unit_weight`, `total_weight`, `shape_code`, `is_manual_count`, `sort_order`, `remarks`, `created_at`, `updated_at`) VALUES
-(1,	1,	'Main',	'X',	16.00,	3.00,	5.00,	6.00,	1.00,	12.00,	12.00,	1,	120.00,	0.3951,	0.05,	NULL,	0,	0,	NULL,	'2026-07-18 05:23:41',	'2026-07-22 05:18:19');
-
 DROP TABLE IF EXISTS `rod_members`;
 CREATE TABLE `rod_members` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `rod_calculation_id` bigint unsigned NOT NULL,
-  `type` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `member_code` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `quantity` int NOT NULL DEFAULT '1',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `rod_calculation_id` bigint(20) unsigned NOT NULL,
+  `type` varchar(30) NOT NULL,
+  `member_code` varchar(100) NOT NULL,
+  `quantity` int(11) NOT NULL DEFAULT 1,
   `length` decimal(10,2) DEFAULT NULL,
   `width` decimal(10,2) DEFAULT NULL,
   `height` decimal(10,2) DEFAULT NULL,
   `depth` decimal(10,2) DEFAULT NULL,
   `thickness` decimal(10,2) DEFAULT NULL,
-  `cover` decimal(10,2) NOT NULL DEFAULT '25.00',
-  `sort_order` int NOT NULL DEFAULT '0',
-  `remarks` text COLLATE utf8mb4_unicode_ci,
+  `cover` decimal(10,2) NOT NULL DEFAULT 25.00,
+  `sort_order` int(11) NOT NULL DEFAULT 0,
+  `remarks` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -2875,12 +2842,45 @@ CREATE TABLE `rod_members` (
 INSERT INTO `rod_members` (`id`, `rod_calculation_id`, `type`, `member_code`, `quantity`, `length`, `width`, `height`, `depth`, `thickness`, `cover`, `sort_order`, `remarks`, `created_at`, `updated_at`) VALUES
 (1,	1,	'footing',	'F1',	10,	20.00,	12.00,	20.00,	6.00,	8.00,	15.00,	0,	NULL,	'2026-07-18 04:21:31',	'2026-07-18 04:21:31');
 
+DROP TABLE IF EXISTS `rod_member_bars`;
+CREATE TABLE `rod_member_bars` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `rod_member_id` bigint(20) unsigned NOT NULL,
+  `bar_name` varchar(100) NOT NULL,
+  `direction` varchar(20) NOT NULL,
+  `diameter` decimal(5,2) NOT NULL,
+  `spacing` decimal(10,2) DEFAULT NULL,
+  `hook_length` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `bend_length` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `lap_length` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `actual_size` decimal(10,2) NOT NULL,
+  `cutting_length` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `bars_count` int(11) NOT NULL DEFAULT 0,
+  `total_length` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `unit_weight` decimal(10,4) NOT NULL DEFAULT 0.0000,
+  `total_weight` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `shape_code` varchar(50) DEFAULT NULL,
+  `is_manual_count` tinyint(1) NOT NULL DEFAULT 0,
+  `sort_order` int(11) NOT NULL DEFAULT 0,
+  `remarks` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `rod_member_bars_rod_member_id_index` (`rod_member_id`),
+  KEY `rod_member_bars_diameter_index` (`diameter`),
+  KEY `rod_member_bars_direction_index` (`direction`),
+  CONSTRAINT `rod_member_bars_rod_member_id_foreign` FOREIGN KEY (`rod_member_id`) REFERENCES `rod_members` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `rod_member_bars` (`id`, `rod_member_id`, `bar_name`, `direction`, `diameter`, `spacing`, `hook_length`, `bend_length`, `lap_length`, `actual_size`, `cutting_length`, `bars_count`, `total_length`, `unit_weight`, `total_weight`, `shape_code`, `is_manual_count`, `sort_order`, `remarks`, `created_at`, `updated_at`) VALUES
+(1,	1,	'Main',	'X',	16.00,	3.00,	5.00,	6.00,	1.00,	12.00,	12.00,	1,	120.00,	0.3951,	0.05,	NULL,	0,	0,	NULL,	'2026-07-18 05:23:41',	'2026-07-22 05:18:19');
+
 DROP TABLE IF EXISTS `roles`;
 CREATE TABLE `roles` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `slug` varchar(255) NOT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -2894,20 +2894,20 @@ INSERT INTO `roles` (`id`, `name`, `slug`, `is_active`, `created_at`, `updated_a
 
 DROP TABLE IF EXISTS `safety_audits`;
 CREATE TABLE `safety_audits` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `audit_number` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `project_id` bigint unsigned DEFAULT NULL,
-  `site_id` bigint unsigned DEFAULT NULL,
-  `auditor_id` bigint unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `audit_number` varchar(255) NOT NULL,
+  `project_id` bigint(20) unsigned DEFAULT NULL,
+  `site_id` bigint(20) unsigned DEFAULT NULL,
+  `auditor_id` bigint(20) unsigned NOT NULL,
   `audit_date` date NOT NULL,
-  `audit_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `scope` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `findings` text COLLATE utf8mb4_unicode_ci,
-  `non_conformances` text COLLATE utf8mb4_unicode_ci,
-  `recommendations` text COLLATE utf8mb4_unicode_ci,
-  `status` enum('scheduled','in_progress','completed','follow_up') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'scheduled',
-  `score` int DEFAULT NULL,
-  `notes` text COLLATE utf8mb4_unicode_ci,
+  `audit_type` varchar(255) NOT NULL,
+  `scope` varchar(255) NOT NULL,
+  `findings` text DEFAULT NULL,
+  `non_conformances` text DEFAULT NULL,
+  `recommendations` text DEFAULT NULL,
+  `status` enum('scheduled','in_progress','completed','follow_up') NOT NULL DEFAULT 'scheduled',
+  `score` int(11) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -2915,7 +2915,7 @@ CREATE TABLE `safety_audits` (
   KEY `safety_audits_project_id_foreign` (`project_id`),
   KEY `safety_audits_site_id_foreign` (`site_id`),
   KEY `safety_audits_auditor_id_foreign` (`auditor_id`),
-  CONSTRAINT `safety_audits_auditor_id_foreign` FOREIGN KEY (`auditor_id`) REFERENCES `users` (`id`) ON DELETE RESTRICT,
+  CONSTRAINT `safety_audits_auditor_id_foreign` FOREIGN KEY (`auditor_id`) REFERENCES `users` (`id`),
   CONSTRAINT `safety_audits_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE SET NULL,
   CONSTRAINT `safety_audits_site_id_foreign` FOREIGN KEY (`site_id`) REFERENCES `sites` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -2923,12 +2923,12 @@ CREATE TABLE `safety_audits` (
 
 DROP TABLE IF EXISTS `sessions`;
 CREATE TABLE `sessions` (
-  `id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `user_id` bigint unsigned DEFAULT NULL,
-  `ip_address` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `user_agent` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `payload` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `last_activity` int NOT NULL,
+  `id` varchar(255) NOT NULL,
+  `user_id` bigint(20) unsigned DEFAULT NULL,
+  `ip_address` varchar(45) DEFAULT NULL,
+  `user_agent` text DEFAULT NULL,
+  `payload` longtext NOT NULL,
+  `last_activity` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `sessions_user_id_index` (`user_id`),
   KEY `sessions_last_activity_index` (`last_activity`)
@@ -2936,13 +2936,14 @@ CREATE TABLE `sessions` (
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
 ('EnxPbGnev5MU1ryMQbNtVVJh0QRzftn0MTHxbSKh',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36',	'YTo1OntzOjY6Il90b2tlbiI7czo0MDoidFBseGpJQW1lZzVUZzJGQ3Y2R1I0NFl1NnM5cHp4b1JZQXZNNHpJSiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NTY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kYXNoYm9hcmQvZmluYW5jZS9yb2QtY2FsY3VsYXRpb25zIjtzOjU6InJvdXRlIjtzOjM2OiJhZG1pbi5maW5hbmNlLnJvZC1jYWxjdWxhdGlvbnMuaW5kZXgiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjEwOiJ0eXJvLWxvZ2luIjthOjE6e3M6NzoiY2FwdGNoYSI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7fQ==',	1784709058),
+('Om5qkcO5NCc12mjTd6XujdDighU6AwUywuDltSio',	1,	'127.0.0.1',	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36',	'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiYUk1aUxtbFRRN3NTZzd6elRRelVnTlFuZ2hIV0JralgyYWRuVmN5USI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjM1OiJodHRwczovL2NvbnN0cnVjdGlvbi50ZXN0L2Rhc2hib2FyZCI7czo1OiJyb3V0ZSI7czoyMDoidHlyby1kYXNoYm9hcmQuaW5kZXgiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjEwOiJ0eXJvLWxvZ2luIjthOjE6e3M6NzoiY2FwdGNoYSI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7fQ==',	1785129611),
 ('vICdyCWmW1l1AZuaLcdBQ8lVzfhOLliPtTkcivj8',	1,	'127.0.0.1',	'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1',	'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiNFFqRGFqaGRjQ2QzU2NrODhnMkJ0c1RlbFpXVWRiNkZwTmJwSFIybyI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjM3OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvZGFzaGJvYXJkL3VzZXJzIjtzOjU6InJvdXRlIjtzOjI2OiJ0eXJvLWRhc2hib2FyZC51c2Vycy5pbmRleCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MTA6InR5cm8tbG9naW4iO2E6MTp7czo3OiJjYXB0Y2hhIjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9',	1784722198);
 
 DROP TABLE IF EXISTS `settings`;
 CREATE TABLE `settings` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `value` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `key` varchar(255) NOT NULL,
+  `value` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -2954,23 +2955,41 @@ INSERT INTO `settings` (`id`, `key`, `value`, `created_at`, `updated_at`) VALUES
 (2,	'app_logo',	'uploads/settings/rXVSOJnvGrjKGSB8FOSkDjv1UKg1sdfYi3ZGiiOw.png',	'2026-05-20 23:40:44',	'2026-05-20 23:40:44'),
 (3,	'app_favicon',	'uploads/settings/jgO768ZxX9OKNj7LnOlOenEUvgSGKlaOwE056BeO.png',	'2026-05-20 23:40:44',	'2026-05-20 23:40:44');
 
+DROP TABLE IF EXISTS `sites`;
+CREATE TABLE `sites` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `location_address` text DEFAULT NULL,
+  `status` enum('active','inactive') NOT NULL DEFAULT 'active',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `sites_project_id_foreign` (`project_id`),
+  CONSTRAINT `sites_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `sites` (`id`, `project_id`, `name`, `location_address`, `status`, `created_at`, `updated_at`) VALUES
+(5,	5,	'Green Tower - Main Site',	'Gulshan, Dhaka',	'active',	'2026-06-16 21:58:33',	'2026-06-16 21:58:33'),
+(6,	6,	'Rupayan City Uttara - Main Site',	'Uttara, Dhaka',	'active',	'2026-06-22 05:14:15',	'2026-06-22 05:23:46');
+
 DROP TABLE IF EXISTS `site_logs`;
 CREATE TABLE `site_logs` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `site_id` bigint unsigned NOT NULL,
-  `submitted_by` bigint unsigned DEFAULT NULL,
-  `report_type` enum('daily_log','field_report') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'daily_log',
-  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `site_id` bigint(20) unsigned NOT NULL,
+  `submitted_by` bigint(20) unsigned DEFAULT NULL,
+  `report_type` enum('daily_log','field_report') NOT NULL DEFAULT 'daily_log',
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
   `log_date` date NOT NULL,
-  `weather_conditions` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `weather_conditions` varchar(255) DEFAULT NULL,
   `temperature` decimal(5,1) DEFAULT NULL,
-  `worker_count` int DEFAULT NULL,
-  `work_completed` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `equipment_used` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `materials_received` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `issues_notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `status` enum('draft','submitted') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
+  `worker_count` int(11) DEFAULT NULL,
+  `work_completed` text DEFAULT NULL,
+  `equipment_used` text DEFAULT NULL,
+  `materials_received` text DEFAULT NULL,
+  `issues_notes` text DEFAULT NULL,
+  `status` enum('draft','submitted') NOT NULL DEFAULT 'draft',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -2985,12 +3004,12 @@ INSERT INTO `site_logs` (`id`, `site_id`, `submitted_by`, `report_type`, `title`
 
 DROP TABLE IF EXISTS `site_photos`;
 CREATE TABLE `site_photos` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `site_id` bigint unsigned NOT NULL,
-  `file_path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `original_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `caption` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `uploaded_by` bigint unsigned DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `site_id` bigint(20) unsigned NOT NULL,
+  `file_path` varchar(255) NOT NULL,
+  `original_name` varchar(255) NOT NULL,
+  `caption` varchar(255) DEFAULT NULL,
+  `uploaded_by` bigint(20) unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -3003,34 +3022,16 @@ CREATE TABLE `site_photos` (
 INSERT INTO `site_photos` (`id`, `site_id`, `file_path`, `original_name`, `caption`, `uploaded_by`, `created_at`, `updated_at`) VALUES
 (1,	5,	'uploads/site-photos/3ZVPCU02LNUYLZu4qvu4rUGrK66iW9abwRVXFxc7.jpg',	'hl-l2320d-1-500x500.jpg',	'test',	1,	'2026-06-16 23:12:24',	'2026-06-16 23:12:24');
 
-DROP TABLE IF EXISTS `sites`;
-CREATE TABLE `sites` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `location_address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `status` enum('active','inactive') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `sites_project_id_foreign` (`project_id`),
-  CONSTRAINT `sites_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-INSERT INTO `sites` (`id`, `project_id`, `name`, `location_address`, `status`, `created_at`, `updated_at`) VALUES
-(5,	5,	'Green Tower - Main Site',	'Gulshan, Dhaka',	'active',	'2026-06-16 21:58:33',	'2026-06-16 21:58:33'),
-(6,	6,	'Rupayan City Uttara - Main Site',	'Uttara, Dhaka',	'active',	'2026-06-22 05:14:15',	'2026-06-22 05:23:46');
-
 DROP TABLE IF EXISTS `social_accounts`;
 CREATE TABLE `social_accounts` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint unsigned NOT NULL,
-  `provider` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `provider_user_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `provider_email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `provider_avatar` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `access_token` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `refresh_token` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) unsigned NOT NULL,
+  `provider` varchar(255) NOT NULL,
+  `provider_user_id` varchar(255) NOT NULL,
+  `provider_email` varchar(255) DEFAULT NULL,
+  `provider_avatar` varchar(255) DEFAULT NULL,
+  `access_token` text DEFAULT NULL,
+  `refresh_token` text DEFAULT NULL,
   `token_expires_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -3044,12 +3045,12 @@ CREATE TABLE `social_accounts` (
 
 DROP TABLE IF EXISTS `stocks`;
 CREATE TABLE `stocks` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `warehouse_id` bigint unsigned DEFAULT NULL,
-  `site_id` bigint unsigned DEFAULT NULL,
-  `material_id` bigint unsigned NOT NULL,
-  `quantity` decimal(12,4) NOT NULL DEFAULT '0.0000',
-  `min_stock` decimal(15,4) NOT NULL DEFAULT '0.0000',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `warehouse_id` bigint(20) unsigned DEFAULT NULL,
+  `site_id` bigint(20) unsigned DEFAULT NULL,
+  `material_id` bigint(20) unsigned NOT NULL,
+  `quantity` decimal(12,4) NOT NULL DEFAULT 0.0000,
+  `min_stock` decimal(15,4) NOT NULL DEFAULT 0.0000,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -3066,24 +3067,46 @@ INSERT INTO `stocks` (`id`, `warehouse_id`, `site_id`, `material_id`, `quantity`
 (6,	NULL,	6,	5,	10.0000,	8.0000,	'2026-06-22 05:50:50',	'2026-06-22 05:54:03'),
 (7,	NULL,	5,	5,	10.0000,	0.0000,	'2026-06-22 05:54:40',	'2026-06-22 05:54:40');
 
+DROP TABLE IF EXISTS `subcontractors`;
+CREATE TABLE `subcontractors` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `contact_name` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `address` text DEFAULT NULL,
+  `trade_category` varchar(255) DEFAULT NULL,
+  `specialization` varchar(255) DEFAULT NULL,
+  `license_number` varchar(255) DEFAULT NULL,
+  `status` enum('active','inactive','pending','approved','rejected','suspended') NOT NULL DEFAULT 'pending',
+  `performance_rating` tinyint(3) unsigned DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `subcontractors` (`id`, `name`, `contact_name`, `email`, `phone`, `address`, `trade_category`, `specialization`, `license_number`, `status`, `performance_rating`, `created_at`, `updated_at`) VALUES
+(1,	'Rahman Construction Ltd',	'Adbul Gaffar',	'gaffar@mail.com',	'01087654321',	'Ashulia, Savar',	'Bricks',	'Concrete works',	'ABCD1234',	'active',	4,	'2026-06-21 23:40:23',	'2026-06-21 23:40:39'),
+(2,	'Al Mahmud Construction Ltd',	'Mahmud Al Hasan',	'mahmud@mail.com',	'01300000000',	NULL,	'Bricks',	NULL,	'ABCD7890',	'active',	5,	'2026-06-22 05:58:05',	'2026-06-22 05:58:41');
+
 DROP TABLE IF EXISTS `subcontract_agreements`;
 CREATE TABLE `subcontract_agreements` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned DEFAULT NULL,
-  `subcontractor_id` bigint unsigned NOT NULL,
-  `agreement_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `scope_of_work` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned DEFAULT NULL,
+  `subcontractor_id` bigint(20) unsigned NOT NULL,
+  `agreement_number` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `scope_of_work` text DEFAULT NULL,
   `agreement_date` date NOT NULL,
   `start_date` date NOT NULL,
   `end_date` date DEFAULT NULL,
-  `contract_value` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `retention_percentage` decimal(5,2) NOT NULL DEFAULT '5.00',
-  `payment_terms` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `special_conditions` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `insurance_requirements` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `status` enum('draft','active','completed','terminated','cancelled') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
-  `created_by` bigint unsigned DEFAULT NULL,
+  `contract_value` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `retention_percentage` decimal(5,2) NOT NULL DEFAULT 5.00,
+  `payment_terms` text DEFAULT NULL,
+  `special_conditions` text DEFAULT NULL,
+  `insurance_requirements` text DEFAULT NULL,
+  `status` enum('draft','active','completed','terminated','cancelled') NOT NULL DEFAULT 'draft',
+  `created_by` bigint(20) unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -3102,21 +3125,21 @@ INSERT INTO `subcontract_agreements` (`id`, `project_id`, `subcontractor_id`, `a
 
 DROP TABLE IF EXISTS `subcontract_progress_payments`;
 CREATE TABLE `subcontract_progress_payments` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `subcontract_agreement_id` bigint unsigned NOT NULL,
-  `certificate_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `subcontract_agreement_id` bigint(20) unsigned NOT NULL,
+  `certificate_number` varchar(255) NOT NULL,
   `period_start` date NOT NULL,
   `period_end` date NOT NULL,
-  `work_completed_value` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `previous_certified_value` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `total_certified_to_date` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `retention_amount` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `retention_released` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `net_payable` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
-  `certified_by` bigint unsigned DEFAULT NULL,
+  `work_completed_value` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `previous_certified_value` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `total_certified_to_date` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `retention_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `retention_released` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `net_payable` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `status` varchar(50) NOT NULL DEFAULT 'draft',
+  `certified_by` bigint(20) unsigned DEFAULT NULL,
   `certified_at` timestamp NULL DEFAULT NULL,
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -3130,77 +3153,23 @@ CREATE TABLE `subcontract_progress_payments` (
 INSERT INTO `subcontract_progress_payments` (`id`, `subcontract_agreement_id`, `certificate_number`, `period_start`, `period_end`, `work_completed_value`, `previous_certified_value`, `total_certified_to_date`, `retention_amount`, `retention_released`, `net_payable`, `status`, `certified_by`, `certified_at`, `notes`, `created_at`, `updated_at`) VALUES
 (1,	1,	'PPC-20260622-1B99',	'2026-06-22',	'2026-12-31',	1500000.00,	0.00,	1500000.00,	225000.00,	225000.00,	1275000.00,	'paid',	1,	'2026-06-22 00:04:27',	NULL,	'2026-06-21 23:59:01',	'2026-06-22 00:04:32');
 
-DROP TABLE IF EXISTS `subcontractors`;
-CREATE TABLE `subcontractors` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `contact_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `phone` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `trade_category` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `specialization` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `license_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `status` enum('active','inactive','pending','approved','rejected','suspended') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
-  `performance_rating` tinyint unsigned DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-INSERT INTO `subcontractors` (`id`, `name`, `contact_name`, `email`, `phone`, `address`, `trade_category`, `specialization`, `license_number`, `status`, `performance_rating`, `created_at`, `updated_at`) VALUES
-(1,	'Rahman Construction Ltd',	'Adbul Gaffar',	'gaffar@mail.com',	'01087654321',	'Ashulia, Savar',	'Bricks',	'Concrete works',	'ABCD1234',	'active',	4,	'2026-06-21 23:40:23',	'2026-06-21 23:40:39'),
-(2,	'Al Mahmud Construction Ltd',	'Mahmud Al Hasan',	'mahmud@mail.com',	'01300000000',	NULL,	'Bricks',	NULL,	'ABCD7890',	'active',	5,	'2026-06-22 05:58:05',	'2026-06-22 05:58:41');
-
-DROP TABLE IF EXISTS `task_dependencies`;
-CREATE TABLE `task_dependencies` (
-  `task_id` bigint unsigned NOT NULL,
-  `depends_on_task_id` bigint unsigned NOT NULL,
-  PRIMARY KEY (`task_id`,`depends_on_task_id`),
-  KEY `task_dependencies_depends_on_task_id_foreign` (`depends_on_task_id`),
-  CONSTRAINT `task_dependencies_depends_on_task_id_foreign` FOREIGN KEY (`depends_on_task_id`) REFERENCES `tasks` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `task_dependencies_task_id_foreign` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-INSERT INTO `task_dependencies` (`task_id`, `depends_on_task_id`) VALUES
-(6,	5);
-
-DROP TABLE IF EXISTS `task_resources`;
-CREATE TABLE `task_resources` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `task_id` bigint unsigned NOT NULL,
-  `project_resource_id` bigint unsigned NOT NULL,
-  `allocated_quantity` decimal(12,2) NOT NULL DEFAULT '0.00',
-  `start_date` date DEFAULT NULL,
-  `end_date` date DEFAULT NULL,
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `task_resources_task_id_foreign` (`task_id`),
-  KEY `task_resources_project_resource_id_foreign` (`project_resource_id`),
-  CONSTRAINT `task_resources_project_resource_id_foreign` FOREIGN KEY (`project_resource_id`) REFERENCES `project_resources` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `task_resources_task_id_foreign` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-
 DROP TABLE IF EXISTS `tasks`;
 CREATE TABLE `tasks` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `site_id` bigint unsigned DEFAULT NULL,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `assigned_to` bigint unsigned DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `site_id` bigint(20) unsigned DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `assigned_to` bigint(20) unsigned DEFAULT NULL,
   `start_date` date DEFAULT NULL,
   `end_date` date DEFAULT NULL,
-  `priority` enum('low','medium','high','critical') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'medium',
-  `status` enum('open','in_progress','review','closed') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'open',
-  `progress_percent` int unsigned NOT NULL DEFAULT '0',
+  `priority` enum('low','medium','high','critical') NOT NULL DEFAULT 'medium',
+  `status` enum('open','in_progress','review','closed') NOT NULL DEFAULT 'open',
+  `progress_percent` int(10) unsigned NOT NULL DEFAULT 0,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `phase_id` bigint unsigned DEFAULT NULL,
-  `milestone_id` bigint unsigned DEFAULT NULL,
+  `phase_id` bigint(20) unsigned DEFAULT NULL,
+  `milestone_id` bigint(20) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `tasks_project_id_foreign` (`project_id`),
   KEY `tasks_site_id_foreign` (`site_id`),
@@ -3218,17 +3187,71 @@ INSERT INTO `tasks` (`id`, `project_id`, `site_id`, `name`, `description`, `assi
 (5,	5,	5,	'Excavation',	NULL,	2,	'2026-06-25',	'2026-06-30',	'medium',	'open',	50,	'2026-06-21 21:44:59',	'2026-06-21 21:49:17',	1,	1),
 (6,	6,	6,	'Bore Pile Casting',	NULL,	2,	'2026-07-10',	'2026-07-15',	'medium',	'in_progress',	0,	'2026-06-22 05:16:08',	'2026-06-22 05:16:30',	2,	NULL);
 
+DROP TABLE IF EXISTS `task_dependencies`;
+CREATE TABLE `task_dependencies` (
+  `task_id` bigint(20) unsigned NOT NULL,
+  `depends_on_task_id` bigint(20) unsigned NOT NULL,
+  PRIMARY KEY (`task_id`,`depends_on_task_id`),
+  KEY `task_dependencies_depends_on_task_id_foreign` (`depends_on_task_id`),
+  CONSTRAINT `task_dependencies_depends_on_task_id_foreign` FOREIGN KEY (`depends_on_task_id`) REFERENCES `tasks` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `task_dependencies_task_id_foreign` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `task_dependencies` (`task_id`, `depends_on_task_id`) VALUES
+(6,	5);
+
+DROP TABLE IF EXISTS `task_resources`;
+CREATE TABLE `task_resources` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `task_id` bigint(20) unsigned NOT NULL,
+  `project_resource_id` bigint(20) unsigned NOT NULL,
+  `allocated_quantity` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `task_resources_task_id_foreign` (`task_id`),
+  KEY `task_resources_project_resource_id_foreign` (`project_resource_id`),
+  CONSTRAINT `task_resources_project_resource_id_foreign` FOREIGN KEY (`project_resource_id`) REFERENCES `project_resources` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `task_resources_task_id_foreign` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+DROP TABLE IF EXISTS `tenders`;
+CREATE TABLE `tenders` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `tender_number` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `issue_date` date NOT NULL,
+  `close_date` date NOT NULL,
+  `status` enum('draft','open','closed','awarded','cancelled') NOT NULL DEFAULT 'draft',
+  `created_by` bigint(20) unsigned NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `tenders_tender_number_unique` (`tender_number`),
+  KEY `tenders_project_id_foreign` (`project_id`),
+  KEY `tenders_created_by_foreign` (`created_by`),
+  CONSTRAINT `tenders_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`),
+  CONSTRAINT `tenders_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 DROP TABLE IF EXISTS `tender_bids`;
 CREATE TABLE `tender_bids` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `tender_id` bigint unsigned NOT NULL,
-  `vendor_id` bigint unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `tender_id` bigint(20) unsigned NOT NULL,
+  `vendor_id` bigint(20) unsigned NOT NULL,
   `bid_amount` decimal(15,2) NOT NULL,
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `technical_score` int DEFAULT NULL,
-  `financial_score` int DEFAULT NULL,
-  `total_score` int DEFAULT NULL,
-  `status` enum('submitted','evaluated','shortlisted','awarded','rejected') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'submitted',
+  `notes` text DEFAULT NULL,
+  `technical_score` int(11) DEFAULT NULL,
+  `financial_score` int(11) DEFAULT NULL,
+  `total_score` int(11) DEFAULT NULL,
+  `status` enum('submitted','evaluated','shortlisted','awarded','rejected') NOT NULL DEFAULT 'submitted',
   `submitted_at` date NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -3236,18 +3259,18 @@ CREATE TABLE `tender_bids` (
   KEY `tender_bids_tender_id_foreign` (`tender_id`),
   KEY `tender_bids_vendor_id_foreign` (`vendor_id`),
   CONSTRAINT `tender_bids_tender_id_foreign` FOREIGN KEY (`tender_id`) REFERENCES `tenders` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `tender_bids_vendor_id_foreign` FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`) ON DELETE RESTRICT
+  CONSTRAINT `tender_bids_vendor_id_foreign` FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 DROP TABLE IF EXISTS `tender_packages`;
 CREATE TABLE `tender_packages` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `tender_id` bigint unsigned NOT NULL,
-  `document_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `document_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `file_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `tender_id` bigint(20) unsigned NOT NULL,
+  `document_name` varchar(255) NOT NULL,
+  `document_type` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `file_path` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -3256,39 +3279,17 @@ CREATE TABLE `tender_packages` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
-DROP TABLE IF EXISTS `tenders`;
-CREATE TABLE `tenders` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `tender_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `issue_date` date NOT NULL,
-  `close_date` date NOT NULL,
-  `status` enum('draft','open','closed','awarded','cancelled') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
-  `created_by` bigint unsigned NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `tenders_tender_number_unique` (`tender_number`),
-  KEY `tenders_project_id_foreign` (`project_id`),
-  KEY `tenders_created_by_foreign` (`created_by`),
-  CONSTRAINT `tenders_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE RESTRICT,
-  CONSTRAINT `tenders_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-
 DROP TABLE IF EXISTS `timesheets`;
 CREATE TABLE `timesheets` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `employee_id` bigint unsigned NOT NULL,
-  `project_id` bigint unsigned DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `employee_id` bigint(20) unsigned NOT NULL,
+  `project_id` bigint(20) unsigned DEFAULT NULL,
   `date` date NOT NULL,
   `start_time` time DEFAULT NULL,
   `end_time` time DEFAULT NULL,
-  `hours_worked` decimal(5,2) NOT NULL DEFAULT '0.00',
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
+  `hours_worked` decimal(5,2) NOT NULL DEFAULT 0.00,
+  `description` text DEFAULT NULL,
+  `status` varchar(50) NOT NULL DEFAULT 'draft',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -3303,16 +3304,16 @@ INSERT INTO `timesheets` (`id`, `employee_id`, `project_id`, `date`, `start_time
 
 DROP TABLE IF EXISTS `toolbox_talks`;
 CREATE TABLE `toolbox_talks` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `employee_id` bigint unsigned DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `employee_id` bigint(20) unsigned DEFAULT NULL,
   `date` date NOT NULL,
-  `topic` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `duration_minutes` int DEFAULT NULL,
-  `location` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `attendees` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `discussion_points` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `action_items` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `topic` varchar(255) NOT NULL,
+  `duration_minutes` int(11) DEFAULT NULL,
+  `location` varchar(255) DEFAULT NULL,
+  `attendees` text DEFAULT NULL,
+  `discussion_points` text DEFAULT NULL,
+  `action_items` text DEFAULT NULL,
+  `notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -3323,17 +3324,17 @@ CREATE TABLE `toolbox_talks` (
 
 DROP TABLE IF EXISTS `training_records`;
 CREATE TABLE `training_records` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `employee_id` bigint unsigned NOT NULL,
-  `training_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `provider` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `employee_id` bigint(20) unsigned NOT NULL,
+  `training_name` varchar(255) NOT NULL,
+  `provider` varchar(255) DEFAULT NULL,
   `start_date` date NOT NULL,
   `end_date` date DEFAULT NULL,
-  `status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'planned',
-  `certificate_no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` varchar(50) NOT NULL DEFAULT 'planned',
+  `certificate_no` varchar(255) DEFAULT NULL,
   `expiry_date` date DEFAULT NULL,
   `cost` decimal(10,2) DEFAULT NULL,
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -3344,15 +3345,15 @@ CREATE TABLE `training_records` (
 
 DROP TABLE IF EXISTS `tyro_audit_logs`;
 CREATE TABLE `tyro_audit_logs` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint unsigned DEFAULT NULL,
-  `event` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `auditable_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `auditable_id` bigint unsigned DEFAULT NULL,
-  `old_values` json DEFAULT NULL,
-  `new_values` json DEFAULT NULL,
-  `metadata` json DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) unsigned DEFAULT NULL,
+  `event` varchar(255) NOT NULL,
+  `auditable_type` varchar(255) DEFAULT NULL,
+  `auditable_id` bigint(20) unsigned DEFAULT NULL,
+  `old_values` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`old_values`)),
+  `new_values` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`new_values`)),
+  `metadata` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`metadata`)),
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `tyro_audit_logs_auditable_type_auditable_id_index` (`auditable_type`,`auditable_id`),
   KEY `tyro_audit_logs_user_id_index` (`user_id`),
@@ -3501,21 +3502,22 @@ INSERT INTO `tyro_audit_logs` (`id`, `user_id`, `event`, `auditable_type`, `audi
 (139,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-21 10:01:13'),
 (140,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-21 10:52:55'),
 (141,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-22 03:54:34'),
-(142,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-22 11:14:35');
+(142,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\": \"hello@inoodex.com\"}',	'{\"ip\": \"127.0.0.1\", \"is_console\": false, \"user_agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36\"}',	'2026-07-22 11:14:35'),
+(143,	1,	'user.login',	'App\\Models\\User',	1,	NULL,	'{\"email\":\"hello@inoodex.com\"}',	'{\"ip\":\"127.0.0.1\",\"user_agent\":\"Mozilla\\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\\/537.36 (KHTML, like Gecko) Chrome\\/150.0.0.0 Safari\\/537.36\",\"is_console\":false}',	'2026-07-27 05:09:34');
 
 DROP TABLE IF EXISTS `tyro_media`;
 CREATE TABLE `tyro_media` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint unsigned NOT NULL,
-  `filename` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `webp_path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `thumbnail_path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `disk` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'public',
-  `mime_type` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `size` bigint unsigned NOT NULL,
-  `alt_text` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `source_url` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) unsigned NOT NULL,
+  `filename` varchar(255) NOT NULL,
+  `path` varchar(255) NOT NULL,
+  `webp_path` varchar(255) DEFAULT NULL,
+  `thumbnail_path` varchar(255) DEFAULT NULL,
+  `disk` varchar(50) NOT NULL DEFAULT 'public',
+  `mime_type` varchar(100) NOT NULL,
+  `size` bigint(20) unsigned NOT NULL,
+  `alt_text` varchar(255) DEFAULT NULL,
+  `source_url` varchar(2048) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -3526,19 +3528,19 @@ CREATE TABLE `tyro_media` (
 
 DROP TABLE IF EXISTS `tyro_starred_import_images`;
 CREATE TABLE `tyro_starred_import_images` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint unsigned NOT NULL,
-  `star_key` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `provider` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `external_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `alt` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `author` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `thumb_url` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `preview_url` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `download_url` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `download_location` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `source_url` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `payload` json DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) unsigned NOT NULL,
+  `star_key` varchar(64) NOT NULL,
+  `provider` varchar(50) NOT NULL,
+  `external_id` varchar(255) DEFAULT NULL,
+  `alt` text DEFAULT NULL,
+  `author` varchar(255) DEFAULT NULL,
+  `thumb_url` varchar(2048) DEFAULT NULL,
+  `preview_url` varchar(2048) DEFAULT NULL,
+  `download_url` varchar(2048) DEFAULT NULL,
+  `download_location` varchar(2048) DEFAULT NULL,
+  `source_url` varchar(2048) DEFAULT NULL,
+  `payload` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`payload`)),
   `starred_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -3549,43 +3551,24 @@ CREATE TABLE `tyro_starred_import_images` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
-DROP TABLE IF EXISTS `user_roles`;
-CREATE TABLE `user_roles` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` bigint unsigned NOT NULL,
-  `role_id` bigint unsigned NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `user_roles_user_id_role_id_unique` (`user_id`,`role_id`),
-  KEY `user_roles_role_id_foreign` (`role_id`),
-  CONSTRAINT `user_roles_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `user_roles_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-INSERT INTO `user_roles` (`id`, `user_id`, `role_id`, `created_at`, `updated_at`) VALUES
-(1,	1,	1,	'2026-05-20 23:28:50',	'2026-05-20 23:28:50'),
-(2,	5,	2,	'2026-07-05 23:21:50',	'2026-07-05 23:21:50'),
-(3,	6,	3,	'2026-07-14 23:27:32',	'2026-07-14 23:27:32');
-
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
   `email_verified_at` timestamp NULL DEFAULT NULL,
-  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `two_factor_secret` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `two_factor_recovery_codes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `password` varchar(255) NOT NULL,
+  `two_factor_secret` text DEFAULT NULL,
+  `two_factor_recovery_codes` text DEFAULT NULL,
   `two_factor_confirmed_at` timestamp NULL DEFAULT NULL,
-  `remember_token` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `remember_token` varchar(100) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `suspended_at` timestamp NULL DEFAULT NULL,
-  `suspension_reason` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `profile_photo_path` varchar(2048) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `use_gravatar` tinyint(1) NOT NULL DEFAULT '0',
-  `client_id` bigint unsigned DEFAULT NULL,
+  `suspension_reason` text DEFAULT NULL,
+  `profile_photo_path` varchar(2048) DEFAULT NULL,
+  `use_gravatar` tinyint(1) NOT NULL DEFAULT 0,
+  `client_id` bigint(20) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `users_email_unique` (`email`),
   KEY `users_client_id_foreign` (`client_id`),
@@ -3600,43 +3583,44 @@ INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `tw
 (5,	'Client1',	'client@inoodex.com',	NULL,	'$2y$12$jQPFKbppyNdP5HTpbkwwl.drhLwSsMIXQEg4m.pz80.v7M02bMpze',	NULL,	NULL,	NULL,	NULL,	'2026-07-05 23:21:50',	'2026-07-05 23:21:50',	NULL,	NULL,	NULL,	0,	1),
 (6,	'Accountant',	'accountant@inoodex.com',	NULL,	'$2y$12$dRT8qr/PjHLHMcZ.REavSujC60zkXr8lQHlaY.ll3axme/x5tmN3q',	NULL,	NULL,	NULL,	NULL,	'2026-07-14 23:27:32',	'2026-07-14 23:27:32',	NULL,	NULL,	NULL,	0,	NULL);
 
-DROP TABLE IF EXISTS `vendor_documents`;
-CREATE TABLE `vendor_documents` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `vendor_id` bigint unsigned NOT NULL,
-  `document_type` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `file_path` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `expiry_date` date DEFAULT NULL,
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+DROP TABLE IF EXISTS `user_roles`;
+CREATE TABLE `user_roles` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) unsigned NOT NULL,
+  `role_id` bigint(20) unsigned NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `vendor_documents_vendor_id_foreign` (`vendor_id`),
-  CONSTRAINT `vendor_documents_vendor_id_foreign` FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`) ON DELETE CASCADE
+  UNIQUE KEY `user_roles_user_id_role_id_unique` (`user_id`,`role_id`),
+  KEY `user_roles_role_id_foreign` (`role_id`),
+  CONSTRAINT `user_roles_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `user_roles_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+INSERT INTO `user_roles` (`id`, `user_id`, `role_id`, `created_at`, `updated_at`) VALUES
+(1,	1,	1,	'2026-05-20 23:28:50',	'2026-05-20 23:28:50'),
+(2,	5,	2,	'2026-07-05 23:21:50',	'2026-07-05 23:21:50'),
+(3,	6,	3,	'2026-07-14 23:27:32',	'2026-07-14 23:27:32');
 
 DROP TABLE IF EXISTS `vendors`;
 CREATE TABLE `vendors` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `contact_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `phone` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `trade_category` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `qualification_status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'unqualified',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `contact_name` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `phone` varchar(255) DEFAULT NULL,
+  `address` text DEFAULT NULL,
+  `trade_category` varchar(255) NOT NULL,
+  `status` varchar(255) NOT NULL,
+  `qualification_status` varchar(50) NOT NULL DEFAULT 'unqualified',
   `qualified_at` timestamp NULL DEFAULT NULL,
-  `credit_limit` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `payment_terms` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `performance_rating` tinyint unsigned NOT NULL DEFAULT '5',
-  `is_blacklisted` tinyint(1) NOT NULL DEFAULT '0',
+  `credit_limit` decimal(15,2) NOT NULL DEFAULT 0.00,
+  `payment_terms` varchar(255) DEFAULT NULL,
+  `performance_rating` tinyint(3) unsigned NOT NULL DEFAULT 5,
+  `is_blacklisted` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `qualified_by` bigint unsigned DEFAULT NULL,
+  `qualified_by` bigint(20) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `vendors_qualified_by_foreign` (`qualified_by`),
   CONSTRAINT `vendors_qualified_by_foreign` FOREIGN KEY (`qualified_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
@@ -3646,25 +3630,43 @@ INSERT INTO `vendors` (`id`, `name`, `contact_name`, `email`, `phone`, `address`
 (7,	'Uttara Steel Ltd',	'Adbul Karim',	'abdulkarim@uttarasteel.com',	'01234567890',	'Sector-7, Uttara, Dhaka',	'Steel',	'active',	'qualified',	'2026-06-21 22:22:27',	0.00,	NULL,	4,	0,	'2026-06-21 22:20:09',	'2026-06-21 23:02:38',	1),
 (8,	'Bashundhara Steel Ltd',	'Monir Hossain',	'monir@bsl-bd.com',	'012000000',	NULL,	'Steel',	'active',	'qualified',	'2026-06-22 05:33:36',	0.00,	NULL,	4,	0,	'2026-06-22 05:33:09',	'2026-06-22 05:33:36',	1);
 
+DROP TABLE IF EXISTS `vendor_documents`;
+CREATE TABLE `vendor_documents` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `vendor_id` bigint(20) unsigned NOT NULL,
+  `document_type` varchar(100) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `file_path` varchar(255) NOT NULL,
+  `expiry_date` date DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `status` varchar(50) NOT NULL DEFAULT 'pending',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `vendor_documents_vendor_id_foreign` (`vendor_id`),
+  CONSTRAINT `vendor_documents_vendor_id_foreign` FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 DROP TABLE IF EXISTS `wage_slips`;
 CREATE TABLE `wage_slips` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `employee_id` bigint unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `employee_id` bigint(20) unsigned NOT NULL,
   `period_start` date NOT NULL,
   `period_end` date NOT NULL,
-  `total_days` int NOT NULL DEFAULT '0',
-  `present_days` int NOT NULL DEFAULT '0',
-  `absent_days` int NOT NULL DEFAULT '0',
-  `late_days` int NOT NULL DEFAULT '0',
-  `half_days` int NOT NULL DEFAULT '0',
-  `holidays` int NOT NULL DEFAULT '0',
-  `basic_pay` decimal(12,2) NOT NULL DEFAULT '0.00',
-  `overtime_pay` decimal(12,2) NOT NULL DEFAULT '0.00',
-  `allowances` decimal(12,2) NOT NULL DEFAULT '0.00',
-  `deductions` decimal(12,2) NOT NULL DEFAULT '0.00',
-  `net_pay` decimal(12,2) NOT NULL DEFAULT '0.00',
-  `status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `total_days` int(11) NOT NULL DEFAULT 0,
+  `present_days` int(11) NOT NULL DEFAULT 0,
+  `absent_days` int(11) NOT NULL DEFAULT 0,
+  `late_days` int(11) NOT NULL DEFAULT 0,
+  `half_days` int(11) NOT NULL DEFAULT 0,
+  `holidays` int(11) NOT NULL DEFAULT 0,
+  `basic_pay` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `overtime_pay` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `allowances` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `deductions` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `net_pay` decimal(12,2) NOT NULL DEFAULT 0.00,
+  `status` varchar(50) NOT NULL DEFAULT 'draft',
+  `notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -3677,10 +3679,10 @@ INSERT INTO `wage_slips` (`id`, `employee_id`, `period_start`, `period_end`, `to
 
 DROP TABLE IF EXISTS `warehouses`;
 CREATE TABLE `warehouses` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `location_address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `status` enum('active','inactive') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `location_address` text DEFAULT NULL,
+  `status` enum('active','inactive') NOT NULL DEFAULT 'active',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -3691,20 +3693,20 @@ INSERT INTO `warehouses` (`id`, `name`, `location_address`, `status`, `created_a
 
 DROP TABLE IF EXISTS `work_orders`;
 CREATE TABLE `work_orders` (
-  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `project_id` bigint unsigned NOT NULL,
-  `task_id` bigint unsigned DEFAULT NULL,
-  `site_id` bigint unsigned DEFAULT NULL,
-  `work_order_number` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `instructions` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `assigned_to` bigint unsigned DEFAULT NULL,
-  `issued_by` bigint unsigned DEFAULT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `task_id` bigint(20) unsigned DEFAULT NULL,
+  `site_id` bigint(20) unsigned DEFAULT NULL,
+  `work_order_number` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `instructions` text DEFAULT NULL,
+  `assigned_to` bigint(20) unsigned DEFAULT NULL,
+  `issued_by` bigint(20) unsigned DEFAULT NULL,
   `issue_date` date DEFAULT NULL,
   `due_date` date DEFAULT NULL,
   `completed_date` date DEFAULT NULL,
-  `status` enum('draft','issued','in_progress','completed','cancelled') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'draft',
-  `notes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `status` enum('draft','issued','in_progress','completed','cancelled') NOT NULL DEFAULT 'draft',
+  `notes` text DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -3725,4 +3727,4 @@ INSERT INTO `work_orders` (`id`, `project_id`, `task_id`, `site_id`, `work_order
 (1,	5,	5,	5,	'WO-2026-0001',	'Excavation Work Order',	'work order created',	2,	1,	'2026-06-22',	'2026-06-30',	NULL,	'issued',	NULL,	'2026-06-21 21:50:16',	'2026-06-21 21:50:16'),
 (2,	6,	6,	6,	'WO-2026-0002',	'Pile Casting Work Order',	NULL,	2,	1,	'2026-06-22',	'2026-06-30',	NULL,	'issued',	NULL,	'2026-06-22 05:23:11',	'2026-06-22 05:23:11');
 
--- 2026-07-22 12:12:42 UTC
+-- 2026-07-27 12:07:42 UTC
