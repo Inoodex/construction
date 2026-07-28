@@ -1983,6 +1983,24 @@ Client requests scope change → RFI Raised → RFI Answered → Change Order Cr
 → Revised Contract Value reflected on reports
 ```
 
+### 16.18 Global Header Search Audit & Module Coverage
+
+> [!NOTE]
+> Global header search (`SearchController.php`) has been audited and updated to capture 100% of all 10 ERP categories and 50+ submodules matching the active sidebar hierarchy.
+
+| Category | Modules Captured in Global Search |
+|---|---|
+| **Core Operations** | Projects, Sites & Field Locations, Site Logs, Site Photos, Tasks, Phases, Milestones, Resources, Allocation Chart (Gantt), Work Orders, Execution Inspections |
+| **Engineering & Estimating** | Bill of Quantities (BOQ), Rate Analysis, Tenders & Bids, Rod Calculations (BBS), Concrete Ratios (Mix Design) |
+| **Documents & Contracts** | Drawings & Blueprints, RFIs, Change Orders, Transmittals, Contracts, Amendments, Claims, Closeout Checklists |
+| **Procurement & Inventory** | Vendors & Suppliers, Materials, Material Submittals, Warehouses, RFQs, Purchase Requisitions, Purchase Orders (PO), Goods Received Notes (GRN), Stocks, Material Transfers, Issue Slips, Material Wastage, Material Reconciliation, Subcontractors, Subcontract Agreements, Progress Payments |
+| **HR & Safety** | Employees, Daily Attendance Register, Monthly Summary, Timesheets, Leave Requests, Payroll Wage Slips, Equipment Fleet, Fuel Logs, PPE Issuance, Safety Incidents, HSE Checklists, Toolbox Talks, Permits to Work (PTW), Safety Audits, Training Records, Certifications |
+| **CRM** | Leads, Clients & Customers, Commercial Proposals |
+| **Quality Control** | Non-Conformance Reports (NCR), Corrective Actions (CAR), Inspection & Test Plans (ITP), Punch Lists (Snagging), Material Test Certificates, Risk Register |
+| **Finance & Accounting** | Sales Invoices, Interim Payment Applications (IPA), Bills Payable (AP), Expense Vouchers, Budgets, Budget Forecasting, Cost Alerts, Labour Cost, Material Takeoffs (MTO), Chart of Accounts (COA), Journal Vouchers, General Ledger, Trial Balance, Bank Reconciliation, Accounts Receivable (AR), Bank Guarantees, Balance Sheet, Income Statement (P&L), Payment Accounts |
+| **Reports & Analytics** | Budget vs Actual, Project Cost Summary, Invoice Status, Cash Flow, Retention Tracker, Progress S-Curve, Labour & Equipment Utilisation, Procurement Spend, AR Aging, AP Aging |
+| **Administration** | Users, Roles, Privileges, System Settings, Categories & Taxonomies |
+
 ---
 
 ### 16.19 Test Completion Checklist

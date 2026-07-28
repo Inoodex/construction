@@ -18,9 +18,10 @@ class SettingController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'app_name' => 'nullable|string|max:255',
-            'app_logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'app_favicon' => 'nullable|image|mimes:ico,png,jpg,jpeg|max:1024',
+            'app_name'          => 'nullable|string|max:255',
+            'app_logo'          => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+            'app_favicon'       => 'nullable|image|mimes:ico,png,jpg,jpeg,svg,webp|max:1024',
+            'application_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:4096',
         ]);
 
         if ($request->has('app_name')) {
@@ -37,6 +38,12 @@ class SettingController extends Controller
             $favicon = $request->file('app_favicon');
             $faviconPath = $favicon->store('uploads/settings', 'public');
             Setting::updateOrCreate(['key' => 'app_favicon'], ['value' => $faviconPath]);
+        }
+
+        if ($request->hasFile('application_image')) {
+            $appImg = $request->file('application_image');
+            $appImgPath = $appImg->store('uploads/settings', 'public');
+            Setting::updateOrCreate(['key' => 'application_image'], ['value' => $appImgPath]);
         }
 
         return redirect()->back()->with('success', 'Settings updated successfully.');
