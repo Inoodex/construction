@@ -14,7 +14,6 @@
                     @csrf
                     <button type="submit" class="btn btn-sm btn-outline-success">Approve</button>
                 </form>
-                <a href="{{ route('admin.finance.concrete-ratios.edit', $concreteRatio->id) }}" class="btn btn-sm btn-outline-warning">Edit</a>
             @endif
             @if($concreteRatio->isApproved())
                 <form action="{{ route('admin.finance.concrete-ratios.complete', $concreteRatio->id) }}" method="POST" class="inline" onsubmit="return confirm('Mark as completed?');">
@@ -36,6 +35,10 @@
             </form>
             <a href="{{ route('admin.finance.concrete-ratios.pdf', $concreteRatio->id) }}" target="_blank" class="btn btn-sm btn-outline-dark">PDF</a>
             <a href="{{ route('admin.finance.concrete-ratios.excel', $concreteRatio->id) }}" class="btn btn-sm btn-outline-success">Excel</a>
+            <a href="{{ route('admin.finance.concrete-ratios.edit', $concreteRatio->id) }}" class="btn btn-sm btn-outline-warning gap-1.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    Edit
+                </a>
             <a href="{{ route('admin.finance.concrete-ratios.index') }}" class="btn btn-sm btn-secondary">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                 Back

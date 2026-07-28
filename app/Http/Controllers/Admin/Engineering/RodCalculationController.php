@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Finance;
+namespace App\Http\Controllers\Admin\Engineering;
 
 use App\Constants\BarDirection;
 use App\Constants\RodCalculationConstants;
@@ -40,13 +40,13 @@ class RodCalculationController extends Controller
         $rodCalculations = $query->latest()->paginate(15);
         $projects = Project::all();
 
-        return view('admin.finance.rod-calculations.index', compact('rodCalculations', 'projects'));
+        return view('admin.engineering.rod-calculations.index', compact('rodCalculations', 'projects'));
     }
 
     public function create()
     {
         $projects = Project::all();
-        return view('admin.finance.rod-calculations.create', compact('projects'));
+        return view('admin.engineering.rod-calculations.create', compact('projects'));
     }
 
     public function store(Request $request)
@@ -78,7 +78,7 @@ class RodCalculationController extends Controller
         $rodCalculation->load('project', 'creator', 'approver', 'members.bars');
         $summary = $this->service->summary($rodCalculation);
 
-        return view('admin.finance.rod-calculations.show', compact('rodCalculation', 'summary'));
+        return view('admin.engineering.rod-calculations.show', compact('rodCalculation', 'summary'));
     }
 
     public function edit(RodCalculation $rodCalculation)
@@ -86,7 +86,7 @@ class RodCalculationController extends Controller
         $rodCalculation->load('project');
         $projects = Project::all();
 
-        return view('admin.finance.rod-calculations.edit', compact('rodCalculation', 'projects'));
+        return view('admin.engineering.rod-calculations.edit', compact('rodCalculation', 'projects'));
     }
 
     public function update(Request $request, RodCalculation $rodCalculation)
@@ -365,7 +365,7 @@ class RodCalculationController extends Controller
         $rodCalculation->load('project', 'creator', 'approver', 'members.bars');
         $summary = $this->service->summary($rodCalculation);
 
-        $pdf = Pdf::loadView('admin.finance.rod-calculations.pdf.bbs', compact('rodCalculation', 'summary'));
+        $pdf = Pdf::loadView('admin.engineering.rod-calculations.pdf.bbs', compact('rodCalculation', 'summary'));
 
         return $pdf->stream("BBS-{$rodCalculation->reference_no}.pdf");
     }

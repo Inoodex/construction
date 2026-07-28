@@ -82,12 +82,14 @@ class DashboardController extends Controller
 
         $invoiceBase = Invoice::when($projectIds, fn ($q) => $q->whereIn('project_id', $projectIds));
         $totalInvoices = (clone $invoiceBase)->count();
-        $unpaidInvoices = (clone $invoiceBase)->whereIn('status', ['draft', 'sent', 'overdue'])->count();
+        $unpaidInvoices = (clone $invoiceBase)->whereIn('status', ['draft', 'sent', 'overdue', 'partially_paid'])->count();
         $totalInvoiceAmount = (clone $invoiceBase)->sum('total_amount');
+        $totalARDue = (clone $invoiceBase)->sum('due_amount');
 
         $billBase = Bill::when($projectIds, fn ($q) => $q->whereIn('project_id', $projectIds));
         $totalBills = (clone $billBase)->count();
-        $unpaidBills = (clone $billBase)->whereIn('status', ['draft', 'sent', 'overdue'])->count();
+        $unpaidBills = (clone $billBase)->whereIn('status', ['draft', 'sent', 'overdue', 'partially_paid'])->count();
+        $totalAPDue = (clone $billBase)->sum('due_amount');
 
         $pendingApprovals = Approval::where('status', 'pending')->count();
 
@@ -104,6 +106,20 @@ class DashboardController extends Controller
         $recentIncidents = IncidentReport::with('employee')->latest()->take(5)->get();
         $recentEmployees = Employee::latest()->take(5)->get();
 
+        $monthlyRevenue = Invoice::when($projectIds, fn ($q) => $q->whereIn('project_id', $projectIds))
+            ->where('issue_date', '>=', now()->subMonths(5)->startOfMonth())
+            ->select(DB::raw('DATE_FORMAT(issue_date, "%b %Y") as month_label'), DB::raw('SUM(total_amount) as total'), DB::raw('MIN(issue_date) as min_date'))
+            ->groupBy('month_label')
+            ->orderBy('min_date', 'asc')
+            ->pluck('total', 'month_label');
+
+        $monthlyExpenses = Bill::when($projectIds, fn ($q) => $q->whereIn('project_id', $projectIds))
+            ->where('bill_date', '>=', now()->subMonths(5)->startOfMonth())
+            ->select(DB::raw('DATE_FORMAT(bill_date, "%b %Y") as month_label'), DB::raw('SUM(total_amount) as total'), DB::raw('MIN(bill_date) as min_date'))
+            ->groupBy('month_label')
+            ->orderBy('min_date', 'asc')
+            ->pluck('total', 'month_label');
+
         return view('admin.dashboard', compact(
             'totalProjects', 'activeProjects', 'planningProjects', 'completedProjects',
             'totalBudget', 'totalSites',
@@ -115,11 +131,12 @@ class DashboardController extends Controller
             'todayAttendance', 'totalLeavePending',
             'totalEquipment', 'activeMaintenance',
             'openIncidents', 'totalTraining', 'expiredCert',
-            'totalInvoices', 'unpaidInvoices', 'totalInvoiceAmount',
-            'totalBills', 'unpaidBills',
+            'totalInvoices', 'unpaidInvoices', 'totalInvoiceAmount', 'totalARDue',
+            'totalBills', 'unpaidBills', 'totalAPDue',
             'pendingApprovals',
             'tasksByPriority', 'projectsByStatus',
-            'recentProjects', 'recentPOs', 'recentIncidents', 'recentEmployees'
+            'recentProjects', 'recentPOs', 'recentIncidents', 'recentEmployees',
+            'monthlyRevenue', 'monthlyExpenses'
         ));
     }
 }

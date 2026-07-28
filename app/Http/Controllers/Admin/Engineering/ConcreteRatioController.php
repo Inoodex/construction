@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Finance;
+namespace App\Http\Controllers\Admin\Engineering;
 
 use App\Constants\ConcreteRatioConstants;
 use App\Constants\RodMemberType;
@@ -40,13 +40,13 @@ class ConcreteRatioController extends Controller
         $concreteRatios = $query->latest()->paginate(15);
         $projects = Project::all();
 
-        return view('admin.finance.concrete-ratios.index', compact('concreteRatios', 'projects'));
+        return view('admin.engineering.concrete-ratios.index', compact('concreteRatios', 'projects'));
     }
 
     public function create()
     {
         $projects = Project::all();
-        return view('admin.finance.concrete-ratios.create', compact('projects'));
+        return view('admin.engineering.concrete-ratios.create', compact('projects'));
     }
 
     public function store(Request $request)
@@ -79,7 +79,7 @@ class ConcreteRatioController extends Controller
         $concreteRatio->load('project', 'creator', 'approver', 'rodCalculation', 'members');
         $summary = $this->service->summary($concreteRatio);
 
-        return view('admin.finance.concrete-ratios.show', compact('concreteRatio', 'summary'));
+        return view('admin.engineering.concrete-ratios.show', compact('concreteRatio', 'summary'));
     }
 
     public function edit(ConcreteRatio $concreteRatio)
@@ -87,7 +87,7 @@ class ConcreteRatioController extends Controller
         $concreteRatio->load('project');
         $projects = Project::all();
 
-        return view('admin.finance.concrete-ratios.edit', compact('concreteRatio', 'projects'));
+        return view('admin.engineering.concrete-ratios.edit', compact('concreteRatio', 'projects'));
     }
 
     public function update(Request $request, ConcreteRatio $concreteRatio)
@@ -106,7 +106,6 @@ class ConcreteRatioController extends Controller
 
         $concreteRatio->update($validated);
 
-        // Automatically recalculate member material quantities with the updated grade/waste
         $this->service->recalculateAll($concreteRatio);
 
         return redirect()->route('admin.finance.concrete-ratios.show', $concreteRatio->id)
@@ -327,7 +326,7 @@ class ConcreteRatioController extends Controller
         $concreteRatio->load('project', 'creator', 'approver', 'rodCalculation', 'members');
         $summary = $this->service->summary($concreteRatio);
 
-        $pdf = Pdf::loadView('admin.finance.concrete-ratios.pdf.concrete', compact('concreteRatio', 'summary'));
+        $pdf = Pdf::loadView('admin.engineering.concrete-ratios.pdf.concrete', compact('concreteRatio', 'summary'));
 
         return $pdf->stream("CR-{$concreteRatio->reference_no}.pdf");
     }

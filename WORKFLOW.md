@@ -1837,6 +1837,9 @@ For City Centre Contract (will be used when project nears completion):
 
 ### 16.14 Engineering Calculations — Concrete Ratio & Rod Calculation
 
+> [!NOTE]
+> Architectural Update: Rod Calculation (Bar Bending Schedule) and Concrete Ratio (Mix Design) have been relocated to dedicated Engineering folders (`App\Http\Controllers\Admin\Engineering\` and `resources/views/admin/engineering/`) for optimal ERP modularity.
+
 **1. Concrete Ratio (Create under Project #1)**
 
 | Reference No | Title | Grade | Waste % | Status |
@@ -1939,12 +1942,13 @@ Navigate to Reports section and verify each report type:
 | **Budget vs Actual** | Shows all 7 budget codes with variance. 01-100: 2.5M favorable. |
 | **Invoice Status** | Invoice #1: Fully Paid. Invoice #2: Partially Paid (10M of 19.69M). |
 | **Cash Flow** | Inflow (44.625M from payment), Outflow (4.79M from bill) = Net positive |
-| **Procurement Spend** | PO total (4.80M) + GRN total (partial 3.07M) |
-| **Project Cost Summary** | Costs broken down: Labour, Materials, Equipment, Subcontractors |
+| **Procurement Spend** | PO total (4.80M) + GRN total (partial 3.07M) with dual ApexCharts (Vendor & Project) |
+| **Project Cost Summary** | Costs broken down: Budget, Actual, PO spend, Resource, Utilization % & ApexChart bar comparison |
 | **S-Curve / Progress** | Shows project progress % over time based on task data |
-| **Retention Tracker** | IPA retention: 2.125M withheld. Invoice #1 retention: 2.125M. |
-| **Aging Report (AR)** | Invoice #2 outstanding: 9,687,500.00 (age: < 30 days from due date) |
-| **Aging Report (AP)** | Bill #1 outstanding: 0 (paid in full) |
+| **Retention Tracker** | IPA retention & Invoice retention held/released/pending with horizontal ApexChart |
+| **Labour & Equipment Utilisation** | Manpower, Machinery & Material spend with Donut chart & Stacked project allocation bar |
+| **Aging Report (AR)** | Invoice outstanding by 0-30, 31-60, 61-90, 90+ day brackets & ApexChart Donut distribution |
+| **Aging Report (AP)** | Bill outstanding by 0-30, 31-60, 61-90, 90+ day brackets, Vendor filter & ApexChart Donut |
 
 ---
 
