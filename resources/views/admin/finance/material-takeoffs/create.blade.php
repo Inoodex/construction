@@ -14,7 +14,7 @@
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="text-sm font-semibold">Project <span class="text-danger">*</span></label>
-                    <select name="project_id" class="form-select" required>
+                    <select name="project_id" id="project_id" class="form-select" required>
                         <option value="">Select project</option>
                         @foreach($projects as $p)
                             <option value="{{ $p->id }}" {{ old('project_id') == $p->id ? 'selected' : '' }}>{{ $p->name }}</option>
@@ -23,10 +23,10 @@
                 </div>
                 <div>
                     <label class="text-sm font-semibold">BOQ Item</label>
-                    <select name="boq_item_id" class="form-select">
+                    <select name="boq_item_id" id="boq_item_id" class="form-select">
                         <option value="">None</option>
                         @foreach($boqItems as $item)
-                            <option value="{{ $item->id }}" {{ old('boq_item_id') == $item->id ? 'selected' : '' }}>
+                            <option value="{{ $item->id }}" data-project-id="{{ $item->boq?->project_id }}" {{ old('boq_item_id') == $item->id ? 'selected' : '' }}>
                                 {{ $item->boq?->boq_number ?? 'BOQ' }} - {{ $item->item_number }} ({{ $item->description }})
                             </option>
                         @endforeach
@@ -60,4 +60,37 @@
             <button type="submit" class="btn btn-primary mt-4">Save Takeoff</button>
         </form>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const projectSelect = document.getElementById('project_id');
+            const boqSelect = document.getElementById('boq_item_id');
+
+            if (!projectSelect || !boqSelect) return;
+
+            function filterBoqItems() {
+                const selectedProjectId = projectSelect.value;
+                const options = boqSelect.querySelectorAll('option');
+
+                options.forEach(opt => {
+                    const optProjectId = opt.getAttribute('data-project-id');
+                    if (!opt.value) {
+                        opt.style.display = '';
+                    } else if (!selectedProjectId || optProjectId === selectedProjectId) {
+                        opt.style.display = '';
+                        opt.disabled = false;
+                    } else {
+                        opt.style.display = 'none';
+                        opt.disabled = true;
+                        if (opt.selected) {
+                            boqSelect.value = '';
+                        }
+                    }
+                });
+            }
+
+            projectSelect.addEventListener('change', filterBoqItems);
+            filterBoqItems();
+        });
+    </script>
 @endsection

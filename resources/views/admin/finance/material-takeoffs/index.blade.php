@@ -48,11 +48,11 @@
                             <td class="text-right font-semibold">{{ number_format($t->total_price, 2) }}</td>
                             <td>{{ $t->source_drawing ?? '—' }}</td>
                             <td class="flex gap-1">
-                                <a href="{{ route('admin.finance.material-takeoffs.show', $t) }}" class="btn btn-xs btn-outline-info">View</a>
-                                <a href="{{ route('admin.finance.material-takeoffs.edit', $t) }}" class="btn btn-xs btn-outline-secondary">Edit</a>
+                                <a href="{{ route('admin.finance.material-takeoffs.show', $t) }}" class="btn btn-sm btn-outline-info">View</a>
+                                <a href="{{ route('admin.finance.material-takeoffs.edit', $t) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
                                 <form action="{{ route('admin.finance.material-takeoffs.destroy', $t) }}" method="POST" class="inline" onsubmit="return confirm('Delete this takeoff?')">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-xs btn-outline-danger">Delete</button>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
                                 </form>
                             </td>
                         </tr>

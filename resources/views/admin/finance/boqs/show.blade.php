@@ -121,9 +121,9 @@
                             <td class="text-xs">৳{{ number_format($item->unit_price, 2) }}</td>
                             <td class="font-semibold">৳{{ number_format($item->total_price, 2) }}</td>
                             <td class="text-center">
-                                <form action="{{ route('admin.finance.boqs.items.destroy', [$boq->id, $item->id]) }}" method="POST" onsubmit="return confirm('Remove this item?');">
+                                <form action="{{ route('admin.finance.boqs.items.destroy', [$boq->id, $item->id]) }}" method="POST" onsubmit="return confirm('Remove this item?');" class="inline">
                                     @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger px-2.5 py-1 font-bold" title="Remove item">X</button>
                                 </form>
                             </td>
                         </tr>

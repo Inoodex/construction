@@ -69,12 +69,15 @@
                             <span class="badge {{ $cls }} capitalize">{{ $g->status }}</span>
                         </td>
                         <td class="text-center">
-                            <a href="{{ route('admin.finance.bank-guarantees.show', $g) }}" class="btn btn-sm btn-outline-info">View</a>
-                            <a href="{{ route('admin.finance.bank-guarantees.pdf', $g->id) }}" target="_blank" class="btn btn-sm btn-outline-success" style="margin-left:4px;">PDF</a>
-                            <form action="{{ route('admin.finance.bank-guarantees.destroy', $g) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this bank guarantee?');">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger" style="margin-left:4px;">Delete</button>
-                            </form>
+                            <div class="flex items-center justify-center gap-2">
+                                <a href="{{ route('admin.finance.bank-guarantees.show', $g) }}" class="btn btn-sm btn-outline-info">View</a>
+                                <a href="{{ route('admin.finance.bank-guarantees.edit', $g) }}" class="btn btn-sm btn-outline-warning">Edit</a>
+                                <a href="{{ route('admin.finance.bank-guarantees.pdf', $g->id) }}" target="_blank" class="btn btn-sm btn-outline-success">PDF</a>
+                                <form action="{{ route('admin.finance.bank-guarantees.destroy', $g) }}" method="POST" onsubmit="return confirm('Delete this bank guarantee?');">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @empty

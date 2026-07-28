@@ -1386,10 +1386,10 @@ Create standard COA hierarchy:
 
 **12. Bank Guarantee (Create)**
 
-| Ref No | Type | Issuing Bank | Project | Amount | Issue Date | Expiry | Status |
-|---|---|---|---|---|---|---|---|
-| BG-001 | Performance Guarantee | Sonali Bank Ltd. | City Centre Tower | 42,500,000.00 (5% of contract) | 2026-01-10 | 2028-09-30 | Active |
-| BG-002 | Advance Payment Guarantee | Dutch-Bangla Bank | City Centre Tower | 21,250,000.00 (2.5% of contract) | 2026-01-10 | 2028-06-30 | Active |
+| Ref No | Type | Issuing Bank | Beneficiary | Project | Amount | Issue Date | Expiry | Status |
+|---|---|---|---|---|---|---|---|---|
+| BG-001 | Performance Guarantee | Sonali Bank Ltd. | Dhaka City Corporation | City Centre Tower | 42,500,000.00 (5% of contract) | 2026-01-10 | 2028-09-30 | Active |
+| BG-002 | Advance Payment Guarantee | Dutch-Bangla Bank | Dhaka City Corporation | City Centre Tower | 21,250,000.00 (2.5% of contract) | 2026-01-10 | 2028-06-30 | Active |
 
 **Validation:** ✓ BG linked to contract. ✓ Status transitions work (active → released/expired).
 

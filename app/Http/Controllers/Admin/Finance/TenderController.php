@@ -59,7 +59,7 @@ class TenderController extends Controller
     public function show(Tender $tender)
     {
         $tender->load(['project', 'creator', 'bids.vendor', 'packages']);
-        $vendors = Vendor::where('status', 'approved')->get();
+        $vendors = Vendor::where('is_blacklisted', false)->get();
         return view('admin.finance.tenders.show', compact('tender', 'vendors'));
     }
 

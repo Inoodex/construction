@@ -10,7 +10,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                 Edit
             </a>
-            <a href="{{ route('admin.finance.tenders.evaluation-matrix', $tender) }}" class="btn btn-outline-warning">Evaluation Matrix</a>
+            <a href="{{ route('admin.finance.tenders.evaluation-matrix', $tender) }}" class="btn btn-danger">Evaluation Matrix</a>
             @if($tender->bids->where('status', 'awarded')->count())
                 <a href="{{ route('admin.finance.tenders.award-letter', $tender) }}" class="btn btn-outline-success">Award Letter</a>
             @endif
@@ -57,59 +57,78 @@
     @endif
 
     <div class="panel mt-6">
-        <h5 class="mb-4 text-lg font-semibold">Tender Package Documents</h5>
-        @if($tender->packages->count())
-            <div class="mb-4 space-y-2">
-                @foreach($tender->packages as $package)
-                    <div class="flex items-center justify-between rounded border border-gray-200 p-3 dark:border-gray-600">
-                        <div>
-                            <span class="font-semibold">{{ $package->document_name }}</span>
-                            <span class="ml-2 rounded bg-gray-100 px-2 py-0.5 text-xs dark:bg-gray-700">{{ ucfirst($package->document_type) }}</span>
-                            @if($package->description)
-                                <p class="mt-1 text-sm text-gray-500">{{ $package->description }}</p>
-                            @endif
-                        </div>
-                        <div class="flex items-center gap-2">
-                            @if($package->file_path)
-                                <a href="{{ asset('storage/' . $package->file_path) }}" target="_blank" class="btn btn-outline-primary btn-sm">Download</a>
-                            @endif
-                            <form action="{{ route('admin.finance.tenders.packages.destroy', [$tender, $package]) }}" method="POST" onsubmit="return confirm('Remove this document?')">
-                                @csrf @method('DELETE')
-                                <button class="btn btn-danger btn-sm">Remove</button>
-                            </form>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        @else
-            <p class="mb-4 text-gray-400">No documents uploaded yet.</p>
-        @endif
+        <div class="flex items-center justify-between mb-4">
+            <h5 class="text-base font-semibold uppercase">Tender Package Documents</h5>
+            <span class="badge badge-outline-primary text-xs">{{ $tender->packages->count() }} Attached Documents</span>
+        </div>
 
-        <form action="{{ route('admin.finance.tenders.packages.store', $tender) }}" method="POST" enctype="multipart/form-data" class="flex flex-wrap items-end gap-3">
+        <div class="overflow-x-auto mb-5">
+            <table class="table-hover w-full table-auto text-xs">
+                <thead>
+                    <tr class="bg-gray-50 dark:bg-gray-800 border-b dark:border-gray-700">
+                        <th class="py-2.5 px-4 text-left">Document Name</th>
+                        <th class="py-2.5 px-4 text-left">Type</th>
+                        <th class="py-2.5 px-4 text-left w-1/3">Description</th>
+                        <th class="py-2.5 px-4 text-center">File</th>
+                        <th class="py-2.5 px-4 text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($tender->packages as $package)
+                        @php
+                            $typeBadge = match(strtolower($package->document_type)) {
+                                'boq' => 'badge-outline-primary',
+                                'specification' => 'badge-outline-info',
+                                'terms' => 'badge-outline-warning',
+                                'drawing' => 'badge-outline-success',
+                                default => 'badge-outline-secondary'
+                            };
+                        @endphp
+                        <tr class="border-t dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                            <td class="py-3 px-4 font-semibold text-sm">{{ $package->document_name }}</td>
+                            <td class="py-3 px-4">
+                                <span class="badge {{ $typeBadge }} uppercase text-[11px]">{{ $package->document_type }}</span>
+                            </td>
+                            <td class="py-3 px-4 text-white-dark">{{ $package->description ?? '—' }}</td>
+                            <td class="py-3 px-4 text-center">
+                                @if($package->file_path)
+                                    <a href="{{ asset('storage/' . $package->file_path) }}" target="_blank" class="btn btn-sm btn-outline-primary gap-1 py-1 px-2.5 text-xs inline-flex items-center">
+                                        <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                        Download
+                                    </a>
+                                @else
+                                    <span class="text-gray-400 font-mono">—</span>
+                                @endif
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <form action="{{ route('admin.finance.tenders.packages.destroy', [$tender, $package]) }}" method="POST" onsubmit="return confirm('Remove this document?')" class="inline">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger px-2.5 py-1 font-bold" title="Remove Document">X</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="py-4 text-center text-gray-400">No tender package documents uploaded yet. Use the form below to upload.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <form action="{{ route('admin.finance.tenders.packages.store', $tender) }}" method="POST" enctype="multipart/form-data" class="flex flex-nowrap items-center gap-2 overflow-x-auto pb-1 bg-gray-50 dark:bg-gray-800/40 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
             @csrf
-            <div>
-                <label class="text-xs font-semibold">Document Name *</label>
-                <input type="text" name="document_name" required class="form-input mt-1">
-            </div>
-            <div>
-                <label class="text-xs font-semibold">Type *</label>
-                <select name="document_type" required class="form-select mt-1">
-                    <option value="boq">BOQ</option>
-                    <option value="specification">Specification</option>
-                    <option value="terms">Terms & Conditions</option>
-                    <option value="drawing">Drawing</option>
-                    <option value="other">Other</option>
-                </select>
-            </div>
-            <div>
-                <label class="text-xs font-semibold">Description</label>
-                <input type="text" name="description" class="form-input mt-1">
-            </div>
-            <div>
-                <label class="text-xs font-semibold">File</label>
-                <input type="file" name="file" class="form-input mt-1">
-            </div>
-            <button type="submit" class="btn btn-primary">Upload</button>
+            <input type="text" name="document_name" required class="form-input min-w-[180px]" placeholder="Document Name *" />
+            <select name="document_type" required class="form-select w-40">
+                <option value="boq">BOQ</option>
+                <option value="specification">Specification</option>
+                <option value="terms">Terms & Conditions</option>
+                <option value="drawing">Drawing</option>
+                <option value="other">Other</option>
+            </select>
+            <input type="text" name="description" class="form-input flex-1 min-w-[300px]" placeholder="Description (optional)" />
+            <input type="file" name="file" class="form-input w-52" />
+            <button type="submit" class="btn btn-primary whitespace-nowrap">+ Upload Document</button>
         </form>
     </div>
 
@@ -120,34 +139,20 @@
         </div>
 
         <div id="addBidForm" class="mb-5 mt-3 hidden rounded-lg border p-4 dark:border-gray-700">
-            <form action="{{ route('admin.finance.tenders.bids.store', $tender->id) }}" method="POST">
+            <form action="{{ route('admin.finance.tenders.bids.store', $tender->id) }}" method="POST" class="flex flex-nowrap items-center gap-2 overflow-x-auto pb-1">
                 @csrf
-                <div class="grid grid-cols-1 gap-3 md:grid-cols-5">
-                    <div>
-                        <select name="vendor_id" class="form-select" required>
-                            <option value="">Vendor</option>
-                            @foreach($vendors as $v)
-                                <option value="{{ $v->id }}">{{ $v->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div>
-                        <input type="number" step="0.01" name="bid_amount" placeholder="Bid Amount" class="form-input" required />
-                    </div>
-                    <div>
-                        <input type="number" name="technical_score" placeholder="Tech Score (0-100)" class="form-input" />
-                    </div>
-                    <div>
-                        <input type="number" name="financial_score" placeholder="Fin Score (0-100)" class="form-input" />
-                    </div>
-                    <div>
-                        <input type="date" name="submitted_at" class="form-input" required value="{{ date('Y-m-d') }}" />
-                    </div>
-                </div>
-                <div class="mt-2">
-                    <textarea name="notes" class="form-input" rows="1" placeholder="Notes (optional)"></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary mt-2">Add Bid</button>
+                <select name="vendor_id" class="form-select min-w-[180px]" required>
+                    <option value="">Select Vendor *</option>
+                    @foreach($vendors as $v)
+                        <option value="{{ $v->id }}">{{ $v->name }}</option>
+                    @endforeach
+                </select>
+                <input type="number" step="0.01" name="bid_amount" placeholder="Bid Amount (৳) *" class="form-input w-36" required />
+                <input type="number" name="technical_score" placeholder="Tech Score" class="form-input w-28" min="0" max="100" />
+                <input type="number" name="financial_score" placeholder="Fin Score" class="form-input w-28" min="0" max="100" />
+                <input type="date" name="submitted_at" class="form-input w-36" required value="{{ date('Y-m-d') }}" />
+                <input type="text" name="notes" class="form-input flex-1 min-w-[280px]" placeholder="Notes (optional)" />
+                <button type="submit" class="btn btn-primary whitespace-nowrap">+ Add Bid</button>
             </form>
         </div>
 
@@ -179,40 +184,30 @@
                                 <span class="badge {{ $bsc[$bid->status] ?? 'badge-outline-secondary' }} capitalize">{{ $bid->status }}</span>
                             </td>
                             <td class="text-center">
-                                <div class="flex justify-center gap-1">
+                                <div class="flex items-center justify-center gap-1">
                                     <button type="button" onclick="document.getElementById('editBidForm_{{ $bid->id }}').classList.toggle('hidden')" class="btn btn-sm btn-outline-info">Edit</button>
-                                    <form action="{{ route('admin.finance.tenders.bids.destroy', [$tender->id, $bid->id]) }}" method="POST" onsubmit="return confirm('Remove this bid?');">
+                                    <form action="{{ route('admin.finance.tenders.bids.destroy', [$tender->id, $bid->id]) }}" method="POST" onsubmit="return confirm('Remove this bid?');" class="inline">
                                         @csrf @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger px-2.5 py-1 font-bold" title="Remove bid">X</button>
                                     </form>
                                 </div>
                                 <div id="editBidForm_{{ $bid->id }}" class="mt-2 hidden rounded-lg border p-3 text-left dark:border-gray-700">
-                                    <form action="{{ route('admin.finance.tenders.bids.update', [$tender->id, $bid->id]) }}" method="POST">
+                                    <form action="{{ route('admin.finance.tenders.bids.update', [$tender->id, $bid->id]) }}" method="POST" class="flex flex-nowrap items-center gap-2 overflow-x-auto text-xs">
                                         @csrf @method('PUT')
                                         <input type="hidden" name="vendor_id" value="{{ $bid->vendor_id }}" />
                                         <input type="hidden" name="submitted_at" value="{{ $bid->submitted_at->format('Y-m-d') }}" />
                                         <input type="hidden" name="notes" value="{{ $bid->notes }}" />
-                                        <div class="grid grid-cols-2 gap-2 text-xs">
-                                            <div>
-                                                <input type="number" step="0.01" name="bid_amount" value="{{ $bid->bid_amount }}" placeholder="Amount" class="form-input text-xs" required />
-                                            </div>
-                                            <div>
-                                                <input type="number" name="technical_score" value="{{ $bid->technical_score }}" placeholder="Tech" class="form-input text-xs" />
-                                            </div>
-                                            <div>
-                                                <input type="number" name="financial_score" value="{{ $bid->financial_score }}" placeholder="Fin" class="form-input text-xs" />
-                                            </div>
-                                            <div>
-                                                <select name="status" class="form-select text-xs">
-                                                    <option value="submitted" {{ $bid->status == 'submitted' ? 'selected' : '' }}>Submitted</option>
-                                                    <option value="evaluated" {{ $bid->status == 'evaluated' ? 'selected' : '' }}>Evaluated</option>
-                                                    <option value="shortlisted" {{ $bid->status == 'shortlisted' ? 'selected' : '' }}>Shortlisted</option>
-                                                    <option value="awarded" {{ $bid->status == 'awarded' ? 'selected' : '' }}>Awarded</option>
-                                                    <option value="rejected" {{ $bid->status == 'rejected' ? 'selected' : '' }}>Rejected</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary btn-sm mt-2 w-full text-xs">Update</button>
+                                        <input type="number" step="0.01" name="bid_amount" value="{{ $bid->bid_amount }}" placeholder="Amount" class="form-input text-xs w-28" required />
+                                        <input type="number" name="technical_score" value="{{ $bid->technical_score }}" placeholder="Tech" class="form-input text-xs w-20" />
+                                        <input type="number" name="financial_score" value="{{ $bid->financial_score }}" placeholder="Fin" class="form-input text-xs w-20" />
+                                        <select name="status" class="form-select text-xs w-28">
+                                            <option value="submitted" {{ $bid->status == 'submitted' ? 'selected' : '' }}>Submitted</option>
+                                            <option value="evaluated" {{ $bid->status == 'evaluated' ? 'selected' : '' }}>Evaluated</option>
+                                            <option value="shortlisted" {{ $bid->status == 'shortlisted' ? 'selected' : '' }}>Shortlisted</option>
+                                            <option value="awarded" {{ $bid->status == 'awarded' ? 'selected' : '' }}>Awarded</option>
+                                            <option value="rejected" {{ $bid->status == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-primary btn-sm text-xs whitespace-nowrap">Update</button>
                                     </form>
                                 </div>
                             </td>

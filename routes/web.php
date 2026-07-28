@@ -796,7 +796,9 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware(['auth', 
     Route::delete('bank-guarantees/{bankGuarantee}', [BankGuaranteeController::class, 'destroy'])->name('bank-guarantees.destroy');
 
     Route::get('balance-sheet', [BalanceSheetController::class, 'index'])->name('balance-sheet.index');
+    Route::get('balance-sheet/pdf', [BalanceSheetController::class, 'pdf'])->name('balance-sheet.pdf');
     Route::get('income-statement', [IncomeStatementController::class, 'index'])->name('income-statement.index');
+    Route::get('income-statement/pdf', [IncomeStatementController::class, 'pdf'])->name('income-statement.pdf');
 
     Route::get('labour-entries', [LabourEntryController::class, 'index'])->name('labour-entries.index');
     Route::get('labour-entries/create', [LabourEntryController::class, 'create'])->name('labour-entries.create');

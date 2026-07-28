@@ -37,18 +37,18 @@
             <img class="bg-img" src="{{ $bgPath }}" alt="" />
         @endif
         <div class="content">
-            <div style="margin-bottom:15px;">
+            <!-- <div style="margin-bottom:15px;">
                 <div class="doc-number">{{ $budget->cost_code }}</div>
-            </div>
+            </div> -->
 
             <table class="meta-table">
                 <tr>
                     <th>Project</th>
-                    <td>{{ $budget->project->name ?? 'N/A' }}</td>
+                    <td>{{ $budget->project->name ?? 'N/A' }} ({{ $budget->cost_code }})</td>
                 </tr>
                 <tr>
                     <th>Description</th>
-                    <td>{{ $budget->description ?? '—' }}</td>
+                    <td>{{ $budget->description ?? 'N/A' }}</td>
                 </tr>
                 <tr>
                     <th>Financial Year</th>

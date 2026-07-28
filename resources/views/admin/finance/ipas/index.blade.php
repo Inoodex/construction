@@ -56,8 +56,8 @@
                             <tr>
                                 <td><span class="font-mono text-xs font-semibold text-primary">{{ $ipa->ipa_number }}</span></td>
                                 <td class="font-semibold">{{ $ipa->title }}</td>
-                                <td class="text-xs">{{ $ipa->project->name ?? 'N/A' }}</td>
-                                <td class="text-xs">{{ $ipa->period_start->format('d/m') }} - {{ $ipa->period_end->format('d/m/Y') }}</td>
+                                <td>{{ $ipa->project->name ?? 'N/A' }}</td>
+                                <td>{{ $ipa->period_start->format('d/m') }} - {{ $ipa->period_end->format('d/m/Y') }}</td>
                                 <td class="font-semibold">{{ number_format($ipa->applied_amount) }}</td>
                                 <td class="font-semibold">{{ number_format($ipa->certified_amount) }}</td>
                                 <td>
