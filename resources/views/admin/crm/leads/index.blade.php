@@ -47,8 +47,10 @@
                         <td class="text-xs">{{ $lead->assignedTo?->name ?? '—' }}</td>
                         <td class="text-xs">{{ $lead->last_contacted_at?->format('d M Y') ?? '—' }}</td>
                         <td class="text-center">
-                            <a href="{{ route('admin.crm.leads.show', $lead) }}" class="btn btn-sm btn-outline-info">View</a>
-                            <a href="{{ route('admin.crm.leads.edit', $lead) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                            <div class="flex items-center justify-center gap-2">
+                                <a href="{{ route('admin.crm.leads.show', $lead) }}" class="btn btn-sm btn-outline-info">View</a>
+                                <a href="{{ route('admin.crm.leads.edit', $lead) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                            </div>
                         </td>
                     </tr>
                 @empty

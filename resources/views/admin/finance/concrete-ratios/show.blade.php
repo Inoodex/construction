@@ -55,35 +55,35 @@
             <p class="font-semibold text-xs">{{ $concreteRatio->project->name ?? 'N/A' }}</p>
         </div>
         <div class="panel flex-1 min-w-[140px] py-2 px-3">
-            <label class="text-[10px] text-white-dark uppercase">Grade</label>
-            <p class="font-semibold text-xs">{{ $concreteRatio->grade ?? '-' }}</p>
+            <label class="text-[10px] text-white-dark uppercase">Grade (Mix Ratio)</label>
+            <p class="font-semibold text-xs text-primary">{{ \App\Constants\ConcreteRatioConstants::GRADE_LABELS[$concreteRatio->grade] ?? ($concreteRatio->grade ?? '-') }}</p>
         </div>
         <div class="panel flex-1 min-w-[140px] py-2 px-3">
             <label class="text-[10px] text-white-dark uppercase">Waste %</label>
-            <p class="text-xs">{{ $concreteRatio->waste_percent ?? '0' }}%</p>
+            <p class="text-xs font-semibold">{{ $concreteRatio->waste_percent ?? '0' }}%</p>
         </div>
         <div class="panel flex-1 min-w-[140px] py-2 px-3">
             <label class="text-[10px] text-white-dark uppercase">Source BBS</label>
-            <p class="text-xs">{{ $concreteRatio->rodCalculation->reference_no ?? '-' }}</p>
+            <p class="text-xs font-semibold">{{ $concreteRatio->rodCalculation->reference_no ?? '-' }}</p>
         </div>
         <div class="panel flex-1 min-w-[140px] py-2 px-3">
             <label class="text-[10px] text-white-dark uppercase">Created By</label>
-            <p class="text-xs">{{ $concreteRatio->creator->name ?? '-' }}</p>
+            <p class="text-xs font-semibold">{{ $concreteRatio->creator->name ?? '-' }}</p>
         </div>
     </div>
 
     {{-- Summary --}}
     <div class="mt-6 flex flex-wrap gap-6">
-        <div class="panel text-center flex flex-col items-center justify-center flex-1 min-w-[180px]">
+        <div class="panel text-center flex flex-col items-center justify-center flex-1 min-w-[200px]">
             <label class="text-xs text-white-dark">Net Volume</label>
-            <p class="text-3xl font-bold text-primary mt-2">{{ number_format($summary['total_volume_m3'], 4) }}</p>
-            <p class="text-xs text-white-dark">m³</p>
+            <p class="text-3xl font-bold text-primary mt-2">{{ number_format($summary['total_volume_m3'], 4) }} <span class="text-sm font-normal text-white-dark">m³</span></p>
+            <p class="text-xs font-semibold text-info mt-1">{{ number_format($summary['total_volume_cft'], 2) }} CFT</p>
             @if($summary['waste_percent'] > 0)
                 <p class="text-[11px] text-warning mt-1">+{{ $summary['waste_percent'] }}% waste</p>
-                <p class="text-sm font-bold text-warning">{{ number_format($summary['gross_volume_m3'], 4) }} m³ gross</p>
+                <p class="text-sm font-bold text-warning">{{ number_format($summary['gross_volume_m3'], 4) }} m³ ({{ number_format($summary['gross_volume_cft'], 2) }} CFT) gross</p>
             @endif
         </div>
-        <div class="flex-1 min-w-[180px] grid grid-cols-2 gap-4">
+        <div class="flex-1 min-w-[220px] grid grid-cols-2 gap-4">
             <div class="panel text-center flex flex-col items-center justify-center">
                 <label class="text-xs text-white-dark">Cement (Net)</label>
                 <p class="text-2xl font-bold mt-2">{{ number_format($summary['total_cement_bags'], 2) }}</p>
@@ -94,18 +94,18 @@
             </div>
             <div class="panel text-center flex flex-col items-center justify-center">
                 <label class="text-xs text-white-dark">Sand (Net)</label>
-                <p class="text-2xl font-bold mt-2">{{ number_format($summary['total_sand_m3'], 4) }}</p>
-                <p class="text-xs text-white-dark">m³</p>
+                <p class="text-2xl font-bold mt-2">{{ number_format($summary['total_sand_m3'], 4) }} <span class="text-xs font-normal">m³</span></p>
+                <p class="text-xs font-semibold text-info">{{ number_format($summary['total_sand_cft'], 2) }} CFT</p>
                 @if($summary['waste_percent'] > 0)
-                    <p class="text-xs text-warning font-semibold mt-1">{{ number_format($summary['gross_sand_m3'], 4) }} m³ gross</p>
+                    <p class="text-xs text-warning font-semibold mt-1">{{ number_format($summary['gross_sand_m3'], 4) }} m³ ({{ number_format($summary['gross_sand_cft'], 2) }} CFT) gross</p>
                 @endif
             </div>
             <div class="panel text-center flex flex-col items-center justify-center">
                 <label class="text-xs text-white-dark">Aggregate (Net)</label>
-                <p class="text-2xl font-bold mt-2">{{ number_format($summary['total_aggregate_m3'], 4) }}</p>
-                <p class="text-xs text-white-dark">m³</p>
+                <p class="text-2xl font-bold mt-2">{{ number_format($summary['total_aggregate_m3'], 4) }} <span class="text-xs font-normal">m³</span></p>
+                <p class="text-xs font-semibold text-info">{{ number_format($summary['total_aggregate_cft'], 2) }} CFT</p>
                 @if($summary['waste_percent'] > 0)
-                    <p class="text-xs text-warning font-semibold mt-1">{{ number_format($summary['gross_aggregate_m3'], 4) }} m³ gross</p>
+                    <p class="text-xs text-warning font-semibold mt-1">{{ number_format($summary['gross_aggregate_m3'], 4) }} m³ ({{ number_format($summary['gross_aggregate_cft'], 2) }} CFT) gross</p>
                 @endif
             </div>
             <div class="panel text-center flex flex-col items-center justify-center">
@@ -118,6 +118,38 @@
             </div>
         </div>
     </div>
+
+    {{-- Cost Estimation Summary --}}
+    @if($summary['total_cost'] > 0 || $concreteRatio->cement_price_per_bag || $concreteRatio->sand_price_per_cft || $concreteRatio->aggregate_price_per_cft)
+    <div class="mt-6 panel bg-primary/5 dark:bg-primary/10 border border-primary/20">
+        <div class="flex items-center justify-between mb-3">
+            <h5 class="text-sm font-bold uppercase text-primary">Concrete Cost Estimation</h5>
+            <span class="text-xs font-semibold text-white-dark">Rate: ৳{{ number_format($summary['cost_per_m3'], 2) }} / m³</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 text-center">
+            <div class="p-2 rounded bg-white dark:bg-[#0e1726]">
+                <span class="text-[10px] text-white-dark uppercase block">Cement Cost</span>
+                <span class="text-lg font-bold text-success">৳{{ number_format($summary['cement_cost'], 2) }}</span>
+                <span class="text-[10px] text-white-dark block">@ ৳{{ number_format($concreteRatio->cement_price_per_bag ?? 0) }}/bag</span>
+            </div>
+            <div class="p-2 rounded bg-white dark:bg-[#0e1726]">
+                <span class="text-[10px] text-white-dark uppercase block">Sand Cost</span>
+                <span class="text-lg font-bold text-success">৳{{ number_format($summary['sand_cost'], 2) }}</span>
+                <span class="text-[10px] text-white-dark block">@ ৳{{ number_format($concreteRatio->sand_price_per_cft ?? 0) }}/CFT</span>
+            </div>
+            <div class="p-2 rounded bg-white dark:bg-[#0e1726]">
+                <span class="text-[10px] text-white-dark uppercase block">Aggregate Cost</span>
+                <span class="text-lg font-bold text-success">৳{{ number_format($summary['aggregate_cost'], 2) }}</span>
+                <span class="text-[10px] text-white-dark block">@ ৳{{ number_format($concreteRatio->aggregate_price_per_cft ?? 0) }}/CFT</span>
+            </div>
+            <div class="p-2 rounded bg-primary text-white">
+                <span class="text-[10px] uppercase block opacity-80">Total Concrete Cost</span>
+                <span class="text-xl font-extrabold">৳{{ number_format($summary['total_cost'], 2) }}</span>
+                <span class="text-[10px] block opacity-80">Gross Materials Included</span>
+            </div>
+        </div>
+    </div>
+    @endif
 
     <script>
         function copyBbs() {

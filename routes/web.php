@@ -242,6 +242,7 @@ Route::prefix('dashboard/core')->name('admin.core.')->middleware(['auth', 'privi
     // Contract Closeout
     Route::get('contract-closeout', [ContractCloseoutController::class, 'index'])->name('contract-closeout.index');
     Route::post('contract-closeout/{contract}', [ContractCloseoutController::class, 'store'])->name('contract-closeout.store');
+    Route::put('contract-closeout/{item}', [ContractCloseoutController::class, 'update'])->name('contract-closeout.update');
     Route::patch('contract-closeout/{item}/toggle', [ContractCloseoutController::class, 'toggle'])->name('contract-closeout.toggle');
     Route::delete('contract-closeout/{item}', [ContractCloseoutController::class, 'destroy'])->name('contract-closeout.destroy');
 });

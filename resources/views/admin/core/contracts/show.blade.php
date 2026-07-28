@@ -6,7 +6,13 @@
     <div class="flex flex-wrap items-center justify-between gap-4">
         <h2 class="text-xl font-semibold uppercase">Contract: {{ $contract->contract_number }}</h2>
         <div class="flex gap-2">
-            <a href="{{ route('admin.core.contracts.edit', $contract) }}" class="btn btn-outline-secondary">Edit</a>
+            <a href="{{ route('admin.core.contracts.edit', $contract) }}" class="btn btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+                    Edit</a>
             <a href="{{ route('admin.core.contracts.index') }}" class="btn btn-outline-secondary">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
@@ -162,8 +168,10 @@
                                     <span class="badge {{ $sc }} capitalize">{{ $amd->status }}</span>
                                 </td>
                                 <td class="text-center">
-                                    <a href="{{ route('admin.core.contract-amendments.show', $amd) }}" class="btn btn-sm btn-outline-info">View</a>
-                                    <a href="{{ route('admin.core.contract-amendments.edit', $amd) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    <div class="flex items-center justify-center gap-2">
+                                        <a href="{{ route('admin.core.contract-amendments.show', $amd) }}" class="btn btn-sm btn-outline-info">View</a>
+                                        <a href="{{ route('admin.core.contract-amendments.edit', $amd) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
@@ -214,8 +222,10 @@
                                     <span class="badge {{ $sc }} capitalize">{{ str_replace('_', ' ', $claim->status) }}</span>
                                 </td>
                                 <td class="text-center">
-                                    <a href="{{ route('admin.core.contract-claims.show', $claim) }}" class="btn btn-sm btn-outline-info">View</a>
-                                    <a href="{{ route('admin.core.contract-claims.edit', $claim) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    <div class="flex items-center justify-center gap-2">
+                                        <a href="{{ route('admin.core.contract-claims.show', $claim) }}" class="btn btn-sm btn-outline-info">View</a>
+                                        <a href="{{ route('admin.core.contract-claims.edit', $claim) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
@@ -228,7 +238,7 @@
     </div>
 
     {{-- Closeout Checklist --}}
-    <div class="panel mt-6">
+    <div class="panel mt-6" id="closeout">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold">Closeout Checklist ({{ $contract->closeoutItems->count() }})</h3>
             <div class="flex items-center gap-2">
@@ -241,10 +251,12 @@
         @if($contract->closeoutItems->count())
             <div class="space-y-2">
                 @foreach($contract->closeoutItems as $item)
-                    <form action="{{ route('admin.core.contract-closeout.toggle', $item) }}" method="POST" class="flex items-center gap-3 p-3 rounded {{ $item->is_completed ? 'bg-success/10' : 'bg-gray-50' }}">
-                        @csrf
-                        @method('PATCH')
-                        <input type="checkbox" {{ $item->is_completed ? 'checked' : '' }} onchange="this.form.submit()" class="form-checkbox h-5 w-5" />
+                    <div class="flex items-center gap-3 p-3 rounded dark:bg-gray-800/60 {{ $item->is_completed ? 'bg-success/10' : 'bg-gray-50' }}">
+                        <form action="{{ route('admin.core.contract-closeout.toggle', $item) }}" method="POST" class="inline-flex items-center">
+                            @csrf
+                            @method('PATCH')
+                            <input type="checkbox" {{ $item->is_completed ? 'checked' : '' }} onchange="this.form.submit()" class="form-checkbox h-5 w-5 cursor-pointer" />
+                        </form>
                         <div class="flex-1">
                             <p class="text-sm font-semibold {{ $item->is_completed ? 'line-through text-gray-500' : '' }}">{{ $item->item }}</p>
                             @if($item->description)
@@ -254,11 +266,48 @@
                         @if($item->is_completed && $item->completed_date)
                             <span class="text-xs text-gray-500">Completed {{ $item->completed_date->format('d M Y') }}</span>
                         @endif
-                        <form action="{{ route('admin.core.contract-closeout.destroy', $item) }}" method="POST" onsubmit="return confirm('Delete this item?');">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="text-danger text-xs">Delete</button>
-                        </form>
-                    </form>
+                        <div class="flex items-center justify-center gap-2">
+                            <button type="button" onclick="document.getElementById('editCloseoutModal_{{ $item->id }}').classList.remove('hidden')" class="btn btn-sm btn-outline-warning p-1.5" title="Edit item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                            </button>
+                            <form action="{{ route('admin.core.contract-closeout.destroy', $item) }}" method="POST" onsubmit="return confirm('Delete this item?');" class="inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-outline-danger p-1.5" title="Delete item">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    {{-- Edit Closeout Item Modal --}}
+                    <div id="editCloseoutModal_{{ $item->id }}" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
+                            <h4 class="text-lg font-semibold mb-4">Edit Closeout Item</h4>
+                            <form action="{{ route('admin.core.contract-closeout.update', $item) }}" method="POST">
+                                @csrf
+                                @method('PUT')
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">Item <span class="text-danger">*</span></label>
+                                        <input type="text" name="item" value="{{ old('item', $item->item) }}" class="form-input w-full" required />
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">Description</label>
+                                        <textarea name="description" rows="2" class="form-input w-full">{{ old('description', $item->description) }}</textarea>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">Order Index</label>
+                                        <input type="number" name="order_index" value="{{ old('order_index', $item->order_index) }}" class="form-input w-full" />
+                                    </div>
+                                </div>
+                                <div class="flex justify-end gap-2 mt-4">
+                                    <button type="button" onclick="document.getElementById('editCloseoutModal_{{ $item->id }}').classList.add('hidden')" class="btn btn-outline-secondary">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Update</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 @endforeach
             </div>
         @else

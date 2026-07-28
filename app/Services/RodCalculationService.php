@@ -152,11 +152,17 @@ class RodCalculationService
                 'member_code' => $member->member_code,
                 'type'        => $member->type,
                 'total_kg'    => round($memberKg, 2),
+                'total_tons'  => round($memberKg / 1000, 3),
             ];
         }
 
+        $steelPrice = (float) ($calc->steel_price_per_kg ?? 0);
+
         foreach ($byDiameter as $key => $d) {
+            $byDiameter[$key]['total_kg'] = round($d['total_kg'], 2);
+            $byDiameter[$key]['total_tons'] = round($d['total_kg'] / 1000, 3);
             $byDiameter[$key]['commercial_12m_sticks'] = ceil($d['total_mm'] / 12000);
+            $byDiameter[$key]['estimated_cost'] = round($d['total_kg'] * $steelPrice, 2);
         }
 
         usort($byDiameter, fn($a, $b) => $a['diameter'] <=> $b['diameter']);
@@ -165,12 +171,25 @@ class RodCalculationService
         $wasteKg = round($totalKg * ($wastePercent / 100), 2);
         $grossTotalKg = round($totalKg + $wasteKg, 2);
 
+        $totalTons = round($totalKg / 1000, 3);
+        $wasteTons = round($wasteKg / 1000, 3);
+        $grossTotalTons = round($grossTotalKg / 1000, 3);
+
+        $totalSteelCost = round($grossTotalKg * $steelPrice, 2);
+        $costPerTon = round($steelPrice * 1000, 2);
+
         return [
             'total_kg'             => round($totalKg, 2),
+            'total_tons'           => $totalTons,
             'waste_percent'        => $wastePercent,
             'waste_kg'             => $wasteKg,
+            'waste_tons'           => $wasteTons,
             'gross_total_kg'       => $grossTotalKg,
+            'gross_total_tons'     => $grossTotalTons,
             'total_12m_sticks'     => array_sum(array_column($byDiameter, 'commercial_12m_sticks')),
+            'steel_price_per_kg'   => $steelPrice,
+            'cost_per_ton'         => $costPerTon,
+            'total_steel_cost'     => $totalSteelCost,
             'by_diameter'          => array_values($byDiameter),
             'by_member'            => $byMember,
         ];

@@ -56,10 +56,10 @@
                         @forelse($notes as $note)
                             <tr>
                                 <td><span class="font-mono text-xs font-semibold text-primary">{{ $note->grn_number }}</span></td>
-                                <td class="text-xs">{{ $note->purchaseOrder->po_number ?? 'N/A' }}</td>
-                                <td class="text-xs">{{ $note->site->name ?? '—' }}</td>
-                                <td class="text-xs">{{ $note->received_date->format('d M Y') }}</td>
-                                <td class="text-xs">{{ $note->receiver->name ?? 'N/A' }}</td>
+                                <td>{{ $note->purchaseOrder->po_number ?? 'N/A' }}</td>
+                                <td>{{ $note->site->name ?? '—' }}</td>
+                                <td>{{ $note->received_date->format('d M Y') }}</td>
+                                <td>{{ $note->receiver->name ?? 'N/A' }}</td>
                                 <td>
                                     <span class="badge {{ $note->status == 'verified' ? 'badge-outline-success' : 'badge-outline-warning' }} capitalize">{{ $note->status }}</span>
                                 </td>

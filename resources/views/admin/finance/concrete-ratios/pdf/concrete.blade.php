@@ -51,7 +51,7 @@
                 </tr>
                 <tr>
                     <th>Grade</th>
-                    <td>{{ $concreteRatio->grade ?? '-' }}</td>
+                    <td>{{ \App\Constants\ConcreteRatioConstants::GRADE_LABELS[$concreteRatio->grade] ?? ($concreteRatio->grade ?? '-') }}</td>
                     <th>Waste %</th>
                     <td>{{ $concreteRatio->waste_percent ?? '0' }}%</td>
                 </tr>
@@ -111,32 +111,46 @@
                     @endforeach
                     <tr class="summary-total">
                         <td colspan="6">NET TOTAL</td>
-                        <td class="text-right">{{ number_format($summary['total_volume_m3'], 4) }} m³</td>
+                        <td class="text-right">{{ number_format($summary['total_volume_m3'], 4) }} m³<br/><span style="font-size:9px; opacity:0.9;">({{ number_format($summary['total_volume_cft'], 2) }} CFT)</span></td>
                         <td class="text-right">{{ number_format($summary['total_cement_bags'], 2) }} bags</td>
-                        <td class="text-right">{{ number_format($summary['total_sand_m3'], 4) }} m³</td>
-                        <td class="text-right">{{ number_format($summary['total_aggregate_m3'], 4) }} m³</td>
+                        <td class="text-right">{{ number_format($summary['total_sand_m3'], 4) }} m³<br/><span style="font-size:9px; opacity:0.9;">({{ number_format($summary['total_sand_cft'], 2) }} CFT)</span></td>
+                        <td class="text-right">{{ number_format($summary['total_aggregate_m3'], 4) }} m³<br/><span style="font-size:9px; opacity:0.9;">({{ number_format($summary['total_aggregate_cft'], 2) }} CFT)</span></td>
                         <td class="text-right">{{ number_format($summary['total_water_liters'], 2) }} L</td>
                     </tr>
                     @if($summary['waste_percent'] > 0)
                     <tr style="background-color:#e8f5e9; font-weight:bold; color:#1b5e20;">
                         <td colspan="6">GROSS TOTAL (incl. {{ $summary['waste_percent'] }}% waste)</td>
-                        <td class="text-right">{{ number_format($summary['gross_volume_m3'], 4) }} m³</td>
+                        <td class="text-right">{{ number_format($summary['gross_volume_m3'], 4) }} m³<br/><span style="font-size:9px;">({{ number_format($summary['gross_volume_cft'], 2) }} CFT)</span></td>
                         <td class="text-right">{{ number_format($summary['gross_cement_bags'], 2) }} bags</td>
-                        <td class="text-right">{{ number_format($summary['gross_sand_m3'], 4) }} m³</td>
-                        <td class="text-right">{{ number_format($summary['gross_aggregate_m3'], 4) }} m³</td>
+                        <td class="text-right">{{ number_format($summary['gross_sand_m3'], 4) }} m³<br/><span style="font-size:9px;">({{ number_format($summary['gross_sand_cft'], 2) }} CFT)</span></td>
+                        <td class="text-right">{{ number_format($summary['gross_aggregate_m3'], 4) }} m³<br/><span style="font-size:9px;">({{ number_format($summary['gross_aggregate_cft'], 2) }} CFT)</span></td>
                         <td class="text-right">{{ number_format($summary['gross_water_liters'], 2) }} L</td>
                     </tr>
                     @endif
                 </tbody>
             </table>
 
-            <div class="notes-box" style="margin-top:20px;">
+            @if($summary['total_cost'] > 0)
+            <div style="margin-top:15px; padding:10px; border:1px solid #263a79; background-color:#f4f6fa;">
+                <table style="width:100%; font-size:10px;">
+                    <tr>
+                        <td style="font-weight:bold; color:#263a79;">ESTIMATED CONCRETE COST:</td>
+                        <td class="text-right">Cement: <strong>৳{{ number_format($summary['cement_cost'], 2) }}</strong> (@ ৳{{ number_format($concreteRatio->cement_price_per_bag ?? 0) }}/bag)</td>
+                        <td class="text-right">Sand: <strong>৳{{ number_format($summary['sand_cost'], 2) }}</strong> (@ ৳{{ number_format($concreteRatio->sand_price_per_cft ?? 0) }}/CFT)</td>
+                        <td class="text-right">Aggregate: <strong>৳{{ number_format($summary['aggregate_cost'], 2) }}</strong> (@ ৳{{ number_format($concreteRatio->aggregate_price_per_cft ?? 0) }}/CFT)</td>
+                        <td class="text-right" style="font-size:12px; font-weight:bold; color:#263a79;">TOTAL: ৳{{ number_format($summary['total_cost'], 2) }}</td>
+                    </tr>
+                </table>
+            </div>
+            @endif
+
+            <div class="notes-box" style="margin-top:15px;">
                 <strong>Notes:</strong><br/>
                 1. All dimensions are in millimetres (mm) unless otherwise noted.<br/>
                 2. Volume calculated as L &times; W &times; (Height/Depth/Thickness as applicable) &times; Qty &divide; 10&sup9; m&sup3;.<br/>
                 3. Member third dimension: Slab/Wall uses Thickness; Footing/Pile Cap uses Depth; Column/Beam/Stair uses Height.<br/>
-                4. Material quantities based on IS 456 standard mix proportions for {{ $concreteRatio->grade ?? 'N/A' }} grade concrete.<br/>
-                5. 1 bag cement = 50 kg. Gross total includes {{ $concreteRatio->waste_percent ?? 0 }}% site wastage allowance.
+                4. Material quantities based on IS 456 standard mix proportions for {{ \App\Constants\ConcreteRatioConstants::GRADE_LABELS[$concreteRatio->grade] ?? ($concreteRatio->grade ?? 'N/A') }}.<br/>
+                5. 1 bag cement = 50 kg. 1 m&sup3; = 35.3147 CFT. Gross total includes {{ $concreteRatio->waste_percent ?? 0 }}% site wastage allowance.
             </div>
         </div>
     </div>

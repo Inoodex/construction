@@ -12,32 +12,56 @@
             @if($rodCalculation->isDraft())
                 <form action="{{ route('admin.finance.rod-calculations.approve', $rodCalculation->id) }}" method="POST" class="inline" onsubmit="return confirm('Approve this calculation?');">
                     @csrf
-                    <button type="submit" class="btn btn-sm btn-outline-success">Approve</button>
+                    <button type="submit" class="btn btn-sm btn-outline-success gap-1.5">
+                        <!-- <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> -->
+                        Approve
+                    </button>
                 </form>
-                <a href="{{ route('admin.finance.rod-calculations.edit', $rodCalculation->id) }}" class="btn btn-sm btn-outline-warning">Edit</a>
+                <a href="{{ route('admin.finance.rod-calculations.edit', $rodCalculation->id) }}" class="btn btn-sm btn-outline-warning gap-1.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    Edit
+                </a>
             @endif
             @if($rodCalculation->isApproved())
                 <form action="{{ route('admin.finance.rod-calculations.complete', $rodCalculation->id) }}" method="POST" class="inline" onsubmit="return confirm('Mark as completed?');">
                     @csrf
-                    <button type="submit" class="btn btn-sm btn-outline-info">Complete</button>
+                    <button type="submit" class="btn btn-sm btn-outline-info gap-1.5">
+                        <!-- <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> -->
+                        Complete
+                    </button>
                 </form>
                 <form action="{{ route('admin.finance.rod-calculations.reopen', $rodCalculation->id) }}" method="POST" class="inline" onsubmit="return confirm('Reopen to draft?');">
                     @csrf
-                    <button type="submit" class="btn btn-sm btn-outline-secondary">Reopen</button>
+                    <button type="submit" class="btn btn-sm btn-outline-secondary gap-1.5">
+                        <!-- <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg> -->
+                        Reopen
+                    </button>
                 </form>
             @endif
             <form action="{{ route('admin.finance.rod-calculations.recalculate', $rodCalculation->id) }}" method="POST" class="inline">
                 @csrf
-                <button type="submit" class="btn btn-sm btn-outline-primary">Recalculate</button>
+                <button type="submit" class="btn btn-sm btn-outline-primary gap-1.5">
+                    <!-- <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg> -->
+                    Recalculate
+                </button>
             </form>
             <form action="{{ route('admin.finance.rod-calculations.duplicate', $rodCalculation->id) }}" method="POST" class="inline" onsubmit="return confirm('Duplicate this BBS calculation sheet?');">
                 @csrf
-                <button type="submit" class="btn btn-sm btn-outline-info">Duplicate</button>
+                <button type="submit" class="btn btn-sm btn-outline-info gap-1.5">
+                    <!-- <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> -->
+                    Duplicate
+                </button>
             </form>
-            <a href="{{ route('admin.finance.rod-calculations.pdf', $rodCalculation->id) }}" target="_blank" class="btn btn-sm btn-outline-dark">PDF</a>
-            <a href="{{ route('admin.finance.rod-calculations.excel', $rodCalculation->id) }}" class="btn btn-sm btn-outline-success">Excel</a>
-            <a href="{{ route('admin.finance.rod-calculations.index') }}" class="btn btn-sm btn-secondary">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+            <a href="{{ route('admin.finance.rod-calculations.pdf', $rodCalculation->id) }}" target="_blank" class="btn btn-sm btn-outline-dark gap-1.5">
+                <!-- <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg> -->
+                PDF
+            </a>
+            <a href="{{ route('admin.finance.rod-calculations.excel', $rodCalculation->id) }}" class="btn btn-sm btn-outline-success gap-1.5">
+                <!-- <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg> -->
+                Excel
+            </a>
+            <a href="{{ route('admin.finance.rod-calculations.index') }}" class="btn btn-sm btn-secondary gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                 Back
             </a>
         </div>
@@ -56,75 +80,125 @@
         </div>
         <div class="panel flex-1 min-w-[140px] py-2 px-3">
             <label class="text-[10px] text-white-dark uppercase">Steel Grade</label>
-            <p class="font-semibold text-xs">{{ $rodCalculation->steel_grade ?? '-' }}</p>
+            <p class="font-semibold text-xs text-primary">{{ $rodCalculation->steel_grade ?? '-' }}</p>
         </div>
         <div class="panel flex-1 min-w-[140px] py-2 px-3">
             <label class="text-[10px] text-white-dark uppercase">Revision</label>
             <p class="font-semibold text-xs">{{ $rodCalculation->revision ?? '-' }}</p>
         </div>
         <div class="panel flex-1 min-w-[140px] py-2 px-3">
+            <label class="text-[10px] text-white-dark uppercase">Waste %</label>
+            <p class="text-xs font-semibold">{{ $rodCalculation->waste_percent ?? '0' }}%</p>
+        </div>
+        <div class="panel flex-1 min-w-[140px] py-2 px-3">
             <label class="text-[10px] text-white-dark uppercase">Created By</label>
-            <p class="text-xs">{{ $rodCalculation->creator->name ?? '-' }}</p>
+            <p class="text-xs font-semibold">{{ $rodCalculation->creator->name ?? '-' }}</p>
         </div>
     </div>
 
-    {{-- Summary --}}
-    <div class="mt-6 flex flex-col lg:flex-row gap-6">
-        <div class="panel text-center flex flex-col items-center justify-center lg:w-1/4">
-            <label class="text-xs text-white-dark">Total Steel Weight</label>
-            <p class="text-3xl font-bold text-primary mt-2">{{ number_format($summary['total_kg'], 2) }} <span class="text-xs font-normal">kg</span></p>
-            @if(($summary['waste_percent'] ?? 0) > 0)
-                <p class="text-[11px] text-white-dark mt-1">Includes {{ $summary['waste_percent'] }}% waste (+{{ number_format($summary['waste_kg'], 1) }}kg)</p>
-            @endif
-            <!-- <div class="mt-3 text-xs text-white-dark border-t pt-2 dark:border-gray-700 w-full">
-                <span class="font-semibold text-xs block mb-1">Commercial Orders (12m Bars)</span>
-                <span class="badge badge-outline-primary text-xs">{{ $summary['total_12m_sticks'] ?? 0 }} Sticks (12m)</span>
-            </div> -->
-            <!-- <div class="mt-3 text-[11px] text-white-dark">
-                @foreach($summary['by_diameter'] as $d)
-                    <span class="inline-block mr-2">Ø{{ $d['diameter'] }}: {{ number_format($d['total_kg'], 1) }}kg ({{ $d['commercial_12m_sticks'] }} pcs)</span>
-                @endforeach
-            </div> -->
+    {{-- Summary Cards (Full Width Grid) --}}
+    <div class="mt-6 flex flex-wrap gap-6">
+        <div class="panel text-center flex flex-col items-center justify-center flex-1 min-w-[200px]">
+            <label class="text-xs text-white-dark uppercase font-semibold">Net Steel Weight</label>
+            <p class="text-3xl font-bold text-primary mt-2">{{ number_format($summary['total_kg'], 2) }} <span class="text-sm font-normal text-white-dark">kg</span></p>
+            <p class="text-xs font-semibold text-info mt-1">{{ number_format($summary['total_tons'], 3) }} Metric Tons</p>
         </div>
-        <div class="panel lg:w-3/4">
-            <label class="text-xs text-white-dark mb-2 block font-semibold">By Diameter Summary & Stock Ordering</label>
-            @if(count($summary['by_diameter']))
-                <div class="overflow-x-auto">
-                    <table class="w-full text-xs">
-                        <thead>
-                            <tr class="border-b dark:border-gray-700">
-                                <th class="text-left py-2">Dia (mm)</th>
-                                <th class="text-right py-2">Bars</th>
-                                <th class="text-right py-2">Total Length (mm)</th>
-                                <th class="text-right py-2">12m Stock Sticks</th>
-                                <th class="text-right py-2">Net Weight (kg)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($summary['by_diameter'] as $d)
-                                <tr class="border-t dark:border-gray-700">
-                                    <td class="py-2 font-semibold">Ø{{ $d['diameter'] }} mm</td>
-                                    <td class="py-2 text-right">{{ $d['bars_count'] }}</td>
-                                    <td class="py-2 text-right">{{ number_format($d['total_mm'], 0) }}</td>
-                                    <td class="py-2 text-right font-semibold text-info">{{ $d['commercial_12m_sticks'] }} pcs</td>
-                                    <td class="py-2 text-right font-semibold">{{ number_format($d['total_kg'], 2) }}</td>
-                                </tr>
-                            @endforeach
-                            <tr class="border-t-2 dark:border-gray-600 font-bold">
-                                <td class="py-2">Total</td>
-                                <td class="py-2 text-right">{{ collect($summary['by_diameter'])->sum('bars_count') }}</td>
-                                <td class="py-2 text-right">{{ number_format(collect($summary['by_diameter'])->sum('total_mm'), 0) }}</td>
-                                <td class="py-2 text-right text-info">{{ $summary['total_12m_sticks'] ?? 0 }} pcs</td>
-                                <td class="py-2 text-right text-primary">{{ number_format($summary['total_kg'], 2) }} kg</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            @else
-                <p class="text-xs text-white-dark py-4 text-center">No bars added yet.</p>
-            @endif
+        <div class="panel text-center flex flex-col items-center justify-center flex-1 min-w-[200px]">
+            <label class="text-xs text-white-dark uppercase font-semibold">Wastage Allowance</label>
+            <p class="text-3xl font-bold text-warning mt-2">{{ $summary['waste_percent'] }}%</p>
+            <p class="text-xs font-semibold text-warning mt-1">+{{ number_format($summary['waste_kg'], 1) }} kg (+{{ number_format($summary['waste_tons'], 3) }} T)</p>
+        </div>
+        <div class="panel text-center flex flex-col items-center justify-center flex-1 min-w-[200px]">
+            <label class="text-xs text-white-dark uppercase font-semibold">Gross Total Weight</label>
+            <p class="text-3xl font-bold text-success mt-2">{{ number_format($summary['gross_total_kg'], 2) }} <span class="text-sm font-normal text-white-dark">kg</span></p>
+            <p class="text-xs font-semibold text-success mt-1">{{ number_format($summary['gross_total_tons'], 3) }} Metric Tons</p>
+        </div>
+        <div class="panel text-center flex flex-col items-center justify-center flex-1 min-w-[200px]">
+            <label class="text-xs text-white-dark uppercase font-semibold">Stock Order (12m Bars)</label>
+            <p class="text-3xl font-bold text-info mt-2">{{ number_format($summary['total_12m_sticks'] ?? 0) }}</p>
+            <p class="text-xs font-semibold text-info mt-1">Commercial Sticks (12m)</p>
         </div>
     </div>
+
+    {{-- By Diameter Summary & Stock Ordering Table (Full Width Panel) --}}
+    <div class="panel mt-6 w-full">
+        <div class="flex items-center justify-between mb-3">
+            <h5 class="text-sm font-bold uppercase text-primary">By Diameter Summary &amp; Stock Ordering</h5>
+            <span class="badge badge-outline-primary text-xs">{{ count($summary['by_diameter']) }} Rebar Sizes</span>
+        </div>
+        @if(count($summary['by_diameter']))
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs">
+                    <thead>
+                        <tr class="border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                            <th class="text-left py-2 px-3">Dia (mm)</th>
+                            <th class="text-right py-2 px-3">Bars Count</th>
+                            <th class="text-right py-2 px-3">Total Length (mm)</th>
+                            <th class="text-right py-2 px-3">12m Stock Sticks</th>
+                            <th class="text-right py-2 px-3">Net Weight (kg)</th>
+                            <th class="text-right py-2 px-3">Net Weight (Tons)</th>
+                            @if(($summary['total_steel_cost'] ?? 0) > 0)
+                                <th class="text-right py-2 px-3">Est. Cost (৳)</th>
+                            @endif
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($summary['by_diameter'] as $d)
+                            <tr class="border-t dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                                <td class="py-2.5 px-3 font-bold text-primary">Ø{{ $d['diameter'] }} mm</td>
+                                <td class="py-2.5 px-3 text-right font-medium">{{ number_format($d['bars_count']) }}</td>
+                                <td class="py-2.5 px-3 text-right font-mono">{{ number_format($d['total_mm'], 0) }} mm</td>
+                                <td class="py-2.5 px-3 text-right font-bold text-info">{{ number_format($d['commercial_12m_sticks']) }} pcs</td>
+                                <td class="py-2.5 px-3 text-right font-bold">{{ number_format($d['total_kg'], 2) }} kg</td>
+                                <td class="py-2.5 px-3 text-right font-bold text-primary">{{ number_format($d['total_tons'], 3) }} T</td>
+                                @if(($summary['total_steel_cost'] ?? 0) > 0)
+                                    <td class="py-2.5 px-3 text-right font-extrabold text-success">৳{{ number_format($d['estimated_cost'], 2) }}</td>
+                                @endif
+                            </tr>
+                        @endforeach
+                        <tr class="border-t-2 dark:border-gray-600 font-extrabold bg-gray-100 dark:bg-gray-800">
+                            <td class="py-3 px-3 uppercase">Total</td>
+                            <td class="py-3 px-3 text-right">{{ number_format(collect($summary['by_diameter'])->sum('bars_count')) }}</td>
+                            <td class="py-3 px-3 text-right font-mono">{{ number_format(collect($summary['by_diameter'])->sum('total_mm'), 0) }} mm</td>
+                            <td class="py-3 px-3 text-right text-info">{{ number_format($summary['total_12m_sticks'] ?? 0) }} pcs</td>
+                            <td class="py-3 px-3 text-right text-primary">{{ number_format($summary['total_kg'], 2) }} kg</td>
+                            <td class="py-3 px-3 text-right text-primary">{{ number_format($summary['total_tons'], 3) }} T</td>
+                            @if(($summary['total_steel_cost'] ?? 0) > 0)
+                                <td class="py-3 px-3 text-right text-success">৳{{ number_format(collect($summary['by_diameter'])->sum('estimated_cost'), 2) }}</td>
+                            @endif
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        @else
+            <p class="text-xs text-white-dark py-4 text-center">No bars added yet.</p>
+        @endif
+    </div>
+
+    {{-- Steel Cost Estimation Summary --}}
+    @if(($summary['total_steel_cost'] ?? 0) > 0 || $rodCalculation->steel_price_per_kg)
+    <div class="mt-6 panel bg-primary/5 dark:bg-primary/10 border border-primary/20">
+        <div class="flex items-center justify-between mb-3">
+            <h5 class="text-sm font-bold uppercase text-primary">Steel Rebar Cost Estimation</h5>
+            <span class="text-xs font-semibold text-white-dark">Rate: ৳{{ number_format($summary['steel_price_per_kg'], 2) }} / kg (৳{{ number_format($summary['cost_per_ton'], 2) }} / Ton)</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+            <div class="p-2 rounded bg-white dark:bg-[#0e1726]">
+                <span class="text-[10px] text-white-dark uppercase block">Net Steel Weight</span>
+                <span class="text-lg font-bold text-primary">{{ number_format($summary['total_kg'], 2) }} kg ({{ number_format($summary['total_tons'], 3) }} T)</span>
+            </div>
+            <div class="p-2 rounded bg-white dark:bg-[#0e1726]">
+                <span class="text-[10px] text-white-dark uppercase block">Gross Steel Weight (incl. {{ $summary['waste_percent'] }}% waste)</span>
+                <span class="text-lg font-bold text-warning">{{ number_format($summary['gross_total_kg'], 2) }} kg ({{ number_format($summary['gross_total_tons'], 3) }} T)</span>
+            </div>
+            <div class="p-2 rounded bg-primary text-white">
+                <span class="text-[10px] uppercase block opacity-80">Total Estimated Steel Cost</span>
+                <span class="text-xl font-extrabold">৳{{ number_format($summary['total_steel_cost'], 2) }}</span>
+                <span class="text-[10px] block opacity-80">Based on Gross Weight</span>
+            </div>
+        </div>
+    </div>
+    @endif
 
     {{-- Members --}}
     <div class="panel mt-6">

@@ -50,10 +50,10 @@
                         @forelse($slips as $slip)
                             <tr>
                                 <td><span class="font-mono text-xs font-semibold text-primary">{{ $slip->issue_number }}</span></td>
-                                <td class="text-xs">{{ $slip->project->name ?? 'N/A' }}</td>
-                                <td class="text-xs">{{ $slip->site->name ?? 'N/A' }}</td>
-                                <td class="text-xs">{{ $slip->recipient->name ?? 'N/A' }}</td>
-                                <td class="text-xs">{{ $slip->issue_date->format('d M Y') }}</td>
+                                <td>{{ $slip->project->name ?? 'N/A' }}</td>
+                                <td>{{ $slip->site->name ?? 'N/A' }}</td>
+                                <td>{{ $slip->recipient->name ?? 'N/A' }}</td>
+                                <td>{{ $slip->issue_date->format('d M Y') }}</td>
                                 <td class="text-center">
                                     <div class="flex items-center justify-center gap-2">
                                         <a href="{{ route('admin.procurement.material-issue-slips.show', $slip->id) }}" class="btn btn-sm btn-outline-info">View</a>

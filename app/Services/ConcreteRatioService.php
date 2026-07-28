@@ -97,6 +97,8 @@ class ConcreteRatioService
         $totalWater     = 0;
         $byMember       = [];
 
+        $m3ToCft = ConcreteRatioConstants::M3_TO_CFT;
+
         foreach ($ratio->members as $member) {
             $totalVolume    += $member->volume_m3;
             $totalCement    += $member->cement_bags;
@@ -105,13 +107,16 @@ class ConcreteRatioService
             $totalWater     += $member->water_liters;
 
             $byMember[] = [
-                'member_code'  => $member->member_code,
-                'type'         => $member->type,
-                'volume_m3'    => round($member->volume_m3, 4),
-                'cement_bags'  => round($member->cement_bags, 2),
-                'sand_m3'      => round($member->sand_m3, 4),
-                'aggregate_m3' => round($member->aggregate_m3, 4),
-                'water_liters' => round($member->water_liters, 2),
+                'member_code'   => $member->member_code,
+                'type'          => $member->type,
+                'volume_m3'     => round($member->volume_m3, 4),
+                'volume_cft'    => round($member->volume_m3 * $m3ToCft, 2),
+                'cement_bags'   => round($member->cement_bags, 2),
+                'sand_m3'       => round($member->sand_m3, 4),
+                'sand_cft'      => round($member->sand_m3 * $m3ToCft, 2),
+                'aggregate_m3'  => round($member->aggregate_m3, 4),
+                'aggregate_cft' => round($member->aggregate_m3 * $m3ToCft, 2),
+                'water_liters'  => round($member->water_liters, 2),
             ];
         }
 
@@ -124,18 +129,49 @@ class ConcreteRatioService
         $grossAggregate  = round($totalAggregate * (1 + $wasteFactor), 4);
         $grossWater      = round($totalWater * (1 + $wasteFactor), 2);
 
+        // CFT conversions
+        $totalVolumeCft  = round($totalVolume * $m3ToCft, 2);
+        $totalSandCft    = round($totalSand * $m3ToCft, 2);
+        $totalAggCft     = round($totalAggregate * $m3ToCft, 2);
+
+        $grossVolumeCft  = round($grossVolume * $m3ToCft, 2);
+        $grossSandCft    = round($grossSand * $m3ToCft, 2);
+        $grossAggCft     = round($grossAggregate * $m3ToCft, 2);
+
+        // Cost estimation based on gross material quantities
+        $cementPrice     = (float) ($ratio->cement_price_per_bag ?? 0);
+        $sandPrice       = (float) ($ratio->sand_price_per_cft ?? 0);
+        $aggPrice        = (float) ($ratio->aggregate_price_per_cft ?? 0);
+
+        $cementCost      = round($grossCement * $cementPrice, 2);
+        $sandCost        = round($grossSandCft * $sandPrice, 2);
+        $aggCost         = round($grossAggCft * $aggPrice, 2);
+        $totalCost       = round($cementCost + $sandCost + $aggCost, 2);
+        $costPerM3       = $grossVolume > 0 ? round($totalCost / $grossVolume, 2) : 0;
+
         return [
             'total_volume_m3'         => round($totalVolume, 4),
+            'total_volume_cft'        => $totalVolumeCft,
             'total_cement_bags'       => round($totalCement, 2),
             'total_sand_m3'           => round($totalSand, 4),
+            'total_sand_cft'          => $totalSandCft,
             'total_aggregate_m3'      => round($totalAggregate, 4),
+            'total_aggregate_cft'     => $totalAggCft,
             'total_water_liters'      => round($totalWater, 2),
             'waste_percent'           => $wastePercent,
             'gross_volume_m3'         => $grossVolume,
+            'gross_volume_cft'        => $grossVolumeCft,
             'gross_cement_bags'       => $grossCement,
             'gross_sand_m3'           => $grossSand,
+            'gross_sand_cft'          => $grossSandCft,
             'gross_aggregate_m3'      => $grossAggregate,
+            'gross_aggregate_cft'     => $grossAggCft,
             'gross_water_liters'      => $grossWater,
+            'cement_cost'             => $cementCost,
+            'sand_cost'               => $sandCost,
+            'aggregate_cost'          => $aggCost,
+            'total_cost'              => $totalCost,
+            'cost_per_m3'             => $costPerM3,
             'by_member'               => $byMember,
         ];
     }

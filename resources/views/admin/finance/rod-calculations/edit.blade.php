@@ -36,6 +36,14 @@
                     <label for="revision">Revision (Optional)</label>
                     <input type="text" name="revision" id="revision" class="form-input" value="{{ old('revision', $rodCalculation->revision) }}" placeholder="e.g. R0, R1" />
                 </div>
+                <div class="form-group">
+                    <label for="waste_percent">Waste %</label>
+                    <input type="number" name="waste_percent" id="waste_percent" class="form-input" value="{{ old('waste_percent', $rodCalculation->waste_percent) }}" step="0.01" min="0" max="100" placeholder="e.g. 5" />
+                </div>
+                <div class="form-group">
+                    <label for="steel_price_per_kg">Steel Rate (৳ / kg)</label>
+                    <input type="number" name="steel_price_per_kg" id="steel_price_per_kg" class="form-input" value="{{ old('steel_price_per_kg', $rodCalculation->steel_price_per_kg) }}" step="0.01" min="0" placeholder="e.g. 95 (৳95,000/Ton)" />
+                </div>
                 <div class="form-group md:col-span-3">
                     <label for="description">Description</label>
                     <textarea name="description" id="description" class="form-input" rows="2">{{ old('description', $rodCalculation->description) }}</textarea>

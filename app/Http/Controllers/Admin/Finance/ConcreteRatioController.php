@@ -57,6 +57,9 @@ class ConcreteRatioController extends Controller
             'description'=> 'nullable|string',
             'grade'      => 'nullable|in:' . implode(',', ConcreteRatioConstants::GRADES),
             'waste_percent' => 'nullable|numeric|min:0|max:100',
+            'cement_price_per_bag' => 'nullable|numeric|min:0',
+            'sand_price_per_cft' => 'nullable|numeric|min:0',
+            'aggregate_price_per_cft' => 'nullable|numeric|min:0',
         ]);
 
         $project = Project::findOrFail($validated['project_id']);
@@ -96,9 +99,15 @@ class ConcreteRatioController extends Controller
             'description'  => 'nullable|string',
             'grade'        => 'nullable|in:' . implode(',', ConcreteRatioConstants::GRADES),
             'waste_percent'=> 'nullable|numeric|min:0|max:100',
+            'cement_price_per_bag' => 'nullable|numeric|min:0',
+            'sand_price_per_cft' => 'nullable|numeric|min:0',
+            'aggregate_price_per_cft' => 'nullable|numeric|min:0',
         ]);
 
         $concreteRatio->update($validated);
+
+        // Automatically recalculate member material quantities with the updated grade/waste
+        $this->service->recalculateAll($concreteRatio);
 
         return redirect()->route('admin.finance.concrete-ratios.show', $concreteRatio->id)
             ->with('success', 'Concrete Ratio updated successfully.');

@@ -14,7 +14,19 @@ class ConcreteRatioConstants
         self::STATUS_COMPLETED,
     ];
 
+    const M3_TO_CFT = 35.3147;
+
     const GRADES = ['M10', 'M15', 'M20', 'M25', 'M30', 'M35', 'M40'];
+
+    const GRADE_LABELS = [
+        'M10' => 'M10 (1:3:6)',
+        'M15' => 'M15 (1:2:4)',
+        'M20' => 'M20 (1:1.5:3)',
+        'M25' => 'M25 (1:1:2)',
+        'M30' => 'M30 (Design Mix ~1:0.75:1.5)',
+        'M35' => 'M35 (Design Mix ~1:0.5:1)',
+        'M40' => 'M40 (Design Mix ~1:0.4:0.8)',
+    ];
 
     const MATERIAL_FACTORS = [
         'M10' => ['cement_bags' => 4.4,  'sand_m3' => 0.46, 'aggregate_m3' => 0.92, 'water_liters' => 205],

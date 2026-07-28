@@ -30,14 +30,18 @@
         </tr>
         <tr><td></td></tr>
         <tr>
-            <td colspan="5" style="font-weight: bold; background-color: #E2EFDA;">SUMMARY BY REBAR DIAMETER &amp; STOCK ORDERING</td>
+            <td colspan="6" style="font-weight: bold; background-color: #E2EFDA;">SUMMARY BY REBAR DIAMETER &amp; STOCK ORDERING</td>
         </tr>
         <tr style="background-color: #F2F2F2; font-weight: bold;">
             <td>Diameter (mm)</td>
             <td>Bar Count</td>
             <td>Total Length (mm)</td>
             <td>12m Commercial Sticks (pcs)</td>
-            <td>Net Weight (kg)</td>
+            <td>Weight (kg)</td>
+            <td>Weight (Metric Tons)</td>
+            @if(($summary['total_steel_cost'] ?? 0) > 0)
+            <td>Est. Cost (৳)</td>
+            @endif
         </tr>
         @foreach($summary['by_diameter'] as $d)
             <tr>
@@ -46,6 +50,10 @@
                 <td>{{ number_format($d['total_mm'], 0, '.', '') }}</td>
                 <td style="font-weight: bold; color: #1F4E78;">{{ $d['commercial_12m_sticks'] }}</td>
                 <td style="font-weight: bold;">{{ number_format($d['total_kg'], 2, '.', '') }}</td>
+                <td style="font-weight: bold; color: #1F4E78;">{{ number_format($d['total_tons'], 3, '.', '') }}</td>
+                @if(($summary['total_steel_cost'] ?? 0) > 0)
+                <td style="font-weight: bold; color: #375623;">৳{{ number_format($d['estimated_cost'], 2, '.', '') }}</td>
+                @endif
             </tr>
         @endforeach
         <tr style="font-weight: bold; background-color: #E2EFDA;">
@@ -54,17 +62,37 @@
             <td>{{ number_format(collect($summary['by_diameter'])->sum('total_mm'), 0, '.', '') }}</td>
             <td>{{ $summary['total_12m_sticks'] ?? 0 }} pcs</td>
             <td>{{ number_format($summary['total_kg'], 2, '.', '') }} kg</td>
+            <td>{{ number_format($summary['total_tons'], 3, '.', '') }} T</td>
+            @if(($summary['total_steel_cost'] ?? 0) > 0)
+            <td>৳{{ number_format(collect($summary['by_diameter'])->sum('estimated_cost'), 2, '.', '') }}</td>
+            @endif
         </tr>
         @if(($summary['waste_percent'] ?? 0) > 0)
             <tr>
                 <td style="font-weight: bold;">Wastage ({{ $summary['waste_percent'] }}%)</td>
                 <td colspan="3"></td>
                 <td style="font-weight: bold;">+{{ number_format($summary['waste_kg'], 2, '.', '') }} kg</td>
+                <td style="font-weight: bold;">+{{ number_format($summary['waste_tons'], 3, '.', '') }} T</td>
             </tr>
             <tr style="font-weight: bold; background-color: #C6E0B4;">
                 <td>GROSS TOTAL WEIGHT</td>
                 <td colspan="3"></td>
                 <td>{{ number_format($summary['gross_total_kg'], 2, '.', '') }} kg</td>
+                <td>{{ number_format($summary['gross_total_tons'], 3, '.', '') }} T</td>
+            </tr>
+        @endif
+        @if(($summary['total_steel_cost'] ?? 0) > 0)
+            <tr><td></td></tr>
+            <tr style="background-color: #D9E1F2; font-weight: bold;">
+                <td colspan="6">STEEL REBAR COST ESTIMATION</td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold;">Steel Rate:</td>
+                <td colspan="5">৳{{ number_format($summary['steel_price_per_kg'], 2) }}/kg (৳{{ number_format($summary['cost_per_ton'], 2) }}/Ton)</td>
+            </tr>
+            <tr style="font-weight: bold; background-color: #E2EFDA;">
+                <td>TOTAL ESTIMATED STEEL COST:</td>
+                <td colspan="5">৳{{ number_format($summary['total_steel_cost'], 2) }} (Gross Weight: {{ number_format($summary['gross_total_tons'], 3) }} Tons)</td>
             </tr>
         @endif
         <tr><td></td></tr>

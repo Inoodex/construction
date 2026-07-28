@@ -91,3 +91,55 @@
         </form>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+const allTasks = @json($tasks);
+const allSites = @json($sites);
+
+function filterProjectDependencies(projectId, selectedTaskId = null, selectedSiteId = null) {
+    const taskSelect = document.getElementById('task_id');
+    const siteSelect = document.getElementById('site_id');
+    
+    taskSelect.innerHTML = '<option value="">No Task</option>';
+    siteSelect.innerHTML = '<option value="">Select Site</option>';
+    
+    if (!projectId) return;
+
+    const filteredTasks = allTasks.filter(t => t.project_id == projectId);
+    filteredTasks.forEach(task => {
+        const opt = document.createElement('option');
+        opt.value = task.id;
+        opt.textContent = task.name;
+        if (selectedTaskId && selectedTaskId == task.id) {
+            opt.selected = true;
+        }
+        taskSelect.appendChild(opt);
+    });
+
+    const filteredSites = allSites.filter(s => s.project_id == projectId);
+    filteredSites.forEach(site => {
+        const opt = document.createElement('option');
+        opt.value = site.id;
+        opt.textContent = site.name;
+        if (selectedSiteId && selectedSiteId == site.id) {
+            opt.selected = true;
+        }
+        siteSelect.appendChild(opt);
+    });
+}
+
+document.getElementById('project_id').addEventListener('change', function() {
+    filterProjectDependencies(this.value);
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const initialProjectId = document.getElementById('project_id').value;
+    const initialTaskId = "{{ old('task_id') }}";
+    const initialSiteId = "{{ old('site_id') }}";
+    if (initialProjectId) {
+        filterProjectDependencies(initialProjectId, initialTaskId, initialSiteId);
+    }
+});
+</script>
+@endpush

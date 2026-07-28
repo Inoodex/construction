@@ -16,7 +16,7 @@
             <td style="font-weight: bold;">Project:</td>
             <td>{{ $concreteRatio->project->name ?? 'N/A' }}</td>
             <td style="font-weight: bold;">Grade:</td>
-            <td>{{ $concreteRatio->grade ?? '-' }}</td>
+            <td>{{ \App\Constants\ConcreteRatioConstants::GRADE_LABELS[$concreteRatio->grade] ?? ($concreteRatio->grade ?? '-') }}</td>
             <td style="font-weight: bold;">Status:</td>
             <td>{{ ucfirst($concreteRatio->status) }}</td>
         </tr>
@@ -40,62 +40,90 @@
 
         {{-- Summary --}}
         <tr>
-            <td colspan="5" style="font-weight: bold; background-color: #E2EFDA;">MATERIAL SUMMARY</td>
+            <td colspan="6" style="font-weight: bold; background-color: #E2EFDA;">MATERIAL SUMMARY</td>
         </tr>
         <tr style="background-color: #F2F2F2; font-weight: bold;">
             <td>Item</td>
-            <td>Net Total</td>
+            <td>Net Total (Metric)</td>
+            <td>Net Total (CFT)</td>
             <td>Unit</td>
             @if($summary['waste_percent'] > 0)
             <td>Gross Total (incl. {{ $summary['waste_percent'] }}% waste)</td>
-            <td>Unit</td>
+            <td>Gross Total (CFT)</td>
             @endif
         </tr>
         <tr>
             <td>Concrete Volume</td>
             <td>{{ number_format($summary['total_volume_m3'], 4, '.', '') }}</td>
-            <td>m³</td>
+            <td>{{ number_format($summary['total_volume_cft'], 2, '.', '') }}</td>
+            <td>m³ / CFT</td>
             @if($summary['waste_percent'] > 0)
             <td style="font-weight: bold; color: #1F4E78;">{{ number_format($summary['gross_volume_m3'], 4, '.', '') }}</td>
-            <td>m³</td>
+            <td style="font-weight: bold; color: #1F4E78;">{{ number_format($summary['gross_volume_cft'], 2, '.', '') }}</td>
             @endif
         </tr>
         <tr>
             <td>Cement</td>
             <td>{{ number_format($summary['total_cement_bags'], 2, '.', '') }}</td>
+            <td>—</td>
             <td>bags</td>
             @if($summary['waste_percent'] > 0)
             <td style="font-weight: bold; color: #1F4E78;">{{ number_format($summary['gross_cement_bags'], 2, '.', '') }}</td>
-            <td>bags</td>
+            <td>—</td>
             @endif
         </tr>
         <tr>
             <td>Sand</td>
             <td>{{ number_format($summary['total_sand_m3'], 4, '.', '') }}</td>
-            <td>m³</td>
+            <td>{{ number_format($summary['total_sand_cft'], 2, '.', '') }}</td>
+            <td>m³ / CFT</td>
             @if($summary['waste_percent'] > 0)
             <td style="font-weight: bold; color: #1F4E78;">{{ number_format($summary['gross_sand_m3'], 4, '.', '') }}</td>
-            <td>m³</td>
+            <td style="font-weight: bold; color: #1F4E78;">{{ number_format($summary['gross_sand_cft'], 2, '.', '') }}</td>
             @endif
         </tr>
         <tr>
             <td>Aggregate (Coarse)</td>
             <td>{{ number_format($summary['total_aggregate_m3'], 4, '.', '') }}</td>
-            <td>m³</td>
+            <td>{{ number_format($summary['total_aggregate_cft'], 2, '.', '') }}</td>
+            <td>m³ / CFT</td>
             @if($summary['waste_percent'] > 0)
             <td style="font-weight: bold; color: #1F4E78;">{{ number_format($summary['gross_aggregate_m3'], 4, '.', '') }}</td>
-            <td>m³</td>
+            <td style="font-weight: bold; color: #1F4E78;">{{ number_format($summary['gross_aggregate_cft'], 2, '.', '') }}</td>
             @endif
         </tr>
         <tr>
             <td>Water</td>
             <td>{{ number_format($summary['total_water_liters'], 2, '.', '') }}</td>
+            <td>—</td>
             <td>liters</td>
             @if($summary['waste_percent'] > 0)
             <td style="font-weight: bold; color: #1F4E78;">{{ number_format($summary['gross_water_liters'], 2, '.', '') }}</td>
-            <td>liters</td>
+            <td>—</td>
             @endif
         </tr>
+        @if($summary['total_cost'] > 0)
+        <tr><td></td></tr>
+        <tr style="background-color: #D9E1F2; font-weight: bold;">
+            <td colspan="6">COST ESTIMATION SUMMARY</td>
+        </tr>
+        <tr>
+            <td style="font-weight: bold;">Cement Cost:</td>
+            <td colspan="5">৳{{ number_format($summary['cement_cost'], 2) }} (@ ৳{{ number_format($concreteRatio->cement_price_per_bag ?? 0) }}/bag)</td>
+        </tr>
+        <tr>
+            <td style="font-weight: bold;">Sand Cost:</td>
+            <td colspan="5">৳{{ number_format($summary['sand_cost'], 2) }} (@ ৳{{ number_format($concreteRatio->sand_price_per_cft ?? 0) }}/CFT)</td>
+        </tr>
+        <tr>
+            <td style="font-weight: bold;">Aggregate Cost:</td>
+            <td colspan="5">৳{{ number_format($summary['aggregate_cost'], 2) }} (@ ৳{{ number_format($concreteRatio->aggregate_price_per_cft ?? 0) }}/CFT)</td>
+        </tr>
+        <tr style="font-weight: bold; background-color: #E2EFDA;">
+            <td>TOTAL CONCRETE COST:</td>
+            <td colspan="5">৳{{ number_format($summary['total_cost'], 2) }} (Rate: ৳{{ number_format($summary['cost_per_m3'], 2) }} / m³)</td>
+        </tr>
+        @endif
         <tr><td></td></tr>
 
         {{-- Member Schedule --}}

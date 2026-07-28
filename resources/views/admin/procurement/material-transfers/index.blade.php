@@ -60,7 +60,7 @@
                             <tr>
                                 <td><span class="font-mono text-xs font-semibold text-primary">{{ $t->transfer_number }}</span></td>
                                 <td><span class="badge badge-outline-info text-xs">{{ $t->transfer_type_label }}</span></td>
-                                <td class="text-xs">{{ $t->from_location_label }}</td>
+                                <td>{{ $t->from_location_label }}</td>
                                 <td class="text-xs">{{ $t->to_location_label }}</td>
                                 <td class="text-xs">{{ $t->transfer_date->format('d M Y') }}</td>
                                 <td>

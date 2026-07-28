@@ -147,39 +147,65 @@
             <table class="items-table" style="margin-top:15px;">
                 <thead>
                     <tr>
-                        <th colspan="4" style="text-align:center; font-size:12px;">SUMMARY BY DIAMETER</th>
+                        <th colspan="6" style="text-align:center; font-size:12px;">SUMMARY BY DIAMETER & REBAR ORDERING</th>
                     </tr>
                     <tr>
                         <th>Diameter (mm)</th>
                         <th class="text-right">Bars Count</th>
                         <th class="text-right">Total Length (mm)</th>
-                        <th class="text-right">Total Weight (kg)</th>
+                        <th class="text-right">12m Stock Sticks</th>
+                        <th class="text-right">Weight (kg)</th>
+                        <th class="text-right">Weight (Tons)</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($summary['by_diameter'] as $d)
                         <tr>
-                            <td style="font-weight:bold;">{{ $d['diameter'] }}</td>
+                            <td style="font-weight:bold;">Ø{{ $d['diameter'] }} mm</td>
                             <td class="text-right">{{ $d['bars_count'] }}</td>
                             <td class="text-right">{{ number_format($d['total_mm'], 0) }}</td>
-                            <td class="text-right">{{ number_format($d['total_kg'], 2) }}</td>
+                            <td class="text-right">{{ $d['commercial_12m_sticks'] }} pcs</td>
+                            <td class="text-right">{{ number_format($d['total_kg'], 2) }} kg</td>
+                            <td class="text-right" style="font-weight:bold;">{{ number_format($d['total_tons'], 3) }} T</td>
                         </tr>
                     @endforeach
                     <tr class="summary-total">
-                        <td>GRAND TOTAL</td>
+                        <td>NET TOTAL</td>
                         <td class="text-right">{{ collect($summary['by_diameter'])->sum('bars_count') }}</td>
                         <td class="text-right">{{ number_format(collect($summary['by_diameter'])->sum('total_mm'), 0) }}</td>
+                        <td class="text-right">{{ $summary['total_12m_sticks'] ?? 0 }} pcs</td>
                         <td class="text-right">{{ number_format($summary['total_kg'], 2) }} kg</td>
+                        <td class="text-right">{{ number_format($summary['total_tons'], 3) }} T</td>
                     </tr>
+                    @if(($summary['waste_percent'] ?? 0) > 0)
+                    <tr style="background-color:#e8f5e9; font-weight:bold; color:#1b5e20;">
+                        <td colspan="4">GROSS TOTAL (incl. {{ $summary['waste_percent'] }}% waste)</td>
+                        <td class="text-right">{{ number_format($summary['gross_total_kg'], 2) }} kg</td>
+                        <td class="text-right">{{ number_format($summary['gross_total_tons'], 3) }} T</td>
+                    </tr>
+                    @endif
                 </tbody>
             </table>
             @endif
 
-            <div class="notes-box" style="margin-top:20px;">
+            @if(($summary['total_steel_cost'] ?? 0) > 0)
+            <div style="margin-top:12px; padding:8px 12px; border:1px solid #263a79; background-color:#f4f6fa;">
+                <table style="width:100%; font-size:10px;">
+                    <tr>
+                        <td style="font-weight:bold; color:#263a79;">ESTIMATED STEEL REBAR COST:</td>
+                        <td>Rate: <strong>৳{{ number_format($summary['steel_price_per_kg'], 2) }}/kg (৳{{ number_format($summary['cost_per_ton'], 2) }}/Ton)</strong></td>
+                        <td class="text-right" style="font-size:12px; font-weight:bold; color:#263a79;">GROSS TOTAL COST: ৳{{ number_format($summary['total_steel_cost'], 2) }}</td>
+                    </tr>
+                </table>
+            </div>
+            @endif
+
+            <div class="notes-box" style="margin-top:15px;">
                 <strong>Notes:</strong><br/>
                 1. All dimensions are in millimetres (mm) unless otherwise noted.<br/>
-                2. Unit weight calculated as D&sup2;/162 kg/m.<br/>
-                3. Total weight = Cutting Length &times; Bar Count &times; Member Quantity &times; Unit Weight.
+                2. Unit weight calculated as D&sup2;/162 kg/m. Commercial 12m stock sticks = &lceil;Total Length &divide; 12,000&rceil;.<br/>
+                3. Total weight = Cutting Length &times; Bar Count &times; Member Quantity &times; Unit Weight.<br/>
+                4. 1 Metric Ton = 1,000 kg. Gross total includes {{ $rodCalculation->waste_percent ?? 0 }}% site scrap/cutting waste.
             </div>
         </div>
     </div>

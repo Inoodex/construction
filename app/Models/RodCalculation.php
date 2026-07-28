@@ -21,14 +21,16 @@ class RodCalculation extends Model
         'revision',
         'status',
         'waste_percent',
+        'steel_price_per_kg',
         'created_by',
         'approved_by',
         'approved_at',
     ];
 
     protected $casts = [
-        'waste_percent' => 'decimal:2',
-        'approved_at'   => 'datetime',
+        'waste_percent'      => 'decimal:2',
+        'steel_price_per_kg' => 'decimal:2',
+        'approved_at'        => 'datetime',
     ];
 
     public function project(): BelongsTo

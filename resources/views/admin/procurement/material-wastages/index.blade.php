@@ -51,12 +51,12 @@
                     <tbody>
                         @forelse($wastages as $w)
                             <tr>
-                                <td class="text-xs">{{ $w->project->name ?? 'N/A' }}</td>
-                                <td class="text-xs">{{ $w->site->name ?? 'N/A' }}</td>
-                                <td class="text-xs">{{ $w->material->name ?? 'N/A' }}</td>
-                                <td class="text-xs">{{ number_format($w->quantity, 2) }} {{ $w->material->unit ?? '' }}</td>
+                                <td>{{ $w->project->name ?? 'N/A' }}</td>
+                                <td>{{ $w->site->name ?? 'N/A' }}</td>
+                                <td>{{ $w->material->name ?? 'N/A' }}</td>
+                                <td>{{ number_format($w->quantity, 2) }} {{ $w->material->unit ?? '' }}</td>
                                 <td class="text-xs max-w-[200px] truncate">{{ $w->reason }}</td>
-                                <td class="text-xs">{{ $w->reported_date->format('d M Y') }}</td>
+                                <td>{{ $w->reported_date->format('d M Y') }}</td>
                                 <td class="text-xs">{{ $w->reporter->name ?? 'N/A' }}</td>
                                 <td class="text-center">
                                     <div class="flex items-center justify-center gap-2">

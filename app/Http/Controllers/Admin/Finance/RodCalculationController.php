@@ -52,11 +52,13 @@ class RodCalculationController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'project_id'   => 'required|exists:projects,id',
-            'title'        => 'required|string|max:255',
-            'description'  => 'nullable|string',
-            'steel_grade'  => 'nullable|string|max:50',
-            'revision'     => 'nullable|max:50',
+            'project_id'         => 'required|exists:projects,id',
+            'title'              => 'required|string|max:255',
+            'description'        => 'nullable|string',
+            'steel_grade'        => 'nullable|string|max:50',
+            'revision'           => 'nullable|max:50',
+            'waste_percent'      => 'nullable|numeric|min:0|max:100',
+            'steel_price_per_kg' => 'nullable|numeric|min:0',
         ]);
 
         $project = Project::findOrFail($validated['project_id']);
@@ -92,13 +94,16 @@ class RodCalculationController extends Controller
         abort_if(!$rodCalculation->isDraft(), 403, 'Only draft calculations can be edited.');
 
         $validated = $request->validate([
-            'title'        => 'required|string|max:255',
-            'description'  => 'nullable|string',
-            'steel_grade'  => 'nullable|string|max:50',
-            'revision'     => 'nullable|max:50',
+            'title'              => 'required|string|max:255',
+            'description'        => 'nullable|string',
+            'steel_grade'        => 'nullable|string|max:50',
+            'revision'           => 'nullable|max:50',
+            'waste_percent'      => 'nullable|numeric|min:0|max:100',
+            'steel_price_per_kg' => 'nullable|numeric|min:0',
         ]);
 
         $rodCalculation->update($validated);
+        $this->service->recalculateAll($rodCalculation);
 
         return redirect()->route('admin.finance.rod-calculations.show', $rodCalculation->id)
             ->with('success', 'Rod Calculation updated successfully.');

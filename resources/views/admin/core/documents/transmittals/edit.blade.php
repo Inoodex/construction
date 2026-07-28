@@ -97,14 +97,42 @@
 @push('scripts')
 <script>
 let itemIndex = {{ $transmittal->items->count() }};
+const allDrawings = @json($drawings);
+
+function getFilteredDrawings(projectId) {
+    if (!projectId) return [];
+    return allDrawings.filter(d => d.project_id == projectId);
+}
+
+function renderDrawingOptions(projectId, selectedDrawingId = null) {
+    const drawings = getFilteredDrawings(projectId);
+    if (!projectId) {
+        return '<option value="">Select Project First</option>';
+    }
+    if (drawings.length === 0) {
+        return '<option value="">No drawings found for this project</option>';
+    }
+    let options = '<option value="">Select Drawing</option>';
+    drawings.forEach(d => {
+        const isSelected = selectedDrawingId && selectedDrawingId == d.id ? 'selected' : '';
+        options += `<option value="${d.id}" ${isSelected}>${d.drawing_number} — ${d.title}</option>`;
+    });
+    return options;
+}
+
+function updateAllDrawingDropdowns(projectId) {
+    const selects = document.querySelectorAll('select[name*="[drawing_id]"]');
+    selects.forEach(select => {
+        const currentVal = select.value;
+        select.innerHTML = renderDrawingOptions(projectId, currentVal);
+    });
+}
 
 function addItem() {
     const container = document.getElementById('items-container');
-    const drawings = @json($drawings);
-    let options = '<option value="">Select Drawing</option>';
-    drawings.forEach(d => {
-        options += `<option value="${d.id}">${d.drawing_number} — ${d.title}</option>`;
-    });
+    const currentProjectId = document.getElementById('project_id').value;
+    const options = renderDrawingOptions(currentProjectId);
+
     const html = `
         <div class="item-row flex items-end gap-3 rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
             <div class="flex-1">
@@ -134,5 +162,16 @@ function removeItem(btn) {
         alert('At least one drawing item is required.');
     }
 }
+
+document.getElementById('project_id').addEventListener('change', function() {
+    updateAllDrawingDropdowns(this.value);
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const initialProjectId = document.getElementById('project_id').value;
+    if (initialProjectId) {
+        updateAllDrawingDropdowns(initialProjectId);
+    }
+});
 </script>
 @endpush

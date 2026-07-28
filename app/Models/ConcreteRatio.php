@@ -21,14 +21,20 @@ class ConcreteRatio extends Model
         'rod_calculation_id',
         'status',
         'waste_percent',
+        'cement_price_per_bag',
+        'sand_price_per_cft',
+        'aggregate_price_per_cft',
         'created_by',
         'approved_by',
         'approved_at',
     ];
 
     protected $casts = [
-        'waste_percent' => 'decimal:2',
-        'approved_at'   => 'datetime',
+        'waste_percent'           => 'decimal:2',
+        'cement_price_per_bag'    => 'decimal:2',
+        'sand_price_per_cft'      => 'decimal:2',
+        'aggregate_price_per_cft' => 'decimal:2',
+        'approved_at'             => 'datetime',
     ];
 
     public function project(): BelongsTo

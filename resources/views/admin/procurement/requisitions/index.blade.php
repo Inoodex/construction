@@ -58,10 +58,10 @@
                         @forelse($requisitions as $pr)
                             <tr>
                                 <td><span class="font-mono text-xs font-semibold text-primary">{{ $pr->requisition_number }}</span></td>
-                                <td class="text-xs">{{ $pr->project->name ?? 'N/A' }}</td>
-                                <td class="text-xs">{{ $pr->requester->name ?? 'N/A' }}</td>
-                                <td class="text-xs">{{ $pr->items->count() }} item(s)</td>
-                                <td class="text-xs">{{ $pr->required_date?->format('d M Y') ?: '—' }}</td>
+                                <td>{{ $pr->project->name ?? 'N/A' }}</td>
+                                <td>{{ $pr->requester->name ?? 'N/A' }}</td>
+                                <td>{{ $pr->items->count() }} item(s)</td>
+                                <td>{{ $pr->required_date?->format('d M Y') ?: '—' }}</td>
                                 <td>
                                     @php
                                         $sc = ['draft' => 'badge-outline-secondary', 'submitted' => 'badge-outline-info', 'approved' => 'badge-outline-success', 'rejected' => 'badge-outline-danger'];

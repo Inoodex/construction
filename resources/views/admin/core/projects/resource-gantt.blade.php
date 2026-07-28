@@ -17,7 +17,7 @@
         $dayWidth = 20;
         $labelW = 250;
         $rowH = 36;
-        $resColors = ['labor' => '#4361ee', 'equipment' => '#e2a03f', 'material' => '#00ab55'];
+        $resColors = ['labor' => '#4361ee', 'labour' => '#4361ee', 'equipment' => '#e2a03f', 'material' => '#00ab55'];
 
         function rpct($date, $chartStart, $totalDays) {
             $days = $chartStart->diffInDays($date);

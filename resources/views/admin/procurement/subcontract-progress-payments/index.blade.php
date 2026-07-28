@@ -66,8 +66,10 @@
                                 <span class="badge {{ $sc[$p->status] ?? 'badge-outline-secondary' }} capitalize">{{ $p->status }}</span>
                             </td>
                             <td class="text-center">
-                                <a href="{{ route('admin.procurement.subcontract-progress-payments.show', $p->id) }}" class="btn btn-sm btn-outline-info">View</a>
-                                <a href="{{ route('admin.procurement.subcontract-progress-payments.pdf', $p->id) }}" target="_blank" class="btn btn-sm btn-outline-success">PDF</a>
+                                <div class="flex items-center justify-center gap-2">
+                                    <a href="{{ route('admin.procurement.subcontract-progress-payments.show', $p->id) }}" class="btn btn-sm btn-outline-info">View</a>
+                                    <a href="{{ route('admin.procurement.subcontract-progress-payments.pdf', $p->id) }}" target="_blank" class="btn btn-sm btn-outline-success">PDF</a>
+                                </div>
                             </td>
                         </tr>
                     @empty

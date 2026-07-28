@@ -29,17 +29,29 @@
                     <input type="text" name="title" id="title" class="form-input" required value="{{ old('title', $concreteRatio->title) }}" />
                 </div>
                 <div class="form-group">
-                    <label for="grade">Grade</label>
+                    <label for="grade">Concrete Grade (Mix Ratio)</label>
                     <select name="grade" id="grade" class="form-select">
                         <option value="">Select Grade</option>
                         @foreach(\App\Constants\ConcreteRatioConstants::GRADES as $g)
-                            <option value="{{ $g }}" {{ old('grade', $concreteRatio->grade) == $g ? 'selected' : '' }}>{{ $g }}</option>
+                            <option value="{{ $g }}" {{ old('grade', $concreteRatio->grade) == $g ? 'selected' : '' }}>{{ \App\Constants\ConcreteRatioConstants::GRADE_LABELS[$g] ?? $g }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="waste_percent">Waste %</label>
                     <input type="number" name="waste_percent" id="waste_percent" class="form-input" value="{{ old('waste_percent', $concreteRatio->waste_percent) }}" step="0.01" min="0" max="100" />
+                </div>
+                <div class="form-group">
+                    <label for="cement_price_per_bag">Cement Price (৳ / bag)</label>
+                    <input type="number" name="cement_price_per_bag" id="cement_price_per_bag" class="form-input" value="{{ old('cement_price_per_bag', $concreteRatio->cement_price_per_bag) }}" step="0.01" min="0" placeholder="e.g. 550" />
+                </div>
+                <div class="form-group">
+                    <label for="sand_price_per_cft">Sand Price (৳ / CFT)</label>
+                    <input type="number" name="sand_price_per_cft" id="sand_price_per_cft" class="form-input" value="{{ old('sand_price_per_cft', $concreteRatio->sand_price_per_cft) }}" step="0.01" min="0" placeholder="e.g. 45" />
+                </div>
+                <div class="form-group">
+                    <label for="aggregate_price_per_cft">Aggregate Price (৳ / CFT)</label>
+                    <input type="number" name="aggregate_price_per_cft" id="aggregate_price_per_cft" class="form-input" value="{{ old('aggregate_price_per_cft', $concreteRatio->aggregate_price_per_cft) }}" step="0.01" min="0" placeholder="e.g. 120" />
                 </div>
                 <div class="form-group md:col-span-3">
                     <label for="description">Description</label>

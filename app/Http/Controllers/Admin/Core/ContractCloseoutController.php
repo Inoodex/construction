@@ -53,6 +53,19 @@ class ContractCloseoutController extends Controller
         return back()->with('success', 'Closeout item added.');
     }
 
+    public function update(Request $request, ContractCloseoutItem $item)
+    {
+        $validated = $request->validate([
+            'item' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'order_index' => 'nullable|integer',
+        ]);
+
+        $item->update($validated);
+
+        return back()->with('success', 'Closeout item updated.');
+    }
+
     public function toggle(ContractCloseoutItem $item)
     {
         $item->update([
