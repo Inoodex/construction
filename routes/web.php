@@ -659,6 +659,7 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware(['auth', 
     Route::post('rod-calculations/{rodCalculation}/reopen', [RodCalculationController::class, 'reopen'])->name('rod-calculations.reopen');
     Route::post('rod-calculations/{rodCalculation}/recalculate', [RodCalculationController::class, 'recalculate'])->name('rod-calculations.recalculate');
     Route::post('rod-calculations/{rodCalculation}/duplicate', [RodCalculationController::class, 'duplicate'])->name('rod-calculations.duplicate');
+    Route::post('rod-calculations/{rodCalculation}/create-pr', [RodCalculationController::class, 'createPurchaseRequisition'])->name('rod-calculations.create-pr');
     Route::post('rod-calculations/{rodCalculation}/members', [RodCalculationController::class, 'storeMember'])->name('rod-calculations.members.store');
     Route::put('rod-calculations/{rodCalculation}/members/{rodMember}', [RodCalculationController::class, 'updateMember'])->name('rod-calculations.members.update');
     Route::delete('rod-calculations/{rodCalculation}/members/{rodMember}', [RodCalculationController::class, 'destroyMember'])->name('rod-calculations.members.destroy');
@@ -666,7 +667,8 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware(['auth', 
     Route::put('rod-calculations/{rodCalculation}/members/{rodMember}/bars/{rodBar}', [RodCalculationController::class, 'updateBar'])->name('rod-calculations.bars.update');
     Route::delete('rod-calculations/{rodCalculation}/members/{rodMember}/bars/{rodBar}', [RodCalculationController::class, 'destroyBar'])->name('rod-calculations.bars.destroy');
 
-    // Concrete Ratios
+    /*
+    // Concrete Ratios (Merged into Rod Calculations)
     Route::get('concrete-ratios', [ConcreteRatioController::class, 'index'])->name('concrete-ratios.index');
     Route::get('concrete-ratios/create', [ConcreteRatioController::class, 'create'])->name('concrete-ratios.create');
     Route::post('concrete-ratios', [ConcreteRatioController::class, 'store'])->name('concrete-ratios.store');
@@ -687,6 +689,7 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware(['auth', 
     Route::post('concrete-ratios/{concreteRatio}/copy-members', [ConcreteRatioController::class, 'copyMembers'])->name('concrete-ratios.copy-members');
     Route::post('concrete-ratios/copy-from-bbs', [ConcreteRatioController::class, 'copyFromBbs'])->name('concrete-ratios.copy-from-bbs');
     Route::get('concrete-ratios/bbs-by-project/{project}', [ConcreteRatioController::class, 'bbsByProject'])->name('concrete-ratios.bbs-by-project');
+    */
 
     Route::get('tenders', [TenderController::class, 'index'])->name('tenders.index');
     Route::get('tenders/create', [TenderController::class, 'create'])->name('tenders.create');

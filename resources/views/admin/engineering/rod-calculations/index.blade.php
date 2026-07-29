@@ -13,21 +13,22 @@
 
     <div class="panel mt-6">
         <div class="mb-5">
-            <form action="{{ route('admin.finance.rod-calculations.index') }}" method="GET" class="flex items-center gap-3 w-full">
-                <select name="project_id" class="form-select flex-1">
+            <form action="{{ route('admin.finance.rod-calculations.index') }}" method="GET" class="flex flex-wrap items-center gap-3 w-full">
+                <input type="text" name="search" class="form-input flex-1 min-w-[200px]" placeholder="Search ref #, title, grade, member..." value="{{ request('search') }}" />
+                <select name="project_id" class="form-select flex-1 min-w-[180px]">
                     <option value="">All Projects</option>
                     @foreach($projects as $project)
                         <option value="{{ $project->id }}" {{ request('project_id') == $project->id ? 'selected' : '' }}>{{ $project->name }}</option>
                     @endforeach
                 </select>
-                <select name="status" class="form-select flex-1">
+                <select name="status" class="form-select flex-1 min-w-[150px]">
                     <option value="">All Statuses</option>
                     <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
                     <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
                     <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
                 </select>
                 <button type="submit" class="btn btn-primary">Filter</button>
-                @if(request()->anyFilled(['project_id', 'status']))
+                @if(request()->anyFilled(['search', 'project_id', 'status']))
                     <a href="{{ route('admin.finance.rod-calculations.index') }}" class="btn btn-outline-danger">Reset</a>
                 @endif
             </form>

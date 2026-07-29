@@ -5,7 +5,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>BBS - {{ $rodCalculation->reference_no }}</title>
+    <title>BBS &amp; Concrete Sheet - {{ $rodCalculation->reference_no }}</title>
     <style>
         @page { margin: 0; }
         body { margin: 0; padding: 0; font-family: sans-serif; color: #333; font-size: 11px; }
@@ -26,11 +26,10 @@
         .summary-total td { padding: 6px 10px; border: 1px solid #263a79; font-weight: bold; color: #fff; background-color: #263a79; font-size: 11px; }
         .text-right { text-align: right; }
         .text-center { text-align: center; }
-        .table-shade { background-color: #eaecf2; }
-        .detail-box { margin-top: 15px; padding: 12px 14px; border: 1px solid #ddd; background-color: #f9f9f9; }
-        .detail-box h3 { margin: 0 0 8px 0; color: #263a79; font-size: 13px; }
-        .detail-box p { margin: 0; line-height: 1.5; }
-        .notes-box { margin-top: 20px; padding: 10px 14px; border-left: 4px solid #263a79; background-color: #eaecf2; font-size: 11px; line-height: 1.5; }
+        .detail-box { margin-top: 12px; padding: 10px 12px; border: 1px solid #ddd; background-color: #f9f9f9; }
+        .detail-box h3 { margin: 0 0 6px 0; color: #263a79; font-size: 12px; }
+        .detail-box p { margin: 0; line-height: 1.4; }
+        .notes-box { margin-top: 15px; padding: 10px 14px; border-left: 4px solid #263a79; background-color: #eaecf2; font-size: 10px; line-height: 1.5; }
         .notes-box strong { color: #263a79; }
     </style>
 </head>
@@ -47,7 +46,7 @@
             <table class="meta-table">
                 <tr>
                     <th>Title</th>
-                    <td colspan="3">{{ $rodCalculation->title }}</td>
+                    <td colspan="3"><strong>{{ $rodCalculation->title }}</strong></td>
                 </tr>
                 <tr>
                     <th>Project</th>
@@ -57,51 +56,45 @@
                 </tr>
                 <tr>
                     <th>Steel Grade</th>
-                    <td>{{ $rodCalculation->steel_grade ?? '-' }}</td>
+                    <td>{{ $rodCalculation->steel_grade ?? 'Grade 60' }}</td>
+                    <th>Concrete Grade</th>
+                    <td>{{ $rodCalculation->concrete_grade ? App\Constants\ConcreteRatioConstants::GRADE_LABELS[$rodCalculation->concrete_grade] ?? $rodCalculation->concrete_grade : 'N/A' }}</td>
+                </tr>
+                <tr>
                     <th>Revision</th>
                     <td>{{ $rodCalculation->revision ?? '-' }}</td>
-                </tr>
-                <tr>
                     <th>Created By</th>
                     <td>{{ $rodCalculation->creator->name ?? 'N/A' }}</td>
-                    <th>Reference No</th>
-                    <td>{{ $rodCalculation->reference_no }}</td>
                 </tr>
-                @if($rodCalculation->approved_by)
-                <tr>
-                    <th>Approved By</th>
-                    <td>{{ $rodCalculation->approver->name ?? '-' }}</td>
-                    <th>Approved At</th>
-                    <td>{{ $rodCalculation->approved_at?->format('d M Y H:i') ?? '-' }}</td>
-                </tr>
-                @endif
             </table>
 
             @if($rodCalculation->description)
                 <div class="detail-box">
-                    <h3>Description</h3>
+                    <h3>Description / Notes</h3>
                     <p>{{ $rodCalculation->description }}</p>
                 </div>
             @endif
 
+            {{-- Members Table --}}
             @foreach($rodCalculation->members as $member)
+                @php $cbd = $member->concrete_breakdown; @endphp
                 <table class="items-table" style="margin-top:12px;">
                     <thead>
                         <tr class="member-header">
                             <td colspan="13">
                                 {{ $member->member_code }} — {{ \App\Constants\RodMemberType::LABELS[$member->type] ?? $member->type }}
-                                | Qty: {{ $member->quantity }}
-                                | Cover: {{ $member->cover }}mm
+                                | Qty: {{ $member->quantity }} | Cover: {{ $member->cover }}mm
                                 @if($member->length) | L: {{ $member->length }}mm @endif
                                 @if($member->width) | W: {{ $member->width }}mm @endif
                                 @if($member->height) | H: {{ $member->height }}mm @endif
                                 @if($member->depth) | D: {{ $member->depth }}mm @endif
                                 @if($member->thickness) | T: {{ $member->thickness }}mm @endif
-                                @if($member->remarks) | {{ $member->remarks }} @endif
+                                | Conc Vol: {{ number_format($cbd['volume_m3'], 3) }} m³ ({{ number_format($cbd['volume_cft'], 1) }} CFT)
+                                [Cement: {{ number_format($cbd['cement_bags'], 1) }} bags | Sand: {{ number_format($cbd['sand_cft'], 1) }} cft | Agg: {{ number_format($cbd['aggregate_cft'], 1) }} cft]
                             </td>
                         </tr>
                         <tr>
-                            <th style="width:12%;">Bar</th>
+                            <th style="width:12%;">Bar Name</th>
                             <th style="width:6%;">Dir</th>
                             <th style="width:6%;">Dia</th>
                             <th style="width:8%;">Actual</th>
@@ -121,21 +114,21 @@
                             <tr>
                                 <td>{{ $bar->bar_name }}</td>
                                 <td class="text-center">{{ $bar->direction }}</td>
-                                <td class="text-center">{{ $bar->diameter }}</td>
-                                <td class="text-right">{{ $bar->actual_size }}</td>
-                                <td class="text-right">{{ $bar->spacing ?? 'manual' }}</td>
-                                <td class="text-right">{{ $bar->hook_length }}</td>
-                                <td class="text-right">{{ $bar->bend_length }}</td>
-                                <td class="text-right">{{ $bar->lap_length }}</td>
+                                <td class="text-center">Ø{{ $bar->diameter }}</td>
+                                <td class="text-right">{{ number_format($bar->actual_size, 0) }}</td>
+                                <td class="text-right">{{ $bar->spacing ? number_format($bar->spacing, 0) : 'manual' }}</td>
+                                <td class="text-right">{{ number_format($bar->hook_length, 0) }}</td>
+                                <td class="text-right">{{ number_format($bar->bend_length, 0) }}</td>
+                                <td class="text-right">{{ number_format($bar->lap_length, 0) }}</td>
                                 <td class="text-right">{{ number_format($bar->cutting_length, 0) }}</td>
                                 <td class="text-center">{{ $bar->bars_count }}</td>
                                 <td class="text-right">{{ number_format($bar->total_length, 0) }}</td>
                                 <td class="text-right">{{ number_format($bar->unit_weight, 4) }}</td>
-                                <td class="text-right" style="font-weight:bold;">{{ number_format($bar->total_weight, 2) }}</td>
+                                <td class="text-right" style="font-weight:bold;">{{ number_format($bar->total_weight, 2) }} kg</td>
                             </tr>
                         @endforeach
                         <tr class="summary-row">
-                            <td colspan="12" class="text-right">Subtotal ({{ $member->member_code }})</td>
+                            <td colspan="12" class="text-right">Subtotal Steel Weight ({{ $member->member_code }})</td>
                             <td class="text-right">{{ number_format($member->bars->sum('total_weight'), 2) }} kg</td>
                         </tr>
                     </tbody>
@@ -147,7 +140,7 @@
             <table class="items-table" style="margin-top:15px;">
                 <thead>
                     <tr>
-                        <th colspan="6" style="text-align:center; font-size:12px;">SUMMARY BY DIAMETER & REBAR ORDERING</th>
+                        <th colspan="6" style="text-align:center; font-size:11px;">REBAR SUMMARY BY DIAMETER</th>
                     </tr>
                     <tr>
                         <th>Diameter (mm)</th>
@@ -162,24 +155,24 @@
                     @foreach($summary['by_diameter'] as $d)
                         <tr>
                             <td style="font-weight:bold;">Ø{{ $d['diameter'] }} mm</td>
-                            <td class="text-right">{{ $d['bars_count'] }}</td>
+                            <td class="text-right">{{ number_format($d['bars_count']) }}</td>
                             <td class="text-right">{{ number_format($d['total_mm'], 0) }}</td>
-                            <td class="text-right">{{ $d['commercial_12m_sticks'] }} pcs</td>
+                            <td class="text-right">{{ number_format($d['commercial_12m_sticks']) }} pcs</td>
                             <td class="text-right">{{ number_format($d['total_kg'], 2) }} kg</td>
                             <td class="text-right" style="font-weight:bold;">{{ number_format($d['total_tons'], 3) }} T</td>
                         </tr>
                     @endforeach
                     <tr class="summary-total">
-                        <td>NET TOTAL</td>
-                        <td class="text-right">{{ collect($summary['by_diameter'])->sum('bars_count') }}</td>
+                        <td>NET STEEL TOTAL</td>
+                        <td class="text-right">{{ number_format(collect($summary['by_diameter'])->sum('bars_count')) }}</td>
                         <td class="text-right">{{ number_format(collect($summary['by_diameter'])->sum('total_mm'), 0) }}</td>
-                        <td class="text-right">{{ $summary['total_12m_sticks'] ?? 0 }} pcs</td>
+                        <td class="text-right">{{ number_format($summary['total_12m_sticks'] ?? 0) }} pcs</td>
                         <td class="text-right">{{ number_format($summary['total_kg'], 2) }} kg</td>
                         <td class="text-right">{{ number_format($summary['total_tons'], 3) }} T</td>
                     </tr>
                     @if(($summary['waste_percent'] ?? 0) > 0)
                     <tr style="background-color:#e8f5e9; font-weight:bold; color:#1b5e20;">
-                        <td colspan="4">GROSS TOTAL (incl. {{ $summary['waste_percent'] }}% waste)</td>
+                        <td colspan="4">GROSS STEEL TOTAL (incl. {{ $summary['waste_percent'] }}% waste)</td>
                         <td class="text-right">{{ number_format($summary['gross_total_kg'], 2) }} kg</td>
                         <td class="text-right">{{ number_format($summary['gross_total_tons'], 3) }} T</td>
                     </tr>
@@ -188,24 +181,79 @@
             </table>
             @endif
 
-            @if(($summary['total_steel_cost'] ?? 0) > 0)
-            <div style="margin-top:12px; padding:8px 12px; border:1px solid #263a79; background-color:#f4f6fa;">
-                <table style="width:100%; font-size:10px;">
+            {{-- Concrete Mix Summary Table --}}
+            <table class="items-table" style="margin-top:15px;">
+                <thead>
                     <tr>
-                        <td style="font-weight:bold; color:#263a79;">ESTIMATED STEEL REBAR COST:</td>
-                        <td>Rate: <strong>৳{{ number_format($summary['steel_price_per_kg'], 2) }}/kg (৳{{ number_format($summary['cost_per_ton'], 2) }}/Ton)</strong></td>
-                        <td class="text-right" style="font-size:12px; font-weight:bold; color:#263a79;">GROSS TOTAL COST: ৳{{ number_format($summary['total_steel_cost'], 2) }}</td>
+                        <th colspan="5" style="text-align:center; font-size:11px;">CONCRETE MIX DESIGN &amp; MATERIAL ESTIMATION SUMMARY</th>
+                    </tr>
+                    <tr>
+                        <th>Material Item</th>
+                        <th class="text-right">Net Quantity</th>
+                        <th class="text-right">Gross Qty (incl. {{ $summary['concrete_waste_percent'] }}% waste)</th>
+                        <th class="text-right">Unit Rate (৳)</th>
+                        <th class="text-right">Estimated Cost (৳)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="font-weight:bold;">Concrete Volume</td>
+                        <td class="text-right">{{ number_format($summary['total_volume_m3'], 4) }} m³ ({{ number_format($summary['total_volume_cft'], 2) }} CFT)</td>
+                        <td class="text-right" style="font-weight:bold;">{{ number_format($summary['gross_volume_m3'], 4) }} m³ ({{ number_format($summary['gross_volume_cft'], 2) }} CFT)</td>
+                        <td class="text-right">-</td>
+                        <td class="text-right">-</td>
+                    </tr>
+                    <tr>
+                        <td>Cement (50kg bags)</td>
+                        <td class="text-right">{{ number_format($summary['total_cement_bags'], 2) }} bags</td>
+                        <td class="text-right" style="font-weight:bold;">{{ number_format($summary['gross_cement_bags'], 2) }} bags</td>
+                        <td class="text-right">৳{{ number_format($summary['cement_price_per_bag'], 2) }}</td>
+                        <td class="text-right" style="font-weight:bold; color:#263a79;">৳{{ number_format($summary['cement_cost'], 2) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Sand (Fine Aggregate)</td>
+                        <td class="text-right">{{ number_format($summary['total_sand_cft'], 2) }} CFT</td>
+                        <td class="text-right" style="font-weight:bold;">{{ number_format($summary['gross_sand_cft'], 2) }} CFT</td>
+                        <td class="text-right">৳{{ number_format($summary['sand_price_per_cft'], 2) }}</td>
+                        <td class="text-right" style="font-weight:bold; color:#263a79;">৳{{ number_format($summary['sand_cost'], 2) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Aggregate / Stone</td>
+                        <td class="text-right">{{ number_format($summary['total_aggregate_cft'], 2) }} CFT</td>
+                        <td class="text-right" style="font-weight:bold;">{{ number_format($summary['gross_aggregate_cft'], 2) }} CFT</td>
+                        <td class="text-right">৳{{ number_format($summary['aggregate_price_per_cft'], 2) }}</td>
+                        <td class="text-right" style="font-weight:bold; color:#263a79;">৳{{ number_format($summary['aggregate_cost'], 2) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Water</td>
+                        <td class="text-right">{{ number_format($summary['total_water_liters'], 1) }} L</td>
+                        <td class="text-right">{{ number_format($summary['gross_water_liters'], 1) }} L</td>
+                        <td class="text-right">-</td>
+                        <td class="text-right">-</td>
+                    </tr>
+                    <tr class="summary-total">
+                        <td colspan="4">TOTAL CONCRETE COST</td>
+                        <td class="text-right">৳{{ number_format($summary['total_concrete_cost'], 2) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            {{-- Combined Cost Box --}}
+            <div style="margin-top:15px; padding:10px 14px; border:2px solid #263a79; background-color:#eaecf2;">
+                <table style="width:100%; font-size:11px;">
+                    <tr>
+                        <td style="font-weight:bold; color:#263a79;">COMBINED SHEET TOTAL COST:</td>
+                        <td>Steel: <strong>৳{{ number_format($summary['total_steel_cost'], 2) }}</strong> | Concrete: <strong>৳{{ number_format($summary['total_concrete_cost'], 2) }}</strong></td>
+                        <td class="text-right" style="font-size:14px; font-weight:bold; color:#263a79;">GRAND TOTAL: ৳{{ number_format($summary['grand_total_sheet_cost'], 2) }}</td>
                     </tr>
                 </table>
             </div>
-            @endif
 
             <div class="notes-box" style="margin-top:15px;">
-                <strong>Notes:</strong><br/>
-                1. All dimensions are in millimetres (mm) unless otherwise noted.<br/>
-                2. Unit weight calculated as D&sup2;/162 kg/m. Commercial 12m stock sticks = &lceil;Total Length &divide; 12,000&rceil;.<br/>
-                3. Total weight = Cutting Length &times; Bar Count &times; Member Quantity &times; Unit Weight.<br/>
-                4. 1 Metric Ton = 1,000 kg. Gross total includes {{ $rodCalculation->waste_percent ?? 0 }}% site scrap/cutting waste.
+                <strong>Notes &amp; Formulas:</strong><br/>
+                1. Steel unit weight calculated as D&sup2;/162 kg/m. Commercial 12m sticks = &lceil;Total Length &divide; 12,000&rceil;.<br/>
+                2. Concrete volume calculated per member dimensions. Concrete Mix Grade = {{ $summary['concrete_grade'] ?? 'M20' }}.<br/>
+                3. Gross quantities include {{ $rodCalculation->waste_percent ?? 0 }}% steel scrap and {{ $summary['concrete_waste_percent'] }}% concrete pour wastage allowance.
             </div>
         </div>
     </div>

@@ -38,7 +38,7 @@
             elseif (str_starts_with($routeName, 'admin.crm.')) $activeDropdown = 'crm';
             elseif (str_starts_with($routeName, 'admin.quality.')) $activeDropdown = 'quality';
             elseif (str_starts_with($routeName, 'admin.finance.boqs.') || str_starts_with($routeName, 'admin.finance.rate-analysis.') || str_starts_with($routeName, 'admin.finance.tenders.')) $activeDropdown = 'estimating';
-            elseif (str_starts_with($routeName, 'admin.finance.rod-calculations.') || str_starts_with($routeName, 'admin.finance.concrete-ratios.')) $activeDropdown = 'calculations';
+            elseif (str_starts_with($routeName, 'admin.finance.rod-calculations.')) $activeDropdown = 'calculations';
             elseif (str_starts_with($routeName, 'admin.finance.budgets.') || str_starts_with($routeName, 'admin.finance.forecasting.') || str_starts_with($routeName, 'admin.finance.cost-overrun-alerts.') || str_starts_with($routeName, 'admin.finance.labour-entries.') || str_starts_with($routeName, 'admin.finance.material-takeoffs.')) $activeDropdown = 'finance';
             elseif (str_starts_with($routeName, 'admin.finance.chart-of-accounts.') || str_starts_with($routeName, 'admin.finance.journal-entries.') || str_starts_with($routeName, 'admin.finance.general-ledger.') || str_starts_with($routeName, 'admin.finance.trial-balance.') || str_starts_with($routeName, 'admin.finance.reconciliation.') || str_starts_with($routeName, 'admin.finance.receivables.') || str_starts_with($routeName, 'admin.finance.bank-guarantees.') || str_starts_with($routeName, 'admin.finance.balance-sheet.') || str_starts_with($routeName, 'admin.finance.income-statement.')) $activeDropdown = 'finance';
             elseif (str_starts_with($routeName, 'admin.finance.invoices.') || str_starts_with($routeName, 'admin.finance.ipas.') || str_starts_with($routeName, 'admin.finance.bills.') || str_starts_with($routeName, 'admin.finance.expenses.')) $activeDropdown = 'finance';
@@ -216,8 +216,8 @@
                         </div>
                     </button>
                     <ul x-cloak x-show="activeDropdown === 'calculations'" x-collapse class="sub-menu text-gray-500">
-                        <li><a href="{{ route('admin.finance.rod-calculations.index') }}">Rod Calculations</a></li>
-                        <li><a href="{{ route('admin.finance.concrete-ratios.index') }}">Concrete Ratios</a></li>
+                        <li><a href="{{ route('admin.finance.rod-calculations.index') }}">Rod &amp; Concrete Calculations</a></li>
+                        {{-- <li><a href="{{ route('admin.finance.concrete-ratios.index') }}">Concrete Ratios</a></li> --}}
                     </ul>
                 </li>
                 @endhasPrivilege

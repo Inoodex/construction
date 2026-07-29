@@ -1750,11 +1750,6 @@ Score ≤ 5 = Low, 6-12 = Medium, 15-25 = High.
 
 | Company | Contact Person | Email | Phone | Address | Tax ID | Trade License | Status |
 |---|---|---|---|---|---|---|---|
-| City Development Authority (CDA) | Mr. Abul Kalam Azad | akazad@cda.gov.bd | 01711-444555 | CDA Bhaban, 12 Agargaon, Dhaka-1207 | TAX-45678-0101 | TL-2024-08901 | Active |
-| ABC Holdings Ltd. | Ms. Tahmina Begum | tahmina@abcholdings.com | 01722-555666 | ABC Tower, 54 Motijheel C/A, Dhaka-1000 | TAX-78901-0202 | TL-2025-01234 | Active |
-
-**Link Project #1 (City Centre Commercial Tower) to ABC Holdings Ltd. as the client.**
-
 **Validation:** ✓ Client portal login (associate a user with client role). ✓ Client sees only their projects/invoices.
 
 **3. Proposals (Create)**

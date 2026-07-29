@@ -11,8 +11,12 @@ use App\Models\RodMember;
 use App\Models\RodMemberBar;
 use App\Exports\RodCalculationExport;
 use App\Services\RodCalculationService;
+use App\Models\Material;
+use App\Models\PurchaseRequisition;
+use App\Models\PurchaseRequisitionItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
@@ -36,6 +40,19 @@ class RodCalculationController extends Controller
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(function($q) use ($s) {
+                $q->where('reference_no', 'like', "%{$s}%")
+                  ->orWhere('title', 'like', "%{$s}%")
+                  ->orWhere('steel_grade', 'like', "%{$s}%")
+                  ->orWhere('concrete_grade', 'like', "%{$s}%")
+                  ->orWhereHas('members', function($mq) use ($s) {
+                      $mq->where('member_code', 'like', "%{$s}%")
+                         ->orWhere('remarks', 'like', "%{$s}%");
+                  });
+            });
+        }
 
         $rodCalculations = $query->latest()->paginate(15);
         $projects = Project::all();
@@ -52,13 +69,18 @@ class RodCalculationController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'project_id'         => 'required|exists:projects,id',
-            'title'              => 'required|string|max:255',
-            'description'        => 'nullable|string',
-            'steel_grade'        => 'nullable|string|max:50',
-            'revision'           => 'nullable|max:50',
-            'waste_percent'      => 'nullable|numeric|min:0|max:100',
-            'steel_price_per_kg' => 'nullable|numeric|min:0',
+            'project_id'              => 'required|exists:projects,id',
+            'title'                   => 'required|string|max:255',
+            'description'             => 'nullable|string',
+            'steel_grade'             => 'nullable|string|max:50',
+            'concrete_grade'          => 'nullable|string|max:20',
+            'revision'                => 'nullable|max:50',
+            'waste_percent'           => 'nullable|numeric|min:0|max:100',
+            'concrete_waste_percent'  => 'nullable|numeric|min:0|max:100',
+            'steel_price_per_kg'      => 'nullable|numeric|min:0',
+            'cement_price_per_bag'    => 'nullable|numeric|min:0',
+            'sand_price_per_cft'      => 'nullable|numeric|min:0',
+            'aggregate_price_per_cft' => 'nullable|numeric|min:0',
         ]);
 
         $project = Project::findOrFail($validated['project_id']);
@@ -70,12 +92,12 @@ class RodCalculationController extends Controller
         $calc = RodCalculation::create($validated);
 
         return redirect()->route('admin.finance.rod-calculations.show', $calc->id)
-            ->with('success', 'Rod Calculation created. Add members now.');
+            ->with('success', 'Rod & Concrete Sheet created. Add members now.');
     }
 
     public function show(RodCalculation $rodCalculation)
     {
-        $rodCalculation->load('project', 'creator', 'approver', 'members.bars');
+        $rodCalculation->load('project', 'creator', 'approver', 'requisition', 'members.bars');
         $summary = $this->service->summary($rodCalculation);
 
         return view('admin.engineering.rod-calculations.show', compact('rodCalculation', 'summary'));
@@ -94,19 +116,24 @@ class RodCalculationController extends Controller
         abort_if(!$rodCalculation->isDraft(), 403, 'Only draft calculations can be edited.');
 
         $validated = $request->validate([
-            'title'              => 'required|string|max:255',
-            'description'        => 'nullable|string',
-            'steel_grade'        => 'nullable|string|max:50',
-            'revision'           => 'nullable|max:50',
-            'waste_percent'      => 'nullable|numeric|min:0|max:100',
-            'steel_price_per_kg' => 'nullable|numeric|min:0',
+            'title'                   => 'required|string|max:255',
+            'description'             => 'nullable|string',
+            'steel_grade'             => 'nullable|string|max:50',
+            'concrete_grade'          => 'nullable|string|max:20',
+            'revision'                => 'nullable|max:50',
+            'waste_percent'           => 'nullable|numeric|min:0|max:100',
+            'concrete_waste_percent'  => 'nullable|numeric|min:0|max:100',
+            'steel_price_per_kg'      => 'nullable|numeric|min:0',
+            'cement_price_per_bag'    => 'nullable|numeric|min:0',
+            'sand_price_per_cft'      => 'nullable|numeric|min:0',
+            'aggregate_price_per_cft' => 'nullable|numeric|min:0',
         ]);
 
         $rodCalculation->update($validated);
         $this->service->recalculateAll($rodCalculation);
 
         return redirect()->route('admin.finance.rod-calculations.show', $rodCalculation->id)
-            ->with('success', 'Rod Calculation updated successfully.');
+            ->with('success', 'Rod & Concrete Sheet updated successfully.');
     }
 
     public function destroy(RodCalculation $rodCalculation)
@@ -376,5 +403,102 @@ class RodCalculationController extends Controller
             new RodCalculationExport($rodCalculation),
             "BBS-{$rodCalculation->reference_no}.xlsx"
         );
+    }
+
+    public function createPurchaseRequisition(RodCalculation $rodCalculation)
+    {
+        abort_if($rodCalculation->isDraft(), 403, 'Purchase Requisition can only be created from Approved or Completed calculation sheets.');
+
+        if ($rodCalculation->purchase_requisition_id) {
+            $existingPr = PurchaseRequisition::find($rodCalculation->purchase_requisition_id);
+            if ($existingPr) {
+                return redirect()->route('admin.procurement.requisitions.show', $existingPr->id)
+                    ->with('info', "A Purchase Requisition ({$existingPr->requisition_number}) already exists for this calculation sheet.");
+            }
+        }
+
+        $summary = $this->service->summary($rodCalculation);
+
+        $requisition = DB::transaction(function () use ($rodCalculation, $summary) {
+            $number = 'PR-' . now()->format('Ymd') . '-' . strtoupper(substr(uniqid(), -4));
+
+            $pr = PurchaseRequisition::create([
+                'project_id'         => $rodCalculation->project_id,
+                'requested_by'       => Auth::id(),
+                'requisition_number' => $number,
+                'status'             => 'draft',
+                'required_date'      => now()->addDays(7),
+            ]);
+
+            // 1. Add Steel Rebar Items (gross_total_kg)
+            foreach ($summary['by_diameter'] as $d) {
+                if ($d['total_kg'] <= 0) continue;
+
+                $diaStr = (string) $d['diameter'];
+                $matName = "Deformed Steel Rebar Ø{$diaStr}mm";
+                $sku = "REBAR-" . str_pad($diaStr, 2, '0', STR_PAD_LEFT);
+
+                $material = Material::firstOrCreate(
+                    ['name' => $matName],
+                    ['sku' => $sku, 'unit' => 'KG', 'description' => "Steel rebar Ø{$diaStr}mm (Grade 60)"]
+                );
+
+                $grossKg = round($d['total_kg'] * (1 + ($summary['waste_percent'] / 100)), 2);
+
+                PurchaseRequisitionItem::create([
+                    'purchase_requisition_id' => $pr->id,
+                    'material_id'             => $material->id,
+                    'quantity'                => $grossKg,
+                    'estimated_unit_price'    => $summary['steel_price_per_kg'] > 0 ? $summary['steel_price_per_kg'] : null,
+                ]);
+            }
+
+            // 2. Add Concrete Component Items
+            if (($summary['gross_cement_bags'] ?? 0) > 0) {
+                $cementMat = Material::firstOrCreate(
+                    ['name' => 'Portland Cement (50kg Bag)'],
+                    ['sku' => 'MAT-CEMENT-50KG', 'unit' => 'Bag', 'description' => 'Standard Portland Composite Cement 50kg bag']
+                );
+                PurchaseRequisitionItem::create([
+                    'purchase_requisition_id' => $pr->id,
+                    'material_id'             => $cementMat->id,
+                    'quantity'                => $summary['gross_cement_bags'],
+                    'estimated_unit_price'    => $summary['cement_price_per_bag'] > 0 ? $summary['cement_price_per_bag'] : null,
+                ]);
+            }
+
+            if (($summary['gross_sand_cft'] ?? 0) > 0) {
+                $sandMat = Material::firstOrCreate(
+                    ['name' => 'Construction Sand (FM 1.5 - 2.5)'],
+                    ['sku' => 'MAT-SAND-CFT', 'unit' => 'CFT', 'description' => 'Coarse river sand for concrete work']
+                );
+                PurchaseRequisitionItem::create([
+                    'purchase_requisition_id' => $pr->id,
+                    'material_id'             => $sandMat->id,
+                    'quantity'                => $summary['gross_sand_cft'],
+                    'estimated_unit_price'    => $summary['sand_price_per_cft'] > 0 ? $summary['sand_price_per_cft'] : null,
+                ]);
+            }
+
+            if (($summary['gross_aggregate_cft'] ?? 0) > 0) {
+                $aggMat = Material::firstOrCreate(
+                    ['name' => 'Stone Aggregate (3/4" Down)'],
+                    ['sku' => 'MAT-AGG-CFT', 'unit' => 'CFT', 'description' => 'Crushed stone chips aggregate']
+                );
+                PurchaseRequisitionItem::create([
+                    'purchase_requisition_id' => $pr->id,
+                    'material_id'             => $aggMat->id,
+                    'quantity'                => $summary['gross_aggregate_cft'],
+                    'estimated_unit_price'    => $summary['aggregate_price_per_cft'] > 0 ? $summary['aggregate_price_per_cft'] : null,
+                ]);
+            }
+
+            $rodCalculation->update(['purchase_requisition_id' => $pr->id]);
+
+            return $pr;
+        });
+
+        return redirect()->route('admin.procurement.requisitions.show', $requisition->id)
+            ->with('success', "Purchase Requisition {$requisition->requisition_number} created from Sheet {$rodCalculation->reference_no}.");
     }
 }

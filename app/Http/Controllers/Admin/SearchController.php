@@ -56,8 +56,7 @@ class SearchController extends Controller
             ['label' => 'Bill of Quantities (BOQ)', 'url' => $r('admin.finance.boqs.index'), 'section' => 'Engineering & Estimating'],
             ['label' => 'Rate Analysis', 'url' => $r('admin.finance.rate-analysis.index'), 'section' => 'Engineering & Estimating'],
             ['label' => 'Tenders & Bids', 'url' => $r('admin.finance.tenders.index'), 'section' => 'Engineering & Estimating'],
-            ['label' => 'Rod Calculations (BBS)', 'url' => $r('admin.finance.rod-calculations.index'), 'section' => 'Engineering & Estimating'],
-            ['label' => 'Concrete Ratios (Mix Design)', 'url' => $r('admin.finance.concrete-ratios.index'), 'section' => 'Engineering & Estimating'],
+            ['label' => 'Rod & Concrete Calculations (BBS & Mix Design)', 'url' => $r('admin.finance.rod-calculations.index'), 'section' => 'Engineering & Estimating'],
 
             // Documents & Contracts
             ['label' => 'Drawings & Blueprints', 'url' => $r('admin.core.documents.drawings.index'), 'section' => 'Documents & Contracts'],

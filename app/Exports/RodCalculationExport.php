@@ -24,7 +24,7 @@ class RodCalculationExport implements FromView, WithTitle, ShouldAutoSize
         $service = new RodCalculationService();
         $summary = $service->summary($this->rodCalculation);
 
-        return view('admin.finance.rod-calculations.excel.bbs', [
+        return view('admin.engineering.rod-calculations.excel.bbs', [
             'rodCalculation' => $this->rodCalculation,
             'summary'        => $summary,
         ]);
