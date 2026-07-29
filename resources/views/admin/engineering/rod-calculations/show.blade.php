@@ -348,12 +348,18 @@
                         <span class="text-xs text-white-dark">Cover: {{ $member->cover }}mm</span>
 
                         {{-- Concrete Member Pill --}}
-                        <div class="hidden lg:flex items-center gap-2 rounded-full bg-success/10 px-3 py-1 text-xs font-semibold text-success border border-success/20">
-                            <span>Vol: {{ number_format($cbd['volume_m3'], 3) }} m³ ({{ number_format($cbd['volume_cft'], 1) }} CFT)</span>
-                            <span>• Cement: {{ number_format($cbd['cement_bags'], 1) }} bags</span>
-                            <span>• Sand: {{ number_format($cbd['sand_cft'], 1) }} cft</span>
-                            <span>• Agg: {{ number_format($cbd['aggregate_cft'], 1) }} cft</span>
-                        </div>
+                        @if($member->bars->isNotEmpty())
+                            <div class="hidden lg:flex items-center gap-2 rounded-full bg-success/10 px-3 py-1 text-xs font-semibold text-success border border-success/20">
+                                <span>Vol: {{ number_format($cbd['volume_m3'], 3) }} m³ ({{ number_format($cbd['volume_cft'], 1) }} CFT)</span>
+                                <span>• Cement: {{ number_format($cbd['cement_bags'], 1) }} bags</span>
+                                <span>• Sand: {{ number_format($cbd['sand_cft'], 1) }} cft</span>
+                                <span>• Agg: {{ number_format($cbd['aggregate_cft'], 1) }} cft</span>
+                            </div>
+                        @else
+                            <div class="hidden lg:flex items-center gap-2 rounded-full bg-warning/10 px-3 py-1 text-xs font-semibold text-warning border border-warning/20">
+                                <span>Add rebar entries to calculate concrete</span>
+                            </div>
+                        @endif
                     </div>
 
                     <div class="flex items-center gap-3">
@@ -454,13 +460,19 @@
                         </div>
 
                         {{-- Concrete Detailed Pill --}}
-                        <div class="flex items-center gap-3 font-semibold text-success">
-                            <span>Conc Vol: <strong>{{ number_format($cbd['volume_m3'], 4) }} m³</strong> ({{ number_format($cbd['volume_cft'], 2) }} CFT)</span>
-                            <span>• Cement: <strong>{{ number_format($cbd['cement_bags'], 2) }} Bags</strong></span>
-                            <span>• Sand: <strong>{{ number_format($cbd['sand_cft'], 2) }} CFT</strong></span>
-                            <span>• Agg: <strong>{{ number_format($cbd['aggregate_cft'], 2) }} CFT</strong></span>
-                            <span>• Water: <strong>{{ number_format($cbd['water_liters'], 1) }} L</strong></span>
-                        </div>
+                        @if($member->bars->isNotEmpty())
+                            <div class="flex items-center gap-3 font-semibold text-success">
+                                <span>Conc Vol: <strong>{{ number_format($cbd['volume_m3'], 4) }} m³</strong> ({{ number_format($cbd['volume_cft'], 2) }} CFT)</span>
+                                <span>• Cement: <strong>{{ number_format($cbd['cement_bags'], 2) }} Bags</strong></span>
+                                <span>• Sand: <strong>{{ number_format($cbd['sand_cft'], 2) }} CFT</strong></span>
+                                <span>• Agg: <strong>{{ number_format($cbd['aggregate_cft'], 2) }} CFT</strong></span>
+                                <span>• Water: <strong>{{ number_format($cbd['water_liters'], 1) }} L</strong></span>
+                            </div>
+                        @else
+                            <div class="flex items-center gap-2 font-semibold text-warning">
+                                <span>Concrete volume &amp; material calculation pending rebar entry input</span>
+                            </div>
+                        @endif
                     </div>
 
                     {{-- Member Cost Breakdown Strip --}}

@@ -151,6 +151,8 @@ class RodCalculationService
 
         foreach ($calc->members as $member) {
             $memberKg = 0;
+            $hasBars = $member->bars->isNotEmpty();
+
             foreach ($member->bars as $bar) {
                 $totalKg  += $bar->total_weight;
                 $memberKg += $bar->total_weight;
@@ -169,13 +171,25 @@ class RodCalculationService
                 $byDiameter[$diameterKey]['bars_count'] += $bar->bars_count;
             }
 
-            // Concrete Member Calculations
-            $concretebd       = $member->concrete_breakdown;
-            $totalVolM3       += $concretebd['volume_m3'];
-            $totalCementBags  += $concretebd['cement_bags'];
-            $totalSandM3      += $concretebd['sand_m3'];
-            $totalAggM3       += $concretebd['aggregate_m3'];
-            $totalWaterLiters += $concretebd['water_liters'];
+            // Concrete Member Calculations (only active after bar data is inputted)
+            $concretebd = $hasBars ? $member->concrete_breakdown : [
+                'volume_m3'     => 0,
+                'volume_cft'    => 0,
+                'cement_bags'   => 0,
+                'sand_m3'       => 0,
+                'sand_cft'      => 0,
+                'aggregate_m3'  => 0,
+                'aggregate_cft' => 0,
+                'water_liters'  => 0,
+            ];
+
+            if ($hasBars) {
+                $totalVolM3       += $concretebd['volume_m3'];
+                $totalCementBags  += $concretebd['cement_bags'];
+                $totalSandM3      += $concretebd['sand_m3'];
+                $totalAggM3       += $concretebd['aggregate_m3'];
+                $totalWaterLiters += $concretebd['water_liters'];
+            }
 
             // Cost per member
             $memberSteelCost = round($memberKg * $steelWasteFactor * $steelPrice, 2);
@@ -191,6 +205,7 @@ class RodCalculationService
                 'member_id'           => $member->id,
                 'member_code'         => $member->member_code,
                 'type'                => $member->type,
+                'has_bars'            => $hasBars,
                 'total_kg'            => round($memberKg, 2),
                 'total_tons'          => round($memberKg / 1000, 3),
                 'steel_cost'          => $memberSteelCost,
