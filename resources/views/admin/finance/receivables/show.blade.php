@@ -36,42 +36,55 @@
         </div>
 
         @if($receivable->due_amount > 0)
-            <div class="mt-6 border-t border-gray-200 pt-4">
+            <div class="mt-6 border-t border-gray-200 pt-4 dark:border-gray-700">
                 <h4 class="mb-3 text-base font-semibold">Record Payment</h4>
-                <form action="{{ route('admin.finance.receivables.payments.store', $receivable) }}" method="POST" class="flex flex-wrap items-end gap-3">
+                <form action="{{ route('admin.finance.receivables.payments.store', $receivable) }}" method="POST">
                     @csrf
-                    <div>
-                        <label class="text-xs">Amount</label>
-                        <input type="number" step="0.01" min="0.01" max="{{ $receivable->due_amount }}" name="amount" class="form-input" required placeholder="0.00" />
+                    {{-- Line 1: Essential Payment Fields --}}
+                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                        <div>
+                            <label class="text-xs font-semibold mb-1 block">Amount (৳) <span class="text-danger">*</span></label>
+                            <input type="number" step="0.01" min="0.01" max="{{ $receivable->due_amount }}" name="amount" class="form-input text-xs" required placeholder="0.00" />
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold mb-1 block">Payment Date <span class="text-danger">*</span></label>
+                            <input type="date" name="payment_date" class="form-input text-xs" required value="{{ date('Y-m-d') }}" />
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold mb-1 block">Payment Method</label>
+                            <select name="payment_method" class="form-select text-xs">
+                                <option value="">Select Method</option>
+                                <option value="cash">Cash</option>
+                                <option value="bank">Bank Transfer</option>
+                                <option value="cheque">Cheque</option>
+                                <option value="online">Online</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs font-semibold mb-1 block">Payment Account</label>
+                            <select name="payment_account_id" class="form-select text-xs">
+                                <option value="">Select Account</option>
+                                @foreach($accounts as $account)
+                                    <option value="{{ $account->id }}">{{ $account->name }} (৳{{ number_format($account->current_balance, 2) }})</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
-                    <div>
-                        <label class="text-xs">Date</label>
-                        <input type="date" name="payment_date" class="form-input" required value="{{ date('Y-m-d') }}" />
+
+                    {{-- Line 2: Reference, Notes & Action Button --}}
+                    <div class="mt-3 flex flex-col md:flex-row items-end gap-3">
+                        <div class="w-full md:w-1/4">
+                            <label class="text-xs font-semibold mb-1 block">Reference #</label>
+                            <input type="text" name="reference" class="form-input text-xs" placeholder="Ref / Txn #" />
+                        </div>
+                        <div class="w-full md:flex-1">
+                            <label class="text-xs font-semibold mb-1 block">Notes</label>
+                            <input type="text" name="notes" class="form-input text-xs" placeholder="Notes (optional)" />
+                        </div>
+                        <div class="w-full md:w-auto whitespace-nowrap">
+                            <button type="submit" class="btn btn-primary w-full md:w-auto text-xs font-bold py-2.5 px-6">+ Add Payment</button>
+                        </div>
                     </div>
-                    <div>
-                        <label class="text-xs">Method</label>
-                        <select name="payment_method" class="form-select">
-                            <option value="">Select</option>
-                            <option value="cash">Cash</option>
-                            <option value="bank">Bank Transfer</option>
-                            <option value="cheque">Cheque</option>
-                            <option value="online">Online</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="text-xs">Account</label>
-                        <select name="payment_account_id" class="form-select">
-                            <option value="">Select Account</option>
-                            @foreach($accounts as $account)
-                                <option value="{{ $account->id }}">{{ $account->name }} ({{ ucfirst($account->type) }})</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div>
-                        <label class="text-xs">Reference</label>
-                        <input type="text" name="reference" class="form-input" placeholder="Ref #" />
-                    </div>
-                    <button type="submit" class="btn btn-primary">Add Payment</button>
                 </form>
             </div>
         @endif

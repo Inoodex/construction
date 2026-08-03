@@ -9,6 +9,15 @@
             <p class="text-xs text-white-dark mt-0.5">Vendor: {{ $bill->vendor->name ?? 'N/A' }} — {{ $bill->project->name ?? 'N/A' }}</p>
         </div>
         <div class="flex items-center gap-2">
+            @if($bill->status === 'draft')
+                <form action="{{ route('admin.finance.bills.approve', $bill->id) }}" method="POST" class="inline" onsubmit="return confirm('Approve this bill and post to general ledger?');">
+                    @csrf
+                    <button type="submit" class="btn btn-success gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        Approve Bill
+                    </button>
+                </form>
+            @endif
             <a href="{{ route('admin.finance.bills.edit', $bill->id) }}" class="btn btn-primary gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                 Edit
@@ -38,7 +47,16 @@
         </div>
         <div class="panel">
             <label class="text-xs text-white-dark uppercase font-semibold">Reference</label>
-            <p class="font-mono text-xs font-medium">{{ $bill->reference ?? '—' }}</p>
+            @if($bill->purchase_order_id && $bill->purchaseOrder)
+                <p class="font-mono text-xs font-bold mt-0.5">
+                    <a href="{{ route('admin.procurement.purchase-orders.show', $bill->purchase_order_id) }}" class="text-primary hover:underline inline-flex items-center gap-1" title="View Purchase Order">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                        {{ $bill->purchaseOrder->po_number }}
+                    </a>
+                </p>
+            @else
+                <p class="font-mono text-xs font-medium mt-0.5">{{ $bill->reference ?? '—' }}</p>
+            @endif
         </div>
         <div class="panel">
             <label class="text-xs text-white-dark uppercase font-semibold">Status</label>
@@ -144,20 +162,47 @@
         </div>
 
         <div id="addPaymentForm" class="mb-5 mt-3 hidden rounded-lg border p-4 bg-gray-50 dark:bg-gray-800/40 dark:border-gray-700">
-            <form action="{{ route('admin.finance.bills.payments.store', $bill->id) }}" method="POST" class="flex flex-nowrap items-center gap-2 overflow-x-auto pb-1">
+            <form action="{{ route('admin.finance.bills.payments.store', $bill->id) }}" method="POST">
                 @csrf
-                <input type="number" step="0.01" name="amount" placeholder="Amount (৳) *" class="form-input w-36" required />
-                <input type="date" name="payment_date" class="form-input w-36" required value="{{ now()->format('Y-m-d') }}" />
-                <input type="text" name="payment_method" placeholder="Method (e.g. Bank)" class="form-input w-36" />
-                <select name="payment_account_id" class="form-select min-w-[180px]">
-                    <option value="">Select Account</option>
-                    @foreach($accounts as $acc)
-                        <option value="{{ $acc->id }}">{{ $acc->name }}</option>
-                    @endforeach
-                </select>
-                <input type="text" name="reference" placeholder="Reference #" class="form-input w-36" />
-                <input type="text" name="notes" placeholder="Notes (optional)" class="form-input flex-1 min-w-[280px]" />
-                <button type="submit" class="btn btn-success whitespace-nowrap">+ Record Payment</button>
+                {{-- Line 1: Essential Payment Fields --}}
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                    <div>
+                        <label class="text-xs font-semibold mb-1 block">Amount (৳) <span class="text-danger">*</span></label>
+                        <input type="number" step="0.01" name="amount" placeholder="0.00" class="form-input text-xs" required />
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold mb-1 block">Payment Date <span class="text-danger">*</span></label>
+                        <input type="date" name="payment_date" class="form-input text-xs" required value="{{ now()->format('Y-m-d') }}" />
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold mb-1 block">Payment Method</label>
+                        <input type="text" name="payment_method" placeholder="e.g. Bank Transfer, Cash" class="form-input text-xs" />
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold mb-1 block">Payment Account</label>
+                        <select name="payment_account_id" class="form-select text-xs">
+                            <option value="">Select Account</option>
+                            @foreach($accounts as $acc)
+                                <option value="{{ $acc->id }}">{{ $acc->name }} (৳{{ number_format($acc->current_balance, 2) }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                {{-- Line 2: Reference, Notes & Action Button --}}
+                <div class="mt-3 flex flex-col md:flex-row items-end gap-3">
+                    <div class="w-full md:w-1/4">
+                        <label class="text-xs font-semibold mb-1 block">Reference #</label>
+                        <input type="text" name="reference" placeholder="Ref / Txn #" class="form-input text-xs" />
+                    </div>
+                    <div class="w-full md:flex-1">
+                        <label class="text-xs font-semibold mb-1 block">Notes</label>
+                        <input type="text" name="notes" placeholder="Notes (optional)" class="form-input text-xs" />
+                    </div>
+                    <div class="w-full md:w-auto whitespace-nowrap">
+                        <button type="submit" class="btn btn-success w-full md:w-auto text-xs font-bold py-2.5 px-6">+ Save Payment</button>
+                    </div>
+                </div>
             </form>
         </div>
 

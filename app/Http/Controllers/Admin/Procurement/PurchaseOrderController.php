@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Procurement;
 
 use App\Http\Controllers\Controller;
 use App\Models\Material;
+use App\Models\Project;
 use App\Models\PurchaseOrder;
 use App\Models\PurchaseOrderItem;
 use App\Models\PurchaseRequisition;
@@ -36,16 +37,18 @@ class PurchaseOrderController extends Controller
 
     public function create()
     {
-        $requisitions = PurchaseRequisition::where('status', 'approved')->get();
+        $requisitions = PurchaseRequisition::where('status', 'approved')->with('project')->get();
         $vendors = Vendor::whereIn('status', ['active', 'approved'])->get();
         $materials = Material::all();
-        return view('admin.procurement.purchase-orders.create', compact('requisitions', 'vendors', 'materials'));
+        $projects = Project::all();
+        return view('admin.procurement.purchase-orders.create', compact('requisitions', 'vendors', 'materials', 'projects'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'purchase_requisition_id' => 'nullable|exists:purchase_requisitions,id',
+            'project_id' => 'nullable|exists:projects,id',
             'vendor_id' => 'required|exists:vendors,id',
             'order_date' => 'required|date',
             'items' => 'required|array|min:1',
@@ -64,7 +67,7 @@ class PurchaseOrderController extends Controller
             $order = PurchaseOrder::create([
                 'purchase_requisition_id' => $validated['purchase_requisition_id'] ?? null,
                 'vendor_id' => $validated['vendor_id'],
-                'project_id' => $pr?->project_id,
+                'project_id' => $validated['project_id'] ?? $pr?->project_id,
                 'po_number' => $number,
                 'status' => 'draft',
                 'total_amount' => $total,
@@ -89,13 +92,13 @@ class PurchaseOrderController extends Controller
 
     public function show(PurchaseOrder $purchaseOrder)
     {
-        $purchaseOrder->load('vendor', 'requisition', 'items.material', 'approvals.history.approver');
+        $purchaseOrder->load('project', 'vendor', 'requisition.project', 'items.material', 'approvals.history.approver');
         return view('admin.procurement.purchase-orders.show', compact('purchaseOrder'));
     }
 
     public function printPdf(PurchaseOrder $purchaseOrder)
     {
-        $purchaseOrder->load('vendor', 'items.material');
+        $purchaseOrder->load('project', 'vendor', 'requisition.project', 'items.material');
         $po = $purchaseOrder;
         $pdf = Pdf::loadView('admin.procurement.purchase-orders.pdf.invoice', compact('po'))
             ->setPaper('a4', 'portrait')
@@ -107,17 +110,19 @@ class PurchaseOrderController extends Controller
 
     public function edit(PurchaseOrder $purchaseOrder)
     {
-        $purchaseOrder->load('items');
-        $requisitions = PurchaseRequisition::where('status', 'approved')->get();
+        $purchaseOrder->load('items', 'project');
+        $requisitions = PurchaseRequisition::where('status', 'approved')->with('project')->get();
         $vendors = Vendor::whereIn('status', ['active', 'approved'])->get();
         $materials = Material::all();
-        return view('admin.procurement.purchase-orders.edit', compact('purchaseOrder', 'requisitions', 'vendors', 'materials'));
+        $projects = Project::all();
+        return view('admin.procurement.purchase-orders.edit', compact('purchaseOrder', 'requisitions', 'vendors', 'materials', 'projects'));
     }
 
     public function update(Request $request, PurchaseOrder $purchaseOrder)
     {
         $validated = $request->validate([
             'purchase_requisition_id' => 'nullable|exists:purchase_requisitions,id',
+            'project_id' => 'nullable|exists:projects,id',
             'vendor_id' => 'required|exists:vendors,id',
             'order_date' => 'required|date',
             'status' => 'required|in:draft,submitted,ordered,partially_received,received,cancelled',
@@ -130,8 +135,11 @@ class PurchaseOrderController extends Controller
         DB::transaction(function () use ($validated, $purchaseOrder) {
             $total = collect($validated['items'])->sum(fn($i) => $i['quantity'] * $i['unit_price']);
 
+            $pr = $validated['purchase_requisition_id'] ? PurchaseRequisition::find($validated['purchase_requisition_id']) : null;
+
             $purchaseOrder->update([
                 'purchase_requisition_id' => $validated['purchase_requisition_id'] ?? null,
+                'project_id' => $validated['project_id'] ?? $pr?->project_id,
                 'vendor_id' => $validated['vendor_id'],
                 'status' => $validated['status'],
                 'total_amount' => $total,

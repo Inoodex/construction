@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jul 28, 2026 at 07:45 AM
+-- Generation Time: Jul 29, 2026 at 06:52 AM
 -- Server version: 11.4.12-MariaDB-cll-lve-log
 -- PHP Version: 8.4.23
 
@@ -287,7 +287,8 @@ CREATE TABLE `boqs` (
 INSERT INTO `boqs` (`id`, `project_id`, `boq_number`, `title`, `description`, `total_amount`, `status`, `created_by`, `created_at`, `updated_at`) VALUES
 (1, 5, 'BOQ-20260617-OR0D', 'BOQ 1', NULL, 15000.00, 'approved', 1, '2026-06-16 23:37:54', '2026-06-22 06:10:58'),
 (2, 6, 'BOQ-20260622-NREW', 'BOQ2', NULL, 920000.00, 'approved', 1, '2026-06-22 06:11:17', '2026-06-22 06:14:32'),
-(3, 7, 'BOQ-20260728-11DP', 'Main Structure — Concrete & Reinforcement', NULL, 3150000.00, 'approved', 1, '2026-07-28 14:44:08', '2026-07-28 14:45:13');
+(3, 7, 'BOQ-20260728-11DP', 'Main Structure — Concrete & Reinforcement', NULL, 3150000.00, 'approved', 1, '2026-07-28 14:44:08', '2026-07-28 14:45:13'),
+(4, 5, 'BOQ-20260729-3AUX', 'Footing', NULL, 0.00, 'draft', 1, '2026-07-29 07:39:08', '2026-07-29 07:39:08');
 
 -- --------------------------------------------------------
 
@@ -361,6 +362,14 @@ CREATE TABLE `cache` (
   `value` mediumtext NOT NULL,
   `expiration` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `cache`
+--
+
+INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
+('inoodex-cache-tyro:user-1:privileges', 'a:35:{i:0;s:12:\"finance.view\";i:1;s:14:\"finance.create\";i:2;s:12:\"finance.edit\";i:3;s:14:\"finance.delete\";i:4;s:14:\"finance.export\";i:5;s:7:\"hr.view\";i:6;s:9:\"hr.create\";i:7;s:7:\"hr.edit\";i:8;s:9:\"hr.delete\";i:9;s:9:\"hr.export\";i:10;s:16:\"procurement.view\";i:11;s:18:\"procurement.create\";i:12;s:16:\"procurement.edit\";i:13;s:18:\"procurement.delete\";i:14;s:18:\"procurement.export\";i:15;s:9:\"core.view\";i:16;s:11:\"core.create\";i:17;s:9:\"core.edit\";i:18;s:11:\"core.delete\";i:19;s:11:\"core.export\";i:20;s:12:\"quality.view\";i:21;s:14:\"quality.create\";i:22;s:12:\"quality.edit\";i:23;s:14:\"quality.delete\";i:24;s:14:\"quality.export\";i:25;s:8:\"crm.view\";i:26;s:10:\"crm.create\";i:27;s:8:\"crm.edit\";i:28;s:10:\"crm.delete\";i:29;s:10:\"crm.export\";i:30;s:12:\"reports.view\";i:31;s:14:\"reports.create\";i:32;s:14:\"reports.export\";i:33;s:10:\"admin.view\";i:34;s:12:\"admin.manage\";}', 1785314236),
+('inoodex-cache-tyro:user-1:roles', 'a:1:{i:0;s:11:\"super-admin\";}', 1785314237);
 
 -- --------------------------------------------------------
 
@@ -649,7 +658,8 @@ CREATE TABLE `concrete_ratios` (
 INSERT INTO `concrete_ratios` (`id`, `project_id`, `reference_no`, `title`, `description`, `grade`, `rod_calculation_id`, `status`, `waste_percent`, `cement_price_per_bag`, `sand_price_per_cft`, `aggregate_price_per_cft`, `created_by`, `approved_by`, `approved_at`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (1, 5, 'CR-GREENT-2026-00001', 'hkgghui', NULL, NULL, 1, 'draft', NULL, NULL, NULL, NULL, 1, NULL, NULL, '2026-07-28 08:20:18', '2026-07-28 08:21:31', '2026-07-28 08:21:31'),
 (2, 6, 'CR-RUPAYA-2026-00001', 'Test', NULL, 'M10', 2, 'draft', NULL, NULL, NULL, NULL, 1, NULL, NULL, '2026-07-28 08:26:37', '2026-07-28 08:27:08', '2026-07-28 08:27:08'),
-(3, 7, 'CR-SKYTOW-2026-00001', 'B1 Level Column Concrete', NULL, 'M20', 3, 'draft', 2.00, 650.00, 42.00, 110.00, 1, NULL, NULL, '2026-07-28 15:27:25', '2026-07-28 15:30:20', NULL);
+(3, 7, 'CR-SKYTOW-2026-00001', 'B1 Level Column Concrete', NULL, 'M20', 3, 'draft', 2.00, 650.00, 42.00, 110.00, 1, NULL, NULL, '2026-07-28 15:27:25', '2026-07-29 08:47:43', '2026-07-29 08:47:43'),
+(4, 7, 'CR-SKYTOW-2026-00002', 'Testing', NULL, 'M10', 3, 'draft', 1.00, 450.00, 2000.00, 1500.00, 1, NULL, NULL, '2026-07-29 08:48:57', '2026-07-29 08:49:23', NULL);
 
 -- --------------------------------------------------------
 
@@ -685,7 +695,7 @@ CREATE TABLE `concrete_ratio_members` (
 --
 
 INSERT INTO `concrete_ratio_members` (`id`, `concrete_ratio_id`, `rod_member_id`, `type`, `member_code`, `quantity`, `length`, `width`, `height`, `depth`, `thickness`, `volume_m3`, `cement_bags`, `sand_m3`, `aggregate_m3`, `water_liters`, `sort_order`, `remarks`, `created_at`, `updated_at`) VALUES
-(3, 3, 3, 'footing', 'F2', 1, 1500.00, 1500.00, NULL, NULL, 300.00, 0.6750, 5.55, 0.2835, 0.5670, 138.38, 0, NULL, '2026-07-28 15:30:20', '2026-07-28 15:30:20');
+(4, 4, 3, 'footing', 'F2', 1, 1500.00, 1500.00, NULL, NULL, 300.00, 0.6750, 2.97, 0.3105, 0.6210, 138.38, 0, NULL, '2026-07-29 08:49:23', '2026-07-29 08:49:23');
 
 -- --------------------------------------------------------
 
@@ -2177,7 +2187,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (144, '2026_07_22_041946_create_concrete_ratios_tables', 60),
 (145, '2026_07_28_000001_alter_project_resources_resource_type_to_string', 61),
 (146, '2026_07_28_000002_add_cost_estimation_fields_to_concrete_ratios_table', 62),
-(147, '2026_07_28_000003_add_unit_price_to_rod_calculations_table', 62);
+(147, '2026_07_28_000003_add_unit_price_to_rod_calculations_table', 62),
+(148, '2026_07_29_000001_add_concrete_ratio_fields_to_rod_calculations_table', 63),
+(149, '2026_07_29_000002_add_purchase_requisition_id_to_rod_calculations_table', 63);
 
 -- --------------------------------------------------------
 
@@ -3093,14 +3105,20 @@ CREATE TABLE `risks` (
 CREATE TABLE `rod_calculations` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `project_id` bigint(20) UNSIGNED NOT NULL,
+  `purchase_requisition_id` bigint(20) UNSIGNED DEFAULT NULL,
   `reference_no` varchar(50) NOT NULL,
   `title` varchar(255) NOT NULL,
   `description` text DEFAULT NULL,
   `steel_grade` varchar(20) DEFAULT NULL,
+  `concrete_grade` varchar(20) DEFAULT NULL,
   `revision` varchar(50) DEFAULT NULL,
   `status` varchar(20) NOT NULL DEFAULT 'draft',
   `waste_percent` decimal(5,2) DEFAULT NULL,
+  `concrete_waste_percent` decimal(5,2) DEFAULT NULL,
   `steel_price_per_kg` decimal(10,2) DEFAULT NULL,
+  `cement_price_per_bag` decimal(10,2) DEFAULT NULL,
+  `sand_price_per_cft` decimal(10,2) DEFAULT NULL,
+  `aggregate_price_per_cft` decimal(10,2) DEFAULT NULL,
   `created_by` bigint(20) UNSIGNED NOT NULL,
   `approved_by` bigint(20) UNSIGNED DEFAULT NULL,
   `approved_at` timestamp NULL DEFAULT NULL,
@@ -3113,10 +3131,11 @@ CREATE TABLE `rod_calculations` (
 -- Dumping data for table `rod_calculations`
 --
 
-INSERT INTO `rod_calculations` (`id`, `project_id`, `reference_no`, `title`, `description`, `steel_grade`, `revision`, `status`, `waste_percent`, `steel_price_per_kg`, `created_by`, `approved_by`, `approved_at`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 5, 'BBS-GREENT-2026-00001', 'Footing', NULL, NULL, NULL, 'draft', NULL, NULL, 1, NULL, NULL, '2026-07-21 16:19:10', '2026-07-28 08:31:02', '2026-07-28 08:31:02'),
-(2, 6, 'BBS-RUPAYA-2026-00001', 'Test', NULL, NULL, NULL, 'draft', NULL, NULL, 1, NULL, NULL, '2026-07-26 09:09:20', '2026-07-26 09:09:20', NULL),
-(3, 7, 'BBS-SKYTOW-2026-00001', 'Footing 1', NULL, NULL, NULL, 'draft', 1.00, 92.00, 1, NULL, NULL, '2026-07-28 15:28:10', '2026-07-28 15:28:48', NULL);
+INSERT INTO `rod_calculations` (`id`, `project_id`, `purchase_requisition_id`, `reference_no`, `title`, `description`, `steel_grade`, `concrete_grade`, `revision`, `status`, `waste_percent`, `concrete_waste_percent`, `steel_price_per_kg`, `cement_price_per_bag`, `sand_price_per_cft`, `aggregate_price_per_cft`, `created_by`, `approved_by`, `approved_at`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, 5, NULL, 'BBS-GREENT-2026-00001', 'Footing', NULL, NULL, NULL, NULL, 'draft', NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, '2026-07-21 16:19:10', '2026-07-28 08:31:02', '2026-07-28 08:31:02'),
+(2, 6, NULL, 'BBS-RUPAYA-2026-00001', 'Test', NULL, NULL, NULL, NULL, 'draft', NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, '2026-07-26 09:09:20', '2026-07-29 12:26:18', '2026-07-29 12:26:18'),
+(3, 7, NULL, 'BBS-SKYTOW-2026-00001', 'Footing 1', NULL, NULL, NULL, NULL, 'draft', 1.00, 1.00, 92.00, 580.00, 50.00, 115.00, 1, NULL, NULL, '2026-07-28 15:28:10', '2026-07-29 12:26:22', '2026-07-29 12:26:22'),
+(4, 7, NULL, 'BBS-SKYTOW-2026-00002', 'Ground Floor Coloum Sheet', NULL, NULL, 'M20', NULL, 'draft', 1.00, 1.50, 97.00, 560.00, 55.00, 115.00, 1, NULL, NULL, '2026-07-29 12:27:13', '2026-07-29 12:27:13', NULL);
 
 -- --------------------------------------------------------
 
@@ -3149,7 +3168,8 @@ CREATE TABLE `rod_members` (
 INSERT INTO `rod_members` (`id`, `rod_calculation_id`, `type`, `member_code`, `quantity`, `length`, `width`, `height`, `depth`, `thickness`, `cover`, `sort_order`, `remarks`, `created_at`, `updated_at`) VALUES
 (1, 1, 'footing', 'F1', 2, 30.00, 25.00, 30.00, 5.00, 8.00, 20.00, 0, NULL, '2026-07-21 16:19:49', '2026-07-21 16:19:49'),
 (2, 2, 'footing', 'F2', 1, 1500.00, 1500.00, NULL, NULL, 300.00, 75.00, 0, NULL, '2026-07-26 09:10:32', '2026-07-26 09:10:32'),
-(3, 3, 'footing', 'F2', 1, 1500.00, 1500.00, NULL, NULL, 300.00, 50.00, 0, NULL, '2026-07-28 15:29:17', '2026-07-28 15:29:17');
+(3, 3, 'footing', 'F2', 3, 1500.00, 1500.00, NULL, NULL, 300.00, 50.00, 0, NULL, '2026-07-28 15:29:17', '2026-07-29 12:23:56'),
+(5, 4, 'footing', 'F2', 4, 15000.00, 15000.00, NULL, NULL, 6000.00, 50.00, 0, NULL, '2026-07-29 12:27:46', '2026-07-29 12:27:46');
 
 -- --------------------------------------------------------
 
@@ -3186,8 +3206,7 @@ CREATE TABLE `rod_member_bars` (
 --
 
 INSERT INTO `rod_member_bars` (`id`, `rod_member_id`, `bar_name`, `direction`, `diameter`, `spacing`, `hook_length`, `bend_length`, `lap_length`, `actual_size`, `cutting_length`, `bars_count`, `total_length`, `unit_weight`, `total_weight`, `shape_code`, `is_manual_count`, `sort_order`, `remarks`, `created_at`, `updated_at`) VALUES
-(3, 3, 'Main Bar', 'X', 16.00, 150.00, 288.00, 0.00, 0.00, 1500.00, 1688.00, 10, 16880.00, 1.5802, 26.67, NULL, 0, 0, NULL, '2026-07-28 15:29:40', '2026-07-28 15:29:40'),
-(2, 2, 'Main', 'X', 16.00, 150.00, 288.00, 0.00, 0.00, 1500.00, 1638.00, 10, 16380.00, 1.5802, 25.88, NULL, 1, 0, NULL, '2026-07-26 14:16:18', '2026-07-26 14:16:18');
+(5, 5, 'Main Bar', 'X', 16.00, 150.00, 288.00, 0.00, 0.00, 15000.00, 15188.00, 100, 6075200.00, 1.5802, 9600.03, NULL, 0, 0, NULL, '2026-07-29 12:32:40', '2026-07-29 12:32:40');
 
 -- --------------------------------------------------------
 
@@ -3259,7 +3278,9 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('MvAFhaZxmt4Yhl9i9QXTlcAa0Zu08thWobr0zVLt', 1, '103.88.140.176', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiQnB4dmRyVGRRdlpMaGY0WU02ekliOUFNSDQyTUQ5THBVUFVJR3JKbiI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjY2OiJodHRwczovL2NvbnN0cnVjdGlvbi5pbm9vZGV4LmNvbS9kYXNoYm9hcmQvZmluYW5jZS9jb25jcmV0ZS1yYXRpb3MiO3M6NToicm91dGUiO3M6MzU6ImFkbWluLmZpbmFuY2UuY29uY3JldGUtcmF0aW9zLmluZGV4Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=', 1785238291);
+('A0mBQBioUbnMo533q3qv96LXOW4fZ77yBGDSZL18', NULL, '198.235.24.129', 'Hello from Palo Alto Networks, find out more about our scans in https://docs-cortex.paloaltonetworks.com/r/1/Cortex-Xpanse/Scanning-activity', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiakxxdkRzbW9qV3p2UVRhWEliYzg4QXhuUXJhSE1DejJ1NW1xVXIyRiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzI6Imh0dHBzOi8vY29uc3RydWN0aW9uLmlub29kZXguY29tIjtzOjU6InJvdXRlIjtOO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1785320244),
+('fXj66RoUrUL78bRjctsHRnUqEHw28tqPV2MvADrE', 1, '103.88.140.181', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiSzVQVFUyeUNsMUdMRE1aTXozQWtpeWpEWE02blBZVjR1UkJnN2tkVCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MDp7fX1zOjk6Il9wcmV2aW91cyI7YToyOntzOjM6InVybCI7czozMjoiaHR0cHM6Ly9jb25zdHJ1Y3Rpb24uaW5vb2RleC5jb20iO3M6NToicm91dGUiO047fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7fQ==', 1785307415),
+('ZHeHetSn5aEeN3NrdKQUZ6WSyZ1zevyfDSQcQnb5', 1, '103.88.140.180', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiSHZtZUpFaXZON0lsWkNZYTZzMkpIWE1nQWJ0M3I1cFBPV3d0R0VZdCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Njk6Imh0dHBzOi8vY29uc3RydWN0aW9uLmlub29kZXguY29tL2Rhc2hib2FyZC9maW5hbmNlL3JvZC1jYWxjdWxhdGlvbnMvNCI7czo1OiJyb3V0ZSI7czozNToiYWRtaW4uZmluYW5jZS5yb2QtY2FsY3VsYXRpb25zLnNob3ciO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjEwOiJ0eXJvLWxvZ2luIjthOjE6e3M6NzoiY2FwdGNoYSI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7fQ==', 1785313960);
 
 -- --------------------------------------------------------
 
@@ -3893,7 +3914,13 @@ INSERT INTO `tyro_audit_logs` (`id`, `user_id`, `event`, `auditable_type`, `audi
 (153, 1, 'user.login', 'App\\Models\\User', 1, NULL, '{\"email\":\"hello@inoodex.com\"}', '{\"ip\":\"182.48.65.252\",\"user_agent\":\"Mozilla\\/5.0 (Windows NT 10.0; Win64; x64; rv:153.0) Gecko\\/20100101 Firefox\\/153.0\",\"is_console\":false}', '2026-07-27 05:32:33'),
 (154, 1, 'user.login', 'App\\Models\\User', 1, NULL, '{\"email\":\"hello@inoodex.com\"}', '{\"ip\":\"103.88.140.179\",\"user_agent\":\"Mozilla\\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\\/537.36 (KHTML, like Gecko) Chrome\\/150.0.0.0 Safari\\/537.36\",\"is_console\":false}', '2026-07-27 08:30:51'),
 (155, 1, 'user.login', 'App\\Models\\User', 1, NULL, '{\"email\":\"hello@inoodex.com\"}', '{\"ip\":\"103.88.140.179\",\"user_agent\":\"Mozilla\\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\\/537.36 (KHTML, like Gecko) Chrome\\/150.0.0.0 Safari\\/537.36\",\"is_console\":false}', '2026-07-27 10:33:19'),
-(156, 1, 'user.login', 'App\\Models\\User', 1, NULL, '{\"email\":\"hello@inoodex.com\"}', '{\"ip\":\"103.88.140.176\",\"user_agent\":\"Mozilla\\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\\/537.36 (KHTML, like Gecko) Chrome\\/150.0.0.0 Safari\\/537.36\",\"is_console\":false}', '2026-07-28 03:36:31');
+(156, 1, 'user.login', 'App\\Models\\User', 1, NULL, '{\"email\":\"hello@inoodex.com\"}', '{\"ip\":\"103.88.140.176\",\"user_agent\":\"Mozilla\\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\\/537.36 (KHTML, like Gecko) Chrome\\/150.0.0.0 Safari\\/537.36\",\"is_console\":false}', '2026-07-28 03:36:31'),
+(157, 1, 'user.login', 'App\\Models\\User', 1, NULL, '{\"email\":\"hello@inoodex.com\"}', '{\"ip\":\"182.48.65.252\",\"user_agent\":\"Mozilla\\/5.0 (Windows NT 10.0; Win64; x64; rv:153.0) Gecko\\/20100101 Firefox\\/153.0\",\"is_console\":false}', '2026-07-29 03:37:54'),
+(158, 7, 'user.login', 'App\\Models\\User', 7, NULL, '{\"email\":\"karim@inoodex.com\"}', '{\"ip\":\"103.88.140.180\",\"user_agent\":\"Mozilla\\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\\/537.36 (KHTML, like Gecko) Chrome\\/150.0.0.0 Safari\\/537.36\",\"is_console\":false}', '2026-07-29 04:44:10'),
+(159, 7, 'user.logout', 'App\\Models\\User', 7, NULL, '{\"email\":\"karim@inoodex.com\"}', '{\"ip\":\"103.88.140.180\",\"user_agent\":\"Mozilla\\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\\/537.36 (KHTML, like Gecko) Chrome\\/150.0.0.0 Safari\\/537.36\",\"is_console\":false}', '2026-07-29 04:44:22'),
+(160, 1, 'user.login', 'App\\Models\\User', 1, NULL, '{\"email\":\"hello@inoodex.com\"}', '{\"ip\":\"103.88.140.180\",\"user_agent\":\"Mozilla\\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\\/537.36 (KHTML, like Gecko) Chrome\\/150.0.0.0 Safari\\/537.36\",\"is_console\":false}', '2026-07-29 04:44:35'),
+(161, 1, 'user.login', 'App\\Models\\User', 1, NULL, '{\"email\":\"hello@inoodex.com\"}', '{\"ip\":\"103.88.140.181\",\"user_agent\":\"Mozilla\\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\\/537.36 (KHTML, like Gecko) Chrome\\/150.0.0.0 Safari\\/537.36\",\"is_console\":false}', '2026-07-29 05:13:36'),
+(162, 1, 'user.login', 'App\\Models\\User', 1, NULL, '{\"email\":\"hello@inoodex.com\"}', '{\"ip\":\"103.88.140.180\",\"user_agent\":\"Mozilla\\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\\/537.36 (KHTML, like Gecko) Chrome\\/150.0.0.0 Safari\\/537.36\",\"is_console\":false}', '2026-07-29 08:20:52');
 
 -- --------------------------------------------------------
 
@@ -5054,7 +5081,8 @@ ALTER TABLE `rod_calculations`
   ADD KEY `rod_calculations_approved_by_foreign` (`approved_by`),
   ADD KEY `rod_calculations_project_id_index` (`project_id`),
   ADD KEY `rod_calculations_status_index` (`status`),
-  ADD KEY `rod_calculations_created_by_index` (`created_by`);
+  ADD KEY `rod_calculations_created_by_index` (`created_by`),
+  ADD KEY `rod_calculations_purchase_requisition_id_foreign` (`purchase_requisition_id`);
 
 --
 -- Indexes for table `rod_members`
@@ -5391,7 +5419,7 @@ ALTER TABLE `bill_payments`
 -- AUTO_INCREMENT for table `boqs`
 --
 ALTER TABLE `boqs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `boq_items`
@@ -5457,13 +5485,13 @@ ALTER TABLE `communication_logs`
 -- AUTO_INCREMENT for table `concrete_ratios`
 --
 ALTER TABLE `concrete_ratios`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `concrete_ratio_members`
 --
 ALTER TABLE `concrete_ratio_members`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `contracts`
@@ -5751,7 +5779,7 @@ ALTER TABLE `media`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=148;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=150;
 
 --
 -- AUTO_INCREMENT for table `milestones`
@@ -5943,19 +5971,19 @@ ALTER TABLE `risks`
 -- AUTO_INCREMENT for table `rod_calculations`
 --
 ALTER TABLE `rod_calculations`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `rod_members`
 --
 ALTER TABLE `rod_members`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `rod_member_bars`
 --
 ALTER TABLE `rod_member_bars`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `roles`
@@ -6075,7 +6103,7 @@ ALTER TABLE `training_records`
 -- AUTO_INCREMENT for table `tyro_audit_logs`
 --
 ALTER TABLE `tyro_audit_logs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=157;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=163;
 
 --
 -- AUTO_INCREMENT for table `tyro_media`

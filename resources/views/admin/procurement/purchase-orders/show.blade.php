@@ -52,6 +52,10 @@
                     </div>
                 </div>
                 <div>
+                    <label class="text-xs text-white-dark">Project</label>
+                    <p class="font-semibold text-primary">{{ $purchaseOrder->project->name ?? $purchaseOrder->requisition?->project?->name ?? 'N/A' }}</p>
+                </div>
+                <div>
                     <label class="text-xs text-white-dark">Vendor</label>
                     <p class="font-semibold">{{ $purchaseOrder->vendor->name ?? 'N/A' }}</p>
                 </div>

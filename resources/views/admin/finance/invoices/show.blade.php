@@ -127,21 +127,48 @@
             <button type="button" onclick="document.getElementById('addPaymentForm').classList.toggle('hidden')" class="btn btn-sm btn-outline-success">+ Record Payment</button>
         </div>
 
-        <div id="addPaymentForm" class="mb-5 mt-3 hidden rounded-lg border p-4 dark:border-gray-700">
-            <form action="{{ route('admin.finance.invoices.payments.store', $invoice->id) }}" method="POST" class="flex flex-nowrap items-center gap-2 overflow-x-auto pb-1">
+        <div id="addPaymentForm" class="mb-5 mt-3 hidden rounded-lg border p-4 bg-gray-50 dark:bg-gray-800/40 dark:border-gray-700">
+            <form action="{{ route('admin.finance.invoices.payments.store', $invoice->id) }}" method="POST">
                 @csrf
-                <input type="number" step="0.01" name="amount" placeholder="Amount (৳) *" class="form-input w-36" required />
-                <input type="date" name="payment_date" class="form-input w-36" required value="{{ date('Y-m-d') }}" />
-                <input type="text" name="payment_method" placeholder="Method (e.g. Bank)" class="form-input w-36" />
-                <select name="payment_account_id" class="form-select min-w-[180px]">
-                    <option value="">Select Account</option>
-                    @foreach($accounts as $account)
-                        <option value="{{ $account->id }}">{{ $account->name }} ({{ ucfirst($account->type) }})</option>
-                    @endforeach
-                </select>
-                <input type="text" name="reference" placeholder="Reference #" class="form-input w-36" />
-                <input type="text" name="notes" placeholder="Notes (optional)" class="form-input flex-1 min-w-[300px]" />
-                <button type="submit" class="btn btn-success whitespace-nowrap">+ Record Payment</button>
+                {{-- Line 1: Essential Payment Fields --}}
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                    <div>
+                        <label class="text-xs font-semibold mb-1 block">Amount (৳) <span class="text-danger">*</span></label>
+                        <input type="number" step="0.01" name="amount" placeholder="0.00" class="form-input text-xs" required />
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold mb-1 block">Payment Date <span class="text-danger">*</span></label>
+                        <input type="date" name="payment_date" class="form-input text-xs" required value="{{ date('Y-m-d') }}" />
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold mb-1 block">Payment Method</label>
+                        <input type="text" name="payment_method" placeholder="e.g. Bank Transfer, Cash" class="form-input text-xs" />
+                    </div>
+                    <div>
+                        <label class="text-xs font-semibold mb-1 block">Payment Account</label>
+                        <select name="payment_account_id" class="form-select text-xs">
+                            <option value="">Select Account</option>
+                            @foreach($accounts as $account)
+                                <option value="{{ $account->id }}">{{ $account->name }} (৳{{ number_format($account->current_balance, 2) }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                {{-- Line 2: Reference, Notes & Action Button --}}
+                <div class="mt-3 flex flex-col md:flex-row items-end gap-3">
+                    <div class="w-full md:w-1/4">
+                        <label class="text-xs font-semibold mb-1 block">Reference #</label>
+                        <input type="text" name="reference" placeholder="Ref / Txn #" class="form-input text-xs" />
+                    </div>
+                    <div class="w-full md:flex-1">
+                        <label class="text-xs font-semibold mb-1 block">Notes</label>
+                        <input type="text" name="notes" placeholder="Notes (optional)" class="form-input text-xs" />
+                    </div>
+                    <div class="w-full md:w-auto whitespace-nowrap">
+                        <button type="submit" class="btn btn-success w-full md:w-auto text-xs font-bold py-2.5 px-6">+ Save Payment</button>
+                    </div>
+                </div>
             </form>
         </div>
 

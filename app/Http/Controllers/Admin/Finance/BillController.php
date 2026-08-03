@@ -9,6 +9,7 @@ use App\Models\BillPayment;
 use App\Models\PaymentAccount;
 use App\Models\AccountTransaction;
 use App\Models\Project;
+use App\Models\PurchaseOrder;
 use App\Models\Vendor;
 use App\Services\LedgerPostingService;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -45,47 +46,106 @@ class BillController extends Controller
     {
         $projects = Project::all();
         $vendors = Vendor::all();
-        return view('admin.finance.bills.create', compact('projects', 'vendors'));
+        $purchaseOrders = PurchaseOrder::whereIn('status', ['submitted', 'ordered', 'partially_received', 'received'])->with('vendor', 'project', 'requisition.project', 'items.material')->get();
+        return view('admin.finance.bills.create', compact('projects', 'vendors', 'purchaseOrders'));
+    }
+
+    public function getPoItems(PurchaseOrder $purchaseOrder)
+    {
+        $purchaseOrder->load('items.material', 'project', 'vendor', 'requisition.project');
+        $projectId = $purchaseOrder->project_id ?? $purchaseOrder->requisition?->project_id;
+        $projectName = $purchaseOrder->project?->name ?? $purchaseOrder->requisition?->project?->name;
+
+        return response()->json([
+            'project_id'   => $projectId,
+            'project_name' => $projectName,
+            'vendor_id'    => $purchaseOrder->vendor_id,
+            'vendor_name'  => $purchaseOrder->vendor?->name,
+            'po_number'    => $purchaseOrder->po_number,
+            'items'        => $purchaseOrder->items->map(fn($i) => [
+                'material_id' => $i->material_id,
+                'description' => ($i->material?->name ?? 'Material') . ($i->material?->unit ? " ({$i->material->unit})" : ''),
+                'quantity'    => (float) $i->quantity,
+                'unit_price'  => (float) $i->unit_price,
+                'total_price' => (float) ($i->quantity * $i->unit_price),
+            ]),
+        ]);
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'project_id' => 'required|exists:projects,id',
-            'vendor_id'  => 'required|exists:vendors,id',
-            'title'      => 'required|string|max:255',
-            'reference'  => 'nullable|string|max:100',
-            'bill_date'  => 'required|date',
-            'due_date'   => 'required|date|after_or_equal:bill_date',
-            'tax_rate'   => 'required|numeric|min:0|max:100',
-            'notes'      => 'nullable|string',
+            'purchase_order_id' => 'nullable|exists:purchase_orders,id',
+            'project_id'        => 'required|exists:projects,id',
+            'vendor_id'         => 'required|exists:vendors,id',
+            'title'             => 'required|string|max:255',
+            'reference'         => 'nullable|string|max:100',
+            'bill_date'         => 'required|date',
+            'due_date'          => 'required|date|after_or_equal:bill_date',
+            'tax_rate'          => 'required|numeric|min:0|max:100',
+            'notes'             => 'nullable|string',
+            'items'             => 'nullable|array',
+            'items.*.description' => 'required_with:items|string',
+            'items.*.quantity'  => 'required_with:items|numeric|min:0.0001',
+            'items.*.unit_price' => 'required_with:items|numeric|min:0',
         ]);
 
-        $validated['bill_number'] = 'BILL-' . now()->format('Ymd') . '-' . strtoupper(Str::random(4));
-        $validated['subtotal'] = 0;
-        $validated['tax_amount'] = 0;
-        $validated['total_amount'] = 0;
-        $validated['paid_amount'] = 0;
-        $validated['due_amount'] = 0;
-        $validated['status'] = 'draft';
-        $validated['created_by'] = Auth::id();
+        $bill = DB::transaction(function () use ($validated, $request) {
+            $number = 'BILL-' . now()->format('Ymd') . '-' . strtoupper(Str::random(4));
 
-        Bill::create($validated);
+            $bill = Bill::create([
+                'project_id'        => $validated['project_id'],
+                'vendor_id'         => $validated['vendor_id'],
+                'purchase_order_id' => $validated['purchase_order_id'] ?? null,
+                'bill_number'       => $number,
+                'reference'         => $validated['reference'] ?? null,
+                'title'             => $validated['title'],
+                'bill_date'         => $validated['bill_date'],
+                'due_date'          => $validated['due_date'],
+                'subtotal'          => 0,
+                'tax_rate'          => $validated['tax_rate'],
+                'tax_amount'        => 0,
+                'total_amount'      => 0,
+                'paid_amount'       => 0,
+                'due_amount'        => 0,
+                'status'            => 'draft',
+                'notes'             => $validated['notes'] ?? null,
+                'created_by'        => Auth::id(),
+            ]);
 
-        return redirect()->route('admin.finance.bills.index')
-            ->with('success', 'Bill created. Add items from the detail page.');
+            if ($request->has('items') && is_array($request->items)) {
+                foreach ($request->items as $item) {
+                    if (empty($item['description'])) continue;
+                    $qty = (float) ($item['quantity'] ?? 1);
+                    $price = (float) ($item['unit_price'] ?? 0);
+                    BillItem::create([
+                        'bill_id'     => $bill->id,
+                        'description' => $item['description'],
+                        'quantity'    => $qty,
+                        'unit_price'  => $price,
+                        'total_price' => round($qty * $price, 2),
+                    ]);
+                }
+                $this->recalculateBill($bill);
+            }
+
+            return $bill;
+        });
+
+        return redirect()->route('admin.finance.bills.show', $bill->id)
+            ->with('success', "Bill {$bill->bill_number} created successfully.");
     }
 
     public function show(Bill $bill)
     {
-        $bill->load('project', 'vendor', 'creator', 'items', 'payments');
+        $bill->load('project', 'vendor', 'creator', 'items', 'payments', 'purchaseOrder');
         $accounts = \App\Models\PaymentAccount::where('status', 'active')->get();
         return view('admin.finance.bills.show', compact('bill', 'accounts'));
     }
 
     public function printPdf(Bill $bill)
     {
-        $bill->load('project', 'vendor', 'items', 'payments');
+        $bill->load('project', 'vendor', 'items', 'payments', 'purchaseOrder');
         $pdf = Pdf::loadView('admin.finance.bills.pdf.bill', compact('bill'))
             ->setPaper('a4', 'portrait')
             ->setOption('defaultFont', 'sans-serif')
@@ -169,10 +229,22 @@ class BillController extends Controller
         $this->recalculateBill($bill);
         return back()->with('success', 'Item removed.');
     }
+    
+    public function approve(Bill $bill)
+    {
+        abort_if($bill->status !== 'draft', 400, 'Only draft bills can be approved.');
+
+        DB::transaction(function () use ($bill) {
+            $bill->update(['status' => 'approved']);
+            $this->syncBillPosting($bill->fresh());
+        });
+
+        return back()->with('success', 'Bill approved successfully and posted to ledger.');
+    }
 
     public function addPayment(Request $request, Bill $bill)
     {
-        abort_if(in_array($bill->status, ['draft', 'cancelled']), 400, 'Payments cannot be recorded for draft or cancelled bills.');
+        abort_if($bill->status === 'cancelled', 400, 'Payments cannot be recorded for cancelled bills.');
 
         $validated = $request->validate([
             'amount'        => 'required|numeric|min:0.01',

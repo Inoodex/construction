@@ -48,10 +48,12 @@
                     <td class="font-mono">৳{{ number_format($p->total_amount, 2) }}</td>
                     <td><span class="badge {{ $statusColors[$p->status] ?? 'badge-outline-secondary' }} text-xs capitalize">{{ $p->status }}</span></td>
                     <td class="text-xs">{{ $p->valid_until?->format('d M Y') ?? '—' }}</td>
-                    <td class="text-center">
-                        <a href="{{ route('admin.crm.proposals.show', $p) }}" class="btn btn-sm btn-outline-info">View</a>
-                        <a href="{{ route('admin.crm.proposals.pdf', $p) }}" class="btn btn-sm btn-outline-success" target="_blank">PDF</a>
-                        <a href="{{ route('admin.crm.proposals.edit', $p) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                    <td class="text-center whitespace-nowrap">
+                        <div class="flex items-center justify-center gap-1">
+                            <a href="{{ route('admin.crm.proposals.show', $p) }}" class="btn btn-sm btn-outline-info">View</a>
+                            <a href="{{ route('admin.crm.proposals.pdf', $p) }}" class="btn btn-sm btn-outline-success" target="_blank">PDF</a>
+                            <a href="{{ route('admin.crm.proposals.edit', $p) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                        </div>
                     </td>
                 </tr>
                 @empty

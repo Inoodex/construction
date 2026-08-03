@@ -117,6 +117,35 @@
         .text-danger {
             color: #e7515a;
         }
+        /* Signatures Section */
+        .signature-table {
+            width: 100%;
+            margin-top: 40px;
+            border-collapse: collapse;
+            page-break-inside: avoid;
+        }
+        .signature-cell {
+            width: 45%;
+            vertical-align: bottom;
+            text-align: center;
+        }
+        .signature-line {
+            border-top: 1px dashed #64748b;
+            margin-top: 35px;
+            margin-bottom: 4px;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .signature-title {
+            font-size: 10px;
+            font-weight: bold;
+            color: #0f172a;
+        }
+        .signature-sub {
+            font-size: 8.5px;
+            color: #64748b;
+        }
     </style>
 </head>
 
@@ -229,6 +258,23 @@
                 2. Please reference the invoice number when making payment.<br/>
                 3. Late payments may be subject to applicable interest charges.
             </div>
+
+            {{-- Dual Signature Block --}}
+            <table class="signature-table">
+                <tr>
+                    <td class="signature-cell">
+                        <div class="signature-line"></div>
+                        <div class="signature-title">{{ $inv->project?->name ?? 'Client Signature' }}</div>
+                        <div class="signature-sub">Accepted &amp; Received By</div>
+                    </td>
+                    <td style="width: 10%;"></td>
+                    <td class="signature-cell">
+                        <div class="signature-line"></div>
+                        <div class="signature-title">{{ config('app.name', 'Inoodex Engineering') }}</div>
+                        <div class="signature-sub">Authorized Representative Signature</div>
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
 

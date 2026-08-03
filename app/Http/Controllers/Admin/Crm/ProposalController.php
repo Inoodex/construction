@@ -109,7 +109,7 @@ class ProposalController extends Controller
 
     public function printPdf(Proposal $proposal)
     {
-        $proposal->load('items', 'lead', 'client');
+        $proposal->load('items', 'lead', 'client', 'creator');
         $pdf = Pdf::loadView('admin.crm.proposals.pdf.proposal', compact('proposal'))
             ->setPaper('a4', 'portrait')
             ->setOption('defaultFont', 'sans-serif')

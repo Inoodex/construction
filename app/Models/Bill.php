@@ -14,6 +14,7 @@ class Bill extends Model
     protected $fillable = [
         'project_id',
         'vendor_id',
+        'purchase_order_id',
         'bill_number',
         'reference',
         'title',
@@ -49,6 +50,11 @@ class Bill extends Model
     public function vendor(): BelongsTo
     {
         return $this->belongsTo(Vendor::class);
+    }
+
+    public function purchaseOrder(): BelongsTo
+    {
+        return $this->belongsTo(PurchaseOrder::class);
     }
 
     public function creator(): BelongsTo

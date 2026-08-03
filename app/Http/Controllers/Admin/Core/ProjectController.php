@@ -87,9 +87,66 @@ class ProjectController extends Controller
             abort(403);
         }
 
-        $project->load('creator', 'sites', 'tasks', 'phases', 'milestones', 'resources');
+        $project->load([
+            'creator',
+            'client',
+            'sites',
+            'tasks',
+            'phases',
+            'milestones',
+            'resources',
+            'budgets',
+        ]);
 
-        return view('admin.core.projects.show', compact('project'));
+        $invoices = \App\Models\Invoice::where('project_id', $project->id)->latest()->get();
+        $receivables = \App\Models\Receivable::where('project_id', $project->id)->latest()->get();
+        $bills = \App\Models\Bill::where('project_id', $project->id)->latest()->get();
+        $purchaseOrders = \App\Models\PurchaseOrder::where('project_id', $project->id)->latest()->get();
+        $expenses = \App\Models\Expense::where('project_id', $project->id)->latest()->get();
+        $rodCalculations = \App\Models\RodCalculation::where('project_id', $project->id)->latest()->get();
+        $requisitions = \App\Models\PurchaseRequisition::where('project_id', $project->id)->latest()->get();
+
+        // Income Metrics
+        $totalInvoiced = $invoices->sum('total_amount') + $receivables->sum('amount');
+        $totalIncomeCollected = $invoices->sum('paid_amount') + $receivables->sum('paid_amount');
+        $pendingReceivables = $invoices->sum('due_amount') + $receivables->sum('due_amount');
+
+        // Expense Metrics
+        $totalBills = $bills->sum('total_amount');
+        $paidBills = $bills->sum('paid_amount');
+        $dueBills = $bills->sum('due_amount');
+        $directExpenses = $expenses->sum('amount');
+        $poTotal = $purchaseOrders->sum('total_amount');
+        $resourceCosts = $project->resources->sum('total_cost');
+
+        $totalExpenses = $totalBills + $directExpenses + $resourceCosts;
+        $actualCashOut = $paidBills + $directExpenses;
+        $netProfit = $totalInvoiced - $totalExpenses;
+        $profitMargin = $totalInvoiced > 0 ? round(($netProfit / $totalInvoiced) * 100, 1) : 0;
+
+        return view('admin.core.projects.show', compact(
+            'project',
+            'invoices',
+            'receivables',
+            'bills',
+            'purchaseOrders',
+            'expenses',
+            'rodCalculations',
+            'requisitions',
+            'totalInvoiced',
+            'totalIncomeCollected',
+            'pendingReceivables',
+            'totalBills',
+            'paidBills',
+            'dueBills',
+            'directExpenses',
+            'poTotal',
+            'resourceCosts',
+            'totalExpenses',
+            'actualCashOut',
+            'netProfit',
+            'profitMargin'
+        ));
     }
 
     public function edit(Project $project)

@@ -157,13 +157,16 @@ class PurchaseRequisitionController extends Controller
 
     public function getItems(PurchaseRequisition $requisition)
     {
-        $items = $requisition->items()->with('material')->get()->map(fn($i) => [
-            'material_id' => $i->material_id,
-            'material_name' => $i->material?->name,
-            'quantity' => $i->quantity,
-            'unit_price' => $i->estimated_unit_price,
+        $requisition->load('items.material');
+        return response()->json([
+            'project_id' => $requisition->project_id,
+            'items' => $requisition->items->map(fn($i) => [
+                'material_id' => $i->material_id,
+                'material_name' => $i->material?->name,
+                'quantity' => $i->quantity,
+                'unit_price' => $i->estimated_unit_price,
+            ]),
         ]);
-        return response()->json($items);
     }
 
     public function printPdf(PurchaseRequisition $requisition)

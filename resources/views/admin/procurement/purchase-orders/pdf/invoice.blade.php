@@ -152,6 +152,9 @@
                     <td style="width: 50%; vertical-align: top; text-align: right;">
                         <div style="display: inline-block; background-color: #263a79; color: white; padding: 7px 12px; margin-bottom: 6px; font-size: 13px; font-weight: bold;">PO No: {{ $po->po_number }}</div>
                         <p style="margin: 4px 0; font-size: 12px;"><strong>Date:</strong> {{ $po->order_date->format('Y-m-d') }}</p>
+                        @if($po->project || $po->requisition?->project)
+                        <p style="margin: 4px 0; font-size: 12px;"><strong>Project:</strong> {{ $po->project->name ?? $po->requisition?->project?->name }}</p>
+                        @endif
                         @if($po->requisition && $po->requisition->requisition_number)
                         <p style="margin: 4px 0; font-size: 12px;"><strong>Requisition:</strong> {{ $po->requisition->requisition_number }}</p>
                         @endif

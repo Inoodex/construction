@@ -737,8 +737,10 @@ Route::prefix('dashboard/finance')->name('admin.finance.')->middleware(['auth', 
 
     Route::get('bills', [BillController::class, 'index'])->name('bills.index');
     Route::get('bills/create', [BillController::class, 'create'])->name('bills.create');
+    Route::get('bills/po-items/{purchaseOrder}', [BillController::class, 'getPoItems'])->name('bills.po-items');
     Route::post('bills', [BillController::class, 'store'])->name('bills.store');
     Route::get('bills/{bill}', [BillController::class, 'show'])->name('bills.show');
+    Route::post('bills/{bill}/approve', [BillController::class, 'approve'])->name('bills.approve');
     Route::get('bills/{bill}/pdf', [BillController::class, 'printPdf'])->name('bills.pdf');
     Route::get('bills/{bill}/edit', [BillController::class, 'edit'])->name('bills.edit');
     Route::put('bills/{bill}', [BillController::class, 'update'])->name('bills.update');

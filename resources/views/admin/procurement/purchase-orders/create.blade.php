@@ -18,7 +18,7 @@
     <div class="panel mt-6">
         <form action="{{ route('admin.procurement.purchase-orders.store') }}" method="POST">
             @csrf
-            <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
+            <div class="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
                 <div class="form-group">
                     <label for="vendor_id">Vendor <span class="text-danger">*</span></label>
                     <select name="vendor_id" id="vendor_id" class="form-select" required>
@@ -34,9 +34,19 @@
                     <select name="purchase_requisition_id" id="purchase_requisition_id" class="form-select">
                         <option value="">Direct Order (No PR)</option>
                         @foreach($requisitions as $pr)
-                            <option value="{{ $pr->id }}" {{ old('purchase_requisition_id') == $pr->id ? 'selected' : '' }}>{{ $pr->requisition_number }}</option>
+                            <option value="{{ $pr->id }}" data-project="{{ $pr->project_id }}" {{ old('purchase_requisition_id') == $pr->id ? 'selected' : '' }}>{{ $pr->requisition_number }}</option>
                         @endforeach
                     </select>
+                </div>
+                <div class="form-group">
+                    <label for="project_id">Project</label>
+                    <select name="project_id" id="project_id" class="form-select bg-gray-100 dark:bg-gray-800 pointer-events-none cursor-not-allowed" tabindex="-1">
+                        <option value="">Auto-filled from PR</option>
+                        @foreach($projects as $project)
+                            <option value="{{ $project->id }}" {{ old('project_id') == $project->id ? 'selected' : '' }}>{{ $project->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('project_id') <span class="text-danger text-sm">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label for="order_date">Order Date <span class="text-danger">*</span></label>
@@ -128,10 +138,24 @@ function calcTotal() {
 
 document.getElementById('purchase_requisition_id').addEventListener('change', function() {
     const val = this.value;
+    const selectedOption = this.options[this.selectedIndex];
+    const dataProject = selectedOption ? selectedOption.getAttribute('data-project') : null;
+    
+    if (dataProject) {
+        const projSelect = document.getElementById('project_id');
+        if (projSelect) projSelect.value = dataProject;
+    }
+
     if (!val) return;
     fetch(`/dashboard/procurement/requisitions/${val}/items`)
         .then(r => r.json())
-        .then(items => {
+        .then(res => {
+            const items = Array.isArray(res) ? res : (res.items || []);
+            const projId = res.project_id || dataProject;
+            if (projId) {
+                const projSelect = document.getElementById('project_id');
+                if (projSelect) projSelect.value = projId;
+            }
             document.getElementById('items-body').innerHTML = '';
             itemIndex = 0;
             items.forEach(item => {
