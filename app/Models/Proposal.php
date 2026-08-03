@@ -11,7 +11,7 @@ class Proposal extends Model
     protected $fillable = [
         'lead_id', 'client_id', 'proposal_number', 'title', 'status',
         'subtotal', 'tax_rate', 'tax_amount', 'total_amount',
-        'valid_until', 'notes', 'created_by',
+        'valid_until', 'notes', 'document_path', 'original_document_name', 'created_by',
     ];
 
     protected $casts = [

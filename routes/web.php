@@ -911,6 +911,7 @@ Route::prefix('dashboard/crm')->name('admin.crm.')->middleware(['auth', 'privile
     Route::resource('proposals', ProposalController::class);
     Route::get('proposals/{proposal}/pdf', [ProposalController::class, 'printPdf'])->name('proposals.pdf');
     Route::post('proposals/{proposal}/status', [ProposalController::class, 'updateStatus'])->name('proposals.status');
+    Route::post('proposals/{proposal}/convert-to-project', [ProposalController::class, 'convertToProject'])->name('proposals.convert-to-project');
 });
 
 Route::prefix('dashboard/approvals')->name('admin.approvals.')->middleware('auth')->group(function () {

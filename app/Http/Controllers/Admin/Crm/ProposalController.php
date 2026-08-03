@@ -7,6 +7,7 @@ use App\Models\Proposal;
 use App\Models\ProposalItem;
 use App\Models\Lead;
 use App\Models\Client;
+use App\Models\Project;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -53,6 +54,7 @@ class ProposalController extends Controller
             'valid_until' => 'nullable|date',
             'notes' => 'nullable|string',
             'status' => 'required|in:draft,sent,accepted,rejected,expired',
+            'proposal_document' => 'nullable|file|mimes:pdf,doc,docx,png,jpg,jpeg|max:10240',
             'items' => 'required|array|min:1',
             'items.*.description' => 'required|string|max:255',
             'items.*.quantity' => 'required|numeric|min:0.01',
@@ -60,13 +62,23 @@ class ProposalController extends Controller
             'items.*.unit_price' => 'required|numeric|min:0',
         ]);
 
+        $documentPath = null;
+        $originalDocumentName = null;
+        if ($request->hasFile('proposal_document')) {
+            $file = $request->file('proposal_document');
+            $originalDocumentName = $file->getClientOriginalName();
+            $filename = 'proposal_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads/proposals'), $filename);
+            $documentPath = 'uploads/proposals/' . $filename;
+        }
+
         $number = 'PRO-' . now()->format('Ymd') . '-' . strtoupper(substr(uniqid(), -4));
 
         $subtotal = collect($request->items)->sum(fn($i) => $i['quantity'] * $i['unit_price']);
         $taxAmount = $subtotal * ($validated['tax_rate'] / 100);
         $totalAmount = $subtotal + $taxAmount;
 
-        $proposal = DB::transaction(function () use ($validated, $number, $request, $subtotal, $taxAmount, $totalAmount) {
+        $proposal = DB::transaction(function () use ($validated, $number, $request, $subtotal, $taxAmount, $totalAmount, $documentPath) {
             $proposal = Proposal::create([
                 'lead_id' => $validated['lead_id'] ?? null,
                 'client_id' => $validated['client_id'] ?? null,
@@ -79,6 +91,8 @@ class ProposalController extends Controller
                 'total_amount' => $totalAmount,
                 'valid_until' => $validated['valid_until'],
                 'notes' => $validated['notes'],
+                'document_path' => $documentPath,
+                'original_document_name' => $originalDocumentName,
                 'created_by' => auth()->id(),
             ]);
 
@@ -96,7 +110,7 @@ class ProposalController extends Controller
             return $proposal;
         });
 
-        return redirect()->route('admin.crm.proposals.show', $proposal)
+        return redirect()->route('admin.crm.proposals.show', ['proposal' => $proposal->id])
             ->with('success', "Proposal {$proposal->proposal_number} created successfully.");
     }
 
@@ -109,6 +123,10 @@ class ProposalController extends Controller
 
     public function printPdf(Proposal $proposal)
     {
+        if ($proposal->document_path && file_exists(public_path($proposal->document_path))) {
+            return response()->file(public_path($proposal->document_path));
+        }
+
         $proposal->load('items', 'lead', 'client', 'creator');
         $pdf = Pdf::loadView('admin.crm.proposals.pdf.proposal', compact('proposal'))
             ->setPaper('a4', 'portrait')
@@ -138,6 +156,7 @@ class ProposalController extends Controller
             'valid_until' => 'nullable|date',
             'notes' => 'nullable|string',
             'status' => 'required|in:draft,sent,accepted,rejected,expired',
+            'proposal_document' => 'nullable|file|mimes:pdf,doc,docx,png,jpg,jpeg|max:10240',
             'items' => 'required|array|min:1',
             'items.*.description' => 'required|string|max:255',
             'items.*.quantity' => 'required|numeric|min:0.01',
@@ -145,11 +164,28 @@ class ProposalController extends Controller
             'items.*.unit_price' => 'required|numeric|min:0',
         ]);
 
+        $documentPath = $proposal->document_path;
+        $originalDocumentName = $proposal->original_document_name;
+        if ($request->boolean('remove_document') && $proposal->document_path) {
+            $fullPath = public_path($proposal->document_path);
+            if (file_exists($fullPath)) {
+                @unlink($fullPath);
+            }
+            $documentPath = null;
+            $originalDocumentName = null;
+        } elseif ($request->hasFile('proposal_document')) {
+            $file = $request->file('proposal_document');
+            $originalDocumentName = $file->getClientOriginalName();
+            $filename = 'proposal_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads/proposals'), $filename);
+            $documentPath = 'uploads/proposals/' . $filename;
+        }
+
         $subtotal = collect($request->items)->sum(fn($i) => $i['quantity'] * $i['unit_price']);
         $taxAmount = $subtotal * ($validated['tax_rate'] / 100);
         $totalAmount = $subtotal + $taxAmount;
 
-        DB::transaction(function () use ($proposal, $validated, $request, $subtotal, $taxAmount, $totalAmount) {
+        DB::transaction(function () use ($proposal, $validated, $request, $subtotal, $taxAmount, $totalAmount, $documentPath) {
             $proposal->update([
                 'lead_id' => $validated['lead_id'] ?? null,
                 'client_id' => $validated['client_id'] ?? null,
@@ -161,6 +197,8 @@ class ProposalController extends Controller
                 'total_amount' => $totalAmount,
                 'valid_until' => $validated['valid_until'],
                 'notes' => $validated['notes'],
+                'document_path' => $documentPath,
+                'original_document_name' => $originalDocumentName,
             ]);
 
             $proposal->items()->delete();
@@ -176,7 +214,7 @@ class ProposalController extends Controller
             }
         });
 
-        return redirect()->route('admin.crm.proposals.show', $proposal)
+        return redirect()->route('admin.crm.proposals.show', ['proposal' => $proposal->id])
             ->with('success', 'Proposal updated successfully.');
     }
 
@@ -197,5 +235,24 @@ class ProposalController extends Controller
         $proposal->update(['status' => $validated['status']]);
 
         return back()->with('success', 'Proposal status updated to ' . str_replace('_', ' ', $validated['status']) . '.');
+    }
+
+    public function convertToProject(Proposal $proposal)
+    {
+        $project = Project::create([
+            'name' => $proposal->title,
+            'client_id' => $proposal->client_id,
+            'budget' => $proposal->total_amount,
+            'status' => 'planning',
+            'start_date' => now(),
+            'end_date' => now()->addMonths(6),
+            'description' => "Created automatically from Proposal #{$proposal->proposal_number}\n\n" . $proposal->notes,
+            'created_by' => auth()->id(),
+        ]);
+
+        $proposal->update(['status' => 'accepted']);
+
+        return redirect()->route('admin.core.projects.show', ['project' => $project->id])
+            ->with('success', "Active Project '{$project->name}' created successfully from Proposal {$proposal->proposal_number}.");
     }
 }

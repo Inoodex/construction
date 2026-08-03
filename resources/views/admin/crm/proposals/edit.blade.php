@@ -14,7 +14,7 @@
             Cancel</a>
     </div>
 
-    <form action="{{ route('admin.crm.proposals.update', $proposal) }}" method="POST">
+    <form action="{{ route('admin.crm.proposals.update', $proposal) }}" method="POST" enctype="multipart/form-data">
         @csrf @method('PUT')
 
         <div class="mb-5 grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -52,7 +52,25 @@
             </div>
             <div><label class="mb-1 block text-xs">Tax Rate (%)</label><input type="number" step="0.01" min="0" max="100" name="tax_rate" class="form-input" value="{{ old('tax_rate', $proposal->tax_rate) }}" /></div>
             <div><label class="mb-1 block text-xs">Valid Until</label><input type="date" name="valid_until" class="form-input" value="{{ old('valid_until', $proposal->valid_until?->format('Y-m-d')) }}" /></div>
-            <div class="md:col-span-3"><label class="mb-1 block text-xs">Notes</label><textarea name="notes" class="form-textarea" rows="2">{{ old('notes', $proposal->notes) }}</textarea></div>
+            
+            <div class="md:col-span-2">
+                <label class="mb-1 block text-xs font-semibold text-primary">Upload / Replace Custom Proposal Document (PDF / Docx)</label>
+                <input type="file" name="proposal_document" accept=".pdf,.doc,.docx,.jpg,.png" class="form-input text-xs bg-gray-50 dark:bg-gray-800" />
+                @if($proposal->document_path)
+                    <div class="mt-2 flex items-center justify-between rounded border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 px-3 py-2">
+                        <div class="flex items-center gap-2 text-xs">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-danger flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+                            <a href="{{ asset($proposal->document_path) }}" target="_blank" class="underline font-semibold text-primary">{{ $proposal->original_document_name ?? basename($proposal->document_path) }}</a>
+                        </div>
+                        <label class="flex items-center gap-1.5 cursor-pointer text-xs text-danger font-semibold">
+                            <input type="checkbox" name="remove_document" value="1" class="form-checkbox text-danger h-3.5 w-3.5" />
+                            Remove Document
+                        </label>
+                    </div>
+                @endif
+            </div>
+
+            <div class="md:col-span-3"><label class="mb-1 block text-xs">Notes & Terms</label><textarea name="notes" class="form-textarea" rows="2">{{ old('notes', $proposal->notes) }}</textarea></div>
         </div>
 
         <div class="mb-5">
@@ -109,11 +127,7 @@
 
 @push('scripts')
 <script>
-    let rowIndex = {
-        {
-            count($proposal - > items)
-        }
-    };
+    let rowIndex = {{ count($proposal->items) }};
 
     function addRow() {
         const html = `<tr>

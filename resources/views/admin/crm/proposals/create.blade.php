@@ -14,7 +14,7 @@
             Back to Proposals</a>
     </div>
 
-    <form action="{{ route('admin.crm.proposals.store') }}" method="POST">
+    <form action="{{ route('admin.crm.proposals.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         <div class="mb-5 grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -41,6 +41,7 @@
                 <select name="status" class="form-select">
                     <option value="draft" {{ old('status') == 'draft' ? 'selected' : '' }}>Draft</option>
                     <option value="sent" {{ old('status') == 'sent' ? 'selected' : '' }}>Sent</option>
+                    <option value="accepted" {{ old('status') == 'accepted' ? 'selected' : '' }}>Accepted</option>
                 </select>
             </div>
             <div class="md:col-span-2">
@@ -56,14 +57,19 @@
                 <label class="mb-1 block text-xs">Valid Until</label>
                 <input type="date" name="valid_until" class="form-input" value="{{ old('valid_until') }}" />
             </div>
+            <div class="md:col-span-2">
+                <label class="mb-1 block text-xs font-semibold text-primary">Upload Custom Proposal Document (PDF / Docx / Image)</label>
+                <input type="file" name="proposal_document" accept=".pdf,.doc,.docx,.jpg,.png" class="form-input text-xs bg-gray-50 dark:bg-gray-800" />
+                <span class="text-[11px] text-white-dark mt-0.5 block">Upload custom formatted proposal PDF or signed document (Max 10MB). If uploaded, it will be viewed & streamed directly.</span>
+            </div>
             <div class="md:col-span-3">
-                <label class="mb-1 block text-xs">Notes</label>
+                <label class="mb-1 block text-xs">Notes & Terms</label>
                 <textarea name="notes" class="form-textarea" rows="2">{{ old('notes') }}</textarea>
             </div>
         </div>
 
         <div class="mb-5">
-            <h6 class="mb-3 text-sm font-semibold">Proposal Items</h6>
+            <h6 class="mb-3 text-sm font-semibold">Proposal Line Items (For Financial Pipeline & ERP Estimation)</h6>
             <div class="table-responsive">
                 <table class="table-hover table" id="items-table">
                     <thead>
