@@ -99,7 +99,7 @@
             <div class="hero-image">
                 <div class="image-wrapper">
                     <div class="image-glow"></div>
-                    <img src="{{ asset('assets/images/landing/images (2).jpg') }}" alt="Construction ERP Dashboard">
+                    <img src="{{ asset('assets/images/landing/construction.jpg') }}" alt="Construction ERP Dashboard">
                 </div>
             </div>
         </div>
