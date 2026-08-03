@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jul 29, 2026 at 06:52 AM
+-- Generation Time: Aug 03, 2026 at 04:36 AM
 -- Server version: 11.4.12-MariaDB-cll-lve-log
 -- PHP Version: 8.4.23
 
@@ -50,7 +50,8 @@ INSERT INTO `account_transactions` (`id`, `payment_account_id`, `type`, `amount`
 (1, 2, 'credit', 100000.00, 100000.00, 'Opening balance', NULL, NULL, NULL, '2026-07-27 08:04:51', '2026-07-27 08:04:51', '2026-07-27 08:04:51'),
 (2, 3, 'credit', 5000.00, 5000.00, 'Opening balance', NULL, NULL, NULL, '2026-07-27 08:06:12', '2026-07-27 08:06:12', '2026-07-27 08:06:12'),
 (3, 4, 'credit', 20000.00, 20000.00, 'Opening balance', NULL, NULL, NULL, '2026-07-27 08:07:00', '2026-07-27 08:07:00', '2026-07-27 08:07:00'),
-(8, 4, 'debit', 1200.00, 18800.00, 'Expense: Lunch Bill', 'App\\Models\\Expense', 5, NULL, '2026-07-27 04:00:00', '2026-07-27 08:21:29', '2026-07-27 08:21:29');
+(8, 4, 'debit', 1200.00, 18800.00, 'Expense: Lunch Bill', 'App\\Models\\Expense', 5, NULL, '2026-07-27 04:00:00', '2026-07-27 08:21:29', '2026-07-27 08:21:29'),
+(9, 1, 'debit', 12500.00, 7487500.00, 'Expense: Campaign', 'App\\Models\\Expense', 6, NULL, '2026-08-02 04:00:00', '2026-08-02 07:51:23', '2026-08-02 07:51:23');
 
 -- --------------------------------------------------------
 
@@ -193,6 +194,7 @@ CREATE TABLE `bills` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `project_id` bigint(20) UNSIGNED NOT NULL,
   `vendor_id` bigint(20) UNSIGNED NOT NULL,
+  `purchase_order_id` bigint(20) UNSIGNED DEFAULT NULL,
   `bill_number` varchar(255) NOT NULL,
   `reference` varchar(255) DEFAULT NULL,
   `title` varchar(255) NOT NULL,
@@ -215,8 +217,10 @@ CREATE TABLE `bills` (
 -- Dumping data for table `bills`
 --
 
-INSERT INTO `bills` (`id`, `project_id`, `vendor_id`, `bill_number`, `reference`, `title`, `bill_date`, `due_date`, `subtotal`, `tax_rate`, `tax_amount`, `total_amount`, `paid_amount`, `due_amount`, `status`, `notes`, `created_by`, `created_at`, `updated_at`) VALUES
-(1, 5, 7, 'BILL-20260622-XECZ', 'PO#1234', 'Bill-1', '2026-06-22', '2026-06-25', 15000.00, 2.50, 375.00, 15375.00, 0.00, 15375.00, 'draft', NULL, 1, '2026-06-22 04:27:09', '2026-06-22 04:32:02');
+INSERT INTO `bills` (`id`, `project_id`, `vendor_id`, `purchase_order_id`, `bill_number`, `reference`, `title`, `bill_date`, `due_date`, `subtotal`, `tax_rate`, `tax_amount`, `total_amount`, `paid_amount`, `due_amount`, `status`, `notes`, `created_by`, `created_at`, `updated_at`) VALUES
+(1, 5, 7, NULL, 'BILL-20260622-XECZ', 'PO#1234', 'Bill-1', '2026-06-22', '2026-06-25', 15000.00, 2.50, 375.00, 15375.00, 0.00, 15375.00, 'draft', NULL, 1, '2026-06-22 04:27:09', '2026-06-22 04:32:02'),
+(2, 5, 8, NULL, 'BILL-20260803-YUET', 'PO-20260728-793C', '60mm MS Rod (Grade 60)', '2026-08-03', '2026-08-03', 12250.00, 0.00, 0.00, 12250.00, 0.00, 12250.00, 'draft', NULL, 1, '2026-08-03 09:10:40', '2026-08-03 09:11:56'),
+(3, 6, 9, NULL, 'BILL-20260803-QKDZ', 'PO-20260803-098B', 'Steel purchase', '2026-08-03', '2026-08-03', 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 'draft', NULL, 1, '2026-08-03 09:36:56', '2026-08-03 09:36:56');
 
 -- --------------------------------------------------------
 
@@ -240,7 +244,8 @@ CREATE TABLE `bill_items` (
 --
 
 INSERT INTO `bill_items` (`id`, `bill_id`, `description`, `quantity`, `unit_price`, `total_price`, `created_at`, `updated_at`) VALUES
-(1, 1, 'test', 10.0000, 1500.00, 15000.00, '2026-06-22 04:32:02', '2026-06-22 04:32:02');
+(1, 1, 'test', 10.0000, 1500.00, 15000.00, '2026-06-22 04:32:02', '2026-06-22 04:32:02'),
+(2, 2, '60mm MS Rod (Grade 60)', 35.0000, 350.00, 12250.00, '2026-08-03 09:11:56', '2026-08-03 09:11:56');
 
 -- --------------------------------------------------------
 
@@ -362,14 +367,6 @@ CREATE TABLE `cache` (
   `value` mediumtext NOT NULL,
   `expiration` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `cache`
---
-
-INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('inoodex-cache-tyro:user-1:privileges', 'a:35:{i:0;s:12:\"finance.view\";i:1;s:14:\"finance.create\";i:2;s:12:\"finance.edit\";i:3;s:14:\"finance.delete\";i:4;s:14:\"finance.export\";i:5;s:7:\"hr.view\";i:6;s:9:\"hr.create\";i:7;s:7:\"hr.edit\";i:8;s:9:\"hr.delete\";i:9;s:9:\"hr.export\";i:10;s:16:\"procurement.view\";i:11;s:18:\"procurement.create\";i:12;s:16:\"procurement.edit\";i:13;s:18:\"procurement.delete\";i:14;s:18:\"procurement.export\";i:15;s:9:\"core.view\";i:16;s:11:\"core.create\";i:17;s:9:\"core.edit\";i:18;s:11:\"core.delete\";i:19;s:11:\"core.export\";i:20;s:12:\"quality.view\";i:21;s:14:\"quality.create\";i:22;s:12:\"quality.edit\";i:23;s:14:\"quality.delete\";i:24;s:14:\"quality.export\";i:25;s:8:\"crm.view\";i:26;s:10:\"crm.create\";i:27;s:8:\"crm.edit\";i:28;s:10:\"crm.delete\";i:29;s:10:\"crm.export\";i:30;s:12:\"reports.view\";i:31;s:14:\"reports.create\";i:32;s:14:\"reports.export\";i:33;s:10:\"admin.view\";i:34;s:12:\"admin.manage\";}', 1785314236),
-('inoodex-cache-tyro:user-1:roles', 'a:1:{i:0;s:11:\"super-admin\";}', 1785314237);
 
 -- --------------------------------------------------------
 
@@ -910,7 +907,7 @@ CREATE TABLE `drawings` (
 
 INSERT INTO `drawings` (`id`, `project_id`, `drawing_number`, `title`, `drawing_type`, `discipline`, `current_revision`, `status`, `description`, `created_by`, `created_at`, `updated_at`) VALUES
 (1, 5, 'DRW-20260711-0001', 'Design 1', 'architectural', NULL, NULL, 'draft', NULL, 1, '2026-07-10 22:55:39', '2026-07-10 22:55:39'),
-(2, 7, 'DRW-20260728-0001', 'DRW-001', 'architectural', 'Architectural', NULL, 'issued', NULL, 1, '2026-07-28 11:17:01', '2026-07-28 11:17:01');
+(2, 7, 'DRW-20260728-0001', 'DRW-001', 'architectural', 'Architectural', 'first', 'issued', NULL, 1, '2026-07-28 11:17:01', '2026-07-30 08:48:39');
 
 -- --------------------------------------------------------
 
@@ -930,6 +927,13 @@ CREATE TABLE `drawing_revisions` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `drawing_revisions`
+--
+
+INSERT INTO `drawing_revisions` (`id`, `drawing_id`, `revision`, `revision_date`, `description`, `file_path`, `uploaded_by`, `is_current`, `created_at`, `updated_at`) VALUES
+(1, 2, 'first', '2026-07-30', NULL, NULL, 1, 1, '2026-07-30 08:48:39', '2026-07-30 08:48:39');
 
 -- --------------------------------------------------------
 
@@ -1129,7 +1133,8 @@ INSERT INTO `expenses` (`id`, `category_id`, `vendor_id`, `project_id`, `title`,
 (2, 20, NULL, NULL, 'Office Electricity', 'July bill', 3500.00, 0.00, 0.00, 3500.00, '2026-07-10', 'cash', NULL, 4, 'draft', NULL, NULL, 1, '2026-07-27 08:10:45', '2026-07-27 08:10:45'),
 (3, 20, NULL, NULL, 'Office Electricity', 'July bill', 3500.00, 0.00, 0.00, 3500.00, '2026-07-10', 'cash', NULL, 4, 'draft', NULL, NULL, 1, '2026-07-27 08:11:33', '2026-07-27 08:11:33'),
 (4, 20, NULL, NULL, 'Office Electricity', 'July bill', 3500.00, 0.00, 0.00, 3500.00, '2026-07-10', 'bank_transfer', NULL, 1, 'draft', NULL, NULL, 1, '2026-07-27 08:12:17', '2026-07-27 08:12:17'),
-(5, 20, NULL, NULL, 'Lunch Bill', NULL, 1200.00, 0.00, 0.00, 1200.00, '2026-07-27', 'cash', NULL, 4, 'paid', NULL, NULL, 1, '2026-07-27 08:21:28', '2026-07-27 08:22:37');
+(5, 20, NULL, NULL, 'Lunch Bill', NULL, 1200.00, 0.00, 0.00, 1200.00, '2026-07-27', 'cash', NULL, 4, 'paid', NULL, NULL, 1, '2026-07-27 08:21:28', '2026-07-27 08:22:37'),
+(6, 25, NULL, NULL, 'Campaign', NULL, 12500.00, 0.00, 0.00, 12500.00, '2026-08-02', 'bank_transfer', NULL, 1, 'paid', NULL, NULL, 1, '2026-08-02 07:51:23', '2026-08-02 07:52:39');
 
 -- --------------------------------------------------------
 
@@ -1642,7 +1647,8 @@ INSERT INTO `journal_entries` (`id`, `journal_number`, `date`, `description`, `t
 (2, 'JV-20260622-001', '2026-06-22', 'test', 'general', 'posted', 0, 1, '2026-06-22 06:19:54', '2026-06-22 06:19:54', NULL, NULL),
 (3, 'JV-20260623-001', '2026-06-23', NULL, 'general', 'posted', 0, 1, '2026-06-22 23:41:43', '2026-06-22 23:41:43', NULL, NULL),
 (4, 'JV-20260727-UXUQG', '2026-07-27', 'Expense: Lunch Bill', 'expense', 'posted', 1, 1, '2026-07-27 08:21:29', '2026-07-27 08:21:29', 'App\\Models\\Expense', 5),
-(5, 'JV-20260728-EYHAW', '2026-07-28', 'Invoice #INV-20260728-FZHB', 'invoice', 'posted', 1, 1, '2026-07-28 15:09:42', '2026-07-28 15:09:42', 'App\\Models\\Invoice', 3);
+(5, 'JV-20260728-EYHAW', '2026-07-28', 'Invoice #INV-20260728-FZHB', 'invoice', 'posted', 1, 1, '2026-07-28 15:09:42', '2026-07-28 15:09:42', 'App\\Models\\Invoice', 3),
+(6, 'JV-20260802-RF34S', '2026-08-02', 'Expense: Campaign', 'expense', 'posted', 1, 1, '2026-08-02 07:51:23', '2026-08-02 07:51:23', 'App\\Models\\Expense', 6);
 
 -- --------------------------------------------------------
 
@@ -1678,7 +1684,9 @@ INSERT INTO `journal_entry_items` (`id`, `journal_entry_id`, `account_id`, `debi
 (10, 5, 47, 3862500.00, 0.00, 'AR - Invoice #INV-20260728-FZHB', '2026-07-28 15:09:42', '2026-07-28 15:09:42'),
 (11, 5, 60, 75000.00, 0.00, 'Retention held - #INV-20260728-FZHB', '2026-07-28 15:09:42', '2026-07-28 15:09:42'),
 (12, 5, 64, 0.00, 3750000.00, 'Contract revenue - #INV-20260728-FZHB', '2026-07-28 15:09:42', '2026-07-28 15:09:42'),
-(13, 5, 62, 0.00, 187500.00, 'Output tax - #INV-20260728-FZHB', '2026-07-28 15:09:42', '2026-07-28 15:09:42');
+(13, 5, 62, 0.00, 187500.00, 'Output tax - #INV-20260728-FZHB', '2026-07-28 15:09:42', '2026-07-28 15:09:42'),
+(14, 6, 59, 12500.00, 0.00, 'Expense: Campaign', '2026-08-02 07:51:23', '2026-08-02 07:51:23'),
+(15, 6, 46, 0.00, 12500.00, 'Expense: Campaign', '2026-08-02 07:51:23', '2026-08-02 07:51:23');
 
 -- --------------------------------------------------------
 
@@ -2027,6 +2035,13 @@ CREATE TABLE `media` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `media`
+--
+
+INSERT INTO `media` (`id`, `model_type`, `model_id`, `uuid`, `collection_name`, `name`, `file_name`, `mime_type`, `disk`, `conversions_disk`, `size`, `manipulations`, `custom_properties`, `generated_conversions`, `responsive_images`, `order_column`, `created_at`, `updated_at`) VALUES
+(1, 'App\\Models\\DrawingRevision', 1, 'b0d33832-2967-482c-ba01-3498e6d11273', 'drawing_file', '1418836105562', '1418836105562.webp', 'image/webp', 'public', 'public', 153062, '[]', '[]', '[]', '[]', 1, '2026-07-30 08:48:39', '2026-07-30 08:48:39');
+
 -- --------------------------------------------------------
 
 --
@@ -2189,7 +2204,10 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (146, '2026_07_28_000002_add_cost_estimation_fields_to_concrete_ratios_table', 62),
 (147, '2026_07_28_000003_add_unit_price_to_rod_calculations_table', 62),
 (148, '2026_07_29_000001_add_concrete_ratio_fields_to_rod_calculations_table', 63),
-(149, '2026_07_29_000002_add_purchase_requisition_id_to_rod_calculations_table', 63);
+(149, '2026_07_29_000002_add_purchase_requisition_id_to_rod_calculations_table', 63),
+(150, '2026_08_03_000001_add_purchase_order_id_to_bills_table', 64),
+(151, '2026_08_03_000002_add_document_path_to_proposals_table', 64),
+(152, '2026_08_03_081918_add_original_document_name_to_proposals_table', 64);
 
 -- --------------------------------------------------------
 
@@ -2312,7 +2330,7 @@ CREATE TABLE `payment_accounts` (
 --
 
 INSERT INTO `payment_accounts` (`id`, `name`, `type`, `account_number`, `bank_name`, `opening_balance`, `current_balance`, `status`, `notes`, `created_by`, `created_at`, `updated_at`) VALUES
-(1, 'City Bank', 'bank', '1234567890', 'City Bank', 7500000.00, 7500000.00, 'active', NULL, 1, '2026-07-14 23:24:09', '2026-07-27 08:03:51'),
+(1, 'City Bank', 'bank', '1234567890', 'City Bank', 7500000.00, 7487500.00, 'active', NULL, 1, '2026-07-14 23:24:09', '2026-08-02 07:51:23'),
 (2, 'Brac Bank', 'bank', '32345681098', 'Brac Bank', 100000.00, 100000.00, 'active', NULL, 1, '2026-07-27 08:04:51', '2026-07-27 08:04:51'),
 (3, 'Bkash', 'mfs', '01712987654', 'Bkash', 5000.00, 5000.00, 'active', NULL, 1, '2026-07-27 08:06:12', '2026-07-27 08:06:12'),
 (4, 'Office Cash', 'cash', NULL, 'Office', 20000.00, 18800.00, 'active', NULL, 1, '2026-07-27 08:07:00', '2026-07-27 08:21:29');
@@ -2622,6 +2640,8 @@ CREATE TABLE `proposals` (
   `total_amount` decimal(15,2) NOT NULL DEFAULT 0.00,
   `valid_until` date DEFAULT NULL,
   `notes` text DEFAULT NULL,
+  `document_path` varchar(255) DEFAULT NULL,
+  `original_document_name` varchar(255) DEFAULT NULL,
   `created_by` bigint(20) UNSIGNED DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -2631,8 +2651,8 @@ CREATE TABLE `proposals` (
 -- Dumping data for table `proposals`
 --
 
-INSERT INTO `proposals` (`id`, `lead_id`, `client_id`, `proposal_number`, `title`, `status`, `subtotal`, `tax_rate`, `tax_amount`, `total_amount`, `valid_until`, `notes`, `created_by`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, 'PRO-20260728-8732', 'Proposal for 8-Storey Commercial Building — Uttara', 'sent', 25000000.00, 2.50, 625000.00, 25625000.00, '2028-12-31', NULL, 1, '2026-07-28 12:25:48', '2026-07-28 12:25:48');
+INSERT INTO `proposals` (`id`, `lead_id`, `client_id`, `proposal_number`, `title`, `status`, `subtotal`, `tax_rate`, `tax_amount`, `total_amount`, `valid_until`, `notes`, `document_path`, `original_document_name`, `created_by`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 'PRO-20260728-8732', 'Proposal for 8-Storey Commercial Building — Uttara', 'sent', 25000000.00, 2.50, 625000.00, 25625000.00, '2028-12-31', NULL, NULL, NULL, 1, '2026-07-28 12:25:48', '2026-07-28 12:25:48');
 
 -- --------------------------------------------------------
 
@@ -2729,7 +2749,8 @@ CREATE TABLE `purchase_orders` (
 INSERT INTO `purchase_orders` (`id`, `purchase_requisition_id`, `vendor_id`, `project_id`, `po_number`, `status`, `total_amount`, `order_date`, `created_at`, `updated_at`) VALUES
 (2, 2, 7, 5, 'PO-20260622-949F', 'received', 135000.00, '2026-06-22', '2026-06-21 23:14:28', '2026-06-21 23:22:51'),
 (3, 3, 8, 6, 'PO-20260622-1377', 'received', 950000.00, '2026-06-22', '2026-06-22 05:45:36', '2026-06-22 05:46:24'),
-(4, 4, 8, 7, 'PO-20260728-793C', 'received', 12250.00, '2026-07-28', '2026-07-28 11:41:12', '2026-07-28 11:44:54');
+(4, 4, 8, 7, 'PO-20260728-793C', 'received', 12250.00, '2026-07-28', '2026-07-28 11:41:12', '2026-07-28 11:44:54'),
+(5, 3, 9, 6, 'PO-20260803-098B', 'received', 950000.00, '2026-08-03', '2026-08-03 09:32:25', '2026-08-03 09:32:59');
 
 -- --------------------------------------------------------
 
@@ -2754,7 +2775,8 @@ CREATE TABLE `purchase_order_items` (
 INSERT INTO `purchase_order_items` (`id`, `purchase_order_id`, `material_id`, `quantity`, `unit_price`, `created_at`, `updated_at`) VALUES
 (3, 2, 4, 10.0000, 13500.00, '2026-06-21 23:14:28', '2026-06-21 23:14:28'),
 (4, 3, 5, 10.0000, 95000.00, '2026-06-22 05:45:36', '2026-06-22 05:45:36'),
-(6, 4, 5, 35.0000, 350.00, '2026-07-28 11:43:37', '2026-07-28 11:43:37');
+(6, 4, 5, 35.0000, 350.00, '2026-07-28 11:43:37', '2026-07-28 11:43:37'),
+(8, 5, 5, 10.0000, 95000.00, '2026-08-03 09:32:59', '2026-08-03 09:32:59');
 
 -- --------------------------------------------------------
 
@@ -3135,7 +3157,7 @@ INSERT INTO `rod_calculations` (`id`, `project_id`, `purchase_requisition_id`, `
 (1, 5, NULL, 'BBS-GREENT-2026-00001', 'Footing', NULL, NULL, NULL, NULL, 'draft', NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, '2026-07-21 16:19:10', '2026-07-28 08:31:02', '2026-07-28 08:31:02'),
 (2, 6, NULL, 'BBS-RUPAYA-2026-00001', 'Test', NULL, NULL, NULL, NULL, 'draft', NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, '2026-07-26 09:09:20', '2026-07-29 12:26:18', '2026-07-29 12:26:18'),
 (3, 7, NULL, 'BBS-SKYTOW-2026-00001', 'Footing 1', NULL, NULL, NULL, NULL, 'draft', 1.00, 1.00, 92.00, 580.00, 50.00, 115.00, 1, NULL, NULL, '2026-07-28 15:28:10', '2026-07-29 12:26:22', '2026-07-29 12:26:22'),
-(4, 7, NULL, 'BBS-SKYTOW-2026-00002', 'Ground Floor Coloum Sheet', NULL, NULL, 'M20', NULL, 'draft', 1.00, 1.50, 97.00, 560.00, 55.00, 115.00, 1, NULL, NULL, '2026-07-29 12:27:13', '2026-07-29 12:27:13', NULL);
+(4, 7, NULL, 'BBS-SKYTOW-2026-00002', 'Ground Floor Coloum Sheet', NULL, NULL, 'M25', NULL, 'draft', 1.00, 1.50, 97.00, 560.00, 55.00, 115.00, 1, NULL, NULL, '2026-07-29 12:27:13', '2026-07-29 15:56:59', NULL);
 
 -- --------------------------------------------------------
 
@@ -3169,7 +3191,8 @@ INSERT INTO `rod_members` (`id`, `rod_calculation_id`, `type`, `member_code`, `q
 (1, 1, 'footing', 'F1', 2, 30.00, 25.00, 30.00, 5.00, 8.00, 20.00, 0, NULL, '2026-07-21 16:19:49', '2026-07-21 16:19:49'),
 (2, 2, 'footing', 'F2', 1, 1500.00, 1500.00, NULL, NULL, 300.00, 75.00, 0, NULL, '2026-07-26 09:10:32', '2026-07-26 09:10:32'),
 (3, 3, 'footing', 'F2', 3, 1500.00, 1500.00, NULL, NULL, 300.00, 50.00, 0, NULL, '2026-07-28 15:29:17', '2026-07-29 12:23:56'),
-(5, 4, 'footing', 'F2', 4, 15000.00, 15000.00, NULL, NULL, 6000.00, 50.00, 0, NULL, '2026-07-29 12:27:46', '2026-07-29 12:27:46');
+(5, 4, 'footing', 'F2', 4, 1500.00, 1500.00, NULL, NULL, 600.00, 50.00, 0, NULL, '2026-07-29 12:27:46', '2026-07-29 15:57:18'),
+(6, 4, 'lintel', 'd1', 3, 1800.00, 1200.00, NULL, NULL, 399.98, 25.00, 1, NULL, '2026-07-30 08:33:10', '2026-07-30 08:33:10');
 
 -- --------------------------------------------------------
 
@@ -3206,7 +3229,9 @@ CREATE TABLE `rod_member_bars` (
 --
 
 INSERT INTO `rod_member_bars` (`id`, `rod_member_id`, `bar_name`, `direction`, `diameter`, `spacing`, `hook_length`, `bend_length`, `lap_length`, `actual_size`, `cutting_length`, `bars_count`, `total_length`, `unit_weight`, `total_weight`, `shape_code`, `is_manual_count`, `sort_order`, `remarks`, `created_at`, `updated_at`) VALUES
-(5, 5, 'Main Bar', 'X', 16.00, 150.00, 288.00, 0.00, 0.00, 15000.00, 15188.00, 100, 6075200.00, 1.5802, 9600.03, NULL, 0, 0, NULL, '2026-07-29 12:32:40', '2026-07-29 12:32:40');
+(7, 5, 'Main Bar', 'Y', 12.00, 150.00, 216.00, 0.00, 0.00, 1500.00, 1616.00, 10, 64640.00, 0.8889, 57.46, NULL, 0, 0, NULL, '2026-07-30 08:23:12', '2026-07-30 08:23:12'),
+(8, 6, 'Main Bar', 'MAIN', 16.00, 120.00, 288.00, 0.00, 0.00, 1800.00, 2038.00, 15, 91710.00, 1.5802, 144.92, NULL, 0, 0, NULL, '2026-07-30 08:33:43', '2026-07-30 08:33:43'),
+(5, 5, 'Main Bar', 'X', 16.00, 150.00, 288.00, 0.00, 0.00, 1500.00, 1688.00, 10, 67520.00, 1.5802, 106.70, NULL, 0, 0, NULL, '2026-07-29 12:32:40', '2026-07-29 15:55:53');
 
 -- --------------------------------------------------------
 
@@ -3278,9 +3303,8 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('A0mBQBioUbnMo533q3qv96LXOW4fZ77yBGDSZL18', NULL, '198.235.24.129', 'Hello from Palo Alto Networks, find out more about our scans in https://docs-cortex.paloaltonetworks.com/r/1/Cortex-Xpanse/Scanning-activity', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiakxxdkRzbW9qV3p2UVRhWEliYzg4QXhuUXJhSE1DejJ1NW1xVXIyRiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzI6Imh0dHBzOi8vY29uc3RydWN0aW9uLmlub29kZXguY29tIjtzOjU6InJvdXRlIjtOO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1785320244),
-('fXj66RoUrUL78bRjctsHRnUqEHw28tqPV2MvADrE', 1, '103.88.140.181', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiSzVQVFUyeUNsMUdMRE1aTXozQWtpeWpEWE02blBZVjR1UkJnN2tkVCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czoxMDoidHlyby1sb2dpbiI7YToxOntzOjc6ImNhcHRjaGEiO2E6MDp7fX1zOjk6Il9wcmV2aW91cyI7YToyOntzOjM6InVybCI7czozMjoiaHR0cHM6Ly9jb25zdHJ1Y3Rpb24uaW5vb2RleC5jb20iO3M6NToicm91dGUiO047fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7fQ==', 1785307415),
-('ZHeHetSn5aEeN3NrdKQUZ6WSyZ1zevyfDSQcQnb5', 1, '103.88.140.180', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiSHZtZUpFaXZON0lsWkNZYTZzMkpIWE1nQWJ0M3I1cFBPV3d0R0VZdCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6Njk6Imh0dHBzOi8vY29uc3RydWN0aW9uLmlub29kZXguY29tL2Rhc2hib2FyZC9maW5hbmNlL3JvZC1jYWxjdWxhdGlvbnMvNCI7czo1OiJyb3V0ZSI7czozNToiYWRtaW4uZmluYW5jZS5yb2QtY2FsY3VsYXRpb25zLnNob3ciO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjEwOiJ0eXJvLWxvZ2luIjthOjE6e3M6NzoiY2FwdGNoYSI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7fQ==', 1785313960);
+('kCjrUOdhZ0tq5Mp9UxKcb1u4TTFOcRDdWsBRPxpy', NULL, '205.210.31.172', 'Hello from Palo Alto Networks, find out more about our scans in https://docs-cortex.paloaltonetworks.com/r/1/Cortex-Xpanse/Scanning-activity', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiaGFuSFZzTzRsaWdJRmZBeUpreFdZTEFEWnF0blRrcjZ2V1pZSjFKQyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzI6Imh0dHBzOi8vY29uc3RydWN0aW9uLmlub29kZXguY29tIjtzOjU6InJvdXRlIjtOO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1785740768),
+('wogGPDFFmgJ1n2tYWAJfixWEqcrhdGvifAn7y4Kf', 1, '103.88.140.177', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoienloaVF0cmZCS01nSlB5ckw3WW92WFl6WW1RNFlYWHhzcGxMUG5XaSI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MTAyOiJodHRwczovL2NvbnN0cnVjdGlvbi5pbm9vZGV4LmNvbS9kYXNoYm9hcmQvcmVwb3J0cy9maW5hbmNpYWwvZXhwb3J0L3Byb2dyZXNzLXNjaGVkdWxlL3BkZj9wcm9qZWN0X2lkPTUiO3M6NToicm91dGUiO3M6MzQ6ImFkbWluLnJlcG9ydHMuZmluYW5jaWFsLmV4cG9ydC5wZGYiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjEwOiJ0eXJvLWxvZ2luIjthOjE6e3M6NzoiY2FwdGNoYSI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7fQ==', 1785736615);
 
 -- --------------------------------------------------------
 
@@ -3920,7 +3944,13 @@ INSERT INTO `tyro_audit_logs` (`id`, `user_id`, `event`, `auditable_type`, `audi
 (159, 7, 'user.logout', 'App\\Models\\User', 7, NULL, '{\"email\":\"karim@inoodex.com\"}', '{\"ip\":\"103.88.140.180\",\"user_agent\":\"Mozilla\\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\\/537.36 (KHTML, like Gecko) Chrome\\/150.0.0.0 Safari\\/537.36\",\"is_console\":false}', '2026-07-29 04:44:22'),
 (160, 1, 'user.login', 'App\\Models\\User', 1, NULL, '{\"email\":\"hello@inoodex.com\"}', '{\"ip\":\"103.88.140.180\",\"user_agent\":\"Mozilla\\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\\/537.36 (KHTML, like Gecko) Chrome\\/150.0.0.0 Safari\\/537.36\",\"is_console\":false}', '2026-07-29 04:44:35'),
 (161, 1, 'user.login', 'App\\Models\\User', 1, NULL, '{\"email\":\"hello@inoodex.com\"}', '{\"ip\":\"103.88.140.181\",\"user_agent\":\"Mozilla\\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\\/537.36 (KHTML, like Gecko) Chrome\\/150.0.0.0 Safari\\/537.36\",\"is_console\":false}', '2026-07-29 05:13:36'),
-(162, 1, 'user.login', 'App\\Models\\User', 1, NULL, '{\"email\":\"hello@inoodex.com\"}', '{\"ip\":\"103.88.140.180\",\"user_agent\":\"Mozilla\\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\\/537.36 (KHTML, like Gecko) Chrome\\/150.0.0.0 Safari\\/537.36\",\"is_console\":false}', '2026-07-29 08:20:52');
+(162, 1, 'user.login', 'App\\Models\\User', 1, NULL, '{\"email\":\"hello@inoodex.com\"}', '{\"ip\":\"103.88.140.180\",\"user_agent\":\"Mozilla\\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\\/537.36 (KHTML, like Gecko) Chrome\\/150.0.0.0 Safari\\/537.36\",\"is_console\":false}', '2026-07-29 08:20:52'),
+(163, 1, 'user.login', 'App\\Models\\User', 1, NULL, '{\"email\":\"hello@inoodex.com\"}', '{\"ip\":\"103.88.140.180\",\"user_agent\":\"Mozilla\\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\\/537.36 (KHTML, like Gecko) Chrome\\/150.0.0.0 Safari\\/537.36\",\"is_console\":false}', '2026-07-29 11:52:26'),
+(164, 1, 'user.login', 'App\\Models\\User', 1, NULL, '{\"email\":\"hello@inoodex.com\"}', '{\"ip\":\"103.88.140.178\",\"user_agent\":\"Mozilla\\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\\/537.36 (KHTML, like Gecko) Chrome\\/150.0.0.0 Safari\\/537.36\",\"is_console\":false}', '2026-07-30 04:12:03');
+INSERT INTO `tyro_audit_logs` (`id`, `user_id`, `event`, `auditable_type`, `auditable_id`, `old_values`, `new_values`, `metadata`, `created_at`) VALUES
+(165, 1, 'user.login', 'App\\Models\\User', 1, NULL, '{\"email\":\"hello@inoodex.com\"}', '{\"ip\":\"103.88.140.183\",\"user_agent\":\"Mozilla\\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\\/537.36 (KHTML, like Gecko) Chrome\\/150.0.0.0 Safari\\/537.36\",\"is_console\":false}', '2026-08-02 03:40:04'),
+(166, 1, 'user.login', 'App\\Models\\User', 1, NULL, '{\"email\":\"hello@inoodex.com\"}', '{\"ip\":\"182.48.65.252\",\"user_agent\":\"Mozilla\\/5.0 (Windows NT 10.0; Win64; x64; rv:153.0) Gecko\\/20100101 Firefox\\/153.0\",\"is_console\":false}', '2026-08-02 04:36:32'),
+(167, 1, 'user.login', 'App\\Models\\User', 1, NULL, '{\"email\":\"hello@inoodex.com\"}', '{\"ip\":\"103.88.140.181\",\"user_agent\":\"Mozilla\\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\\/537.36 (KHTML, like Gecko) Chrome\\/150.0.0.0 Safari\\/537.36\",\"is_console\":false}', '2026-08-03 04:52:46');
 
 -- --------------------------------------------------------
 
@@ -4248,7 +4278,8 @@ ALTER TABLE `bills`
   ADD UNIQUE KEY `bills_bill_number_unique` (`bill_number`),
   ADD KEY `bills_project_id_foreign` (`project_id`),
   ADD KEY `bills_vendor_id_foreign` (`vendor_id`),
-  ADD KEY `bills_created_by_foreign` (`created_by`);
+  ADD KEY `bills_created_by_foreign` (`created_by`),
+  ADD KEY `bills_purchase_order_id_foreign` (`purchase_order_id`);
 
 --
 -- Indexes for table `bill_items`
@@ -5359,7 +5390,7 @@ ALTER TABLE `work_orders`
 -- AUTO_INCREMENT for table `account_transactions`
 --
 ALTER TABLE `account_transactions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `approvals`
@@ -5401,13 +5432,13 @@ ALTER TABLE `bank_guarantees`
 -- AUTO_INCREMENT for table `bills`
 --
 ALTER TABLE `bills`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `bill_items`
 --
 ALTER TABLE `bill_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `bill_payments`
@@ -5539,7 +5570,7 @@ ALTER TABLE `drawings`
 -- AUTO_INCREMENT for table `drawing_revisions`
 --
 ALTER TABLE `drawing_revisions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `drawing_transmittals`
@@ -5575,7 +5606,7 @@ ALTER TABLE `equipment_maintenance`
 -- AUTO_INCREMENT for table `expenses`
 --
 ALTER TABLE `expenses`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -5689,13 +5720,13 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT for table `journal_entries`
 --
 ALTER TABLE `journal_entries`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `journal_entry_items`
 --
 ALTER TABLE `journal_entry_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `labour_entries`
@@ -5773,13 +5804,13 @@ ALTER TABLE `material_wastages`
 -- AUTO_INCREMENT for table `media`
 --
 ALTER TABLE `media`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=150;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=153;
 
 --
 -- AUTO_INCREMENT for table `milestones`
@@ -5881,13 +5912,13 @@ ALTER TABLE `punch_list_items`
 -- AUTO_INCREMENT for table `purchase_orders`
 --
 ALTER TABLE `purchase_orders`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `purchase_order_items`
 --
 ALTER TABLE `purchase_order_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `purchase_requisitions`
@@ -5977,13 +6008,13 @@ ALTER TABLE `rod_calculations`
 -- AUTO_INCREMENT for table `rod_members`
 --
 ALTER TABLE `rod_members`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `rod_member_bars`
 --
 ALTER TABLE `rod_member_bars`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `roles`
@@ -6103,7 +6134,7 @@ ALTER TABLE `training_records`
 -- AUTO_INCREMENT for table `tyro_audit_logs`
 --
 ALTER TABLE `tyro_audit_logs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=163;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=168;
 
 --
 -- AUTO_INCREMENT for table `tyro_media`
@@ -6216,6 +6247,7 @@ ALTER TABLE `bank_guarantees`
 ALTER TABLE `bills`
   ADD CONSTRAINT `bills_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`),
   ADD CONSTRAINT `bills_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`),
+  ADD CONSTRAINT `bills_purchase_order_id_foreign` FOREIGN KEY (`purchase_order_id`) REFERENCES `purchase_orders` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `bills_vendor_id_foreign` FOREIGN KEY (`vendor_id`) REFERENCES `vendors` (`id`);
 
 --

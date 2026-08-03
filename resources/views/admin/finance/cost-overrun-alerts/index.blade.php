@@ -122,21 +122,27 @@
                                 </td>
                                 <td class="text-xs">{{ $alert->created_at->format('d/m/Y') }}</td>
                                 <td class="text-center">
-                                    <div class="flex items-center justify-center gap-1">
-                                        @if($alert->status === 'open')
-                                            <form action="{{ route('admin.finance.cost-overrun-alerts.acknowledge', $alert->id) }}" method="POST" class="inline">
-                                                @csrf
-                                                <button type="submit" class="btn btn-sm btn-outline-warning" title="Acknowledge">Ack</button>
-                                            </form>
-                                        @endif
-                                        @if(in_array($alert->status, ['open', 'acknowledged']))
-                                            <form action="{{ route('admin.finance.cost-overrun-alerts.resolve', $alert->id) }}" method="POST" class="inline" onsubmit="return confirm('Mark as resolved?');">
-                                                @csrf
-                                                <input type="hidden" name="notes" value="Resolved manually" />
-                                                <button type="submit" class="btn btn-sm btn-outline-success" title="Resolve">Resolve</button>
-                                            </form>
-                                        @endif
-                                    </div>
+                                    <x-action-dropdown>
+                                        <x-slot name="items">
+                                            @if($alert->status === 'open')
+                                                <li>
+                                                    <form action="{{ route('admin.finance.cost-overrun-alerts.acknowledge', $alert->id) }}" method="POST">
+                                                        @csrf
+                                                        <button type="submit"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Acknowledge</button>
+                                                    </form>
+                                                </li>
+                                            @endif
+                                            @if(in_array($alert->status, ['open', 'acknowledged']))
+                                                <li>
+                                                    <form action="{{ route('admin.finance.cost-overrun-alerts.resolve', $alert->id) }}" method="POST" onsubmit="return confirm('Mark as resolved?');">
+                                                        @csrf
+                                                        <input type="hidden" name="notes" value="Resolved manually" />
+                                                        <button type="submit"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> Resolve</button>
+                                                    </form>
+                                                </li>
+                                            @endif
+                                        </x-slot>
+                                    </x-action-dropdown>
                                 </td>
                             </tr>
                             @if($alert->message)
