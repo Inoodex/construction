@@ -62,7 +62,7 @@
                         @forelse($bills as $bill)
                             <tr>
                                 <td><span class="font-mono text-xs font-semibold text-primary">{{ $bill->bill_number }}</span></td>
-                                <td class="font-semibold">{{ $bill->title }}</td>
+                                <td class="font-semibold">{{ Str::limit($bill->title, 30) }}</td>
                                 <td>{{ $bill->vendor->name ?? 'N/A' }}</td>
                                 <td>{{ $bill->project->name ?? 'N/A' }}</td>
                                 <td>{{ $bill->bill_date->format('d/m/Y') }}</td>
