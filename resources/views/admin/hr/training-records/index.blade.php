@@ -73,14 +73,10 @@
                                 <span class="badge {{ $cls }}">{{ ucfirst($r->status) }}</span>
                             </td>
                             <td class="text-right">{{ $r->cost ? number_format($r->cost, 2) : '—' }}</td>
-                            <td class="flex items-center gap-1">
-                                <a href="{{ route('admin.hr.training-records.show', $r) }}" class="btn btn-sm btn-outline-info">View</a>
-                                <a href="{{ route('admin.hr.training-records.edit', $r) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
-                                <form action="{{ route('admin.hr.training-records.destroy', $r) }}" method="POST" class="inline-flex" onsubmit="return confirm('Delete this record?')">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                                </form>
-                            </td>
+                            <td class="text-center">
+                                <x-action-dropdown>
+                                    <x-slot name="items">
+                                        <li><a href="{{ route('admin.hr.training-records.show', $r) }}">
                         </tr>
                     @empty
                         <tr><td colspan="9" class="text-center text-gray-400 py-4">No training records found.</td></tr>

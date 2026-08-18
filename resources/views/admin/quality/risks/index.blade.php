@@ -13,27 +13,27 @@
 
     <div class="panel mt-6">
         <div class="mb-5">
-            <form action="{{ route('admin.quality.risks.index') }}" method="GET" class="flex flex-wrap items-center gap-3 w-full">
-                <div class="relative flex-1">
+            <form action="{{ route('admin.quality.risks.index') }}" method="GET" class="flex flex-nowrap items-center gap-2 overflow-x-auto pb-2 w-full">
+                <div class="relative min-w-[200px] flex-1">
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Search by risk # or title..." class="form-input ltr:pr-11 rtl:pl-11 w-full" />
                     <button type="submit" class="absolute inset-y-0 flex items-center hover:text-primary ltr:right-4 rtl:left-4">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" stroke-width="1.5" opacity="0.5" /><path d="M18.5 18.5L22 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg>
                     </button>
                 </div>
-                <select name="project_id" class="form-select" style="min-width: 150px;">
+                <select name="project_id" class="form-select min-w-[140px] flex-1">
                     <option value="">All Projects</option>
                     @foreach($projects as $project)
                         <option value="{{ $project->id }}" {{ request('project_id') == $project->id ? 'selected' : '' }}>{{ $project->name }}</option>
                     @endforeach
                 </select>
-                <select name="status" class="form-select" style="min-width: 130px;">
+                <select name="status" class="form-select min-w-[120px] flex-1">
                     <option value="">All Status</option>
                     <option value="open" {{ request('status') == 'open' ? 'selected' : '' }}>Open</option>
                     <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>In Progress</option>
                     <option value="mitigated" {{ request('status') == 'mitigated' ? 'selected' : '' }}>Mitigated</option>
                     <option value="closed" {{ request('status') == 'closed' ? 'selected' : '' }}>Closed</option>
                 </select>
-                <select name="probability" class="form-select" style="min-width: 130px;">
+                <select name="probability" class="form-select min-w-[130px] flex-1">
                     <option value="">All Probability</option>
                     <option value="very_low" {{ request('probability') == 'very_low' ? 'selected' : '' }}>Very Low</option>
                     <option value="low" {{ request('probability') == 'low' ? 'selected' : '' }}>Low</option>
@@ -41,7 +41,7 @@
                     <option value="high" {{ request('probability') == 'high' ? 'selected' : '' }}>High</option>
                     <option value="very_high" {{ request('probability') == 'very_high' ? 'selected' : '' }}>Very High</option>
                 </select>
-                <select name="impact" class="form-select" style="min-width: 130px;">
+                <select name="impact" class="form-select min-w-[120px] flex-1">
                     <option value="">All Impact</option>
                     <option value="very_low" {{ request('impact') == 'very_low' ? 'selected' : '' }}>Very Low</option>
                     <option value="low" {{ request('impact') == 'low' ? 'selected' : '' }}>Low</option>
@@ -49,7 +49,7 @@
                     <option value="high" {{ request('impact') == 'high' ? 'selected' : '' }}>High</option>
                     <option value="very_high" {{ request('impact') == 'very_high' ? 'selected' : '' }}>Very High</option>
                 </select>
-                <select name="category" class="form-select" style="min-width: 140px;">
+                <select name="category" class="form-select min-w-[130px] flex-1">
                     <option value="">All Categories</option>
                     <option value="technical" {{ request('category') == 'technical' ? 'selected' : '' }}>Technical</option>
                     <option value="safety" {{ request('category') == 'safety' ? 'selected' : '' }}>Safety</option>
@@ -58,9 +58,9 @@
                     <option value="schedule" {{ request('category') == 'schedule' ? 'selected' : '' }}>Schedule</option>
                     <option value="other" {{ request('category') == 'other' ? 'selected' : '' }}>Other</option>
                 </select>
-                <button type="submit" class="btn btn-primary">Filter</button>
+                <button type="submit" class="btn btn-primary whitespace-nowrap">Filter</button>
                 @if(request()->anyFilled(['search', 'project_id', 'status', 'probability', 'impact', 'category']))
-                    <a href="{{ route('admin.quality.risks.index') }}" class="btn btn-outline-danger">Reset</a>
+                    <a href="{{ route('admin.quality.risks.index') }}" class="btn btn-outline-danger whitespace-nowrap">Reset</a>
                 @endif
             </form>
         </div>

@@ -70,11 +70,17 @@
                             <td>{{ $t->end_time ? \Carbon\Carbon::parse($t->end_time)->format('H:i') : '-' }}</td>
                             <td>{{ number_format($t->hours_worked, 1) }}</td>
                             <td><span class="badge badge-outline-{{ $t->status === 'approved' ? 'success' : ($t->status === 'rejected' ? 'danger' : 'secondary') }}">{{ ucfirst($t->status) }}</span></td>
-                            <td>
-                                <form action="{{ route('admin.hr.timesheets.destroy', $t) }}" method="POST" class="inline-flex" onsubmit="return confirm('Delete this entry?')">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                                </form>
+                            <td class="text-center">
+                                <x-action-dropdown>
+                                    <x-slot name="items">
+                                        <li class="danger">
+                                            <form action="{{ route('admin.hr.timesheets.destroy', $t) }}" method="POST" onsubmit="return confirm('Delete this entry?')">
+                                                @csrf @method('DELETE')
+                                                <button type="submit"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m-7 0a1 1 0 001-1h4a1 1 0 001 1m-6 0h6"/></svg> Delete</button>
+                                            </form>
+                                        </li>
+                                    </x-slot>
+                                </x-action-dropdown>
                             </td>
                         </tr>
                     @empty
