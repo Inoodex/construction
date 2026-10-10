@@ -30,12 +30,12 @@ Route::get('/', function () {
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware('auth')->name('tyro-dashboard.index');
 Route::get('/dashboard/search', [SearchController::class, 'search'])->middleware('auth')->name('admin.search');
 
-Route::prefix('dashboard/settings')->name('admin.settings.')->group(function () {
+Route::prefix('dashboard/settings')->name('admin.settings.')->middleware(['auth', 'privilege:admin.view'])->group(function () {
     Route::get('/', [SettingController::class, 'index'])->name('index');
     Route::post('/update', [SettingController::class, 'update'])->name('update');
 });
 
-Route::prefix('dashboard/categories')->name('admin.categories.')->group(function () {
+Route::prefix('dashboard/categories')->name('admin.categories.')->middleware(['auth', 'privilege:admin.view'])->group(function () {
     Route::get('/', [CategoryController::class, 'index'])->name('index');
     Route::get('/create', [CategoryController::class, 'create'])->name('create');
     Route::post('/', [CategoryController::class, 'store'])->name('store');
@@ -47,7 +47,7 @@ Route::prefix('dashboard/categories')->name('admin.categories.')->group(function
 // Role Management Overrides
 use App\Http\Controllers\Admin\RoleController as LocalRoleController;
 
-Route::prefix('dashboard/roles')->name('tyro-dashboard.roles.')->group(function () {
+Route::prefix('dashboard/roles')->name('tyro-dashboard.roles.')->middleware(['auth', 'privilege:admin.view'])->group(function () {
     Route::get('/', [LocalRoleController::class, 'index'])->name('index');
     Route::get('/create', [LocalRoleController::class, 'create'])->name('create');
     Route::post('/', [LocalRoleController::class, 'store'])->name('store');
