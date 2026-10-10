@@ -90,14 +90,10 @@
                                 @endphp
                                 <span class="badge {{ $stCls }}">{{ ucfirst($r->status) }}</span>
                             </td>
-                            <td class="flex gap-1" style="justify-content: center">
-                                <a href="{{ route('admin.quality.itps.show', $r) }}" class="btn btn-sm btn-outline-info">View</a>
-                                <a href="{{ route('admin.quality.itps.edit', $r) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
-                                <form action="{{ route('admin.quality.itps.destroy', $r) }}" method="POST" class="inline" onsubmit="return confirm('Delete this ITP?')">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                                </form>
-                            </td>
+                            <td class="text-center">
+                                <x-action-dropdown>
+                                    <x-slot name="items">
+                                        <li><a href="{{ route('admin.quality.itps.show', $r) }}">
                         </tr>
                     @empty
                         <tr><td colspan="8" class="text-center text-gray-400 py-4">No ITPs found.</td></tr>

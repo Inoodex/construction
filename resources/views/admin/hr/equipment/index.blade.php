@@ -104,14 +104,10 @@
                                 @endphp
                                 <span class="badge {{ $statusClass }} capitalize">{{ $eq->status === 'under-maintenance' ? 'Maint' : $eq->status }}</span>
                             </td>
-                            <td class="flex gap-1">
-                                <a href="{{ route('admin.hr.equipment.show', $eq) }}" class="btn btn-sm btn-outline-info">View</a>
-                                <a href="{{ route('admin.hr.equipment.edit', $eq) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
-                                <form action="{{ route('admin.hr.equipment.destroy', $eq) }}" method="POST" class="inline" onsubmit="return confirm('Delete this equipment?')">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                                </form>
-                            </td>
+                            <td class="text-center">
+                                <x-action-dropdown>
+                                    <x-slot name="items">
+                                        <li><a href="{{ route('admin.hr.equipment.show', $eq) }}">
                         </tr>
                     @empty
                         <tr><td colspan="10" class="text-center text-gray-400 py-4">No equipment registered.</td></tr>

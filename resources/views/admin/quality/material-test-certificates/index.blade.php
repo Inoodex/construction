@@ -78,14 +78,10 @@
                                 @php $compCls = match($r->compliance_status) { 'compliant' => 'badge-outline-success', 'non_compliant' => 'badge-outline-danger', default => 'badge-outline-warning' }; @endphp
                                 <span class="badge {{ $compCls }}">{{ str_replace('_', ' ', ucfirst($r->compliance_status)) }}</span>
                             </td>
-                            <td class="flex gap-1" style="justify-content: center">
-                                <a href="{{ route('admin.quality.material-test-certificates.show', $r) }}" class="btn btn-sm btn-outline-info">View</a>
-                                <a href="{{ route('admin.quality.material-test-certificates.edit', $r) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
-                                <form action="{{ route('admin.quality.material-test-certificates.destroy', $r) }}" method="POST" class="inline" onsubmit="return confirm('Delete this certificate?')">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                                </form>
-                            </td>
+                            <td class="text-center">
+                                <x-action-dropdown>
+                                    <x-slot name="items">
+                                        <li><a href="{{ route('admin.quality.material-test-certificates.show', $r) }}">
                         </tr>
                     @empty
                         <tr><td colspan="8" class="text-center text-gray-400 py-4">No certificates found.</td></tr>

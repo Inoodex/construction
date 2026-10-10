@@ -70,12 +70,13 @@
                             <span class="badge {{ $cls }} capitalize">{{ $r->status }}</span>
                         </td>
                         <td class="text-xs">{{ $r->note ?? '—' }}</td>
-                        <td>
-                            <form action="{{ route('admin.hr.attendance.destroy', $r) }}" method="POST" onsubmit="return confirm('Delete?');">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger">×</button>
-                            </form>
-                        </td>
+                        <td class="text-center">
+                            <x-action-dropdown>
+                                <x-slot name="items">
+                                    <li class="danger">
+                                        <form action="{{ route('admin.hr.attendance.destroy', $r) }}" method="POST" onsubmit="return confirm('Delete?');">
+                                            @csrf @method('DELETE')
+                                            <button type="submit">
                     </tr>
                 @empty
                     <tr><td colspan="7" class="text-center text-gray-500">No attendance records found.</td></tr>

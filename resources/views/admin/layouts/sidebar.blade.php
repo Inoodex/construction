@@ -490,7 +490,7 @@
                 @endhasPrivilege
 
                 {{-- SECTION 7: QUALITY CONTROL --}}
-                @hasPrivilege('quality.view')
+                <!-- @hasPrivilege('quality.view')
                 <h2 class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
                     <span>Quality Control</span>
                 </h2>
@@ -537,7 +537,7 @@
                         <li><a href="{{ route('admin.quality.risks.index') }}">Risk Register</a></li>
                     </ul>
                 </li>
-                @endhasPrivilege
+                @endhasPrivilege -->
 
                 {{-- SECTION 8: FINANCE & ACCOUNTING --}}
                 @hasPrivilege('finance.view')

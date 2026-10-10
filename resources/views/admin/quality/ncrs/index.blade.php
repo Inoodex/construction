@@ -102,15 +102,10 @@
                                 @endphp
                                 <span class="badge {{ $stCls }}">{{ str_replace('_', ' ', ucfirst($r->status)) }}</span>
                             </td>
-                            <td class="flex gap-1" style="justify-content: center">
-                                <a href="{{ route('admin.quality.ncrs.show', $r) }}" class="btn btn-sm btn-outline-info">View</a>
-                                <a href="{{ route('admin.quality.ncrs.pdf', $r->id) }}" target="_blank" class="btn btn-sm btn-outline-success">PDF</a>
-                                <a href="{{ route('admin.quality.ncrs.edit', $r) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
-                                <form action="{{ route('admin.quality.ncrs.destroy', $r) }}" method="POST" class="inline" onsubmit="return confirm('Delete this NCR?')">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                                </form>
-                            </td>
+                            <td class="text-center">
+                                <x-action-dropdown>
+                                    <x-slot name="items">
+                                        <li><a href="{{ route('admin.quality.ncrs.show', $r) }}">
                         </tr>
                     @empty
                         <tr><td colspan="9" class="text-center text-gray-400 py-4">No NCRs found.</td></tr>
